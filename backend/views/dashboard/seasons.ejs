@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontier Seasons | Blaze Frontier</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050508;
+            font-family: var(--font-main);
+        }
+
+        .seasons-bg {
+            position: absolute;
+            top: 72px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 72px);
+            z-index: 1;
+            background-image: url('/public/reg.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* UI Overlay Layer */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            /* Only children with pointer-events will be clickable */
+            transition: opacity 1s ease;
+        }
+
+        /* Cave Entrance UI */
+        #cave-entrance {
+            text-align: center;
+            pointer-events: auto;
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            width: 100%;
+        }
+
+        .cave-title {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255, 87, 34, 0.5), 0 0 40px rgba(255, 87, 34, 0.3);
+            margin-bottom: 10px;
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        .cave-subtitle {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: #ff8a65;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .enter-btn {
+            background: rgba(20, 5, 5, 0.8);
+            border: 1px solid #ff5722;
+            color: #ffffff;
+            padding: 20px 60px;
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            cursor: pointer;
+            position: relative;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(255, 87, 34, 0.2);
+            transition: all 0.3s ease;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            text-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .enter-btn:hover {
+            background: rgba(255, 87, 34, 0.15);
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            box-shadow: 0 0 40px rgba(255, 87, 34, 0.8), inset 0 0 20px rgba(255, 87, 34, 0.4);
+            transform: scale(1.05);
+            text-shadow: 0 0 15px rgba(255, 87, 34, 0.8);
+        }
+
+        .enter-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Access Denied UI */
+        #access-denied {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 5, 5, 0.85);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.4);
+            pointer-events: auto;
+            z-index: 100;
+            max-width: 600px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        #access-denied h2 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: #ef4444;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        #access-denied p {
+            color: #fca5a5;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .denied-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fff;
+            padding: 12px 30px;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .denied-btn:hover {
+            background: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background container below navbar -->
+    <div class="seasons-bg"></div>
+
+    <!-- Include Navbar (z-index needs to be high) -->
+    <div style="position: relative; z-index: 100;">
+        <%- include('../partials/navbar') %>
+    </div>
+
+    <!-- UI Layer -->
+    <div id="ui-layer">
+
+        <!-- Entrance Screen -->
+        <div id="cave-entrance">
+            <a href="/dashboard/seasons/hub" class="enter-btn" id="enter-btn">ENTER THE SEASON</a>
+        </div>
+
+        <!-- Access Denied Modal -->
+        <div id="access-denied">
+            <h2>ACCESS DENIED</h2>
+            <p>Only Trusted Warriors of BZ may enter the Frontier.<br>Complete your 2-Series Qualification to prove your
+                worth and gain entry to the elite arena.</p>
+            <a href="/dashboard" class="denied-btn">RETURN TO HUB</a>
+        </div>
+    </div>
+
+
+
+    <script>
+        const token = localStorage.getItem('blaze_token');
+        if (!token) window.location.href = '/auth';
+    </script>
+</body>
+
+</html>

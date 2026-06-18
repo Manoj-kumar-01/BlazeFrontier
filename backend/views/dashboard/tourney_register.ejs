@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Registration | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .page-wrap { max-width: 900px; margin: 0 auto; padding: 100px 24px 60px; }
+
+        .form-card {
+            background: #111116; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px; position: relative; overflow: hidden;
+        }
+
+        .fc-header {
+            padding: 40px; border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: linear-gradient(180deg, rgba(255,87,34,0.05) 0%, #111116 100%);
+        }
+        .fc-title { font-family: var(--font-display); font-size: 2.4rem; color: #fff; letter-spacing: 1px; }
+        .fc-sub { color: var(--text-muted); font-size: 0.95rem; margin-top: 6px; line-height: 1.6; max-width: 700px; }
+
+        .form-body { padding: 40px; }
+
+        /* Step Architecture */
+        .step-block { margin-bottom: 40px; position: relative; }
+        .step-block:last-child { margin-bottom: 0; }
+        .step-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+        .step-num { 
+            color: var(--blaze-orange); font-family: var(--font-mono); font-weight: 600; 
+            font-size: 0.85rem; letter-spacing: 2px;
+        }
+        .step-title { font-family: var(--font-display); font-size: 1.5rem; color: #fff; letter-spacing: 1px; }
+        .step-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; }
+
+        /* Options Grid */
+        .opt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .opt-btn {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; padding: 18px; color: var(--text-muted);
+            font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+            text-align: left; display: flex; flex-direction: column; gap: 6px;
+        }
+        .opt-btn span { font-size: 0.75rem; font-weight: 400; opacity: 0.7; }
+        .opt-btn:hover { border-color: rgba(255,87,34,0.4); color: #fff; }
+        .opt-btn.active { background: rgba(255,87,34,0.1); border-color: var(--blaze-orange); color: var(--blaze-orange); }
+
+        /* Discord Section */
+        .discord-box {
+            background: rgba(88, 101, 242, 0.1); border: 1px solid rgba(88, 101, 242, 0.3);
+            border-radius: 8px; padding: 20px; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+        }
+        .dc-info { flex: 1; }
+        .dc-title { color: #5865F2; font-weight: 700; margin-bottom: 6px; font-size: 1.1rem; }
+        .dc-text { color: #fff; font-size: 0.85rem; line-height: 1.5; margin-bottom: 8px; }
+        .dc-warn { color: var(--text-muted); font-size: 0.8rem; font-style: italic; }
+        .dc-btn {
+            background: #5865F2; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none;
+            font-weight: 600; font-size: 0.9rem; transition: background 0.2s; white-space: nowrap;
+        }
+        .dc-btn:hover { background: #4752C4; }
+
+        /* Input Fields */
+        .input-group { margin-bottom: 20px; }
+        .input-label { display: block; color: #fff; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; margin-bottom: 8px; }
+        .input-control {
+            width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+            color: #fff; font-family: var(--font-body); font-size: 1rem; transition: border-color 0.2s;
+        }
+        .input-control:focus { outline: none; border-color: var(--blaze-orange); }
+
+        /* Calendar */
+        .cal-wrapper { display: flex; flex-direction: column; gap: 12px; }
+        .cal-selected-dates {
+            background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+            border-radius: 8px; padding: 16px; display: none;
+        }
+        .csd-title { color: #22c55e; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .csd-text { color: #fff; font-family: var(--font-mono); font-size: 1rem; }
+        .cal-warn { background: rgba(240, 165, 0, 0.1); border: 1px solid rgba(240, 165, 0, 0.3); padding: 12px; border-radius: 8px; color: #f0a500; font-size: 0.85rem; margin-top: 12px; display: none; }
+
+        /* Submit Button */
+        .submit-wrapper { padding: 40px; border-top: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.2); }
+        .submit-btn {
+            width: 100%; padding: 18px; border-radius: 8px; border: none;
+            background: var(--blaze-orange); color: #fff;
+            font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .submit-btn:hover { box-shadow: 0 4px 20px rgba(255,87,34,0.3); transform: translateY(-2px); }
+        .submit-btn:disabled { background: rgba(255,255,255,0.1); color: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Success Overlay */
+        .success-overlay {
+            background: #111116; border-radius: 8px;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 60px 40px; animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .so-icon { font-size: 4rem; color: #22c55e; margin-bottom: 20px; }
+        .so-title { font-family: var(--font-display); font-size: 2.2rem; color: #fff; letter-spacing: 1px; margin-bottom: 12px; }
+        .so-text { color: var(--text-muted); font-size: 1rem; line-height: 1.6; max-width: 450px; margin-bottom: 30px; }
+        .so-btn {
+            padding: 12px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: #fff; font-family: var(--font-display); font-size: 1.1rem;
+            letter-spacing: 1px; text-decoration: none; transition: background 0.2s;
+        }
+        .so-btn:hover { background: rgba(255,255,255,0.05); }
+
+        .day-row { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+        .day-label { color: #fff; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+        .slots-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 10px; }
+        .slot-btn { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 16px 12px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; 
+            border: 1px solid rgba(255,255,255,0.08); transition: all 0.3s ease;
+            background: rgba(0,0,0,0.3); font-family: var(--font-mono); position: relative; overflow: hidden;
+        }
+        .slot-btn.available { cursor: pointer; color: #fff; }
+        .slot-btn.available:hover { border-color: rgba(255,87,34,0.5); background: rgba(255,87,34,0.05); transform: translateY(-2px); }
+        .slot-btn.available.selected { 
+            background: rgba(255,87,34,0.1); border-color: var(--blaze-orange); color: var(--blaze-orange); 
+            box-shadow: 0 4px 20px rgba(255,87,34,0.2); transform: translateY(-2px); 
+        }
+        .slot-btn.booked { background: rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.03); color: var(--text-muted); cursor: not-allowed; opacity: 0.5; }
+        .slot-status { font-size: 0.7rem; font-family: var(--font-body); letter-spacing: 1px; margin-top: 6px; font-weight: 700; }
+        .slot-btn.available .slot-status { color: #22c55e; }
+        .slot-btn.available.selected .slot-status { color: var(--blaze-orange); }
+        .slot-btn.booked .slot-status { color: #e63946; }
+
+        @media (max-width: 600px) {
+            .page-wrap { padding: 90px 12px 40px; }
+            .fc-header, .form-body, .submit-wrapper, .success-overlay { padding: 24px; }
+            .input-group > div { flex-direction: column; }
+            .dc-btn { text-align: center; }
+            .opt-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="page-wrap">
+        <div class="form-card">
+            <!-- Success Screen -->
+            <div class="success-overlay" id="success-screen">
+                <div class="so-icon">✓</div>
+                <div class="so-title">REGISTRATION SECURED</div>
+                <div class="so-text">You will get slot details from the Blaze Team soon. Please check your notifications or Gmail for further confirmation and match timing.</div>
+                <a href="/dashboard" class="so-btn">RETURN TO HUB</a>
+            </div>
+
+            <div class="fc-header" id="fc-header">
+                <div class="fc-title">SERIES REGISTRATION</div>
+                <div class="fc-sub">To ensure competitive integrity, please follow the steps below carefully to register your entry. Incorrect details will lead to slot forfeiture.</div>
+            </div>
+
+            <form id="reg-form">
+                <div class="form-body">
+                    <!-- Step 1: Format -->
+                    <div class="step-block">
+                        <div class="step-header">
+                            <span class="step-num">STEP 01</span>
+                            <span class="step-title">MATCH FORMAT</span>
+                        </div>
+                        <div class="step-desc">Select your desired squad size and combat style.</div>
+                        
+                        <div class="opt-grid" id="type-grid" style="margin-bottom: 12px;">
+                            <div class="opt-btn active" data-val="solo">SOLO <span>1 Player</span></div>
+                            <div class="opt-btn" data-val="duo">DUO <span>2 Players</span></div>
+                            <div class="opt-btn" data-val="squad">SQUAD <span>4 Players</span></div>
+                        </div>
+
+                        <div id="team-inputs-container" style="display:none; margin-bottom: 16px;"></div>
+                        <button type="button" id="verify-team-btn" class="dc-btn" style="display:none; margin-bottom: 16px;">VERIFY TEAM</button>
+                        <div id="team-status" style="margin-top: -6px; margin-bottom: 16px; font-size:0.9rem; font-weight:600; display:none;"></div>
+
+                        <div class="opt-grid" id="mode-grid" style="margin-bottom: 12px;">
+                            <div class="opt-btn active" data-val="spray_body">SPRAY (BODY) <span>Standard Rules</span></div>
+                            <div class="opt-btn" data-val="spray_head">SPRAY (HEADSHOT) <span>Precision Rules</span></div>
+                            <div class="opt-btn" data-val="onetaps">ONETAPS <span>Hardcore Rules</span></div>
+                        </div>
+
+                        <div class="opt-grid" id="skills-grid">
+                            <div class="opt-btn active" data-val="on">SKILLS: ON <span>Character abilities active</span></div>
+                            <div class="opt-btn" data-val="off">SKILLS: OFF <span>Raw gunplay only</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Discord -->
+                    <div class="step-block" id="step-2" style="opacity: 1; transition: opacity 0.4s;">
+                        <div class="step-header">
+                            <span class="step-num">STEP 02</span>
+                            <span class="step-title">COMMUNICATION VERIFICATION</span>
+                        </div>
+                        <div class="step-desc">Lobby IDs, passwords, and match communications are strictly handled via our Discord server.</div>
+                        
+                        <div class="discord-box">
+                            <div class="dc-info">
+                                <div class="dc-title">Join the Blaze Frontier Server</div>
+                                <div class="dc-text">Click the link to join our Discord. You must navigate to the verification channel and verify yourself to gain access to tournament categories.</div>
+                                <div class="dc-warn">Note: Verify in Discord to join the server and view channels.</div>
+                            </div>
+                            <a href="https://discord.com/channels/1513772783505506384/1513788275196690454" target="_blank" class="dc-btn">JOIN SERVER</a>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">YOUR NAME IN THE SERVER YOU JOINED</label>
+                            <div style="display: flex; gap: 12px; align-items: stretch;">
+                                <input type="text" id="discord" class="input-control" placeholder="e.g. Commander#1234 or your server nickname" required>
+                                <button type="button" id="verify-dc-btn" class="dc-btn" style="height: auto;">VERIFY CONNECTION</button>
+                            </div>
+                            <div id="dc-status" style="margin-top: 10px; font-size: 0.9rem; font-weight: 600; display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Schedule -->
+                    <div class="step-block" id="step-3" style="opacity: 0.3; pointer-events: none; transition: opacity 0.4s;">
+                        <div class="step-header">
+                            <span class="step-num">STEP 03</span>
+                            <span class="step-title">MATCH SCHEDULE (2-SERIES)</span>
+                        </div>
+                        <div class="step-desc" style="color:var(--orange); font-weight:600; margin-bottom:8px;">You must play 2 matches consecutively (one after the other) within a single time slot.</div>
+                        <div class="step-desc">Select your preferred date and time slot for your 2-match series below.</div>
+                        
+                        <div class="cal-wrapper">
+                            <div class="input-group" style="margin-bottom:16px;">
+                                <label class="input-label">SELECT DATE (Within next 7 days)</label>
+                                <input type="date" id="selected-date" class="input-control" required onclick="this.showPicker()">
+                            </div>
+                            
+                            <div id="slots-container">
+                                <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">Select a date to view live slots...</div>
+                            </div>
+                            
+                            <input type="hidden" id="selected-slot" value="">
+                            
+                            <div class="cal-selected-dates" id="date-block" style="display: none; margin-top: 16px;">
+                                <div class="csd-title">YOUR 2-MATCH SERIES</div>
+                                <div class="csd-text" id="date-text">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submit-wrapper">
+                    <button type="submit" class="submit-btn" id="submit-btn">SUBMIT REGISTRATION</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('blaze_token');
+            if (!token) { window.location.href = '/auth'; return; }
+
+            let currentUserPlayerId = null;
+            let isTeamVerified = true; // True by default for Solo
+
+            const initUser = async () => {
+                try {
+                    const tRes = await fetch('/api/tournaments', { headers: { 'x-auth-token': token } });
+                    if(tRes.ok) {
+                        const tData = await tRes.json();
+                        const hasActive = tData.requests && tData.requests.some(r => r.status === 'Approved' || r.status === 'Pending');
+                        if(hasActive) {
+                            alert('You already have an active or pending Series registration. You cannot register again until it completes.');
+                            window.location.href = '/dashboard/tournaments';
+                            return;
+                        }
+                    }
+
+                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                    const data = await res.json();
+                    currentUserPlayerId = data.playerId;
+                    
+                    const firstInp = document.querySelector('.team-blaze-id[readonly]');
+                    if(firstInp && firstInp.value === 'Loading...') {
+                        firstInp.value = currentUserPlayerId;
+                    }
+                } catch(e) { console.error(e); }
+            };
+            initUser();
+
+            // Option Selectors
+            const setupOptGrid = (gridId) => {
+                const btns = document.querySelectorAll(`#${gridId} .opt-btn`);
+                btns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        btns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        if(gridId === 'type-grid') {
+                            handleFormatChange(btn.dataset.val);
+                        }
+                    });
+                });
+            };
+            
+            const handleFormatChange = (val) => {
+                const container = document.getElementById('team-inputs-container');
+                const vBtn = document.getElementById('verify-team-btn');
+                const status = document.getElementById('team-status');
+                const step2 = document.getElementById('step-2');
+                
+                container.innerHTML = '';
+                status.style.display = 'none';
+                vBtn.disabled = false;
+                vBtn.textContent = 'VERIFY TEAM';
+                vBtn.style.background = '#5865F2';
+                
+                if (val === 'solo') {
+                    container.style.display = 'none';
+                    vBtn.style.display = 'none';
+                    isTeamVerified = true;
+                    step2.style.opacity = '1';
+                    step2.style.pointerEvents = 'auto';
+                } else {
+                    container.style.display = 'flex';
+                    container.style.flexDirection = 'column';
+                    container.style.gap = '10px';
+                    vBtn.style.display = 'block';
+                    isTeamVerified = false;
+                    step2.style.opacity = '0.3';
+                    step2.style.pointerEvents = 'none';
+                    
+                    let count = val === 'duo' ? 2 : 4;
+                    for(let i=0; i<count; i++) {
+                        const wrap = document.createElement('div');
+                        wrap.className = 'input-group';
+                        wrap.style.marginBottom = '0';
+                        
+                        const inp = document.createElement('input');
+                        inp.type = 'text';
+                        inp.className = 'input-control team-blaze-id';
+                        inp.placeholder = `Player ${i+1} Blaze ID`;
+                        inp.required = true;
+                        
+                        if (i === 0) {
+                            inp.value = currentUserPlayerId || 'Loading...';
+                            inp.readOnly = true;
+                            inp.style.background = 'rgba(0,0,0,0.5)';
+                            inp.style.opacity = '0.7';
+                            inp.style.cursor = 'not-allowed';
+                        }
+                        
+                        wrap.appendChild(inp);
+                        container.appendChild(wrap);
+                    }
+                }
+            };
+
+            document.getElementById('verify-team-btn').addEventListener('click', async () => {
+                const inputs = document.querySelectorAll('.team-blaze-id');
+                const teamMembers = [];
+                for(let inp of inputs) {
+                    if(!inp.value.trim()) {
+                        alert('Please fill all Blaze IDs.');
+                        return;
+                    }
+                    teamMembers.push(inp.value.trim());
+                }
+                
+                const vBtn = document.getElementById('verify-team-btn');
+                const status = document.getElementById('team-status');
+                vBtn.disabled = true;
+                vBtn.textContent = 'VERIFYING...';
+                
+                try {
+                    const res = await fetch('/api/tournaments/verify-team', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                        body: JSON.stringify({ teamMembers })
+                    });
+                    const data = await res.json();
+                    if(res.ok) {
+                        status.style.display = 'block';
+                        status.style.color = '#22c55e';
+                        status.innerHTML = 'Team Verified! Step 02 Unlocked.';
+                        vBtn.textContent = 'TEAM VERIFIED ✓';
+                        vBtn.style.background = '#22c55e';
+                        isTeamVerified = true;
+                        inputs.forEach(inp => { 
+                            inp.readOnly = true; 
+                            inp.style.opacity = '0.7'; 
+                            inp.style.cursor = 'not-allowed';
+                        });
+                        const step2 = document.getElementById('step-2');
+                        step2.style.opacity = '1';
+                        step2.style.pointerEvents = 'auto';
+                        step2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        status.style.display = 'block';
+                        status.style.color = '#e63946';
+                        status.innerHTML = data.msg || 'Verification failed.';
+                        vBtn.disabled = false;
+                        vBtn.textContent = 'VERIFY TEAM';
+                    }
+                } catch(err) {
+                    status.style.display = 'block';
+                    status.style.color = '#e63946';
+                    status.innerHTML = 'Server error.';
+                    vBtn.disabled = false;
+                    vBtn.textContent = 'VERIFY TEAM';
+                }
+            });
+
+            setupOptGrid('type-grid');
+            setupOptGrid('mode-grid');
+            setupOptGrid('skills-grid');
+
+            const submitBtn = document.getElementById('submit-btn');
+
+            // Date logic setup
+            const setupDateLimits = () => {
+                const today = new Date();
+                const todayStr = today.toISOString().split('T')[0];
+                
+                const nextWeek = new Date();
+                nextWeek.setDate(today.getDate() + 7);
+                const nextWeekStr = nextWeek.toISOString().split('T')[0];
+                
+                const el = document.getElementById('selected-date');
+                if(el) {
+                    el.setAttribute('min', todayStr);
+                    el.setAttribute('max', nextWeekStr);
+                }
+            };
+            setupDateLimits();
+
+            const checkSelectionComplete = () => {
+                const d = document.getElementById('selected-date').value;
+                const s = document.getElementById('selected-slot').value;
+                
+                if (d && s) {
+                    const opts = { month: 'short', day: 'numeric', year: 'numeric' };
+                    const d1 = new Date(d).toLocaleDateString('en-US', opts);
+                    
+                    document.getElementById('date-text').innerHTML = `<strong>2 Matches Consecutive:</strong><br>${d1} at ${s}`;
+                    document.getElementById('date-block').style.display = 'block';
+                    submitBtn.disabled = false;
+                } else {
+                    document.getElementById('date-block').style.display = 'none';
+                    submitBtn.disabled = true;
+                }
+            };
+
+            const fetchSlotsForDate = async (dateStr) => {
+                const container = document.getElementById('slots-container');
+                const hiddenInput = document.getElementById('selected-slot');
+                hiddenInput.value = '';
+                checkSelectionComplete();
+                
+                if (!dateStr) {
+                    container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">Select a date to view live slots...</div>';
+                    return;
+                }
+                
+                container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">Fetching slots...</div>';
+                
+                try {
+                    const res = await fetch(`/api/tournaments/slots?date=${dateStr}`, {
+                        headers: { 'x-auth-token': token }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.isFull) {
+                            container.innerHTML = '<div style="color:#e63946; font-size:0.85rem; padding:8px; background:rgba(230,57,70,0.1); border-radius:4px; border:1px solid rgba(230,57,70,0.3);">All slots are filled for this date. Please choose another date.</div>';
+                            return;
+                        }
+                        
+                        let slotsHtml = '<div class="slots-container">';
+                        data.slots.forEach(slot => {
+                            if (slot.available) {
+                                slotsHtml += `<div class="slot-btn available" data-slot="${slot.time}">${slot.time} <span class="slot-status">OPEN</span></div>`;
+                            } else {
+                                slotsHtml += `<div class="slot-btn booked">${slot.time} <span class="slot-status">BOOKED</span></div>`;
+                            }
+                        });
+                        slotsHtml += '</div>';
+                        
+                        container.innerHTML = slotsHtml;
+                        
+                        container.querySelectorAll('.slot-btn.available').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                container.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+                                e.currentTarget.classList.add('selected');
+                                hiddenInput.value = e.currentTarget.dataset.slot;
+                                checkSelectionComplete();
+                            });
+                        });
+                    }
+                } catch(err) {
+                    container.innerHTML = '<div style="color:#e63946; font-size:0.85rem;">Failed to fetch slots.</div>';
+                }
+            };
+
+            document.getElementById('selected-date').addEventListener('change', (e) => {
+                fetchSlotsForDate(e.target.value);
+            });
+
+            // Discord Verification
+            let isDiscordVerified = false;
+            const dcBtn = document.getElementById('verify-dc-btn');
+            const dcInput = document.getElementById('discord');
+            const dcStatus = document.getElementById('dc-status');
+            const step3 = document.getElementById('step-3');
+
+            dcBtn.addEventListener('click', async () => {
+                const discordName = dcInput.value.trim();
+                if (!discordName) {
+                    dcStatus.style.display = 'block';
+                    dcStatus.style.color = '#e63946';
+                    dcStatus.innerHTML = 'Please enter a name first.';
+                    return;
+                }
+
+                dcBtn.disabled = true;
+                dcBtn.textContent = 'VERIFYING...';
+                dcStatus.style.display = 'block';
+                dcStatus.style.color = '#f0a500';
+                dcStatus.innerHTML = 'Scanning server members...';
+
+                try {
+                    const res = await fetch('/api/tournaments/verify-discord', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': token
+                        },
+                        body: JSON.stringify({ discordName })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.status === 401) {
+                        alert('Your login session has expired. Please log in again.');
+                        localStorage.removeItem('blaze_token');
+                        window.location.href = '/auth';
+                        return;
+                    }
+
+                    if (res.ok) {
+                        isDiscordVerified = true;
+                        dcBtn.textContent = 'VERIFIED ✓';
+                        dcBtn.style.background = '#22c55e';
+                        dcInput.style.borderColor = '#22c55e';
+                        dcInput.readOnly = true;
+                        dcInput.style.opacity = '0.7';
+                        dcInput.style.cursor = 'not-allowed';
+                        dcStatus.style.color = '#22c55e';
+                        dcStatus.innerHTML = 'Identity confirmed! Input locked. Step 03 Unlocked.';
+                        
+                        // Unlock Step 3 (The wonders of interaction)
+                        step3.style.opacity = '1';
+                        step3.style.pointerEvents = 'auto';
+                        step3.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        isDiscordVerified = false;
+                        dcBtn.disabled = false;
+                        dcBtn.textContent = 'VERIFY CONNECTION';
+                        dcInput.style.borderColor = '#e63946';
+                        dcStatus.style.color = '#e63946';
+                        dcStatus.innerHTML = data.msg || 'Verification failed. Try again.';
+                    }
+                } catch (err) {
+                    dcBtn.disabled = false;
+                    dcBtn.textContent = 'VERIFY CONNECTION';
+                    dcStatus.style.color = '#e63946';
+                    dcStatus.innerHTML = 'Server error during verification.';
+                }
+            });
+
+            // Submit
+            document.getElementById('reg-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!isTeamVerified) {
+                    alert('You must verify your team before submitting.');
+                    return;
+                }
+                
+                if (!isDiscordVerified) {
+                    alert('You must verify your Discord connection before submitting.');
+                    dcInput.focus();
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'PROCESSING...';
+
+                const format = document.querySelector('#type-grid .opt-btn.active').dataset.val;
+                const mode = document.querySelector('#mode-grid .opt-btn.active').dataset.val;
+                const skills = document.querySelector('#skills-grid .opt-btn.active').dataset.val;
+                const discord = document.getElementById('discord').value;
+                const startDate = document.getElementById('selected-date').value;
+                const timeSlot = document.getElementById('selected-slot').value;
+
+                let teamMembers = [];
+                if (format !== 'solo') {
+                    const inputs = document.querySelectorAll('.team-blaze-id');
+                    inputs.forEach(inp => teamMembers.push(inp.value.trim()));
+                }
+
+                if (!startDate || !timeSlot) {
+                    alert('Please select a date and time slot.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'SUBMIT REGISTRATION';
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/api/tournaments/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': token
+                        },
+                        body: JSON.stringify({ format, mode, skills, discord, startDate, timeSlot, teamMembers })
+                    });
+
+                    if (res.ok) {
+                        document.getElementById('fc-header').style.display = 'none';
+                        document.getElementById('reg-form').style.display = 'none';
+                        document.getElementById('success-screen').style.display = 'flex';
+                    } else {
+                        const data = await res.json();
+                        alert(data.msg || 'Registration failed');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'SUBMIT REGISTRATION';
+                    }
+                } catch(err) {
+                    alert('Server Error. Try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'SUBMIT REGISTRATION';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

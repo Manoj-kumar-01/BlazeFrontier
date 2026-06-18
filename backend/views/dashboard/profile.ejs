@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Blaze Frontier</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .page-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 24px 60px;
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .profile-sidebar {
+            width: 340px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .profile-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        /* Sidebar: Header card */
+        .profile-header {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 36px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .ph-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 87, 34, 0.4);
+            object-fit: cover;
+            margin-bottom: 16px;
+        }
+
+        .ph-info {
+            width: 100%;
+        }
+
+        .ph-name {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: #fff;
+            letter-spacing: 1px;
+            line-height: 1;
+            margin-bottom: 24px;
+        }
+
+        .ph-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .ph-tag {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ph-tag span {
+            color: #fff;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        /* Sidebar: Rank progress */
+        .rank-bar {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .rank-badge {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            color: var(--blaze-orange);
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .rank-info {
+            width: 100%;
+        }
+
+        .rank-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .rank-text {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: #fff;
+            margin: 8px 0 20px;
+        }
+
+        .prog-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .prog-fill {
+            height: 100%;
+            background: var(--blaze-orange);
+            border-radius: 4px;
+            transition: width 1s ease-out;
+            width: 0%;
+        }
+
+        /* Main: Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-val {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Main: Two-column details */
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .detail-panel {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .dp-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: #fff;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .dp-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .dp-item:last-child {
+            border-bottom: none;
+        }
+
+        .dp-key {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .dp-val {
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Main: Actions */
+        .action-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 10px;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+            border: none;
+        }
+
+        .action-primary {
+            background: var(--blaze-orange);
+            color: #fff;
+        }
+
+        .action-primary:hover {
+            box-shadow: 0 4px 16px rgba(255, 87, 34, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .action-ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .action-ghost:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        @media (max-width: 1000px) {
+            .page-wrap {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .profile-sidebar, .profile-main {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .detail-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .page-wrap {
+                padding: 90px 12px 40px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .action-row {
+                flex-direction: column;
+            }
+            .reward-item {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px;
+            }
+            .dp-item { flex-direction: row; align-items: center; }
+            .dp-val { text-align: right; }
+        }
+
+        /* Modal CSS */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #111116; padding: 32px; border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%; max-width: 400px;
+        }
+        .modal-title { font-family: var(--font-display); color: #fff; font-size: 1.8rem; margin-bottom: 24px; text-align: center; }
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-input { width: 100%; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 12px; border-radius: 8px; font-family: var(--font-mono); outline: none; }
+        .form-input:focus { border-color: var(--blaze-orange); }
+        .btn { padding: 12px 24px; font-family: var(--font-display); font-size: 1.1rem; border-radius: 8px; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary { background: var(--blaze-orange); color: #fff; }
+        .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+    </style>
+</head>
+
+<body>
+
+    <%- include('../partials/navbar') %>
+
+        <div class="page-wrap">
+
+            <!-- SIDEBAR -->
+            <div class="profile-sidebar">
+                <!-- Header -->
+                <div class="profile-header" id="profile-header">
+                    <div style="position: relative; display: inline-block;">
+                        <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar" style="transition: all 0.3s ease; display: block;">
+                        <button onclick="openEditProfileModal()" style="position: absolute; bottom: 16px; right: 0; background: var(--blaze-orange); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="ph-info">
+                        <div
+                            style="display:flex; align-items:center; gap: 12px; margin-bottom: 24px; justify-content:center;">
+                            <div class="ph-name" id="ph-name" style="margin-bottom:0;">—</div>
+                            <div id="ph-badge"
+                                style="font-size:0.75rem; font-weight:700; padding:4px 8px; border-radius:4px; font-family:var(--font-mono); letter-spacing:1px;">
+                            </div>
+                        </div>
+                        <div class="ph-meta">
+                            <div class="ph-tag">Region <span><span id="ph-region">—</span></span></div>
+                            <div class="ph-tag">Game UID <span><span id="ph-uid">—</span></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rank bar -->
+                <div class="rank-bar">
+                    <div class="rank-badge" id="rank-icon">#—</div>
+                    <div class="rank-info">
+                        <div class="rank-label">Platform Ranking</div>
+                        <div class="rank-text" id="rank-text">Calculating…</div>
+                        <div class="prog-track">
+                            <div class="prog-fill" id="rank-prog"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="profile-main">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 215, 0, 0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">💰</div>
+                        <div class="stat-label" style="color: #fcd34d; position: relative; z-index: 1;">Blaze Coins</div>
+                        <div class="stat-val" id="st-bp" style="color: #fff; position: relative; z-index: 1;">—</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(34, 197, 94, 0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🎮</div>
+                        <div class="stat-label" style="color: #86efac; position: relative; z-index: 1;">Matches</div>
+                        <div class="stat-val" id="st-matches" style="color: #fff; position: relative; z-index: 1;">—</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 87, 34, 0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🏆</div>
+                        <div class="stat-label" style="color: #fdba74; position: relative; z-index: 1;">Championships</div>
+                        <div class="stat-val" id="st-wins" style="color: #fff; position: relative; z-index: 1;">—</div>
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="detail-row">
+                    <div class="detail-panel">
+                        <div class="dp-title">ACCOUNT</div>
+                        <div class="dp-item"><span class="dp-key">Username</span><span class="dp-val"
+                                id="dp-user">—</span></div>
+                        <div class="dp-item"><span class="dp-key">In-Game Name</span><span class="dp-val"
+                                id="dp-ign">—</span></div>
+                        <div class="dp-item"><span class="dp-key">Setup</span><span class="dp-val" style="color:#22c55e"
+                                id="dp-setup">—</span></div>
+                    </div>
+                    <div class="detail-panel">
+                        <div class="dp-title">SERVER</div>
+                        <div class="dp-item"><span class="dp-key">Region</span><span class="dp-val"
+                                id="dp-region">—</span></div>
+                        <div class="dp-item"><span class="dp-key">Game UID</span><span class="dp-val"
+                                id="dp-uid">—</span></div>
+                        <div class="dp-item"><span class="dp-key">Player ID</span><span class="dp-val" id="dp-pid"
+                                style="font-size:0.75rem">—</span></div>
+                    </div>
+
+                    <!-- Rewards Section -->
+                    <style>
+                        @keyframes fallCoin {
+                            0% { transform: translateY(-30px) rotate(0deg); opacity: 0; }
+                            10% { opacity: 0.8; }
+                            90% { opacity: 0.8; }
+                            100% { transform: translateY(250px) rotate(360deg); opacity: 0; }
+                        }
+                        .rewards-panel {
+                            position: relative;
+                            overflow: hidden;
+                            border: 1px solid rgba(255, 215, 0, 0.06) !important;
+                        }
+                        .coin-bg {
+                            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+                            pointer-events: none; z-index: 0;
+                        }
+                        .c-particle {
+                            position: absolute;
+                            width: 32px; height: 32px;
+                            background-image: url('/public/blaze_coin.jpg');
+                            background-size: cover;
+                            background-position: center;
+                            border-radius: 50%;
+                            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+                            top: -40px; opacity: 0;
+                            z-index: 0;
+                        }
+                        .c-1 { left: 10%; animation: fallCoin 12s linear infinite 0s; }
+                        .c-2 { left: 35%; animation: fallCoin 15s linear infinite 3s; }
+                        .c-3 { left: 60%; animation: fallCoin 10s linear infinite 1s; }
+                        .c-4 { left: 80%; animation: fallCoin 14s linear infinite 5s; }
+                        .c-5 { left: 90%; animation: fallCoin 18s linear infinite 2s; }
+                        .rewards-panel > * {
+                            position: relative;
+                            z-index: 1;
+                        }
+                    </style>
+                    <div class="detail-panel rewards-panel" style="grid-column: 1 / -1;">
+                        <div class="coin-bg">
+                            <div class="c-particle c-1"></div>
+                            <div class="c-particle c-2"></div>
+                            <div class="c-particle c-3"></div>
+                            <div class="c-particle c-4"></div>
+                            <div class="c-particle c-5"></div>
+                        </div>
+                        <div class="dp-title" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>EARN REWARDS</span>
+                        </div>
+                        <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">First Login (100
+                                BC)</span><button id="first-login-btn" class="action-btn action-primary"
+                                style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
+                        </div>
+                        <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">Daily Login (10
+                                BC)</span><button id="daily-login-btn" class="action-btn action-primary"
+                                style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
+                        </div>
+                        <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">Trusted Player (100
+                                BC)</span><button id="trusted-player-btn" class="action-btn action-primary"
+                                style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="action-row" style="margin-top: 12px;">
+                    <a href="/dashboard/tournaments" class="action-btn action-primary">Browse Tournaments</a>
+                    <a href="/dashboard/leaderboards" class="action-btn action-ghost">VIEW LEADERBOARD</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Edit Profile</h2>
+            <form id="editProfileForm" onsubmit="handleEditProfile(event)">
+                <div class="form-group" style="text-align: center; margin-bottom: 24px;">
+                    <img id="edit-avatar-preview" src="/public/blaze_avatar.png" alt="Preview" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--blaze-orange); margin-bottom: 12px; cursor: pointer;" onclick="document.getElementById('profilePicInput').click()">
+                    <div>
+                        <label for="profilePicInput" style="color: var(--blaze-orange); cursor: pointer; font-size: 0.9rem; font-family: var(--font-display);">CHANGE AVATAR</label>
+                        <input type="file" id="profilePicInput" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editInGameName">In-Game Name</label>
+                    <input type="text" class="form-input" id="editInGameName" placeholder="Enter new IGN">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editGameUid">Game UID</label>
+                    <input type="text" class="form-input" id="editGameUid" placeholder="Enter Game UID">
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeEditProfileModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;" id="saveProfileBtn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/public/script.js"></script>
+    <script>
+        function openEditProfileModal() {
+            const modal = document.getElementById('editProfileModal');
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+            document.getElementById('editInGameName').value = document.getElementById('ph-name').innerText;
+            document.getElementById('editGameUid').value = document.getElementById('ph-uid').innerText;
+            document.getElementById('edit-avatar-preview').src = document.getElementById('ph-avatar').src;
+        }
+
+        function closeEditProfileModal() {
+            const modal = document.getElementById('editProfileModal');
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+        }
+
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('edit-avatar-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function handleEditProfile(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveProfileBtn');
+            const originalText = btn.innerText;
+            btn.innerText = 'Saving...';
+            btn.disabled = true;
+
+            const inGameName = document.getElementById('editInGameName').value;
+            const gameUid = document.getElementById('editGameUid').value;
+            const fileInput = document.getElementById('profilePicInput');
+
+            const formData = new FormData();
+            if (inGameName) formData.append('inGameName', inGameName);
+            if (gameUid) formData.append('gameUid', gameUid);
+            if (fileInput.files[0]) formData.append('profilePic', fileInput.files[0]);
+
+            try {
+                const token = localStorage.getItem('blaze_token');
+                const res = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: { 'x-auth-token': token },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    // Update DOM
+                    if (data.inGameName) document.getElementById('ph-name').innerText = data.inGameName;
+                    if (data.gameUid) document.getElementById('ph-uid').innerText = data.gameUid;
+                    if (data.profilePic) document.getElementById('ph-avatar').src = data.profilePic;
+                    
+                    showToast('Profile updated successfully!', 'success');
+                    closeEditProfileModal();
+                } else {
+                    showToast('Failed to update profile', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('An error occurred', 'error');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const token = localStorage.getItem('blaze_token');
+                if (!token) { window.location.href = '/auth'; return; }
+
+                try {
+                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                    if (res.status === 401 || res.status === 404) {
+                        localStorage.removeItem('blaze_token');
+                        window.location.href = '/auth';
+                        return;
+                    }
+                    if (!res.ok) throw new Error();
+                    const u = await res.json();
+
+                    document.getElementById('ph-name').textContent = u.inGameName || u.username;
+                    document.getElementById('ph-region').textContent = u.location || '—';
+                    document.getElementById('ph-uid').textContent = u.gameUid || '—';
+                    if (u.profilePic) {
+                        document.getElementById('ph-avatar').src = u.profilePic;
+                    }
+
+                    document.getElementById('st-bp').textContent = u.blazeCoins || 0;
+                    document.getElementById('st-matches').textContent = u.totalMatches || 0;
+                    document.getElementById('st-wins').textContent = u.tournamentsWon || 0;
+                    const pct = u.globalRankPercentile || 0;
+                    document.getElementById('rank-text').textContent = u.rankText || 'UNRANKED';
+                    document.getElementById('rank-icon').textContent = pct > 0 ? `TOP ${pct}%` : '#—';
+                    document.getElementById('rank-prog').style.width = `${100 - pct}%`;
+
+                    document.getElementById('dp-user').textContent = u.username || '—';
+                    document.getElementById('dp-ign').textContent = u.inGameName || '—';
+                    document.getElementById('dp-setup').textContent = u.isSetupComplete ? 'COMPLETE' : 'PENDING';
+                    document.getElementById('dp-region').textContent = u.location || '—';
+                    document.getElementById('dp-uid').textContent = u.gameUid || '—';
+                    document.getElementById('dp-pid').textContent = u.playerId || '—';
+
+                    // Avatar and badge styling based on genuine status
+                    if (u.isGenuine) {
+                        document.getElementById('ph-avatar').style.borderColor = '#ffd700';
+                        document.getElementById('ph-avatar').style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.4)';
+                        document.getElementById('ph-badge').innerHTML = '<span style="margin-right:4px;">★</span> TRUSTED PLAYER';
+                        document.getElementById('ph-badge').style.background = 'rgba(255, 215, 0, 0.1)';
+                        document.getElementById('ph-badge').style.color = '#ffd700';
+                        document.getElementById('ph-badge').style.border = '1px solid rgba(255, 215, 0, 0.3)';
+                        document.getElementById('profile-header').style.background = 'linear-gradient(180deg, rgba(255, 215, 0, 0.15) 0%, #111116 100%)';
+                    } else {
+                        document.getElementById('ph-badge').textContent = 'UNVERIFIED';
+                        document.getElementById('ph-badge').style.background = 'rgba(255, 255, 255, 0.05)';
+                        document.getElementById('ph-badge').style.color = 'var(--text-muted)';
+                        document.getElementById('ph-badge').style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                    }
+
+                    // Update rewards status
+                    const updateRewardsStatus = (userData) => {
+                        const firstBtn = document.getElementById('first-login-btn');
+                        const dailyBtn = document.getElementById('daily-login-btn');
+                        const trustedBtn = document.getElementById('trusted-player-btn');
+
+                        if (userData.firstLoginClaimed) {
+                            firstBtn.textContent = 'CLAIMED';
+                            firstBtn.disabled = true;
+                            firstBtn.style.background = 'rgba(255,255,255,0.05)';
+                            firstBtn.style.color = 'var(--text-muted)';
+                            firstBtn.style.cursor = 'not-allowed';
+                            firstBtn.style.boxShadow = 'none';
+                        } else {
+                            firstBtn.textContent = 'CLAIM';
+                            firstBtn.disabled = false;
+                            firstBtn.style.background = 'var(--blaze-orange)';
+                            firstBtn.style.color = '#fff';
+                            firstBtn.style.cursor = 'pointer';
+                        }
+
+                        if (!userData.isGenuine) {
+                            trustedBtn.textContent = 'NOT ELIGIBLE';
+                            trustedBtn.disabled = true;
+                            trustedBtn.style.background = 'rgba(255,255,255,0.05)';
+                            trustedBtn.style.color = 'var(--text-muted)';
+                            trustedBtn.style.cursor = 'not-allowed';
+                            trustedBtn.style.boxShadow = 'none';
+                        } else if (userData.trustedPlayerClaimed) {
+                            trustedBtn.textContent = 'CLAIMED';
+                            trustedBtn.disabled = true;
+                            trustedBtn.style.background = 'rgba(255,255,255,0.05)';
+                            trustedBtn.style.color = 'var(--text-muted)';
+                            trustedBtn.style.cursor = 'not-allowed';
+                            trustedBtn.style.boxShadow = 'none';
+                        } else {
+                            trustedBtn.textContent = 'CLAIM';
+                            trustedBtn.disabled = false;
+                            trustedBtn.style.background = 'var(--blaze-orange)';
+                            trustedBtn.style.color = '#fff';
+                            trustedBtn.style.cursor = 'pointer';
+                        }
+
+                        let canClaimDaily = false;
+                        if (!userData.lastLoginClaimDate) {
+                            canClaimDaily = true;
+                        } else {
+                            const lastClaim = new Date(userData.lastLoginClaimDate);
+                            const now = new Date();
+                            if (lastClaim.toDateString() !== now.toDateString()) {
+                                canClaimDaily = true;
+                            }
+                        }
+
+                        if (!canClaimDaily) {
+                            dailyBtn.textContent = 'CLAIMED';
+                            dailyBtn.disabled = true;
+                            dailyBtn.style.background = 'rgba(255,255,255,0.05)';
+                            dailyBtn.style.color = 'var(--text-muted)';
+                            dailyBtn.style.cursor = 'not-allowed';
+                            dailyBtn.style.boxShadow = 'none';
+                        } else {
+                            dailyBtn.textContent = 'CLAIM';
+                            dailyBtn.disabled = false;
+                            dailyBtn.style.background = 'var(--blaze-orange)';
+                            dailyBtn.style.color = '#fff';
+                            dailyBtn.style.cursor = 'pointer';
+                        }
+                    };
+
+                    updateRewardsStatus(u);
+
+                    const handleClaim = async (type, btnId) => {
+                        const btn = document.getElementById(btnId);
+                        if (btn.disabled) return;
+
+                        try {
+                            btn.textContent = '...';
+                            const claimRes = await fetch('/api/user/claim-bonus', {
+                                method: 'POST',
+                                headers: {
+                                    'x-auth-token': token,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ type })
+                            });
+                            const claimData = await claimRes.json();
+                            
+                            if (claimData.claimed) {
+                                // Update total BC in UI
+                                document.getElementById('st-bp').textContent = claimData.totalBonus;
+                                
+                                // Re-fetch profile to update statuses properly
+                                const freshRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                                if (freshRes.ok) {
+                                    const freshU = await freshRes.json();
+                                    updateRewardsStatus(freshU);
+                                }
+                            } else {
+                                btn.textContent = 'CLAIMED';
+                            }
+                        } catch (err) {
+                            console.error('Failed to claim bonus', err);
+                            alert('Error claiming bonus. Please try again later.');
+                            btn.textContent = 'CLAIM';
+                        }
+                    };
+
+                    document.getElementById('first-login-btn').addEventListener('click', () => handleClaim('first', 'first-login-btn'));
+                    document.getElementById('daily-login-btn').addEventListener('click', () => handleClaim('daily', 'daily-login-btn'));
+                    document.getElementById('trusted-player-btn').addEventListener('click', () => handleClaim('trusted', 'trusted-player-btn'));
+
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+        </script>
+</body>
+
+</html>

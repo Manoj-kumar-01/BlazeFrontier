@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .dash {
+            display: grid; grid-template-columns: 1fr 1fr 1fr 340px;
+            grid-template-rows: auto auto 1fr;
+            gap: 14px; padding: 88px 20px 20px; min-height: 100vh;
+            max-width: 1500px; margin: 0 auto;
+        }
+
+        .card {
+            background: #111116; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px; padding: 24px;
+        }
+
+        /* Welcome — left half */
+        .c-welcome {
+            grid-column: 1 / 3;
+            display: flex; justify-content: space-between; align-items: center; gap: 20px;
+            padding: 28px 32px;
+            background: linear-gradient(90deg, rgba(17,17,22,0.95) 0%, rgba(17,17,22,0.1) 70%), url('/public/ff_multiplayer_bg.png') center/cover no-repeat;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .c-welcome > div {
+            position: relative;
+            z-index: 1;
+        }
+        .cw-title { font-family: var(--font-display); font-size: 2.2rem; color: #fff; letter-spacing: 1px; }
+        .cw-title span { color: var(--blaze-orange); text-shadow: 0 0 10px rgba(255,87,34,0.4); }
+        .cw-sub { color: #e0e0e0; font-size: 0.85rem; margin-top: 2px; max-width: 400px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+        /* Featured Promo — right half */
+        .c-featured {
+            grid-column: 3 / -1;
+            background: linear-gradient(135deg, rgba(255,87,34,0.15) 0%, #111116 100%);
+            border: 1px solid rgba(255,87,34,0.3);
+            border-radius: 12px;
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+        .cf-info { position: relative; z-index: 1; }
+        .cf-title { font-family: var(--font-display); font-size: 1.8rem; color: #fff; margin-bottom: 6px; letter-spacing: 1px; }
+        .cf-title span { color: var(--blaze-orange); }
+        .cf-sub { color: var(--text-muted); font-size: 0.85rem; max-width: 280px; line-height: 1.4; }
+        .cf-action {
+            background: var(--blaze-orange); color: #fff; font-family: var(--font-display);
+            padding: 12px 28px; border-radius: 6px; text-decoration: none; font-size: 1.2rem;
+            letter-spacing: 1px; transition: transform 0.2s, box-shadow 0.2s;
+            position: relative; z-index: 1; white-space: nowrap;
+        }
+        .cf-action:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,87,34,0.4); }
+        .cf-bg {
+            position: absolute; right: -10px; bottom: -30px; font-size: 8rem; opacity: 0.05;
+            transform: rotate(-15deg); pointer-events: none;
+        }
+        
+        /* Stat cards — top row */
+        .c-stat { display: flex; flex-direction: column; justify-content: center; }
+        .cs-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+        .cs-val { font-family: var(--font-display); font-size: 2.4rem; color: #fff; line-height: 1; }
+        .cs-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-family: var(--font-mono); }
+
+        /* Main Content Grid */
+        .c-main { grid-column: 1 / 4; grid-row: 3; display: flex; flex-direction: column; gap: 14px; }
+        
+        .section-header {
+            font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px;
+            margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        /* Qualification Series Section */
+        .qs-section {
+            margin-bottom: 24px;
+            padding: 24px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(15,15,20,0.6) 0%, rgba(10,10,15,0.75) 100%), url('/public/qs_match_bg.png') center/cover no-repeat;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .qs-header-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .qs-title {
+            justify-self: start;
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: #fff;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .qs-subtitle {
+            justify-self: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            font-family: var(--font-display);
+            text-transform: uppercase;
+        }
+        .qs-view-all {
+            justify-self: end;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 30px;
+            color: #e0e0e0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 1.5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .qs-view-all:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            transform: translateX(-4px);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        /* Leaderboard Podium (Left) */
+        .podium-item {
+            display: flex; align-items: center; gap: 16px; padding: 14px;
+            background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 10px; margin-bottom: 8px; transition: border-color 0.2s;
+        }
+        .podium-item:hover { border-color: rgba(255,87,34,0.3); }
+        .pi-rank { font-family: var(--font-display); font-size: 1.8rem; width: 40px; text-align: center; }
+        .pi-rank.r1 { color: #f0a500; }
+        .pi-rank.r2 { color: #e0e0e0; }
+        .pi-rank.r3 { color: #cd7f32; }
+        .pi-info { flex: 1; }
+        .pi-name { color: #fff; font-size: 0.95rem; font-weight: 600; }
+        .pi-score { font-family: var(--font-mono); font-size: 1.1rem; color: #fff; font-weight: 600; text-align: right; }
+        .pi-score span { font-size: 0.7rem; color: var(--text-muted); margin-left: 4px; }
+
+        /* Tournaments (Right) */
+        .t-card {
+            padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 10px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .tc-head { display: flex; justify-content: space-between; align-items: center; }
+        .tc-title { color: #fff; font-size: 0.95rem; font-weight: 600; }
+        .tc-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 1px; }
+        .tc-badge.open { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .tc-meta { color: var(--text-muted); font-size: 0.8rem; display: flex; justify-content: space-between; }
+        .tc-meta span { color: #fff; font-family: var(--font-mono); }
+
+        /* Professional Match Card */
+        .pro-match-card {
+            position: relative; background: linear-gradient(145deg, rgba(20,20,28,0.9) 0%, rgba(10,10,15,0.95) 100%);
+            border: 1px solid rgba(255, 87, 34, 0.2); border-radius: 12px; padding: 20px;
+            margin-bottom: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+        }
+        .pro-match-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255, 87, 34, 0.15); border-color: rgba(255, 87, 34, 0.5); }
+        .pro-match-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--blaze-orange); box-shadow: 0 0 15px var(--blaze-orange);
+        }
+        .pmc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .pmc-title { font-family: var(--font-display); font-size: 1.4rem; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
+        .pmc-badge { background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 6px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .pmc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .pmc-stat { display: flex; flex-direction: column; gap: 4px; }
+        .pmc-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .pmc-stat-val { font-family: var(--font-mono); color: #fff; font-size: 1rem; font-weight: 600; }
+        .pmc-alert { background: rgba(0, 188, 212, 0.1); border-left: 3px solid #00bcd4; padding: 10px 14px; border-radius: 4px; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: #e0f7fa; }
+
+        /* Sidebar — right column */
+        .c-sidebar { grid-column: 4; grid-row: 2 / 4; display: flex; flex-direction: column; gap: 14px; }
+
+        .side-panel {
+            background: #111116; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px; padding: 20px; flex: 1;
+        }
+        .sp-title {
+            font-family: var(--font-display); font-size: 1.1rem; color: #fff; letter-spacing: 1px;
+            margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        /* Top Clips */
+        .clip-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: center; }
+        .clip-item:last-child { border-bottom: none; }
+        .ci-play { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,87,34,0.1); color: var(--blaze-orange); display: flex; justify-content: center; align-items: center; font-size: 0.8rem; }
+        .ci-info { flex: 1; }
+        .ci-title { color: #fff; font-size: 0.85rem; font-weight: 500; margin-bottom: 3px; }
+        .ci-author { color: var(--text-muted); font-size: 0.7rem; }
+        .ci-views { font-family: var(--font-mono); font-size: 0.75rem; color: #fff; }
+
+        /* Quick links */
+        .view-link {
+            display: block; text-align: center; color: var(--text-muted); text-decoration: none;
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; margin-top: 14px; transition: color 0.2s;
+        }
+        .view-link:hover { color: #fff; }
+
+        @media (max-width: 1100px) {
+            .dash { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto auto; }
+            .c-welcome { grid-column: 1 / -1; }
+            .c-main { grid-column: 1 / -1; }
+            .c-sidebar { grid-column: 1 / -1; grid-row: auto; flex-direction: row; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 700px) {
+            .dash { grid-template-columns: 1fr 1fr; padding: 88px 10px 10px; }
+            .c-welcome, .c-featured, .c-main, .c-sidebar { grid-column: 1 / -1; }
+            .c-stat:nth-child(3) { display: none; } /* Hide first stat to allow 2x grid */
+            
+            .c-welcome { flex-direction: column; text-align: center; padding: 24px; }
+            .cw-title { font-size: 1.8rem; }
+            .cw-sub { font-size: 0.8rem; }
+            
+            .c-featured { flex-direction: column; text-align: center; padding: 20px; gap: 16px; }
+            .cf-title { font-size: 1.5rem; margin-bottom: 8px; }
+            .cf-sub { font-size: 0.8rem; margin-bottom: 0; max-width: 100%; }
+            .cf-action { width: 100%; text-align: center; font-size: 1rem; padding: 12px; }
+            
+            .c-sidebar { flex-direction: column; }
+            .cs-val { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="dash">
+        <!-- Welcome -->
+        <div class="card c-welcome">
+            <div>
+                <div class="cw-title">ARENA: <span>FREE FIRE</span></div>
+                <div class="cw-sub">Track elite survivors, dominate the ranked ladder, and prove your worth in the Free Fire battleground.</div>
+            </div>
+        </div>
+
+        <!-- Featured Promo -->
+        <div class="c-featured">
+            <div class="cf-bg">🔥</div>
+            <div class="cf-info">
+                <div class="cf-title">DOMINATE <span>THE ARENA</span></div>
+                <div class="cf-sub">Join our official community, become part of the elite Guild, and unlock exclusive gaming perks!<br><br><span style="color:var(--blaze-orange);font-weight:600;">Note: To lead the leaderboards and be eligible for major tournaments, you must first verify your Discord and become a Trusted Player.</span></div>
+            </div>
+            <a href="/dashboard/tournaments/register" class="cf-action">START REGISTRATION</a>
+        </div>
+
+        <!-- Stats row -->
+        <div class="card c-stat">
+            <div class="cs-label">Active Players</div>
+            <div class="cs-val" id="ff-stat-operators">...</div>
+            <div class="cs-sub">Global players</div>
+        </div>
+        <div class="card c-stat">
+            <div class="cs-label">Participated Tourneys</div>
+            <div class="cs-val" style="color:#22c55e" id="ff-stat-participated">...</div>
+            <div class="cs-sub">Your lifetime entries</div>
+        </div>
+        <div class="card c-stat">
+            <div class="cs-label">Active Tourneys</div>
+            <div class="cs-val" id="ff-stat-tourneys">...</div>
+            <div class="cs-sub">Open for registration</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="c-main">
+            <div class="grid-1">
+                <!-- Active Tournaments -->
+                <div class="qs-section">
+                    <div class="qs-header-container">
+                        <div class="qs-title">Qualification Series</div>
+                        <div class="qs-subtitle">Play to unlock Elite Tournaments</div>
+                        <a href="#" id="view-all-qs-btn" class="qs-view-all">VIEW ALL <span>→</span></a>
+                    </div>
+                    
+                    <div id="ff-tourneys-container">
+                        <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">Loading matches...</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="c-sidebar">
+            <div class="side-panel">
+                <div class="sp-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    TOP CLIPS
+                    <span style="font-size: 0.65rem; color: var(--blaze-orange); background: rgba(255,87,34,0.1); padding: 3px 6px; border-radius: 4px;">DAILY REWARDS</span>
+                </div>
+                <div id="top-clips-container">
+                    <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">Loading top clips...</div>
+                </div>
+                <a href="#" class="view-link" onclick="event.preventDefault(); document.getElementById('clip-submit-modal').style.display='flex';">SUBMIT YOUR CLIP</a>
+            </div>
+
+            <!-- Clip Submission Modal -->
+            <div id="clip-submit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center;">
+                <div style="background:#111116; border:1px solid rgba(255,87,34,0.3); border-radius:12px; padding:30px; width: 90%; max-width:450px; box-shadow:0 10px 40px rgba(0,0,0,0.5); position:relative;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                        <h2 style="font-family:var(--font-display); color:#fff; font-size:1.5rem; letter-spacing:1px; margin:0;">SUBMIT CLIP</h2>
+                        <button onclick="document.getElementById('clip-submit-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">×</button>
+                    </div>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Submit your best 5-10s clip! Top 3 clips will be featured and awarded <span style="color:var(--blaze-orange); font-weight:bold;">50 BlazeCoins</span>. (Limit 1 submission per day)</p>
+                    <form id="clip-submit-form">
+                        <div style="margin-bottom: 15px;">
+                            <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Highlight Title</label>
+                            <input type="text" id="cs-title" required style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;" placeholder="e.g., Insane 1v4 Clutch">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Video File (MP4/WebM, Max 10s)</label>
+                            <input type="file" id="cs-file" required accept="video/mp4,video/webm" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;">
+                            <div id="cs-duration-error" style="color: #ef4444; font-size: 0.75rem; margin-top: 5px; display: none;">Video duration exceeds 10 seconds! Please select a shorter clip.</div>
+                        </div>
+                        <button type="submit" id="cs-submit-btn" style="width: 100%; background:var(--blaze-orange); color:#fff; border:none; padding:14px; border-radius:8px; font-weight:bold; cursor:pointer; transition:transform 0.2s;">SUBMIT CLIP FOR REVIEW</button>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('testToken')) {
+                const tokenRes = await fetch('/api/test-token');
+                const tokenData = await tokenRes.json();
+                localStorage.setItem('blaze_token', tokenData.token);
+                window.location.href = window.location.pathname;
+                return;
+            }
+
+            const token = localStorage.getItem('blaze_token');
+            if (!token) { window.location.href = '/auth'; return; }
+
+            let isGenuine = false;
+            let totalMatches = 0;
+            try {
+                const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                if (profRes.status === 401) {
+                    localStorage.removeItem('blaze_token');
+                    window.location.href = '/auth';
+                    return;
+                }
+                if(profRes.ok) {
+                    const prof = await profRes.json();
+                    isGenuine = prof.isGenuine === true;
+                    totalMatches = prof.totalMatches || 0;
+                }
+            } catch(e) {}
+
+            document.getElementById('ff-stat-participated').innerText = totalMatches;
+
+            // Fetch dynamic HUB stats
+            try {
+                const res = await fetch('/api/hub/freefire/stats');
+                if(res.ok) {
+                    const stats = await res.json();
+                    
+                    document.getElementById('ff-stat-operators').innerText = stats.activeOperators > 0 ? stats.activeOperators : 0;
+                    document.getElementById('ff-stat-tourneys').innerText = stats.activeTournaments;
+                }
+            } catch(e) {
+                console.error("Failed to load hub stats", e);
+            }
+            // Fetch dynamic tournaments (Live & Upcoming)
+            async function loadTournaments() {
+                try {
+                    const token = localStorage.getItem('blaze_token');
+                    const tRes = await fetch('/api/tournaments?game=freefire', { headers: { 'x-auth-token': token } });
+                    
+                    if (tRes.status === 401) {
+                        localStorage.removeItem('blaze_token');
+                        window.location.href = '/auth';
+                        return;
+                    }
+
+                if(tRes.ok) {
+                    const tData = await tRes.json();
+                    let html = '';
+                    
+                    const activeReq = tData.requests && tData.requests.find(r => r.status === 'Approved' || r.status === 'Pending');
+                    
+                    if (activeReq) {
+                        const formatStr = activeReq.format ? activeReq.format.toUpperCase() : 'UNKNOWN';
+                        const modeStr = activeReq.mode ? activeReq.mode.toUpperCase() : 'UNKNOWN';
+                        
+                        html += `
+                        <div style="padding: 10px 0;">
+                            <div class="pmc-header">
+                                <div class="pmc-title">${formatStr} ${modeStr}</div>
+                                <div class="pmc-badge" style="${activeReq.status === 'Pending' ? 'background:rgba(255,193,7,0.1);color:#ffc107;' : 'background:rgba(34,197,94,0.1);color:#22c55e;'}">${activeReq.status.toUpperCase()}</div>
+                            </div>
+                            <div class="pmc-grid">
+                                <div class="pmc-stat">
+                                    <span class="pmc-stat-label">Match ID</span>
+                                    <span class="pmc-stat-val" style="color: var(--blaze-orange);">${activeReq.matchNumber || 'TBA'}</span>
+                                </div>
+                                <div class="pmc-stat" style="text-align: right;">
+                                    <span class="pmc-stat-label">Date</span>
+                                    <span class="pmc-stat-val">${activeReq.date || 'TBA'}</span>
+                                </div>
+                                <div class="pmc-stat">
+                                    <span class="pmc-stat-label">Format</span>
+                                    <span class="pmc-stat-val">${formatStr}</span>
+                                </div>
+                                <div class="pmc-stat" style="text-align: right;">
+                                    <span class="pmc-stat-label">Timing</span>
+                                    <span class="pmc-stat-val">${activeReq.timeSlot || 'TBA'}</span>
+                                </div>
+                            </div>
+                            `;
+
+                            if (activeReq.status === 'Awaiting Verification') {
+                                html += `
+                                <div class="pmc-alert" style="background: rgba(252, 211, 77, 0.1); border-color: rgba(252, 211, 77, 0.3);">
+                                    <span style="font-size: 1.2rem;">⏳</span>
+                                    <div>
+                                        <strong style="color: #fcd34d; display:block; margin-bottom:2px;">Verification in Progress</strong>
+                                        The owner is currently verifying your match profile. Please wait for approval.
+                                    </div>
+                                </div>
+                                `;
+                            } else if (activeReq.isTimeCompleted) {
+                                html += `
+                                <div class="pmc-alert" style="background: rgba(255, 87, 34, 0.1); border-color: rgba(255, 87, 34, 0.3); justify-content: center; text-align: center;">
+                                    <div style="width: 100%;">
+                                        <strong style="color: #fff; display:block; margin-bottom:12px; font-size:1.1rem;">Your match time has concluded.<br>Have you successfully played your 2 consecutive games?</strong>
+                                        <div style="display:flex; justify-content:center; gap: 12px;">
+                                            <button onclick="confirmPlay('${activeReq.id}', 'yes')" style="background: #22c55e; color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px;">YES</button>
+                                            <button onclick="confirmPlay('${activeReq.id}', 'no')" style="background: #ef4444; color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px;">NO</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                            } else {
+                                html += `
+                                <div class="pmc-alert">
+                                    <span style="font-size: 1.2rem;">🛡️</span>
+                                    <div>
+                                        <strong style="color: #00bcd4; display:block; margin-bottom:2px;">Match Credentials</strong>
+                                        Room ID & Password will be shared 10 mins prior.
+                                    </div>
+                                </div>
+                                `;
+                            }
+
+                            html += `</div>`;
+                    } else if (isGenuine) {
+                        html = `
+                        <div style="text-align:center; padding: 20px 10px;">
+                            <div style="font-size: 2rem; margin-bottom: 12px;">✅</div>
+                            <div style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px;">VERIFIED PLAYER</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">You have already completed your qualification series and are a trusted player.</div>
+                        </div>
+                        `;
+                    } else {
+                        html = `
+                        <div style="text-align:center; padding: 20px 10px;">
+                            <div style="font-size: 2rem; margin-bottom: 12px;">🔥</div>
+                            <div style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px;">BECOME A TRUSTED PLAYER</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Register for a Qualification Series to prove your skills and unlock Elite Tournaments.</div>
+                            <a href="/dashboard/tournaments/register" style="display:inline-block; background: var(--blaze-orange); color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-family: var(--font-display); font-size: 0.9rem;">START REGISTRATION</a>
+                        </div>
+                        `;
+                    }
+                    
+                    document.getElementById('ff-tourneys-container').innerHTML = html;
+                } else {
+                    document.getElementById('ff-tourneys-container').innerHTML = `<div style="text-align:center; padding: 20px; color: #ef4444; font-size: 0.9rem;">Server Error: ${tRes.status}</div>`;
+                }
+                } catch(e) {
+                    console.error("Failed to load freefire tournaments", e);
+                    document.getElementById('ff-tourneys-container').innerHTML = `<div style="text-align:center; padding: 20px; color: #ef4444; font-size: 0.9rem;">Failed to load: ${e.message}</div>`;
+                }
+            }
+
+            // Initial load and real-time syncing every 30 seconds
+            loadTournaments();
+            setInterval(loadTournaments, 30000);
+
+            // Event Listener for "View All" Qualification Series
+            const viewAllQsBtn = document.getElementById('view-all-qs-btn');
+            if(viewAllQsBtn) {
+                viewAllQsBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    document.getElementById('qs-side-panel').style.right = '0';
+                    
+                    try {
+                        const token = localStorage.getItem('blaze_token');
+                        const tRes = await fetch('/api/tournaments?game=freefire', { headers: { 'x-auth-token': token } });
+                        
+                        if (tRes.status === 401) {
+                            localStorage.removeItem('blaze_token');
+                            window.location.href = '/auth';
+                            return;
+                        }
+
+                        if(tRes.ok) {
+                            const tData = await tRes.json();
+                            const qsMatches = tData.upcoming.filter(m => m.game === 'CUSTOM SERIES');
+                            
+                            let html = '';
+                            if(qsMatches.length > 0) {
+                                qsMatches.forEach(m => {
+                                    html += `
+                                    <div style="background: linear-gradient(135deg, rgba(15,15,20,0.6) 0%, rgba(10,10,15,0.75) 100%), url('/public/qs_match_bg.png') center/cover no-repeat; border: 1px solid rgba(0, 188, 212, 0.3); border-left: 4px solid var(--blaze-orange); border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); position: relative; transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateX(-4px)'; this.style.borderColor='rgba(0,188,212,0.6)'" onmouseout="this.style.transform='none'; this.style.borderColor='rgba(0,188,212,0.3)'">
+                                        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                                            <div style="color: #fff; font-family: var(--font-display); font-size: 1.1rem;">MATCH #${m.matchNumber || 'TBA'}</div>
+                                            <div style="color: var(--blaze-orange); font-size: 0.65rem; font-weight: bold; background: rgba(255,87,34,0.1); padding: 4px 8px; border-radius: 4px;">${m.status}</div>
+                                        </div>
+                                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 4px;">Player: <span style="color:#fff; font-weight:600;">${m.playerName || 'Unknown'}</span></div>
+                                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 4px;">Format: <span style="color:#fff">${m.name}</span></div>
+                                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 4px;">Type: <span style="color:#fff; text-transform:capitalize;">${m.team}</span></div>
+                                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 4px;">Date: <span style="color:#fff">${m.date}</span></div>
+                                        <div style="color: var(--text-muted); font-size: 0.85rem;">Slot: <span style="color:#fff">${m.timeSlot || m.slot}</span></div>
+                                    </div>
+                                    `;
+                                });
+                            } else {
+                                html = '<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">No qualification matches available right now.</div>';
+                            }
+                            document.getElementById('qs-panel-content').innerHTML = html;
+                        } else {
+                            document.getElementById('qs-panel-content').innerHTML = `<div style="color: #ef4444; padding: 20px; text-align: center;">Server Error: ${tRes.status}</div>`;
+                        }
+                    } catch(err) {
+                        console.error("Side panel error:", err);
+                        document.getElementById('qs-panel-content').innerHTML = `<div style="color: #ef4444; padding: 20px; text-align: center;">Failed to load matches: ${err.message}</div>`;
+                    }
+                });
+            }
+
+            // Dynamic Top Clips
+            try {
+                const clipsRes = await fetch('/api/game/freefire/clips');
+                if (clipsRes.ok) {
+                    const clipsData = await clipsRes.json();
+                    const container = document.getElementById('top-clips-container');
+                    if (clipsData.length === 0) {
+                        container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">No top clips for today yet. Submit yours!</div>';
+                    } else {
+                        container.innerHTML = clipsData.map(c => `
+                            <div class="clip-item">
+                                <a href="${c.url}" target="_blank" class="ci-play" style="text-decoration:none;">▶</a>
+                                <div class="ci-info">
+                                    <div class="ci-title">${c.title}</div>
+                                    <div class="ci-author">By ${c.author}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to load clips", e);
+            }
+
+            // Clip Submission Logic
+            const fileInput = document.getElementById('cs-file');
+            const submitBtn = document.getElementById('cs-submit-btn');
+            const durationError = document.getElementById('cs-duration-error');
+            let isDurationValid = false;
+            let playerBlazeId = '';
+            try {
+                const pRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                if (pRes.ok) {
+                    const pData = await pRes.json();
+                    playerBlazeId = pData.playerId || '';
+                }
+            } catch(e) {}
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const video = document.createElement('video');
+                    video.preload = 'metadata';
+                    video.onloadedmetadata = function() {
+                        window.URL.revokeObjectURL(video.src);
+                        if (video.duration > 11) { // 10s + 1s margin
+                            durationError.style.display = 'block';
+                            submitBtn.disabled = true;
+                            submitBtn.style.opacity = '0.5';
+                            isDurationValid = false;
+                        } else {
+                            durationError.style.display = 'none';
+                            submitBtn.disabled = false;
+                            submitBtn.style.opacity = '1';
+                            isDurationValid = true;
+                        }
+                    }
+                    video.src = URL.createObjectURL(file);
+                });
+            }
+
+            const clipSubmitForm = document.getElementById('clip-submit-form');
+            if (clipSubmitForm) {
+                clipSubmitForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (!isDurationValid) return;
+
+                    const title = document.getElementById('cs-title').value;
+                    const file = document.getElementById('cs-file').files[0];
+
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('clip', file);
+                    formData.append('game', 'freefire');
+                    formData.append('playerId', playerBlazeId);
+
+                    const originalText = submitBtn.innerText;
+                    submitBtn.innerText = 'UPLOADING...';
+                    submitBtn.disabled = true;
+
+                    try {
+                        const res = await fetch('/api/clips/submit', {
+                            method: 'POST',
+                            headers: { 'x-auth-token': token },
+                            body: formData
+                        });
+                        if (res.ok) {
+                            alert('Your clip has been submitted for review! Check back later to see if you made the Top Clips.');
+                            document.getElementById('clip-submit-modal').style.display = 'none';
+                            e.target.reset();
+                        } else {
+                            const data = await res.json();
+                            alert('Upload failed: ' + (data.msg || 'Unknown error'));
+                        }
+                    } catch (err) {
+                        alert('An error occurred during upload.');
+                    } finally {
+                        submitBtn.innerText = originalText;
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+        });
+
+        // Global confirmPlay function
+        window.confirmPlay = async function(regId, played) {
+            const btnYes = event.target.parentNode.querySelector('button:nth-child(1)');
+            const btnNo = event.target.parentNode.querySelector('button:nth-child(2)');
+            btnYes.disabled = true;
+            btnNo.disabled = true;
+            btnYes.style.opacity = '0.5';
+            btnNo.style.opacity = '0.5';
+
+            try {
+                const token = localStorage.getItem('blaze_token');
+                const res = await fetch('/api/tournaments/confirm-play', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ regId, played })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    alert(data.msg || 'Error processing request');
+                    btnYes.disabled = false;
+                    btnNo.disabled = false;
+                    btnYes.style.opacity = '1';
+                    btnNo.style.opacity = '1';
+                }
+            } catch (e) {
+                alert('Server error.');
+                btnYes.disabled = false;
+                btnNo.disabled = false;
+                btnYes.style.opacity = '1';
+                btnNo.style.opacity = '1';
+            }
+        };
+
+    </script>
+
+    <!-- Qualification Series Side Panel -->
+    <div id="qs-side-panel" style="position: fixed; top: 0; right: -450px; width: 400px; max-width: 100vw; height: 100vh; background: #111116; border-left: 1px solid rgba(255,255,255,0.06); z-index: 9999; box-shadow: -10px 0 30px rgba(0,0,0,0.8); transition: right 0.3s ease; display: flex; flex-direction: column;">
+        <div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);">
+            <div style="font-family: var(--font-display); font-size: 1.2rem; color: #fff;">ALL QUALIFICATION SERIES</div>
+            <button id="close-qs-panel" onclick="document.getElementById('qs-side-panel').style.right = '-450px';" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'">&times;</button>
+        </div>
+        <div id="qs-panel-content" style="flex: 1; overflow-y: auto; padding: 20px;">
+            <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">Loading...</div>
+        </div>
+    </div>
+    <style>
+        #qs-panel-content::-webkit-scrollbar { width: 6px; }
+        #qs-panel-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        #qs-panel-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    </style>
+</body>
+</html>

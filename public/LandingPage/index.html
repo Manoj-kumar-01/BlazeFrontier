@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blaze Frontier | Elite Gaming Rankings</title>
+    <link rel="icon" type="image/png" href="../public/Logo.png">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Blaze Frontier — The elite gaming player showcase. Track stats, climb rankings, and dominate the battlefield. Join the ultimate arena for top warriors.">
+    <meta name="keywords"
+        content="gaming rankings, player stats, esports, gaming tournaments, gaming leaderboard, Blaze Frontier, competitive gaming">
+    <meta name="author" content="Blaze Frontier">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://blazefrontier.in/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://blazefrontier.in/">
+    <meta property="og:title" content="Blaze Frontier | Elite Gaming Rankings">
+    <meta property="og:description"
+        content="Blaze Frontier — The elite gaming player showcase. Track stats, climb rankings, and dominate the battlefield.">
+    <meta property="og:image" content="https://blazefrontier.in/public/Logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://blazefrontier.in/">
+    <meta property="twitter:title" content="Blaze Frontier | Elite Gaming Rankings">
+    <meta property="twitter:description"
+        content="Blaze Frontier — The elite gaming player showcase. Track stats, climb rankings, and dominate the battlefield.">
+    <meta property="twitter:image" content="https://blazefrontier.in/public/Logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Cinzel+Decorative:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "url": "https://blazefrontier.in",
+              "logo": "https://blazefrontier.in/public/Logo.png",
+              "name": "Blaze Frontier"
+            }
+            </script>
+</head>
+
+<body>
+    <!-- Atmospheric Layers -->
+    <div class="atmosphere">
+        <canvas id="mesh-canvas" class="mesh-canvas"></canvas>
+        <div class="mouse-glow" id="mouse-glow"></div>
+        <div class="noise-overlay"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <a href="#" class="logo" id="logo">
+                <img src="../public/Logo.png" alt="Blaze Frontier Logo" class="logo-img">
+                <span class="logo-name">BLAZE<span class="logo-highlight">FRONTIER</span></span>
+            </a>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#hero" class="nav-item active">Home</a>
+                <a href="#players" class="nav-item">Players</a>
+                <a href="#stats" class="nav-item">Stats</a>
+                <a href="#leaderboard" class="nav-item">Rankings</a>
+                <a href="#join" class="nav-item">Join</a>
+            </div>
+            <div class="nav-right">
+                <a href="http://localhost:5000/auth" class="nav-btn nav-btn-ghost" id="btn-sign-in">Sign In</a>
+                <a href="http://localhost:5000/auth" class="nav-btn nav-btn-fill" id="btn-get-started">Get Started</a>
+            </div>
+            <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
+                <span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ======================== HERO ======================== -->
+    <section id="hero" class="hero">
+        <!-- Video Background -->
+        <div class="hero-video-bg">
+            <video id="hero-bg-video" autoplay muted loop playsinline class="bg-video">
+                <source src="../public/DesktopBG.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+
+        <div class="hero-grid-bg"></div>
+
+        <div class="hero-content">
+            <div class="hero-eyebrow" data-reveal>
+                <div class="eyebrow-line"></div>
+                <span>GAMING ELITE PLATFORM</span>
+                <div class="eyebrow-line"></div>
+            </div>
+
+            <h1 class="hero-heading" data-reveal data-delay="1">
+                <span class="heading-row">WHERE LEGENDS</span>
+                <span class="heading-row heading-outline">ARE FORGED</span>
+            </h1>
+
+            <p class="hero-desc" data-reveal data-delay="2">
+                The definitive platform for the world's top warriors. Real-time stats,
+                verified rankings, and an elite community — all in one arena.
+            </p>
+
+            <div class="hero-actions" data-reveal data-delay="3">
+                <a href="#players" class="cta-primary" id="cta-explore">
+                    <span class="cta-text">Explore Rankings</span>
+                    <span class="cta-icon">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </span>
+                </a>
+                <a href="#join" class="cta-secondary" id="cta-join">Join the Arena</a>
+            </div>
+
+            <div class="hero-metrics" data-reveal data-delay="4">
+                <div class="metric">
+                    <span class="metric-val" style="font-size: 1.6rem;">Live</span>
+                    <span class="metric-label">Global Rankings</span>
+                </div>
+                <div class="metric-sep"></div>
+                <div class="metric">
+                    <span class="metric-val" style="font-size: 1.6rem;">100%</span>
+                    <span class="metric-label">Verified Stats</span>
+                </div>
+                <div class="metric-sep"></div>
+                <div class="metric">
+                    <span class="metric-val" style="font-size: 1.6rem;">Elite</span>
+                    <span class="metric-label">Custom Profiles</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="hero-ring ring-outer" data-parallax="0.03"></div>
+            <div class="hero-ring ring-mid" data-parallax="0.05"></div>
+            <div class="hero-ring ring-inner" data-parallax="0.07"></div>
+            <div class="hero-center-glow"></div>
+        </div>
+
+        <div class="scroll-cue">
+            <span>Scroll to explore</span>
+            <div class="scroll-cue-bar"></div>
+        </div>
+    </section>
+
+    <!-- ======================== PLAYERS SHOWCASE ======================== -->
+    <section id="players" class="section players-section">
+        <div class="section-intro" data-reveal>
+            <span class="section-label">TOP WARRIORS</span>
+            <h2 class="section-heading">Season's <span class="text-accent">Finest</span></h2>
+            <p class="section-sub">Validated gameplay. Verified stats. These players have earned their place at the top.
+            </p>
+        </div>
+
+        <div class="roster-grid">
+            <!-- Card 1 -->
+            <div class="roster-card" data-reveal data-delay="0">
+                <div class="rc-bg"></div>
+                <div class="rc-header">
+                    <span class="rc-rank text-gold">01</span>
+                    <span class="rc-tier">GM</span>
+                </div>
+                <div class="rc-body">
+                    <div class="rc-avatar">DX</div>
+                    <h3 class="rc-name">DarkPhoenix_X</h3>
+                </div>
+                <div class="rc-stats">
+                    <div class="rc-stat"><span>Rating</span><strong>24.1K</strong></div>
+                    <div class="rc-stat"><span>K/D</span><strong>5.2</strong></div>
+                    <div class="rc-stat"><span>Wins</span><strong>892</strong></div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="roster-card" data-reveal data-delay="1">
+                <div class="rc-bg"></div>
+                <div class="rc-header">
+                    <span class="rc-rank text-silver">02</span>
+                    <span class="rc-tier">HEROIC</span>
+                </div>
+                <div class="rc-body">
+                    <div class="rc-avatar">SH</div>
+                    <h3 class="rc-name">ShadowHunter</h3>
+                </div>
+                <div class="rc-stats">
+                    <div class="rc-stat"><span>Rating</span><strong>18.4K</strong></div>
+                    <div class="rc-stat"><span>K/D</span><strong>4.8</strong></div>
+                    <div class="rc-stat"><span>Wins</span><strong>756</strong></div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="roster-card" data-reveal data-delay="2">
+                <div class="rc-bg"></div>
+                <div class="rc-header">
+                    <span class="rc-rank text-bronze">03</span>
+                    <span class="rc-tier">GM</span>
+                </div>
+                <div class="rc-body">
+                    <div class="rc-avatar">BV</div>
+                    <h3 class="rc-name">BlazingViper</h3>
+                </div>
+                <div class="rc-stats">
+                    <div class="rc-stat"><span>Rating</span><strong>16.8K</strong></div>
+                    <div class="rc-stat"><span>K/D</span><strong>4.5</strong></div>
+                    <div class="rc-stat"><span>Wins</span><strong>690</strong></div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="roster-card" data-reveal data-delay="3">
+                <div class="rc-bg"></div>
+                <div class="rc-header">
+                    <span class="rc-rank text-400" style="color:var(--text-400);">04</span>
+                    <span class="rc-tier">HEROIC</span>
+                </div>
+                <div class="rc-body">
+                    <div class="rc-avatar">NK</div>
+                    <h3 class="rc-name">NightKing_99</h3>
+                </div>
+                <div class="rc-stats">
+                    <div class="rc-stat"><span>Rating</span><strong>15.2K</strong></div>
+                    <div class="rc-stat"><span>K/D</span><strong>4.2</strong></div>
+                    <div class="rc-stat"><span>Wins</span><strong>620</strong></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== STATS / VALIDATION ======================== -->
+    <section id="stats" class="section stats-section">
+        <div class="stats-bg-mesh"></div>
+        <div class="section-intro" data-reveal>
+            <span class="section-label">BATTLE ANALYTICS</span>
+            <h2 class="section-heading">Precision <span class="text-accent">Metrics</span></h2>
+            <p class="section-sub">Every shot, every match, every victory — tracked and validated in real time.</p>
+        </div>
+        <div class="metrics-grid">
+            <div class="metric-card" data-reveal data-delay="0">
+                <div class="mc-sparkline">
+                    <svg viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <path d="M0,40 L10,35 L20,38 L30,25 L40,28 L50,15 L60,20 L70,10 L80,12 L90,5 L100,2 L100,40 Z"
+                            fill="rgba(76,201,240,0.05)" stroke="var(--cyan)" stroke-width="1" />
+                    </svg>
+                </div>
+                <div class="mc-content">
+                    <span class="mc-label">COMBAT METRICS</span>
+                    <span class="mc-val text-cyan" style="font-size: 2rem;">Tracked</span>
+                </div>
+            </div>
+
+            <div class="metric-card" data-reveal data-delay="1">
+                <div class="mc-sparkline">
+                    <svg viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <path d="M0,40 L15,30 L30,35 L45,20 L60,25 L75,10 L90,15 L100,5 L100,40 Z"
+                            fill="rgba(230,57,70,0.05)" stroke="var(--accent)" stroke-width="1" />
+                    </svg>
+                </div>
+                <div class="mc-content">
+                    <span class="mc-label">PLAYER RANKINGS</span>
+                    <span class="mc-val text-accent" style="font-size: 2rem;">Real-Time</span>
+                </div>
+            </div>
+
+            <div class="metric-card" data-reveal data-delay="2">
+                <div class="mc-sparkline">
+                    <svg viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <path d="M0,40 L20,38 L40,25 L60,28 L80,10 L100,8 L100,40 Z" fill="rgba(240,165,0,0.05)"
+                            stroke="var(--gold)" stroke-width="1" />
+                    </svg>
+                </div>
+                <div class="mc-content">
+                    <span class="mc-label">MATCH HISTORY</span>
+                    <span class="mc-val text-gold" style="font-size: 2rem;">Verified</span>
+                </div>
+            </div>
+
+            <div class="metric-card" data-reveal data-delay="3">
+                <div class="mc-sparkline">
+                    <svg viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <path d="M0,40 L10,30 L20,32 L30,25 L40,28 L50,20 L60,22 L70,15 L80,18 L90,10 L100,5 L100,40 Z"
+                            fill="rgba(46,196,182,0.05)" stroke="var(--green)" stroke-width="1" />
+                    </svg>
+                </div>
+                <div class="mc-content">
+                    <span class="mc-label">DATA ANALYTICS</span>
+                    <span class="mc-val text-green" style="font-size: 2rem;">Advanced</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== LEADERBOARD ======================== -->
+    <section id="leaderboard" class="section leaderboard-section">
+        <div class="section-intro" data-reveal>
+            <span class="section-label">GLOBAL RANKINGS</span>
+            <h2 class="section-heading">The <span class="text-accent">Leaderboard</span></h2>
+            <p class="section-sub">Updated every hour. Only the strongest survive at the top.</p>
+        </div>
+
+        <!-- Podium Section -->
+        <div class="lb-podium" data-reveal data-delay="0">
+            <!-- Rank 2 -->
+            <div class="lb-podium-card glass-lb-panel rank-2">
+                <div class="lb-podium-avatar">
+                    <div class="avatar-ring">
+                        <div class="avatar-initials">SH</div>
+                    </div>
+                    <span class="lb-rank-badge">#2</span>
+                </div>
+                <div class="lb-podium-name">SHADOWHUNTER</div>
+                <div class="lb-podium-tier" style="color: var(--cyan);">HEROIC</div>
+                <div class="lb-podium-rp">
+                    <span class="rp-value">18,420</span>
+                    <span class="rp-label">PTS</span>
+                </div>
+                <div class="lb-rp-bar"><div class="rp-fill"></div></div>
+            </div>
+
+            <!-- Rank 1 -->
+            <div class="lb-podium-card glass-lb-panel rank-1">
+                <div class="lb-podium-avatar">
+                    <span class="crown-icon">👑</span>
+                    <div class="avatar-ring">
+                        <div class="avatar-initials">DX</div>
+                    </div>
+                    <span class="lb-rank-badge">#1</span>
+                </div>
+                <div class="lb-podium-name">DARKPHOENIX_X</div>
+                <div class="lb-podium-tier" style="color: var(--accent);">GRANDMASTER</div>
+                <div class="lb-podium-rp">
+                    <span class="rp-value">24,150</span>
+                    <span class="rp-label">PTS</span>
+                </div>
+                <div class="lb-rp-bar"><div class="rp-fill"></div></div>
+            </div>
+
+            <!-- Rank 3 -->
+            <div class="lb-podium-card glass-lb-panel rank-3">
+                <div class="lb-podium-avatar">
+                    <div class="avatar-ring">
+                        <div class="avatar-initials">BV</div>
+                    </div>
+                    <span class="lb-rank-badge">#3</span>
+                </div>
+                <div class="lb-podium-name">BLAZINGVIPER</div>
+                <div class="lb-podium-tier" style="color: var(--gold);">CHALLENGER</div>
+                <div class="lb-podium-rp">
+                    <span class="rp-value">16,890</span>
+                    <span class="rp-label">PTS</span>
+                </div>
+                <div class="lb-rp-bar"><div class="rp-fill"></div></div>
+            </div>
+        </div>
+
+        <!-- Glass Table -->
+        <div class="glass-lb-panel" data-reveal data-delay="1" style="overflow: hidden;">
+            <table class="lb-glass-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Game</th>
+                        <th>Tier</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="tbl-rank">04</span></td>
+                        <td>
+                            <div class="lb-player-cell">
+                                <div class="tbl-avatar">NK</div>
+                                <div class="tbl-player-info">
+                                    <div class="tbl-player-name">NightKing_99</div>
+                                    <div class="tbl-player-team">Team: Phoenix_Rise</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="lb-region">🌐 Free Fire</span></td>
+                        <td><span class="lb-tier-badge tier-heroic">Heroic</span></td>
+                        <td><span class="tbl-points">15,200</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="tbl-rank">05</span></td>
+                        <td>
+                            <div class="lb-player-cell">
+                                <div class="tbl-avatar">ST</div>
+                                <div class="tbl-player-info">
+                                    <div class="tbl-player-name">StormTrooper</div>
+                                    <div class="tbl-player-team">Team: Neon_Legion</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="lb-region">🌐 COD</span></td>
+                        <td><span class="lb-tier-badge tier-challenger">Challenger</span></td>
+                        <td><span class="tbl-points">14,750</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="tbl-rank">06</span></td>
+                        <td>
+                            <div class="lb-player-cell">
+                                <div class="tbl-avatar">RF</div>
+                                <div class="tbl-player-info">
+                                    <div class="tbl-player-name">RapidFire_X</div>
+                                    <div class="tbl-player-team">Team: Void_Runners</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="lb-region">🌐 Mini Militia</span></td>
+                        <td><span class="lb-tier-badge tier-gm">Grandmaster</span></td>
+                        <td><span class="tbl-points">13,980</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="tbl-rank">07</span></td>
+                        <td>
+                            <div class="lb-player-cell">
+                                <div class="tbl-avatar">GS</div>
+                                <div class="tbl-player-info">
+                                    <div class="tbl-player-name">GhostSniper</div>
+                                    <div class="tbl-player-team">Team: Independent</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="lb-region">🌐 Free Fire</span></td>
+                        <td><span class="lb-tier-badge tier-diamond">Diamond</span></td>
+                        <td><span class="tbl-points">13,450</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer Stats -->
+        <div class="lb-footer-stats" data-reveal data-delay="2">
+            <div class="lb-footer-stat glass-lb-panel">
+                <div class="lfs-label">ACTIVE PLAYERS</div>
+                <div class="lfs-value" style="color: var(--accent);">59,200+</div>
+            </div>
+            <div class="lb-footer-stat glass-lb-panel">
+                <div class="lfs-label">MATCHES (24H)</div>
+                <div class="lfs-value" style="color: var(--cyan);">12,480</div>
+            </div>
+            <div class="lb-footer-stat glass-lb-panel">
+                <div class="lfs-label">PEAK CONCURRENCY</div>
+                <div class="lfs-value" style="color: var(--gold);">8.4K</div>
+            </div>
+            <div class="lb-footer-stat glass-lb-panel">
+                <div class="lfs-label">AVG MATCH TIME</div>
+                <div class="lfs-value" style="color: #fff;">9.2m</div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ======================== JOIN / CTA ======================== -->
+    <section id="join" class="section join-section">
+        <div class="join-3d-grid"></div>
+        <div class="join-content" data-reveal>
+            <span class="section-label">ENTER THE ARENA</span>
+            <h2 class="join-heading">Ready to Prove<br><span class="text-accent pro-reveal">You're the Best?</span></h2>
+            <p class="join-desc">Join us, submit your stats, and compete with the world's top
+                players.</p>
+            <div class="join-actions">
+                <a href="https://chat.whatsapp.com/BXY6wj7HOAY8uORA8pYIZ6?s=cl&p=a&mlu=4&amv=0" target="_blank"
+                    rel="noopener noreferrer" class="cta-primary cta-lg" id="join-cta">
+                    <span class="cta-text">Join Us</span>
+                    <span class="cta-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== FOOTER ======================== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <img src="../public/Logo.png" alt="Blaze Frontier Logo" class="logo-img-footer">
+                        <span class="logo-name">BLAZE<span class="logo-highlight">FRONTIER</span></span>
+                    </a>
+                    <p class="footer-desc">The elite player showcase platform. Track. Compete. Dominate.</p>
+                    <div class="footer-socials">
+                        <a href="https://www.facebook.com/profile.php?id=61590654844106" aria-label="Facebook"
+                            target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z" />
+                            </svg>
+                        </a>
+                        <a href="mailto:blazefrontierofficial@gmail.com" aria-label="Gmail">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>
+                        </a>
+                        <a href="https://discord.gg/4mWkJKfAU" aria-label="Discord" target="_blank"
+                            rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/blaze_frontier?igsh=MW4wdDZscWk5bXl2bQ=="
+                            aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h5>Platform</h5>
+                        <a href="#">Rankings</a>
+                        <a href="#">Player Stats</a>
+                        <a href="#">Tournaments</a>
+                        <a href="#">API</a>
+                    </div>
+                    <div class="footer-col">
+                        <h5>Community</h5>
+                        <a href="#">Discord</a>
+                        <a href="#">Forums</a>
+                        <a href="#">Creators</a>
+                        <a href="#">Events</a>
+                    </div>
+                    <div class="footer-col">
+                        <h5>Support</h5>
+                        <a href="help.html">Help Center</a>
+                        <a href="help.html#contact">Contact</a>
+                        <a href="#">Bug Reports</a>
+                        <a href="#">Status</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-disclaimer">
+                <p><strong>Disclaimer:</strong> Blaze Frontier is an independent, community-driven platform created to
+                    host tournaments and display publicly accessible player statistics across multiple games.</p>
+                <p>We are not affiliated with, endorsed by, or sponsored by any game developers or official gaming
+                    companies. All trademarks, game content, and intellectual property belong solely to their respective
+                    owners.</p>
+                <p>Blaze Frontier does not provide or sell in-game items, currency, or services. Any rewards or
+                    recognition offered on this site are limited to Blaze Frontier's own system and are independent of
+                    any official gaming ecosystem.</p>
+                <p>Player data displayed here is limited to information already visible to players within the games and
+                    is used solely for community engagement. Blaze Frontier respects player privacy and complies with
+                    applicable data protection laws.</p>
+                <p>Use of Blaze Frontier is subject to local laws and regulations. Players are responsible for complying
+                    with the Terms of Service of the games they participate in.</p>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Blaze Frontier. All rights reserved.</span>
+                <div class="footer-bottom-links">
+                    <a href="privacy.html">Privacy</a>
+                    <a href="terms.html">Terms</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-glow"></div>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('blaze_token')) {
+                const signInBtn = document.getElementById('btn-sign-in');
+                const getStartedBtn = document.getElementById('btn-get-started');
+                if (signInBtn) {
+                    signInBtn.textContent = 'Dashboard';
+                    signInBtn.href = '/dashboard';
+                }
+                if (getStartedBtn) {
+                    getStartedBtn.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

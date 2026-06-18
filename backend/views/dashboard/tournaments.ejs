@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournaments | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 100px 24px 60px; }
+        .page-head { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+        .page-head h1 { font-family: var(--font-display); font-size: 2.8rem; color: #fff; letter-spacing: 1px; }
+        .page-head p { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
+
+        .filter-group { display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
+        .filter-btn {
+            padding: 6px 14px; border-radius: 6px; border: none; background: transparent;
+            font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 1px;
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+        }
+        .filter-btn.active { background: var(--blaze-orange); color: #fff; }
+        .filter-btn:hover:not(.active) { color: #fff; }
+
+        .t-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .t-card {
+            background: #111116; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px; padding: 28px; transition: border-color 0.2s, transform 0.2s;
+        }
+        .t-card:hover { border-color: rgba(255,87,34,0.3); transform: translateY(-3px); }
+        .t-game { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--blaze-orange); margin-bottom: 8px; }
+        .t-name { font-family: var(--font-display); font-size: 1.8rem; color: #fff; margin-bottom: 6px; line-height: 1.1; }
+        .t-status { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        .t-status.open { color: #22c55e; }
+        .t-status.closed { color: var(--text-muted); }
+        .t-meta { display: flex; justify-content: space-between; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .t-stat-val { color: #fff; font-weight: 600; font-size: 1rem; }
+        .t-stat-label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        .empty-state { text-align: center; padding: 60px 0; color: var(--text-muted); font-size: 0.95rem; }
+        .spinner-ring {
+            display: inline-block; width: 24px; height: 24px;
+            border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--blaze-orange);
+            border-radius: 50%; animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .cta-banner {
+            background: linear-gradient(90deg, rgba(255,87,34,0.1) 0%, #111116 100%);
+            border: 1px solid rgba(255,87,34,0.3); border-radius: 14px;
+            padding: 30px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+        }
+        .cta-content h2 { font-family: var(--font-display); font-size: 2rem; color: #fff; margin-bottom: 8px; letter-spacing: 1px; }
+        .cta-content p { color: var(--text-muted); font-size: 0.95rem; max-width: 600px; }
+        .cta-btn {
+            background: var(--blaze-orange); color: #fff; padding: 14px 28px; border-radius: 8px;
+            font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px; text-decoration: none;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .cta-btn:hover { box-shadow: 0 4px 20px rgba(255,87,34,0.3); transform: translateY(-2px); }
+        @media (max-width: 700px) {
+            .cta-banner { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 500px) {
+            .page-wrap { padding: 90px 12px 40px; }
+            .t-grid { grid-template-columns: 1fr; }
+            .page-head h1 { font-size: 2.2rem; }
+        }
+
+        /* Hero Poster Animations */
+        .poster-frame { position: absolute; inset: 0; }
+        .fade-out { animation: fadeOut 0.5s forwards; }
+        .fade-in { animation: fadeIn 0.5s forwards; }
+        .slide-in-left { animation: slideInLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide-in-right { animation: slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .pop-in { animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .slide-up { animation: slideUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+        /* Professional Match Card */
+        .pro-match-card {
+            position: relative; background: linear-gradient(145deg, rgba(20,20,28,0.9) 0%, rgba(10,10,15,0.95) 100%);
+            border: 1px solid rgba(255, 87, 34, 0.2); border-radius: 12px; padding: 20px;
+            margin-bottom: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+        }
+        .pro-match-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255, 87, 34, 0.15); border-color: rgba(255, 87, 34, 0.5); }
+        .pro-match-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--blaze-orange); box-shadow: 0 0 15px var(--blaze-orange);
+        }
+        .pmc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .pmc-title { font-family: var(--font-display); font-size: 1.4rem; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
+        .pmc-badge { background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 6px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .pmc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .pmc-stat { display: flex; flex-direction: column; gap: 4px; }
+        .pmc-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .pmc-stat-val { font-family: var(--font-mono); color: #fff; font-size: 1rem; font-weight: 600; }
+        .pmc-alert { background: rgba(0, 188, 212, 0.1); border-left: 3px solid #00bcd4; padding: 10px 14px; border-radius: 4px; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: #e0f7fa; }
+
+        @keyframes fadeOut { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.05); } }
+        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+        @keyframes slideInLeft { 0% { opacity: 0; transform: translateX(-100px); } 100% { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInRight { 0% { opacity: 0; transform: translateX(100px); } 100% { opacity: 1; transform: translateX(0); } }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.2) rotate(-10deg); } 70% { transform: scale(1.1) rotate(5deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+        @keyframes slideUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/navbar') %>
+
+    <div class="page-wrap">
+        <div class="page-head">
+            <div>
+                <h1>TOURNAMENTS</h1>
+            </div>
+        </div>
+
+        <div class="filter-group" id="view-tabs" style="margin-bottom: 24px; display: inline-flex;">
+            <button class="filter-btn active" data-view="live">LIVE</button>
+            <button class="filter-btn" data-view="upcoming">UPCOMING</button>
+        </div>
+
+        <div id="t-content">
+            <div style="text-align:center;padding:60px"><div class="spinner-ring"></div></div>
+        </div>
+
+        <div class="cta-banner" id="registration-cta">
+            <div class="cta-content">
+                <h2>Wanna see your name on the Leaderboards?</h2>
+                <p>Register for a 2-match Series to prove your worth. Earn Blaze Coins, rank up, and establish dominance in your arena.</p>
+            </div>
+            <a href="/dashboard/tournaments/register" class="cta-btn">START REGISTRATION</a>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('blaze_token');
+            if (!token) { window.location.href = '/auth'; return; }
+
+            let userGame = null;
+
+            // Get user's game
+            try {
+                const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                if (profRes.status === 401 || profRes.status === 404) {
+                    localStorage.removeItem('blaze_token');
+                    window.location.href = '/auth';
+                    return;
+                }
+                if (profRes.ok) {
+                    const prof = await profRes.json();
+                    if (!prof.isGenuine) {
+                        document.querySelector('.page-wrap').style.display = 'none';
+                        const modal = document.getElementById('tournaments-lock-modal');
+                        if (modal) {
+                            modal.style.display = 'flex';
+                            const btn = modal.querySelector('button');
+                            if(btn) btn.onclick = () => { window.location.href = '/dashboard'; };
+                        } else {
+                            window.location.href = '/dashboard';
+                        }
+                        return;
+                    }
+                    userGame = prof.game;
+                }
+            } catch (e) {}
+
+
+
+            const loadTournaments = async (gameFilter) => {
+                const container = document.getElementById('t-content');
+                container.innerHTML = '<div style="text-align:center;padding:60px"><div class="spinner-ring"></div></div>';
+
+                let url = '/api/tournaments';
+                try {
+                    const res = await fetch(url, { headers: { 'x-auth-token': token } });
+                    if (res.ok) {
+                        let data = await res.json();
+                        window.tournamentData = data;
+
+                        // Check if user has an active or pending request
+                        const hasActive = data.requests && data.requests.some(r => r.status === 'Approved' || r.status === 'Pending');
+                        if (hasActive) {
+                            const cta = document.getElementById('registration-cta');
+                            if (cta) cta.style.display = 'none';
+                        }
+
+                        renderView('live');
+                    }
+                } catch (e) {
+                    container.innerHTML = '<div class="empty-state">Failed to load tournaments.</div>';
+                }
+            };
+
+            window.renderView = (view) => {
+                const container = document.getElementById('t-content');
+                if (!window.tournamentData) return;
+                
+                const list = window.tournamentData[view];
+                let html = '';
+
+                if (view === 'live') {
+                    if (list.length === 0) {
+                        html = '<div class="empty-state" style="margin-bottom: 40px;">No live tournaments currently in this arena.</div>';
+                    } else {
+                        html = '<div class="t-grid" style="margin-bottom: 40px;">' + list.map(t => `
+                            <div class="t-card" style="border-color: #22c55e;">
+                                <div class="t-game">${t.game}</div>
+                                <div class="t-name">${t.name}</div>
+                                <div class="t-status open" style="display:flex; align-items:center; gap:6px;"><div style="width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 1.2s infinite;"></div> ${t.status.toUpperCase()}</div>
+                                <div class="t-meta">
+                                    <div><div class="t-stat-val">${t.participants}</div><div class="t-stat-label">Players</div></div>
+                                    <div style="text-align:right"><div class="t-stat-val">${t.date}</div><div class="t-stat-label">Date</div></div>
+                                </div>
+                                <a href="/dashboard/leaderboards" style="display:block; text-align:center; margin-top:20px; background:rgba(34, 197, 94, 0.1); color:#22c55e; padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; text-decoration:none; transition:transform 0.2s;">SPECTATE / LEADERBOARD</a>
+                            </div>
+                        `).join('') + '</div>';
+                    }
+                } else {
+                    if (list.length === 0) {
+                        html = '<div class="empty-state">No upcoming tournaments open for registration.</div>';
+                    } else {
+                        html = '<div class="t-grid">' + list.map(t => `
+                            ${t.type === 'match' ? `
+                                <div class="pro-match-card">
+                                    <div class="pmc-header">
+                                        <div class="pmc-title">${t.name}</div>
+                                        <div class="pmc-badge">${t.status}</div>
+                                    </div>
+                                    <div class="pmc-grid">
+                                        <div class="pmc-stat">
+                                            <span class="pmc-stat-label">Match ID</span>
+                                            <span class="pmc-stat-val" style="color: var(--blaze-orange);">${t.matchNumber}</span>
+                                        </div>
+                                        <div class="pmc-stat" style="text-align: right;">
+                                            <span class="pmc-stat-label">Date</span>
+                                            <span class="pmc-stat-val">${t.date}</span>
+                                        </div>
+                                        <div class="pmc-stat">
+                                            <span class="pmc-stat-label">Format</span>
+                                            <span class="pmc-stat-val">${t.team || 'Solo'}</span>
+                                        </div>
+                                        <div class="pmc-stat" style="text-align: right;">
+                                            <span class="pmc-stat-label">Timing</span>
+                                            <span class="pmc-stat-val">${t.timeSlot || 'TBA'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="pmc-alert">
+                                        <span style="font-size: 1.2rem;">🛡️</span>
+                                        <div>
+                                            <strong style="color: #00bcd4; display:block; margin-bottom:2px;">Match Credentials</strong>
+                                            Room ID & Password will be shared 10 mins prior.
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="t-card">
+                                    <div class="t-game">${t.game}</div>
+                                    <div class="t-name">${t.name}</div>
+                                    <div class="t-status" style="color: var(--blaze-orange)">${t.status.toUpperCase()}</div>
+                                    <div class="t-meta">
+                                        <div><div class="t-stat-val">${t.participants}</div><div class="t-stat-label">Players</div></div>
+                                        <div style="text-align:right"><div class="t-stat-val">${t.date}</div><div class="t-stat-label">Date</div></div>
+                                    </div>
+                                    ${t.canRegister ? '<a href="/dashboard/tournaments/register" style="display:block; text-align:center; margin-top:20px; background:var(--blaze-orange); color:#fff; padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; text-decoration:none; transition:transform 0.2s;">REGISTER NOW</a>' : '<div style="display:block; text-align:center; margin-top:20px; background:rgba(255,255,255,0.05); color:var(--text-muted); padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; transition:transform 0.2s;">WAITING</div>'}
+                                </div>
+                            `}
+                        `).join('') + '</div>';
+                    }
+                }
+                
+                container.innerHTML = html;
+            };
+
+            // View Tabs
+            document.querySelectorAll('#view-tabs .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#view-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderView(btn.dataset.view);
+                });
+            });
+
+            // Initial load
+            await loadTournaments();
+
+
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Streams | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .page-wrap { max-width: 1200px; margin: 0 auto; padding: 100px 24px 60px; }
+        .page-head { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+        .page-head h1 { font-family: var(--font-display); font-size: 2.8rem; color: #fff; letter-spacing: 1px; }
+        .page-head p { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
+        
+    <style>
+        .stream-grid { display: grid; grid-template-columns: 1fr; gap: 40px; margin-top: 20px; }
+        @media(min-width: 900px) { .stream-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .stream-card {
+            background: #111116; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stream-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.5); border-color: rgba(255,87,34,0.3); }
+        .stream-video-wrap {
+            position: relative; padding-bottom: 56.25%; /* 16:9 Aspect Ratio */ height: 0;
+            background: #000; cursor: pointer;
+        }
+        .stream-video-wrap iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+
+        /* Overlay to intercept clicks on iframe */
+        .click-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10;
+            background: rgba(0,0,0,0.01); /* Invisible but clickable */
+        }
+
+        /* When fullscreen, we want pointer-events none so user can interact with iframe */
+        .stream-video-wrap:fullscreen .click-overlay { pointer-events: none; }
+        .stream-video-wrap:-webkit-full-screen .click-overlay { pointer-events: none; }
+        .stream-video-wrap:-ms-fullscreen .click-overlay { pointer-events: none; }
+
+        .stream-info { padding: 24px; }
+        .stream-game { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--blaze-orange); margin-bottom: 8px; }
+        .stream-title { font-family: var(--font-display); font-size: 1.6rem; color: #fff; margin-bottom: 12px; line-height: 1.2; }
+        .stream-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; }
+        
+        .live-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(220, 38, 38, 0.15); color: #ef4444; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; border: 1px solid rgba(220, 38, 38, 0.3); animation: pulse 2s infinite; }
+        .live-badge .dot { width: 6px; height: 6px; background: #ef4444; border-radius: 50%; }
+        
+        .watch-btn {
+            background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; transition: background 0.2s;
+        }
+        .watch-btn:hover { background: var(--blaze-orange); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/navbar') %>
+
+    <div class="page-wrap">
+        <div class="page-head">
+            <div>
+                <h1>DAILY SHOWCASE</h1>
+                <p>Watch the latest highlights, shorts, and gameplay directly from our channels.</p>
+            </div>
+        </div>
+
+        <div id="streams-container">
+            <div class="stream-grid">
+                
+                <!-- YouTube Stream -->
+                <div class="stream-card" style="border-color: rgba(255, 0, 0, 0.3);">
+                    <div class="stream-video-wrap" id="yt-wrap" onclick="toggleFullscreen('yt-wrap')">
+                        <div class="click-overlay"></div>
+                        <!-- Replace src with your actual YouTube live embed link -->
+                        <iframe src="https://www.youtube.com/embed/live_stream?channel=UCYOURCHANNELID" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
+                    </div>
+                    <div class="stream-info">
+                        <div class="stream-game" style="color: #FF0000;">YOUTUBE CONTENT</div>
+                        <div class="stream-title">Blaze Frontier Official YouTube</div>
+                        <div class="stream-meta">
+                            <div class="live-badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e; border-color: rgba(34, 197, 94, 0.3);"><div class="dot" style="background: #22c55e;"></div> FEATURED</div>
+                            <a href="https://youtube.com/@blazefrontier" target="_blank" class="watch-btn" style="background: rgba(255,0,0,0.1); color: #ff4d4d; border: 1px solid rgba(255,0,0,0.3);">View on YouTube</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facebook Stream -->
+                <div class="stream-card" style="border-color: rgba(24, 119, 242, 0.3);">
+                    <div class="stream-video-wrap" id="fb-wrap" onclick="toggleFullscreen('fb-wrap')">
+                        <div class="click-overlay"></div>
+                        <!-- Replace src with your actual Facebook video embed link -->
+                        <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379946729%2F&show_text=false" scrolling="no" allow="autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+                    </div>
+                    <div class="stream-info">
+                        <div class="stream-game" style="color: #1877F2;">FACEBOOK CONTENT</div>
+                        <div class="stream-title">Blaze Frontier Official Facebook</div>
+                        <div class="stream-meta">
+                            <div class="live-badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e; border-color: rgba(34, 197, 94, 0.3);"><div class="dot" style="background: #22c55e;"></div> FEATURED</div>
+                            <a href="https://facebook.com/blazefrontier" target="_blank" class="watch-btn" style="background: rgba(24,119,242,0.1); color: #60a5fa; border: 1px solid rgba(24,119,242,0.3);">View on Facebook</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="/public/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('blaze_token');
+            if (!token) { window.location.href = '/auth'; return; }
+
+            try {
+                const statsRes = await fetch('/api/dashboard/stats', { headers: { 'x-auth-token': token } });
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    if(stats.liveMatches && stats.liveMatches[0]) {
+                        const content = stats.liveMatches[0];
+                        const ytIframe = document.querySelector('#yt-wrap iframe');
+                        const fbIframe = document.querySelector('#fb-wrap iframe');
+                        
+                        if(ytIframe && content.youtubeLink) ytIframe.src = content.youtubeLink;
+                        if(fbIframe && content.facebookLink) fbIframe.src = content.facebookLink;
+                    }
+                }
+            } catch(e) {
+                console.error('Failed to load content links', e);
+            }
+        });
+
+        // Toggle Fullscreen on video wrap click
+        function toggleFullscreen(elementId) {
+            const elem = document.getElementById(elementId);
+            
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => console.log(err));
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

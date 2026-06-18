@@ -1,0 +1,257 @@
+<nav class="nav scrolled" id="nav">
+    <div class="nav-container">
+        <a href="/dashboard" class="logo" id="logo">
+            <img src="/public/Logo.png" alt="Blaze Frontier Logo" class="logo-img">
+            <span class="logo-name">BLAZE<span class="logo-highlight">FRONTIER</span></span>
+        </a>
+        <div class="mobile-toggle" id="mobile-toggle" style="cursor: pointer;">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-menu" id="nav-menu">
+            <a href="/dashboard" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/dashboard' ? 'active' : '' %>">Hub</a>
+            <a href="#" id="nav-tournaments-tab" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/dashboard/tournaments' ? 'active' : '' %>" style="filter: blur(1.5px); opacity: 0.8;" onclick="event.preventDefault(); document.getElementById('tournaments-lock-modal').style.display = 'flex';">Tournaments <span style="margin-left: 6px; filter: none; opacity: 1; display: inline-block;">🔒</span></a>
+            <a href="/dashboard/leaderboards" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/dashboard/leaderboards' ? 'active' : '' %>">Leaderboards</a>
+            <a href="/dashboard/seasons" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/dashboard/seasons' ? 'active' : '' %>" style="color: #38bdf8; text-shadow: 0 0 8px rgba(56,189,248,0.4);"><span style="margin-right:4px;">⚔️</span> Seasons</a>
+            
+            <!-- Notifications -->
+            <div class="nav-item notif-wrapper" id="notif-bell" style="position: relative; cursor: pointer; display: flex; align-items: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); transition: color 0.2s;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                <span id="notif-badge" style="display:none; position: absolute; top: -5px; right: -5px; background: var(--blaze-orange); color: white; border-radius: 50%; font-size: 0.65rem; font-weight: bold; width: 16px; height: 16px; text-align: center; line-height: 16px;">0</span>
+                
+                <!-- Dropdown -->
+                <div id="notif-dropdown" style="display:none; position: absolute; top: 40px; right: -20px; background: #111116; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 320px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.8); overflow: hidden; cursor: default;">
+                    <div style="font-family: var(--font-display); font-size: 1.1rem; color: #fff; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);">NOTIFICATIONS</div>
+                    <div id="nav-notifications-container" style="max-height: 300px; overflow-y: auto;">
+                        <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.8rem;">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="/dashboard/profile" class="nav-item nav-primary <%= typeof activePage !== 'undefined' && activePage === '/dashboard/profile' ? 'active' : '' %>">Profile</a>
+            <a href="#" class="nav-item" id="logout-btn" style="color: var(--text-muted);" onclick="event.preventDefault(); localStorage.removeItem('blaze_token'); window.location.href='/auth';">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Lockdown Modal -->
+<div id="tournaments-lock-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#111116; border:1px solid rgba(255,87,34,0.3); border-radius:12px; padding:40px; max-width:450px; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.5); position:relative; overflow:hidden;">
+        <div style="position:absolute; top:-20px; right:-20px; font-size:8rem; opacity:0.05; transform:rotate(15deg);">🛡️</div>
+        <div style="font-size:3.5rem; margin-bottom:16px;">🔒</div>
+        <h2 style="font-family:var(--font-display); color:#fff; font-size:2rem; letter-spacing:1px; margin-bottom:12px;">ACCESS RESTRICTED</h2>
+        <p style="color:var(--text-muted); font-size:1rem; margin-bottom:30px; line-height:1.5;">You must complete the 2-Series Qualification process to become a Verified Trusted Player before unlocking ELITE Tournaments.</p>
+        <button onclick="document.getElementById('tournaments-lock-modal').style.display='none'" style="background:var(--blaze-orange); color:#fff; border:none; padding:14px 28px; border-radius:8px; font-family:var(--font-display); font-size:1.1rem; letter-spacing:1px; cursor:pointer; transition:transform 0.2s;">ACKNOWLEDGE</button>
+    </div>
+</div>
+
+<style>
+    #nav-notifications-container::-webkit-scrollbar { display: none; }
+    #nav-notifications-container { -ms-overflow-style: none; scrollbar-width: none; }
+    @media (max-width: 900px) {
+        .mobile-toggle {
+            display: flex !important;
+            z-index: 1001;
+        }
+        .mobile-toggle.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        .nav-menu {
+            position: fixed;
+            top: 72px;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(16px);
+            flex-direction: column;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+            transition: clip-path 0.4s ease;
+            display: flex !important; /* Override standard flex gap */
+            z-index: 999;
+        }
+        .nav-menu.active {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+        .nav-item {
+            width: 100%;
+            padding: 16px;
+            border-radius: 0;
+        }
+        .nav-item::after { display: none; }
+        #notif-dropdown {
+            width: 100% !important;
+            right: 0 !important;
+            top: 50px !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            border-left: none; border-right: none;
+        }
+    }
+</style>
+
+<script>
+    // Session / Idle Tracking (30 mins inactivity = signout)
+    (function() {
+        const token = localStorage.getItem('blaze_token');
+        if (!token) return;
+
+        const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+        const checkIdle = () => {
+            const lastActive = localStorage.getItem('blaze_last_active');
+            if (lastActive && (Date.now() - parseInt(lastActive) > IDLE_TIMEOUT_MS)) {
+                localStorage.removeItem('blaze_token');
+                localStorage.removeItem('blaze_last_active');
+                window.location.href = '/auth';
+            }
+        };
+
+        const updateActivity = () => {
+            localStorage.setItem('blaze_last_active', Date.now().toString());
+        };
+
+        // Initial check on load
+        checkIdle();
+        updateActivity();
+
+        // Update on user activity (Throttled to max 1 update per 5 seconds)
+        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
+            document.addEventListener(evt, () => {
+                const now = Date.now();
+                const last = parseInt(localStorage.getItem('blaze_last_active') || '0');
+                if (now - last > 5000) {
+                    updateActivity();
+                }
+            }, { passive: true });
+        });
+
+        // Periodic check while browser is open
+        setInterval(checkIdle, 60000);
+    })();
+
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (mobileToggle && navMenu) {
+        mobileToggle.addEventListener('click', () => {
+            mobileToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    const notifBell = document.getElementById('notif-bell');
+    const notifDropdown = document.getElementById('notif-dropdown');
+
+    if (notifBell && notifDropdown) {
+        notifBell.addEventListener('click', (e) => {
+            if (e.target.closest('#notif-dropdown')) return; // Don't close when clicking inside dropdown
+            notifDropdown.style.display = notifDropdown.style.display === 'none' ? 'block' : 'none';
+            
+            if (notifDropdown.style.display === 'block' && window.hasUnreadNotifs) {
+                const token = localStorage.getItem('blaze_token');
+                if (token) {
+                    fetch('/api/user/notifications/clear', { method: 'DELETE', headers: { 'x-auth-token': token } });
+                    window.hasUnreadNotifs = false;
+                }
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!notifBell.contains(e.target)) {
+                notifDropdown.style.display = 'none';
+            }
+        });
+        
+        // Hover effect on svg
+        notifBell.addEventListener('mouseenter', () => { notifBell.querySelector('svg').style.color = '#fff'; });
+        notifBell.addEventListener('mouseleave', () => { notifBell.querySelector('svg').style.color = 'var(--text-muted)'; });
+    }
+
+    // Fetch Notifications
+    document.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem('blaze_token');
+        if (token) {
+            try {
+                // Check Profile Verification
+                fetch('/api/profile', { headers: { 'x-auth-token': token } })
+                    .then(res => { if(res.ok) return res.json(); throw new Error('Failed to fetch profile'); })
+                    .then(prof => {
+                        if (prof.isGenuine) {
+                            const tTab = document.getElementById('nav-tournaments-tab');
+                            if (tTab) {
+                                tTab.style.filter = 'none';
+                                tTab.style.opacity = '1';
+                                tTab.innerHTML = 'Tournaments';
+                                tTab.href = '/dashboard/tournaments';
+                                tTab.removeAttribute('onclick');
+                            }
+                        }
+                    })
+                    .catch(e => console.error(e));
+
+                const [tournRes, notifRes] = await Promise.all([
+                    fetch('/api/tournaments', { headers: { 'x-auth-token': token } }),
+                    fetch('/api/user/notifications', { headers: { 'x-auth-token': token } })
+                ]);
+                
+                let html = '';
+                let count = 0;
+
+                if (tournRes.ok) {
+                    const data = await tournRes.json();
+                    if (data.requests && data.requests.length > 0) {
+                        const pendingReqs = data.requests.filter(r => r.status === 'Pending');
+                        if (pendingReqs.length > 0) {
+                            count += pendingReqs.length;
+                            pendingReqs.forEach(r => {
+                                let statusColor = r.status === 'Approved' ? '#22c55e' : (r.status === 'Rejected' ? '#ef4444' : '#f59e0b');
+                            html += `
+                                <div style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 6px; transition: background 0.2s;">
+                                    <div style="display:flex; justify-content:space-between; align-items: center; width:100%;">
+                                        <div style="color:#fff; font-family: var(--font-display); font-size: 1rem; letter-spacing: 1px;">${r.game.toUpperCase()}</div>
+                                        <div style="font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; background: ${statusColor}22; color: ${statusColor}; font-weight:700; letter-spacing: 0.5px;">${r.status.toUpperCase()}</div>
+                                    </div>
+                                    <div style="color: var(--text-muted); font-size: 0.8rem; font-weight: 500;">Format: <span style="color:#e0e0e0">${r.format}</span> • Mode: <span style="color:#e0e0e0">${r.mode}</span></div>
+                                    <div style="color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono);">Start: ${r.date}</div>
+                                </div>
+                            `;
+                        });
+                    }
+                }
+            }
+
+                if (notifRes.ok) {
+                    const notifs = await notifRes.json();
+                    if (notifs && notifs.length > 0) {
+                        window.hasUnreadNotifs = true;
+                        count += notifs.length;
+                        notifs.forEach(n => {
+                            let statusColor = n.type === 'success' ? '#22c55e' : (n.type === 'error' ? '#ef4444' : '#f0a500');
+                            html += `
+                                <div style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 4px; transition: background 0.2s;">
+                                    <div style="display:flex; justify-content:space-between; align-items: center; width:100%;">
+                                        <div style="color:${statusColor}; font-family: var(--font-display); font-size: 1rem; letter-spacing: 1px;">${n.title}</div>
+                                    </div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 400; line-height: 1.3;">${n.message}</div>
+                                    <div style="color: rgba(255,255,255,0.3); font-size: 0.7rem; font-family: var(--font-mono); margin-top: 4px;">${new Date(n.createdAt).toLocaleDateString()}</div>
+                                </div>
+                            `;
+                        });
+                    }
+                }
+
+                if (count > 0) {
+                    document.getElementById('notif-badge').style.display = 'block';
+                    document.getElementById('notif-badge').innerText = count;
+                    document.getElementById('nav-notifications-container').innerHTML = html;
+                } else {
+                    document.getElementById('nav-notifications-container').innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.8rem;">No recent notifications.</div>';
+                }
+            } catch(e) {}
+        }
+    });
+</script>

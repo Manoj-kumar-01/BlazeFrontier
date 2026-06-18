@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGNITE · Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --font-display: 'Bebas Neue', cursive;
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --red-accent: #c62828;
+            --red-light: #ef5350;
+            --red-glow: rgba(198, 40, 40, 0.4);
+            --red-subtle: rgba(198, 40, 40, 0.08);
+            --bg-body: #080808;
+            --bg-card: #0f0f12;
+            --bg-card-hover: #141418;
+            --border: rgba(255, 255, 255, 0.06);
+            --text-primary: #f5f5f5;
+            --text-secondary: rgba(255, 255, 255, 0.5);
+            --text-muted: rgba(255, 255, 255, 0.25);
+        }
+
+        body, html {
+            background: var(--bg-body);
+            font-family: var(--font-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ═══════════════ LAYOUT ═══════════════ */
+        .pride-page {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px 32px 80px;
+        }
+
+        /* ═══════════════ TOP BAR ═══════════════ */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .return-link {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .return-link:hover { color: var(--red-light); }
+
+        .season-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--red-subtle);
+            border: 1px solid rgba(198, 40, 40, 0.2);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--red-light);
+        }
+
+        .season-pill .dot {
+            width: 8px; height: 8px;
+            background: var(--red-accent);
+            border-radius: 50%;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+
+        /* ═══════════════ HEADER ═══════════════ */
+        .page-header {
+            margin-bottom: 48px;
+        }
+
+        .page-header .overline {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--red-light);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .page-header h1 {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            letter-spacing: 3px;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .page-header .desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 540px;
+            line-height: 1.6;
+        }
+
+        /* ═══════════════ TABS ═══════════════ */
+        .tabs-row {
+            display: flex;
+            gap: 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            padding: 12px 28px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--red-light);
+            border-bottom-color: var(--red-accent);
+        }
+
+        /* ═══════════════ CONTENT PANES ═══════════════ */
+        .section-pane {
+            display: none;
+            animation: fadeUp 0.35s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ═══════════════ SECTION HEADER ═══════════════ */
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 32px;
+        }
+
+        .section-head .overline {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--red-light);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .section-head h2 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .section-head .sub {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* ═══════════════ CARD GRID ═══════════════ */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 28px;
+        }
+
+        /* ═══════════════ TOURNAMENT CARD ═══════════════ */
+        .tourney-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .tourney-card:hover {
+            border-color: rgba(198, 40, 40, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(198, 40, 40, 0.06);
+        }
+
+        /* Card Image / Visual Area */
+        .card-visual {
+            height: 180px;
+            background: linear-gradient(135deg, #0d0d12 0%, #1a0a0a 100%);
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            padding: 16px;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        /* Abstract red particle/network decoration */
+        .card-visual::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(198, 40, 40, 0.15) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .badge {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 4px 14px;
+            border-radius: 4px;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+
+        .badge.live {
+            background: var(--red-accent);
+            color: #fff;
+        }
+
+        .badge.upcoming {
+            background: rgba(198, 40, 40, 0.15);
+            color: var(--red-light);
+            border: 1px solid rgba(198, 40, 40, 0.3);
+        }
+
+        .badge.completed {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .badge.game-name {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        /* Card Body */
+        .card-body {
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-body h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: flex;
+            gap: 24px;
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat .stat-label i {
+            font-size: 0.6rem;
+        }
+
+        .stat .stat-value {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        .stat .stat-value.red { color: var(--red-light); }
+        .stat .stat-value.white { color: var(--text-primary); }
+
+        /* ═══════════════ LEVELS VIEW ═══════════════ */
+        .levels-wrapper {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .levels-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .levels-header .overline {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--red-light);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .levels-header h2 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            letter-spacing: 2px;
+        }
+
+        .levels-header .desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .levels-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* ═══════════════ TIMELINE LEVELS ═══════════════ */
+        .timeline-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        .timeline-axis {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(198, 40, 40, 0), rgba(198, 40, 40, 0.5), rgba(198, 40, 40, 0));
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+            width: 100%;
+        }
+
+        .timeline-item.right { justify-content: flex-end; }
+        .timeline-item.left { justify-content: flex-start; }
+
+        .timeline-item.right .timeline-content {
+            margin-left: 50%;
+            padding-left: 40px;
+            width: 50%;
+        }
+
+        .timeline-item.left .timeline-content {
+            width: 50%;
+            padding-right: 40px;
+            text-align: right;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-body);
+            border: 2px solid var(--red-accent);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeline-dot::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--red-light);
+        }
+
+        .timeline-dot.locked { border-color: var(--border); }
+        .timeline-dot.locked::after { background: var(--border); }
+
+        .timeline-connector {
+            position: absolute;
+            top: 50%;
+            height: 2px;
+            background: rgba(198, 40, 40, 0.5);
+            width: 40px;
+            z-index: 0;
+        }
+
+        .timeline-item.right .timeline-connector { left: 50%; }
+        .timeline-item.left .timeline-connector { right: 50%; }
+        .timeline-item .locked-connector { background: var(--border); }
+
+        .timeline-card {
+            background: rgba(23, 23, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(198, 40, 40, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .timeline-item.left .timeline-card { border-color: var(--border); }
+
+        .timeline-card:hover {
+            box-shadow: 0 0 20px rgba(198, 40, 40, 0.15);
+            border-color: var(--red-accent);
+            transform: translateY(-2px);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .timeline-item.left .timeline-header { flex-direction: row-reverse; }
+
+        .timeline-stage {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .timeline-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-badge.active {
+            background: var(--red-subtle);
+            color: var(--red-light);
+            border: 1px solid rgba(198, 40, 40, 0.2);
+        }
+
+        .timeline-badge.locked {
+            background: rgba(255,255,255,0.03);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .timeline-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .timeline-item.right .timeline-title { color: var(--text-primary); }
+
+        .timeline-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .timeline-meta {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: left;
+        }
+
+        .timeline-meta-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-meta-value {
+            color: var(--red-light);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .timeline-item.left .timeline-meta-value { color: var(--text-secondary); }
+
+        .back-row {
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .back-link {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            background: none;
+            border: 1px solid var(--border);
+            padding: 10px 32px;
+            border-radius: 6px;
+            transition: 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .back-link:hover {
+            color: var(--red-light);
+            border-color: rgba(198, 40, 40, 0.3);
+        }
+
+        /* ═══════════════ EMPTY STATE ═══════════════ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+        }
+
+        .empty-state .icon { font-size: 2.5rem; opacity: 0.15; margin-bottom: 12px; }
+        .empty-state h3 { font-family: var(--font-display); font-size: 1.6rem; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 4px; }
+        .empty-state p { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* ═══════════════ REWARD TEXT ═══════════════ */
+        .card-reward {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+
+        .card-reward i {
+            color: var(--red-light);
+            margin-right: 6px;
+        }
+
+        .card-reward .highlight {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* ═══════════════ LOCK OVERLAYS & ALERTS ═══════════════ */
+        .headshot-badge {
+            color: var(--red-light);
+            font-size: 0.5em;
+            vertical-align: middle;
+            margin-left: 8px;
+            border: 1px solid var(--red-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(198, 40, 40, 0.1);
+        }
+
+        .blur-locked {
+            filter: blur(2px) grayscale(50%);
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .lock-overlay-container {
+            position: relative;
+        }
+
+        .lock-overlay-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: var(--text-primary);
+            z-index: 10;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .locked-register-box {
+            background: rgba(198, 40, 40, 0.05);
+            border: 1px solid var(--red-accent);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .locked-register-box i.fa-lock {
+            font-size: 2rem;
+            color: var(--red-accent);
+            margin-bottom: 12px;
+        }
+
+        .locked-register-box h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .locked-register-box p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .btn-register.locked {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 12px 32px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: not-allowed;
+        }
+
+        .guild-cta {
+            background: linear-gradient(135deg, rgba(198,40,40,0.1) 0%, rgba(10,10,10,1) 100%);
+            border: 1px solid rgba(198,40,40,0.3);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .guild-cta h3 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .guild-cta p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .guild-link {
+            display: inline-block;
+            background: #5865F2; /* Discord color */
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-family: var(--font-main);
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .guild-link:hover {
+            background: #4752c4;
+            transform: translateY(-2px);
+        }
+
+        /* ═══════════════ RESPONSIVE ═══════════════ */
+        @media (max-width: 768px) {
+            .pride-page { padding: 16px 16px 60px; }
+            .page-header h1 { font-size: 3.5rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .tabs-row { overflow-x: auto; }
+            .tab-btn { padding: 12px 20px; font-size: 1.1rem; white-space: nowrap; }
+            .section-head h2 { font-size: 2rem; }
+            
+            .timeline-axis { left: 24px; }
+            .timeline-item.left, .timeline-item.right { justify-content: flex-start; }
+            .timeline-item.right .timeline-content, .timeline-item.left .timeline-content {
+                margin-left: 48px;
+                width: calc(100% - 48px);
+                padding: 0;
+                text-align: left;
+            }
+            .timeline-dot { left: 24px; }
+            .timeline-item.right .timeline-connector, .timeline-item.left .timeline-connector { left: 24px; width: 24px; right: auto; }
+            .timeline-item.left .timeline-header { flex-direction: row; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div style="position: relative; z-index: 100;">
+        <%- include('../partials/navbar') %>
+    </div>
+
+    <div class="pride-page">
+
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <a href="/dashboard/seasons" class="return-link">
+                <i class="fas fa-arrow-left"></i> Return to Hub
+            </a>
+            <div class="season-pill">
+                <span class="dot"></span> Season Active
+            </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="overline">Season</div>
+            <h1>IGNITE <span style="font-size: 4rem;">🔥</span></h1>
+            <p class="desc">Your battleground awaits. Compete in live matches, track upcoming events, and review your completed operations.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-row">
+            <button class="tab-btn active" data-pane="matches">Available Matches</button>
+            <button class="tab-btn" data-pane="upcoming">Upcoming</button>
+            <button class="tab-btn" data-pane="completed">Completed</button>
+        </div>
+
+        <!-- ════════ PANE: MATCHES TODAY ════════ -->
+        <div id="pane-matches" class="section-pane" style="display: block;">
+            <div class="section-head">
+                <div>
+                    <div class="overline">Live Operations</div>
+                    <h2>AVAILABLE MATCHES</h2>
+                    <p class="sub">Active combat zones. Deploy now before slots fill.</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <!-- Card 1: Shield Sniper -->
+                <div class="tourney-card" onclick="showLevels('Shield Sniper')">
+                    <div class="card-visual" style="background: url('/public/shield_sniper.png') center/cover no-repeat;">
+                        <span class="badge live">Live</span>
+                        <span class="badge game-name">Sniper Clash</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Shield Sniper</h3>
+                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Inflammable UMP -->
+                <div class="tourney-card" onclick="showLevels('Inflammable UMP')">
+                    <div class="card-visual" style="background: url('/public/inflammable_ump.png') center/cover no-repeat;">
+                        <span class="badge live">Live</span>
+                        <span class="badge game-name">Arena</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Inflammable UMP <span class="headshot-badge">ONLY HEADSHOTS</span></h3>
+                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Sahara Desert -->
+                <div class="tourney-card" onclick="showLevels('Sahara Desert')">
+                    <div class="card-visual" style="background: url('/public/sahara_desert.png') center/cover no-repeat;">
+                        <span class="badge live">Live</span>
+                        <span class="badge game-name">Bounty</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Sahara Desert <span class="headshot-badge">ONLY HEADSHOTS</span></h3>
+                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ════════ PANE: UPCOMING ════════ -->
+        <div id="pane-upcoming" class="section-pane">
+            <div class="section-head">
+                <div>
+                    <div class="overline">On The Horizon</div>
+                    <h2>UPCOMING MATCHES</h2>
+                    <p class="sub">Lock in your calendar. Brackets and qualifiers ahead.</p>
+                </div>
+            </div>
+
+            <div class="card-grid lock-overlay-container">
+                <div class="lock-overlay-icon"><i class="fas fa-lock"></i></div>
+                <div class="tourney-card blur-locked">
+                    <div class="card-visual">
+                        <span class="badge upcoming">Upcoming</span>
+                        <span class="badge game-name">Squad</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Shadow Marksman</h3>
+                    </div>
+                </div>
+
+                <div class="tourney-card blur-locked">
+                    <div class="card-visual">
+                        <span class="badge upcoming">Upcoming</span>
+                        <span class="badge game-name">Duel</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>The Apex Predator</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════ PANE: COMPLETED ════════ -->
+        <div id="pane-completed" class="section-pane">
+            <div class="section-head">
+                <div>
+                    <div class="overline">Mission Archives</div>
+                    <h2>COMPLETED</h2>
+                    <p class="sub">Review past operations and performance data.</p>
+                </div>
+            </div>
+
+            <div class="empty-state">
+                <div class="icon"><i class="fas fa-box-open"></i></div>
+                <h3>No Completed Matches</h3>
+                <p>Match history will appear here once operations conclude.</p>
+            </div>
+        </div>
+
+        <!-- ════════ PANE: LEVELS ════════ -->
+        <div id="pane-levels" class="section-pane">
+            <div class="levels-wrapper">
+                <div class="levels-header">
+                    <div class="overline">Progress</div>
+                    <h2>STAGES</h2>
+                    <p class="desc">Complete stages sequentially to unlock elite rewards.</p>
+                </div>
+
+                <div id="dynamic-registration-box" class="locked-register-box" style="margin-bottom: 30px; transition: all 0.3s ease;">
+                    <div id="reg-status-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                    <h3 id="reg-status-title">Checking Eligibility...</h3>
+                    <p id="reg-status-text">Verifying your operator status...</p>
+                    <button id="btn-season-register" class="btn-register locked" disabled onclick="registerForSeason()">Register Now</button>
+                </div>
+
+                <div class="timeline-container">
+                    <div class="timeline-axis"></div>
+
+                    <!-- Level 1 -->
+                    <div class="timeline-item right">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-connector"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-card">
+                                <div class="timeline-header">
+                                    <div class="timeline-stage">LEVEL 1</div>
+                                    <div class="timeline-badge active">Active</div>
+                                </div>
+                                <div class="timeline-title">The Vanguard (1v2)</div>
+                                <p class="timeline-desc">Face off against Official Blaze Members.</p>
+                                <div class="timeline-meta">
+                                    <span class="timeline-meta-label">Win Condition</span>
+                                    <span class="timeline-meta-value">Eliminate the 2 Official Blaze Members</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Level 2 -->
+                    <div class="timeline-item left">
+                        <div class="timeline-dot locked"></div>
+                        <div class="timeline-connector locked-connector"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-card">
+                                <div class="timeline-header">
+                                    <div class="timeline-stage">LEVEL 2</div>
+                                    <div class="timeline-badge locked">Locked</div>
+                                </div>
+                                <div class="timeline-title">Precision Strike (1v3)</div>
+                                <p class="timeline-desc">Intense 1v3 combat against Official Blaze Members.</p>
+                                <div class="timeline-meta">
+                                    <span class="timeline-meta-label">Win Condition</span>
+                                    <span class="timeline-meta-value">Win minimum 6 out of 7 rounds</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Level 3 -->
+                    <div class="timeline-item right">
+                        <div class="timeline-dot locked"></div>
+                        <div class="timeline-connector locked-connector"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-card" style="border-color: var(--border);">
+                                <div class="timeline-header">
+                                    <div class="timeline-stage">LEVEL 3</div>
+                                    <div class="timeline-badge locked">Locked</div>
+                                </div>
+                                <div class="timeline-title" style="color: var(--text-secondary);">Ghost Protocol (1v4)</div>
+                                <p class="timeline-desc">The ultimate test. 1v4 against Official Blaze Members.</p>
+                                <div class="timeline-meta">
+                                    <span class="timeline-meta-label">Win Condition</span>
+                                    <span class="timeline-meta-value" style="color: var(--text-secondary);">Win minimum 5 out of 7 rounds</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guild-cta">
+                    <h3>Join the Official Guild</h3>
+                    <p>Coordinate with Team BLZ and prepare for your drops.</p>
+                    <a href="#" class="guild-link"><i class="fab fa-discord"></i> Join Server</a>
+                </div>
+
+                <div class="back-row">
+                    <button class="back-link" onclick="switchPane('matches')">
+                        <i class="fas fa-arrow-left"></i> Back to Matches
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Auth
+        const token = localStorage.getItem('blaze_token');
+        if (!token) window.location.href = '/auth';
+
+        // Tab System
+        const tabs = document.querySelectorAll('.tab-btn');
+        const panes = {
+            matches: document.getElementById('pane-matches'),
+            upcoming: document.getElementById('pane-upcoming'),
+            completed: document.getElementById('pane-completed'),
+            levels: document.getElementById('pane-levels')
+        };
+
+        function switchPane(id) {
+            Object.values(panes).forEach(p => p.style.display = 'none');
+            if (panes[id]) {
+                panes[id].style.display = 'block';
+                panes[id].style.animation = 'none';
+                panes[id].offsetHeight;
+                panes[id].style.animation = 'fadeUp 0.35s ease forwards';
+            }
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                if (t.dataset.pane === id) t.classList.add('active');
+            });
+        }
+
+        tabs.forEach(t => t.addEventListener('click', () => {
+            if (t.dataset.pane) switchPane(t.dataset.pane);
+        }));
+
+        let currentMatchName = '';
+        let isEligible = false;
+
+        async function fetchUserStatus() {
+            try {
+                const res = await fetch('/api/profile', {
+                    headers: { 'x-auth-token': token }
+                });
+                if(res.ok) {
+                    const user = await res.json();
+                    const box = document.getElementById('dynamic-registration-box');
+                    const icon = document.getElementById('reg-status-icon');
+                    const title = document.getElementById('reg-status-title');
+                    const text = document.getElementById('reg-status-text');
+                    const btn = document.getElementById('btn-season-register');
+
+                    if(user.isGenuine && user.hasCompletedTwoSeries) {
+                        isEligible = true;
+                        box.style.filter = 'none';
+                        icon.innerHTML = '<i class="fas fa-unlock" style="color: #4ade80;"></i>';
+                        title.innerHTML = 'Registration Unlocked';
+                        title.style.color = '#4ade80';
+                        text.innerHTML = 'You are a verified operator. You may deploy into this match.';
+                        btn.classList.remove('locked');
+                        btn.disabled = false;
+                        btn.style.background = 'var(--accent)';
+                    } else {
+                        isEligible = false;
+                        icon.innerHTML = '<i class="fas fa-lock"></i>';
+                        title.innerHTML = 'Registration Locked';
+                        title.style.color = '';
+                        text.innerHTML = 'Complete the 2-series challenge to unlock the season. Status: <span style="color:var(--text-muted);">Unverified / Challenge Incomplete</span>';
+                        btn.classList.add('locked');
+                        btn.disabled = true;
+                        btn.style.background = '';
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function showLevels(matchName) { 
+            if(matchName) currentMatchName = matchName;
+            switchPane('levels'); 
+        }
+
+        async function registerForSeason() {
+            if(!isEligible || !currentMatchName) return;
+            const btn = document.getElementById('btn-season-register');
+            const originalText = btn.innerText;
+            btn.innerText = 'Registering...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/season/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ matchName: currentMatchName })
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    alert('Registration Submitted successfully!');
+                    btn.innerText = 'Registered';
+                    btn.style.background = '#4ade80';
+                } else {
+                    alert(data.msg || 'Error registering');
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            } catch(e) {
+                console.error(e);
+                alert('Server error');
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Fetch on load
+        fetchUserStatus();
+    </script>
+</body>
+
+</html>

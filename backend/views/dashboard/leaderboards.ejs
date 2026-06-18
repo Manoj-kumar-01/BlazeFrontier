@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 100px 24px 60px; }
+        .page-head { margin-bottom: 40px; }
+        .page-head h1 { font-family: var(--font-display); font-size: 2.8rem; color: #fff; letter-spacing: 1px; }
+        .page-head p { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
+
+        /* Podium */
+        .podium-row { display: flex; justify-content: center; align-items: flex-end; gap: 16px; margin-bottom: 48px; }
+        .pod {
+            background: #111116; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px;
+            text-align: center; padding: 24px 20px; width: 200px; transition: border-color 0.2s;
+        }
+        .pod-1 { border-color: rgba(240,165,0,0.3); order: 2; padding-bottom: 36px; }
+        .pod-2 { order: 1; }
+        .pod-3 { order: 3; }
+        .pod-rank {
+            font-family: var(--font-display); font-size: 2.5rem; line-height: 1;
+            margin-bottom: 8px;
+        }
+        .pod-1 .pod-rank { color: #f0a500; font-size: 3rem; }
+        .pod-2 .pod-rank { color: #a0a0ab; }
+        .pod-3 .pod-rank { color: #cd7f32; }
+        .pod-name { font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px; margin-bottom: 4px; }
+        .pod-bp { font-family: var(--font-mono); font-size: 0.85rem; color: var(--blaze-orange); }
+
+        /* Showcase cards */
+        .showcase-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 48px; }
+        .sc {
+            background: #111116; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px;
+            padding: 24px; display: flex; gap: 16px; align-items: center;
+        }
+        .sc-icon { font-size: 2rem; }
+        .sc-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 4px; }
+        .sc-name { font-family: var(--font-display); font-size: 1.4rem; color: #fff; line-height: 1; }
+        .sc-val { font-family: var(--font-mono); font-size: 0.8rem; color: var(--blaze-orange); margin-top: 4px; }
+
+        /* Table panel */
+        .table-panel {
+            background: #111116; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden;
+        }
+        .table-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .table-title { font-family: var(--font-display); font-size: 1.4rem; color: #fff; letter-spacing: 1px; }
+        .tab-group { display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 8px; }
+        .tab-btn {
+            padding: 6px 14px; border-radius: 6px; border: none; background: transparent;
+            font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 1px;
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+        }
+        .tab-btn.active { background: var(--blaze-orange); color: #fff; }
+        .tab-btn:hover:not(.active) { color: #fff; }
+
+        .lb-table { width: 100%; border-collapse: collapse; }
+        .lb-table th {
+            padding: 14px 24px; text-align: left; font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 1.5px; color: var(--text-muted); font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .lb-table td { padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #fff; }
+        .lb-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .rank-cell { font-family: var(--font-display); font-size: 1.3rem; color: var(--text-muted); }
+        .rank-1 .rank-cell { color: #f0a500; }
+        .rank-2 .rank-cell { color: #a0a0ab; }
+        .rank-3 .rank-cell { color: #cd7f32; }
+        .bp-cell { font-family: var(--font-mono); font-weight: 600; color: var(--blaze-orange); }
+        .arena-badge {
+            background: rgba(255,255,255,0.06); padding: 4px 8px; border-radius: 4px;
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .spinner-ring {
+            display: inline-block; width: 24px; height: 24px;
+            border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--blaze-orange);
+            border-radius: 50%; animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-row td { text-align: center; padding: 40px; }
+        .empty-row td { text-align: center; padding: 40px; color: var(--text-muted); }
+
+        @media (max-width: 800px) {
+            .podium-row { flex-direction: column; align-items: center; }
+            .pod { order: unset !important; width: 100%; }
+            .showcase-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .page-wrap { padding: 90px 12px 40px; }
+            .page-head h1 { font-size: 2.2rem; }
+        }
+
+        /* Overlay */
+        #restricted-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(8, 8, 12, 0.85); backdrop-filter: blur(12px);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px;
+        }
+        .ro-icon { font-size: 4rem; margin-bottom: 20px; color: var(--text-muted); }
+        .ro-title { font-family: var(--font-display); font-size: 3rem; color: #fff; letter-spacing: 2px; margin-bottom: 12px; }
+        .ro-desc { color: var(--text-muted); font-size: 1.1rem; max-width: 500px; line-height: 1.5; margin-bottom: 32px; }
+        .ro-btn {
+            background: var(--blaze-orange); color: #fff; border: none; padding: 14px 32px;
+            font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px;
+            border-radius: 8px; cursor: pointer; text-decoration: none; transition: transform 0.2s;
+        }
+        .ro-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255,87,34,0.3); }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/navbar') %>
+
+    <div class="page-wrap">
+        <div class="page-head">
+            <h1>LEADERBOARD</h1>
+            <p>Top commanders across the Blaze Frontier network.</p>
+        </div>
+
+        <!-- Podium -->
+        <div class="podium-row" id="podium">
+            <div style="text-align:center; width:100%;"><div class="spinner-ring"></div></div>
+        </div>
+
+        <!-- Showcase -->
+        <div class="showcase-row" id="showcases"></div>
+
+        <!-- Table -->
+        <div class="table-panel">
+            <div class="table-header">
+                <div class="table-title">RANKINGS</div>
+                <div class="tab-group">
+                    <button class="tab-btn active" id="tab-national">NATIONAL</button>
+                    <button class="tab-btn" id="tab-regional">YOUR REGION</button>
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="lb-table">
+                    <thead>
+                        <tr><th>Rank</th><th>Commander</th><th>Arena</th><th>Blaze Coins</th></tr>
+                    </thead>
+                    <tbody id="lb-body">
+                        <tr class="loading-row"><td colspan="4"><div class="spinner-ring"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('blaze_token');
+            if (!token) { window.location.href = '/auth'; return; }
+
+            try {
+                // Showcases & Podium
+                const scRes = await fetch('/api/leaderboard/showcases');
+                if (scRes.ok) {
+                    const data = await scRes.json();
+
+                    // Podium
+                    const podEl = document.getElementById('podium');
+                    if (data.podium && data.podium.length > 0) {
+                        const order = [1, 0, 2]; // 2nd, 1st, 3rd
+                        podEl.innerHTML = order.filter(i => data.podium[i]).map(i => {
+                            const p = data.podium[i];
+                            return `<div class="pod pod-${p.rank}">
+                                <div class="pod-rank">#${p.rank}</div>
+                                <div class="pod-name">${p.name}</div>
+                                <div class="pod-bp">${p.bp} BC</div>
+                            </div>`;
+                        }).join('');
+                    } else {
+                        podEl.innerHTML = '<div style="text-align:center;width:100%;color:var(--text-muted)">No ranked players yet.</div>';
+                    }
+
+                    // Showcases
+                    const scEl = document.getElementById('showcases');
+                    const cards = [];
+                    if (data.showcases.mvp) cards.push({ icon: '⚡', label: 'MVP', ...data.showcases.mvp });
+                    if (data.showcases.lethal) cards.push({ icon: '🎯', label: 'MOST LETHAL', ...data.showcases.lethal });
+                    if (data.showcases.survival) cards.push({ icon: '🏆', label: 'SURVIVAL EXPERT', ...data.showcases.survival });
+                    scEl.innerHTML = cards.map(c => `
+                        <div class="sc">
+                            <div class="sc-icon">${c.icon}</div>
+                            <div>
+                                <div class="sc-label">${c.label}</div>
+                                <div class="sc-name">${c.name}</div>
+                                <div class="sc-val">${c.val}</div>
+                            </div>
+                        </div>
+                    `).join('') || '';
+                }
+
+                let userRegion = null;
+                try {
+                    const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                    if (profRes.ok) {
+                        const prof = await profRes.json();
+                        
+
+
+                        if (prof.location && prof.location !== 'Global Server') {
+                            userRegion = prof.location.split(',')[0].trim();
+                        }
+                    }
+                } catch (e) {}
+
+                const loadLB = async (region) => {
+                    const tbody = document.getElementById('lb-body');
+                    tbody.innerHTML = '<tr class="loading-row"><td colspan="4"><div class="spinner-ring"></div></td></tr>';
+                    let url = '/api/leaderboard';
+                    if (region) url += `?region=${encodeURIComponent(region)}`;
+
+                    try {
+                        const res = await fetch(url);
+                        if (res.ok) {
+                            const lb = await res.json();
+                            if (lb.length === 0) {
+                                tbody.innerHTML = `<tr class="empty-row"><td colspan="4">No ranked players${region ? ' in ' + region : ''} yet.</td></tr>`;
+                                return;
+                            }
+                            tbody.innerHTML = lb.map(p => `
+                                <tr class="rank-${p.rank}">
+                                    <td><span class="rank-cell">#${p.rank}</span></td>
+                                    <td style="font-weight:600">${p.name}</td>
+                                    <td><span class="arena-badge">GLOBAL</span></td>
+                                    <td><span class="bp-cell">${p.bp} BC</span></td>
+                                </tr>
+                            `).join('');
+                        }
+                    } catch (e) {
+                        tbody.innerHTML = '<tr class="empty-row"><td colspan="4">Failed to load rankings.</td></tr>';
+                    }
+                };
+
+                await loadLB(null);
+
+                document.getElementById('tab-national').addEventListener('click', () => {
+                    document.getElementById('tab-national').classList.add('active');
+                    document.getElementById('tab-regional').classList.remove('active');
+                    loadLB(null);
+                });
+                document.getElementById('tab-regional').addEventListener('click', () => {
+                    document.getElementById('tab-regional').classList.add('active');
+                    document.getElementById('tab-national').classList.remove('active');
+                    if (userRegion) {
+                        loadLB(userRegion);
+                    } else {
+                        document.getElementById('lb-body').innerHTML = '<tr class="empty-row"><td colspan="4">Region unknown. Update your profile.</td></tr>';
+                    }
+                });
+
+            } catch (e) { console.error(e); }
+        });
+    </script>
+</body>
+</html>

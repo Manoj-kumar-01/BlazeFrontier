@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commander Setup | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #ff5722;
+            --red: #e63946;
+            --bg: #08080c;
+            --surface: #111116;
+            --border: rgba(255,255,255,0.08);
+            --border-active: rgba(255,87,34,0.5);
+            --text: #ffffff;
+            --text-dim: #71717a;
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: var(--font-body); background: var(--bg); color: var(--text);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Subtle background — no heavy animations */
+        .bg-layer {
+            position: fixed; inset: 0; z-index: 0;
+            background-image: url('/public/ff_bg.png');
+            background-size: cover; background-position: center;
+            filter: brightness(0.15) saturate(0.3); transition: background-image 0.8s ease;
+        }
+        .bg-layer::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(8,8,12,0.6) 0%, rgba(8,8,12,0.95) 100%);
+        }
+
+        /* Container */
+        .setup-container {
+            position: relative; z-index: 10; width: 100%; max-width: 680px;
+            margin: 0 20px;
+        }
+
+        /* Step Panel */
+        .panel {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; padding: 48px; display: none;
+            animation: panelIn 0.35s ease forwards;
+        }
+        .panel.active { display: block; }
+        @keyframes panelIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Step indicator */
+        .step-indicator {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 32px;
+        }
+        .step-num {
+            width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 0.75rem; font-weight: 700;
+            background: rgba(255,255,255,0.06); color: var(--text-dim); border: 1px solid var(--border);
+        }
+        .step-num.current { background: var(--orange); color: #fff; border-color: var(--orange); }
+        .step-line { flex: 1; height: 1px; background: var(--border); }
+
+        .panel-title {
+            font-family: var(--font-display); font-size: 2.5rem; letter-spacing: 1px;
+            color: var(--text); margin-bottom: 6px;
+        }
+        .panel-desc { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 32px; line-height: 1.5; }
+
+        /* Game cards — compact, clean */
+        .game-list { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 32px; }
+        .g-card {
+            position: relative; height: 160px; border-radius: 12px; overflow: hidden;
+            cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, transform 0.2s;
+            display: flex; align-items: flex-end; padding: 16px;
+        }
+        .g-card-bg {
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            filter: brightness(0.45); transition: filter 0.2s;
+        }
+        .g-card:hover { transform: translateY(-4px); }
+        .g-card:hover .g-card-bg { filter: brightness(0.6); }
+        .g-card.selected { border-color: var(--orange); }
+        .g-card.selected .g-card-bg { filter: brightness(0.7); }
+        .g-card-name {
+            position: relative; z-index: 2; font-family: var(--font-display);
+            font-size: 1.5rem; letter-spacing: 1px; color: #fff;
+        }
+        .g-card-check {
+            position: absolute; top: 10px; right: 10px; z-index: 2;
+            width: 24px; height: 24px; border-radius: 50%; background: var(--orange);
+            display: none; align-items: center; justify-content: center;
+        }
+        .g-card.selected .g-card-check { display: flex; }
+
+        /* Location panel */
+        .loc-display {
+            background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px;
+            padding: 32px; text-align: center; margin-bottom: 24px;
+        }
+        .loc-label { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+        .loc-value {
+            font-family: var(--font-display); font-size: 2.2rem; letter-spacing: 2px; color: var(--text);
+            min-height: 36px;
+        }
+        .loc-status {
+            font-family: var(--font-mono); font-size: 0.8rem; color: var(--orange); margin-top: 8px;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.15);
+            border-top-color: var(--orange); border-radius: 50%; animation: spin 0.6s linear infinite;
+            vertical-align: middle; margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Inputs */
+        .field { margin-bottom: 20px; }
+        .field-label {
+            display: block; font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 600;
+        }
+        .field-input {
+            width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border); border-radius: 10px; color: #fff;
+            font-family: var(--font-body); font-size: 0.95rem; transition: border-color 0.2s;
+        }
+        .field-input:focus { outline: none; border-color: var(--border-active); }
+        .field-input::placeholder { color: rgba(255,255,255,0.2); }
+
+        /* Fair play */
+        .fair-play {
+            background: rgba(230,57,70,0.06); border: 1px solid rgba(230,57,70,0.2);
+            border-radius: 10px; padding: 20px; margin-bottom: 24px;
+        }
+        .fp-title { font-family: var(--font-display); font-size: 1.2rem; color: var(--red); letter-spacing: 1px; margin-bottom: 6px; }
+        .fp-text { color: var(--text-dim); font-size: 0.85rem; line-height: 1.6; margin-bottom: 14px; }
+        .fp-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .fp-check input { width: 18px; height: 18px; accent-color: var(--red); cursor: pointer; }
+        .fp-check span { font-size: 0.9rem; color: var(--text); }
+        
+        .critical-note {
+            background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); border-left: 4px solid #ff9800;
+            border-radius: 6px; padding: 14px 16px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 12px;
+        }
+        .cn-icon { font-size: 1.2rem; line-height: 1; }
+        .cn-text { font-size: 0.85rem; color: rgba(255,255,255,0.9); line-height: 1.5; }
+        .cn-text strong { color: #ff9800; font-family: var(--font-display); letter-spacing: 1px; font-size: 0.95rem; }
+
+        /* Buttons */
+        .actions { display: flex; gap: 12px; margin-top: 32px; }
+        .act-btn {
+            flex: 1; padding: 14px 24px; border-radius: 10px; font-family: var(--font-display);
+            font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; border: none;
+        }
+        .act-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .act-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .act-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.2); }
+        .act-primary {
+            background: var(--orange); color: #fff;
+            box-shadow: 0 4px 16px rgba(255,87,34,0.25);
+        }
+        .act-primary:hover:not(:disabled) { box-shadow: 0 6px 24px rgba(255,87,34,0.4); transform: translateY(-2px); }
+
+        /* Error & disclaimer */
+        .err-msg { color: var(--red); font-size: 0.85rem; text-align: center; margin-top: 16px; display: none; font-weight: 500; }
+        .region-block {
+            background: rgba(230,57,70,0.08); border: 1px solid rgba(230,57,70,0.3);
+            border-radius: 10px; padding: 16px; margin-top: 16px; display: none; text-align: center;
+        }
+        .region-block strong { color: var(--red); }
+        .region-block p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin-top: 4px; }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .panel { padding: 28px 20px; }
+            .panel-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer" id="bg-layer"></div>
+
+    <div class="setup-container">
+        <!-- STEP 1: Location -->
+        <div class="panel active" id="step-1">
+            <div class="step-indicator">
+                <div class="step-num current">1</div><div class="step-line"></div>
+                <div class="step-num">2</div>
+            </div>
+            <h1 class="panel-title">VERIFY REGION</h1>
+            <p class="panel-desc">We need your location to connect you to the nearest tournament server.</p>
+
+            <div class="loc-display">
+                <div class="loc-label">DETECTED REGION</div>
+                <div class="loc-value" id="loc-value">—</div>
+                <div class="loc-status" id="loc-status">Waiting for signal…</div>
+            </div>
+
+            <div style="text-align:center; margin-bottom: 16px;">
+                <button class="act-btn act-ghost" style="flex:none; width:auto; padding:10px 24px; font-size:0.95rem;" onclick="detectLocation()">DETECT LOCATION</button>
+            </div>
+
+            <div class="region-block" id="region-block">
+                <strong>REGION RESTRICTED</strong>
+                <p>Blaze Frontier is currently available for Indian servers only. We're building support for other regions — stay tuned.</p>
+            </div>
+            <div class="err-msg" id="err-1">Location access is required to verify your region.</div>
+
+            <div class="actions">
+                <button class="act-btn act-primary" id="btn-lock" onclick="nextStep(1)" disabled>CONFIRM REGION</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Identity -->
+        <div class="panel" id="step-2">
+            <div class="step-indicator">
+                <div class="step-num current">1</div><div class="step-line" style="background:var(--orange)"></div>
+                <div class="step-num current">2</div>
+            </div>
+            <h1 class="panel-title">VERIFY IDENTITY</h1>
+            <p class="panel-desc">Enter your in-game name and ID so we can track your tournament stats and assign you to the correct match lobbies.</p>
+
+            <div class="critical-note">
+                <div class="cn-icon">⚠️</div>
+                <div class="cn-text">
+                    <strong>STRICT VERIFICATION</strong><br>
+                    These credentials will be verified during live tournament matches. If your provided IGN and UID do not exactly match the ones used in the lobby, you will face immediate disqualification and potential account suspension.
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="field-label">In-Game Name (IGN)</label>
+                <input type="text" class="field-input" id="ign" placeholder="Exact name as it appears in-game" maxlength="12">
+            </div>
+            <div class="field">
+                <label class="field-label">Game UID</label>
+                <input type="text" class="field-input" id="uid" placeholder="Your unique Free Fire player ID" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+            </div>
+
+            <div class="fair-play">
+                <div class="fp-title">FAIR PLAY PROTOCOL</div>
+                <div class="fp-text">Zero-tolerance policy against cheating, hacking, or third-party exploits. Violators face a permanent ban and forfeiture of all winnings.</div>
+                <label class="fp-check">
+                    <input type="checkbox" id="anti-cheat-agree">
+                    <span>I accept the terms and commit to fair play.</span>
+                </label>
+            </div>
+
+            <div class="err-msg" id="err-2">All fields are required. You must accept the Fair Play Protocol.</div>
+
+            <div class="actions">
+                <button class="act-btn act-ghost" onclick="prevStep(2)">BACK</button>
+                <button class="act-btn act-primary" id="final-submit" onclick="submitOnboarding()">COMPLETE SETUP</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let onboardingData = { location: null, ign: null, uid: null };
+
+        // Auto detect location on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(detectLocation, 500);
+        });
+
+        // Location detection
+        function detectLocation() {
+            const val = document.getElementById('loc-value');
+            const stat = document.getElementById('loc-status');
+            const block = document.getElementById('region-block');
+            const err = document.getElementById('err-1');
+            const btn = document.getElementById('btn-lock');
+
+            val.innerHTML = '—';
+            stat.innerHTML = '<span class="spinner"></span> Detecting location…';
+            stat.style.color = 'var(--orange)';
+            block.style.display = 'none';
+            err.style.display = 'none';
+            btn.disabled = true;
+
+            if (!navigator.geolocation) {
+                stat.textContent = 'Geolocation not supported';
+                stat.style.color = 'var(--red)';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    try {
+                        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=en`);
+                        const data = await res.json();
+                        const loc = `${data.city || data.principalSubdivision || 'Unknown'}, ${data.countryCode}`;
+
+                        if (data.countryCode !== 'IN') {
+                            val.textContent = loc.toUpperCase();
+                            stat.textContent = 'Region not supported';
+                            stat.style.color = 'var(--red)';
+                            block.style.display = 'block';
+                            onboardingData.location = null;
+                            return;
+                        }
+
+                        val.textContent = loc.toUpperCase();
+                        stat.textContent = 'Region confirmed';
+                        stat.style.color = '#22c55e';
+                        onboardingData.location = loc;
+                        btn.disabled = false;
+                    } catch (e) {
+                        stat.textContent = 'Detection failed — please retry';
+                        stat.style.color = 'var(--red)';
+                    }
+                },
+                () => {
+                    stat.textContent = 'Access denied';
+                    stat.style.color = 'var(--red)';
+                    err.style.display = 'block';
+                    onboardingData.location = null;
+                }
+            );
+        }
+
+        // Navigation
+        function nextStep(cur) {
+            if (cur === 1 && !onboardingData.location) {
+                detectLocation();
+                return;
+            }
+            document.getElementById(`step-${cur}`).classList.remove('active');
+            document.getElementById(`step-${cur + 1}`).classList.add('active');
+        }
+
+        function prevStep(cur) {
+            document.getElementById(`step-${cur}`).classList.remove('active');
+            document.getElementById(`step-${cur - 1}`).classList.add('active');
+        }
+
+        // Submit
+        async function submitOnboarding() {
+            const ign = document.getElementById('ign').value.trim();
+            const uid = document.getElementById('uid').value.trim();
+            const agree = document.getElementById('anti-cheat-agree').checked;
+            const err = document.getElementById('err-2');
+            const btn = document.getElementById('final-submit');
+
+            if (!ign || !uid || !agree) { err.style.display = 'block'; return; }
+
+            err.style.display = 'none';
+            onboardingData.ign = ign;
+            onboardingData.uid = uid;
+            btn.textContent = 'PROCESSING…';
+            btn.disabled = true;
+
+            const token = localStorage.getItem('blaze_token');
+            if (!token) { window.location.href = '/auth'; return; }
+
+            try {
+                const res = await fetch('/api/user/setup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify(onboardingData)
+                });
+                if (res.ok) {
+                    window.location.href = '/dashboard';
+                } else {
+                    const data = await res.json();
+                    err.textContent = data.msg || 'Setup failed';
+                    err.style.display = 'block';
+                    btn.textContent = 'COMPLETE SETUP';
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                err.textContent = 'Server error. Please try again.';
+                err.style.display = 'block';
+                btn.textContent = 'COMPLETE SETUP';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
