@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Fetch Overview Stats
-        const overviewRes = await fetch(`http://localhost:5000/api/game/${gameId}/overview`);
+        const overviewRes = await fetch(`https://blazefrontier-1.onrender.com/api/game/${gameId}/overview`);
         if (overviewRes.ok) {
             const overview = await overviewRes.json();
             
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Fetch Leaderboard
-        const lbRes = await fetch(`http://localhost:5000/api/game/${gameId}/leaderboard`);
+        const lbRes = await fetch(`https://blazefrontier-1.onrender.com/api/game/${gameId}/leaderboard`);
         if (lbRes.ok) {
             const leaderboard = await lbRes.json();
             
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Fetch Clips
-        const clipsRes = await fetch(`http://localhost:5000/api/game/${gameId}/clips`);
+        const clipsRes = await fetch(`https://blazefrontier-1.onrender.com/api/game/${gameId}/clips`);
         if (clipsRes.ok) {
             const clips = await clipsRes.json();
             const clipsContainer = document.querySelector('.clips-grid');
