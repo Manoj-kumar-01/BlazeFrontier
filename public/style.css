@@ -1616,14 +1616,24 @@ img {
         height: auto;
         min-height: 72px;
     }
+    
+    .logo {
+        height: 72px;
+    }
+    
+    .mobile-toggle {
+        height: 72px;
+        justify-content: center;
+        display: flex;
+    }
 
     .logo-name {
-        font-size: 1.15rem;
+        font-size: 1.4rem;
     }
 
     .logo-img {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
     }
 
     .nav-menu {
