@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        const res = await fetch('https://blazefrontier-1.onrender.com/api/profile', {
+        const res = await fetch('/api/profile', {
             headers: { 'x-auth-token': token }
         });
 
@@ -51,12 +51,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Fetch Tournaments (Dynamic Integration Mockup)
-        const tourneyRes = await fetch('https://blazefrontier-1.onrender.com/api/tournaments');
+        const tourneyRes = await fetch('/api/tournaments');
         const tourneys = await tourneyRes.json();
         
         // Fetch Champion (Hall of Fame)
         try {
-            const champRes = await fetch('https://blazefrontier-1.onrender.com/api/champion');
+            const champRes = await fetch('/api/champion');
             if (champRes.ok) {
                 const champ = await champRes.json();
                 const champNameEl = document.getElementById('hof-champion-name');

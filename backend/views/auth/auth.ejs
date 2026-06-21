@@ -225,7 +225,8 @@
         @media (max-width: 900px) {
             body { flex-direction: column; }
             .brand-side { display: none; }
-            .auth-side { flex: 1; width: 100%; border-left: none; }
+            .auth-side { flex: 1; width: 100%; border-left: none; padding: 10px; }
+            .auth-card { padding: 15px; border: none; background: transparent; box-shadow: none; }
             .mobile-logo { display: block; }
         }
     </style>
@@ -300,6 +301,9 @@
                     use_fedcm_for_prompt: false
                 });
 
+                let containerPadding = window.innerWidth <= 900 ? 50 : 80;
+                let btnWidth = Math.min(window.innerWidth - containerPadding, 320);
+
                 google.accounts.id.renderButton(
                     document.getElementById('google-signin-btn'),
                     {
@@ -309,7 +313,7 @@
                         text: 'continue_with',
                         size: 'large',
                         logo_alignment: 'left',
-                        width: 320
+                        width: btnWidth
                     }
                 );
 

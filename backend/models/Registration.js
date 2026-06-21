@@ -10,7 +10,11 @@ const RegistrationSchema = new mongoose.Schema({
     timeSlot: { type: String, required: true },
     teamMembers: [{ type: String }], // Array of playerIds
     matchId: { type: Number },
+    roomId: { type: String, default: null },
+    roomPassword: { type: String, default: null },
     status: { type: String, default: 'Pending' },
+    playerFeedback: { type: String, enum: ['Pending', 'Completed', 'Not Completed'], default: 'Pending' },
+    isCompleted: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
 

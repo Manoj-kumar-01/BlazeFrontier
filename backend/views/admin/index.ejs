@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center | Blaze Frontier</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <title>Host | Blaze Frontier</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
     <style>
         body {
@@ -15,28 +18,35 @@
             height: 100vh;
             overflow: hidden;
             display: flex;
+            flex-direction: column;
         }
 
         /* Sidebar Styling */
         .admin-sidebar {
-            width: 280px;
-            background: rgba(6, 6, 11, 0.8);
+            width: 100%;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
-            flex-direction: column;
-            padding: 30px 0;
+            flex-direction: row;
+            align-items: center;
+            padding: 0 20px;
             z-index: 10;
         }
 
         .admin-brand {
-            padding: 0 30px;
-            margin-bottom: 40px;
+            padding: 0 30px 0 0;
+            margin-bottom: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
         }
 
         .admin-logo-text {
             font-family: var(--font-display);
-            font-size: 2.5rem;
+            font-size: 2rem;
             background: linear-gradient(135deg, #FFD700 0%, #FF4E00 60%, #CC0000 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -46,22 +56,32 @@
 
         .admin-nav {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 8px;
-            padding: 0 15px;
+            padding: 0;
+            flex: 1;
+            overflow-x: auto;
+            align-items: center;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .admin-nav::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-link {
-            padding: 14px 20px;
+            padding: 10px 16px;
             border-radius: 10px;
             cursor: pointer;
             color: var(--text-300);
             font-weight: 500;
             font-size: 0.95rem;
+            white-space: nowrap;
             transition: all 0.3s var(--ease);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .nav-link:hover {
@@ -103,8 +123,15 @@
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .page-header {
@@ -139,14 +166,17 @@
             padding: 30px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .glass-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
         }
 
         .card-title {
@@ -167,8 +197,8 @@
         .admin-input {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             color: #fff;
             font-family: var(--font-body);
@@ -179,7 +209,7 @@
         .admin-input:focus {
             outline: none;
             border-color: var(--accent);
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
         }
 
         .btn-action {
@@ -218,25 +248,25 @@
         }
 
         .data-table th {
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             padding: 16px 20px;
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-400);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .data-table td {
             padding: 16px 20px;
             font-size: 0.9rem;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
             color: var(--text-200);
             vertical-align: middle;
         }
 
         .data-table tr:hover td {
-            background: rgba(255,255,255,0.01);
+            background: rgba(255, 255, 255, 0.01);
         }
 
         .badge {
@@ -248,10 +278,25 @@
             letter-spacing: 0.5px;
         }
 
-        .badge-admin { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
-        .badge-genuine { background: rgba(0, 229, 255, 0.2); color: #00e5ff; }
-        .badge-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-        .badge-approved { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .badge-admin {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        .badge-genuine {
+            background: rgba(0, 229, 255, 0.2);
+            color: #00e5ff;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .badge-approved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
 
         .btn-sm {
             padding: 6px 12px;
@@ -263,54 +308,135 @@
             transition: all 0.2s;
         }
 
-        .btn-danger { background: rgba(230, 57, 70, 0.1); color: var(--accent); border: 1px solid rgba(230, 57, 70, 0.2); }
-        .btn-danger:hover { background: var(--accent); color: #fff; }
-        
-        .btn-success { background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
-        .btn-success:hover { background: #22c55e; color: #fff; }
-        
-        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-200); }
-        .btn-outline:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .btn-danger {
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(230, 57, 70, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-success:hover {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-200);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
     </style>
 </head>
+
 <body>
 
     <!-- Sidebar -->
     <div class="admin-sidebar">
         <div class="admin-brand">
-            <div class="admin-logo-text">COMMAND CENTER</div>
+            <div class="admin-logo-text">HOST</div>
         </div>
         <div class="admin-nav">
             <div class="nav-link" onclick="switchTab('stats', this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"></path><path d="M18 20V4"></path><path d="M6 20v-4"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10"></path>
+                    <path d="M18 20V4"></path>
+                    <path d="M6 20v-4"></path>
+                </svg>
                 Match Stats
             </div>
             <div class="nav-link active" onclick="switchTab('users', this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
                 User Directory
             </div>
             <div class="nav-link" onclick="switchTab('banned', this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
                 Banned Users
             </div>
+            <div class="nav-link" onclick="switchTab('trusted', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <polyline points="17 11 19 13 23 9"></polyline>
+                </svg>
+                Trusted Players
+            </div>
             <div class="nav-link" onclick="switchTab('registrations', this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
                 Registrations
             </div>
+            <div class="nav-link" onclick="switchTab('qualification', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                    </polygon>
+                </svg>
+                Qualification Matches
+            </div>
             <div class="nav-link" onclick="switchTab('season-regs', this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
                 Season Matches
             </div>
+
             <div class="nav-link" onclick="switchTab('updates', this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path><line x1="2" y1="20" x2="2.01" y2="20"></line></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6">
+                    </path>
+                    <line x1="2" y1="20" x2="2.01" y2="20"></line>
+                </svg>
                 Platform Updates
             </div>
             <div class="nav-link" onclick="switchTab('daily-content', this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                </svg>
                 Daily Content
             </div>
             <div class="nav-link" onclick="switchTab('clips', this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                    <line x1="7" y1="2" x2="7" y2="22"></line>
+                    <line x1="17" y1="2" x2="17" y2="22"></line>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <line x1="2" y1="7" x2="7" y2="7"></line>
+                    <line x1="2" y1="17" x2="7" y2="17"></line>
+                    <line x1="17" y1="17" x2="22" y2="17"></line>
+                    <line x1="17" y1="7" x2="22" y2="7"></line>
+                </svg>
                 Clip Submissions
             </div>
         </div>
@@ -318,41 +444,59 @@
 
     <!-- Content -->
     <div class="admin-content">
-        
-        <!-- Tab: Match Stats -->
+
+        <!-- Tab: Match Intel -->
         <div id="tab-stats" class="tab-pane">
             <div class="page-header">
-                <h1 class="page-title">Match Statistics</h1>
-                <div class="page-desc">Manually process post-match analytics and leaderboard points.</div>
+                <h1 class="page-title">Match Intel</h1>
+                <div class="page-desc">View full team formations, slots, and player data for registered matches.</div>
             </div>
             <div class="admin-grid">
-                <div class="glass-card">
-                    <div class="card-title">INPUT MATCH DATA</div>
-                    <div class="input-group" style="display:flex; gap:10px;">
-                        <input type="text" id="stat-match" class="admin-input" placeholder="Match ID">
-                        <button class="btn-action" style="margin-top:0; width:auto; padding:0 20px; background:#4f46e5;" onclick="fetchMatchDetails()">FETCH</button>
-                    </div>
-                    
-                    <!-- Match Details Panel -->
-                    <div id="match-details-panel" style="display:none; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:8px; margin-bottom:15px; font-size:0.85rem;">
-                        <div style="color:var(--text-300); margin-bottom:5px;">SERIES: <span id="detail-series" style="color:#fff; font-weight:600;"></span></div>
-                        <div style="color:var(--text-300); margin-bottom:5px;">FORMAT: <span id="detail-format" style="color:var(--cyan); font-weight:600; text-transform:uppercase;"></span> • <span id="detail-mode" style="color:var(--cyan); text-transform:uppercase;"></span></div>
-                        <div style="color:var(--text-300); margin-bottom:5px;">PLAYER: <span id="detail-player" style="color:#fff; font-weight:600;"></span></div>
-                        <div style="color:var(--text-300);">STATUS: <span id="detail-status" class="badge"></span></div>
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <div class="card-title">FETCH MATCH ROSTER</div>
+                    <div class="input-group" style="display:flex; gap:10px; max-width: 400px;">
+                        <input type="text" id="stat-match" class="admin-input" placeholder="Numeric Match ID (e.g. 3)">
+                        <button class="btn-action" style="margin-top:0; width:auto; padding:0 20px; background:#4f46e5;"
+                            onclick="fetchMatchDetails()">FETCH</button>
                     </div>
 
-                    <div id="stats-input-section" style="opacity:0.5; pointer-events:none; transition:all 0.3s;">
-                        <div class="input-group" style="display:flex; gap:10px;">
-                            <input type="number" id="stat-kills" class="admin-input" placeholder="Kills">
-                            <input type="number" id="stat-survival" class="admin-input" placeholder="Survival Time (Mins)">
+                    <!-- Match Intel Details Panel -->
+                    <div id="match-details-panel" style="display:none; margin-top: 25px;">
+                        <div style="display:flex; gap: 30px; flex-wrap: wrap; margin-bottom: 20px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); padding:20px; border-radius:10px;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <div style="color:var(--text-400); font-size:0.75rem; letter-spacing:1px; margin-bottom:5px;">FORMAT & MODE</div>
+                                <div id="intel-format" style="color:var(--cyan); font-weight:600; font-size:1.1rem; text-transform:uppercase;">—</div>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <div style="color:var(--text-400); font-size:0.75rem; letter-spacing:1px; margin-bottom:5px;">SCHEDULE</div>
+                                <div id="intel-schedule" style="color:#fff; font-size:1.1rem; font-weight:600;">—</div>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <div style="color:var(--text-400); font-size:0.75rem; letter-spacing:1px; margin-bottom:5px;">ROOM INFO</div>
+                                <div id="intel-room" style="color:var(--text-200); font-family:var(--font-mono); font-size:1rem;">—</div>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <input type="number" id="stat-placement" class="admin-input" placeholder="Placement (1-100)">
+
+                        <div class="card-title" style="font-size: 1.2rem; margin-bottom: 15px;">TEAM FORMATION</div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Operator</th>
+                                        <th>Blaze ID</th>
+                                        <th>In-Game ID</th>
+                                        <th>Discord</th>
+                                        <th style="text-align:right;">Profile</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="intel-team-list">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
                         </div>
-                        <button class="btn-action" style="background: var(--cyan);" onclick="submitStats()">CALCULATE & SUBMIT STATS</button>
                     </div>
                 </div>
-                
+
 
             </div>
         </div>
@@ -374,7 +518,9 @@
                         </tr>
                     </thead>
                     <tbody id="user-list">
-                        <tr><td colspan="4" style="text-align:center;">Loading database...</td></tr>
+                        <tr>
+                            <td colspan="4" style="text-align:center;">Loading database...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -397,7 +543,58 @@
                         </tr>
                     </thead>
                     <tbody id="banned-list">
-                        <tr><td colspan="4" style="text-align:center;">Loading blacklist...</td></tr>
+                        <tr>
+                            <td colspan="4" style="text-align:center;">Loading blacklist...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab: Trusted Players -->
+        <div id="tab-trusted" class="tab-pane">
+            <div class="page-header">
+                <h1 class="page-title" style="color: #00e5ff;">Trusted Players</h1>
+                <div class="page-desc">The elite verified members of the community.</div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Player ID</th>
+                            <th>Email</th>
+                            <th style="text-align:right;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trusted-list">
+                        <tr>
+                            <td colspan="4" style="text-align:center;">Loading trusted players...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="page-header" style="margin-top: 40px;">
+                <h1 class="page-title">Verified Matches</h1>
+                <div class="page-desc">History of matches that have been successfully verified and completed.</div>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Discord / Comm</th>
+                            <th>Format & Mode</th>
+                            <th>Schedule</th>
+                            <th>Status</th>
+                            <th style="text-align:right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verified-list">
+                        <tr>
+                            <td colspan="6" style="text-align:center;">Loading verified matches...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -418,119 +615,298 @@
                             <th>Format & Mode</th>
                             <th>Schedule</th>
                             <th>Status</th>
+                            <th>Feedback</th>
                             <th style="text-align:right;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="reg-list">
-                        <tr><td colspan="6" style="text-align:center;">Loading queue...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Tab: Season Registrations -->
-        <div id="tab-season-regs" class="tab-pane">
-            <div class="page-header">
-                <h1 class="page-title">Season Matches</h1>
-                <div class="page-desc">Track and manage verified player registrations for Season Matches.</div>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
                         <tr>
-                            <th>Operator</th>
-                            <th>Discord</th>
-                            <th>Match Series</th>
-                            <th>Date Submited</th>
-                            <th>Status</th>
-                            <th style="text-align:right;">Actions</th>
+                            <td colspan="6" style="text-align:center;">Loading queue...</td>
                         </tr>
-                    </thead>
-                    <tbody id="season-reg-list">
-                        <tr><td colspan="6" style="text-align:center;">Loading season queue...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Tab: Platform Updates -->
-        <div id="tab-updates" class="tab-pane">
-            <div class="page-header">
-                <h1 class="page-title">Broadcast Network</h1>
-                <div class="page-desc">Push live intel to all operator dashboards globally.</div>
+    <!-- Tab: Qualification Matches -->
+    <div id="tab-qualification" class="tab-pane">
+        <div class="page-header">
+            <h1 class="page-title">Qualification Matches</h1>
+            <div class="page-desc">Track all registered matches and manually mark them as Completed or Not Completed.
             </div>
-            <div class="admin-grid">
-                <div class="glass-card">
-                    <div class="card-title">COMPOSE BROADCAST</div>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Match ID</th>
+                        <th>Operator</th>
+                        <th>Schedule</th>
+                        <th>Room Info</th>
+                        <th>Status</th>
+                        <th>Player Feedback</th>
+                        <th style="text-align:right;">Admin Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="qual-list">
+                    <tr>
+                        <td colspan="7" style="text-align:center;">Loading matches...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab: Season Registrations -->
+    <div id="tab-season-regs" class="tab-pane">
+        <div class="page-header">
+            <h1 class="page-title">Season Matches</h1>
+            <div class="page-desc">Track and manage verified player registrations for Season Matches.</div>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Discord</th>
+                        <th>Match Series</th>
+                        <th>Date Submitted</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="season-reg-list">
+                    <tr>
+                        <td colspan="6" style="text-align:center;">Loading season queue...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+    <!-- Tab: Platform Updates -->
+    <div id="tab-updates" class="tab-pane">
+        <div class="page-header">
+            <h1 class="page-title">Broadcast Network</h1>
+            <div class="page-desc">Push live intel to all operator dashboards globally.</div>
+        </div>
+        <div class="admin-grid">
+            <div class="glass-card">
+                <div class="card-title">COMPOSE BROADCAST</div>
+                <div style="color:var(--text-400); font-size:0.85rem; margin-bottom:20px;">Send a live notification to
+                    all connected players on the Hub.</div>
+                <div class="input-group">
+                    <label
+                        style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block; font-weight:600;">Headline
+                        / Message</label>
+                    <input type="text" id="news-title" class="admin-input" placeholder="Enter broadcast message...">
+                </div>
+                <div class="input-group">
+                    <label
+                        style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block; font-weight:600;">Broadcast
+                        Tag</label>
+                    <select id="news-tag" class="admin-input" onchange="updateTagClass()">
+                        <option value="UPDATE">UPDATE</option>
+                        <option value="MAINTENANCE">MAINTENANCE</option>
+                        <option value="NEW SEASON">NEW SEASON</option>
+                        <option value="ESPORTS">ESPORTS</option>
+                    </select>
+                    <input type="hidden" id="news-tagClass" value="tag-update">
+                </div>
+                <button class="btn-action"
+                    style="background: linear-gradient(90deg, #8b5cf6, #6366f1); margin-top:10px; width:100%;"
+                    onclick="publishUpdate()">TRANSMIT INTEL</button>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-title">SET PLAYER OF THE DAY</div>
+                <div style="color:var(--text-400); font-size:0.85rem; margin-bottom:20px;">Feature a standout player and
+                    their top clip on the Hub.</div>
+                <form id="potd-form" onsubmit="submitPotd(event)">
                     <div class="input-group">
-                        <input type="text" id="news-title" class="admin-input" placeholder="Headline / Message">
+                        <label
+                            style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block; font-weight:600;">Blaze
+                            ID</label>
+                        <input type="text" id="potd-player" class="admin-input" placeholder="e.g. BZ-12345" required>
                     </div>
                     <div class="input-group">
-                        <select id="news-tag" class="admin-input" onchange="updateTagClass()">
-                            <option value="UPDATE">UPDATE</option>
-                            <option value="MAINTENANCE">MAINTENANCE</option>
-                            <option value="NEW SEASON">NEW SEASON</option>
-                            <option value="ESPORTS">ESPORTS</option>
-                        </select>
-                        <input type="hidden" id="news-tagClass" value="tag-update">
+                        <label
+                            style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block; font-weight:600;">Custom
+                            Player Name (Optional)</label>
+                        <input type="text" id="potd-name" class="admin-input"
+                            placeholder="Overrides automatic fetch if provided">
                     </div>
-                    <button class="btn-action" style="background: #8b5cf6;" onclick="publishUpdate()">TRANSMIT INTEL</button>
-                </div>
-                
-                <div class="glass-card">
-                    <div class="card-title">SET PLAYER OF THE DAY</div>
-                    <form id="potd-form" onsubmit="submitPOTD(event)">
-                        <div class="input-group">
-                            <input type="text" id="potd-player" class="admin-input" placeholder="Blaze ID of the Player" required>
+                    <div class="input-group">
+                        <label
+                            style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block; font-weight:600;">Highlight
+                            Title</label>
+                        <input type="text" id="potd-title" class="admin-input" placeholder="e.g., Insane 1v4 Clutch"
+                            required>
+                    </div>
+                    <div class="input-group">
+                        <label
+                            style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block; font-weight:600;">Upload
+                            Video Clip (Max 50MB)</label>
+                        <div
+                            style="background:rgba(0,0,0,0.2); border:1px dashed rgba(255,255,255,0.2); border-radius:8px; padding:15px; text-align:center;">
+                            <input type="file" id="potd-clip" accept="video/mp4,video/webm"
+                                style="color:var(--text-200); font-size:0.85rem;" required>
                         </div>
-                        <div class="input-group">
-                            <input type="text" id="potd-title" class="admin-input" placeholder="Highlight Title (e.g., Insane 1v4 Clutch)" required>
-                        </div>
-                        <div class="input-group">
-                            <label style="color:var(--text-300); font-size:0.8rem; margin-bottom: 5px; display:block;">Upload Video Clip (MP4/WebM, Max 50MB)</label>
-                            <input type="file" id="potd-clip" class="admin-input" accept="video/mp4,video/webm" required>
-                        </div>
-                        <button type="submit" class="btn-action" style="background: #eab308;">SET PLAYER OF THE DAY</button>
-                    </form>
-                </div>
+                    </div>
+                    <button type="submit" class="btn-action"
+                        style="background: linear-gradient(90deg, #eab308, #f59e0b); margin-top:10px; width:100%; color:#000;">SET
+                        PLAYER OF THE DAY</button>
+                </form>
             </div>
         </div>
+    </div>
 
-        <!-- Tab: Daily Content -->
-        <div id="tab-daily-content" class="tab-pane">
-            <div class="page-header">
-                <h1 class="page-title">Daily Content</h1>
-                <div class="page-desc">Set the YouTube and Facebook embed links for today's showcases.</div>
+    <!-- Tab: Daily Content -->
+    <div id="tab-daily-content" class="tab-pane">
+        <div class="page-header">
+            <h1 class="page-title">Daily Content</h1>
+            <div class="page-desc">Set the YouTube and Facebook embed links for today's showcases.</div>
+        </div>
+        <div class="glass-card" style="max-width: 800px;">
+            <div class="card-title">UPDATE DAILY HIGHLIGHTS</div>
+            <div style="color:var(--text-400); font-size:0.85rem; margin-bottom:25px;">These links will automatically
+                embed content in the player Hubs. Make sure you use the embed URL format.</div>
+            <form id="daily-content-form" onsubmit="submitDailyContent(event)">
+                <div class="input-group">
+                    <label
+                        style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block; font-weight:600;">YouTube
+                        Embed Link</label>
+                    <input type="text" id="dc-yt" class="admin-input"
+                        placeholder="e.g. https://www.youtube.com/embed/XXXXXX" required>
+                </div>
+                <div class="input-group">
+                    <label
+                        style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block; font-weight:600;">Facebook
+                        Embed Link</label>
+                    <input type="text" id="dc-fb" class="admin-input"
+                        placeholder="e.g. https://www.facebook.com/plugins/video.php?href=..." required>
+                </div>
+                <div style="display:flex; justify-content:flex-end;">
+                    <button type="submit" class="btn-action"
+                        style="background: linear-gradient(90deg, #00bcd4, #0284c7); width: 250px; margin-top: 10px;">SAVE
+                        DAILY CONTENT</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tab: Clip Submissions -->
+    <div id="tab-clips" class="tab-pane">
+        <div class="page-header">
+            <h1 class="page-title">Clip Review Queue</h1>
+            <div class="page-desc">Approve top plays to feature them on the hub and award 50 BlazeCoins to the player.
             </div>
-            <div class="admin-grid">
-                <div class="glass-card" style="grid-column: 1 / -1;">
-                    <div class="card-title">UPDATE DAILY HIGHLIGHTS</div>
-                    <form id="daily-content-form" onsubmit="submitDailyContent(event)">
-                        <div class="input-group">
-                            <label style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block;">YouTube Embed Link</label>
-                            <input type="text" id="dc-yt" class="admin-input" placeholder="e.g. https://www.youtube.com/embed/XXXXXX" required>
-                        </div>
-                        <div class="input-group">
-                            <label style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block;">Facebook Embed Link</label>
-                            <input type="text" id="dc-fb" class="admin-input" placeholder="e.g. https://www.facebook.com/plugins/video.php?href=..." required>
-                        </div>
-                        <button type="submit" class="btn-action" style="background: var(--cyan); width: 250px;">SAVE DAILY CONTENT</button>
-                    </form>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Submitter</th>
+                        <th>Clip Title</th>
+                        <th>Date Submitted</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clip-list">
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 20px; color:var(--text-muted);">Loading
+                            submissions...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Credentials Modal -->
+    <div id="creds-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+        <div class="glass-card" style="width: 450px; position:relative;">
+            <button type="button" onclick="document.getElementById('creds-modal').style.display='none'"
+                style="position:absolute; top:15px; right:15px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">&times;</button>
+            <div class="card-title" style="margin-bottom: 5px;">DISPATCH CREDENTIALS</div>
+            <div style="color:var(--text-muted); margin-bottom:20px; font-size:0.85rem;">Sending to: <span
+                    id="modal-player-name" style="color:#fff; font-weight:bold;"></span></div>
+
+            <div
+                style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:15px; margin-bottom:20px; font-size:0.85rem;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div><span style="color:var(--text-400);">Match ID:</span> <span id="modal-m-id"
+                            style="color:var(--blaze-orange); font-weight:bold;"></span></div>
+                    <div><span style="color:var(--text-400);">Date:</span> <span id="modal-date"
+                            style="color:#fff;"></span></div>
+                    <div><span style="color:var(--text-400);">Slot:</span> <span id="modal-slot"
+                            style="color:var(--cyan);"></span></div>
+                    <div><span style="color:var(--text-400);">Game UID:</span> <span id="modal-guid"
+                            style="color:#fff;"></span></div>
+                </div>
+                <div style="margin-top:10px;"><span style="color:var(--text-400);">Email:</span> <span id="modal-email"
+                        style="color:#fff;"></span></div>
+                <div style="margin-top:5px;"><span style="color:var(--text-400);">Blaze ID:</span> <span id="modal-bid"
+                        style="color:#fff; font-family:var(--font-mono);"></span></div>
+            </div>
+
+            <form onsubmit="submitCredentials(event)">
+                <input type="hidden" id="modal-match-id">
+                <div class="input-group">
+                    <label style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block;">Room
+                        ID</label>
+                    <input type="text" id="modal-room-id" class="admin-input" placeholder="Room ID" required>
+                </div>
+                <div class="input-group">
+                    <label
+                        style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block;">Password</label>
+                    <input type="text" id="modal-room-pass" class="admin-input" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-action" style="background: var(--cyan); width: 100%;">DISPATCH
+                    NOW</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Squad Verify Modal -->
+    <div id="squad-verify-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center;">
+        <div class="glass-card" style="width: 550px; max-height: 80vh; overflow-y: auto; position:relative;">
+            <button type="button" onclick="document.getElementById('squad-verify-modal').style.display='none'"
+                style="position:absolute; top:15px; right:15px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">&times;</button>
+            <div class="card-title" id="verify-modal-title" style="margin-bottom: 5px;">VERIFY SQUAD</div>
+            <div style="color:var(--text-muted); margin-bottom:15px; font-size:0.85rem;">Review match participants
+                before granting Trusted Player status.</div>
+
+            <div
+                style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:15px; margin-bottom:20px; font-size:0.85rem;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div><span style="color:var(--text-400);">Match ID:</span> <span id="v-modal-m-id"
+                            style="color:var(--blaze-orange); font-weight:bold;"></span></div>
+                    <div><span style="color:var(--text-400);">Date:</span> <span id="v-modal-date"
+                            style="color:#fff;"></span></div>
+                    <div><span style="color:var(--text-400);">Slot:</span> <span id="v-modal-slot"
+                            style="color:var(--cyan);"></span></div>
+                    <div><span style="color:var(--text-400);">Format:</span> <span id="v-modal-format"
+                            style="color:#fff;"></span></div>
                 </div>
             </div>
-        </div>
 
-        <!-- Tab: Clip Submissions -->
-        <div id="tab-clips" class="tab-pane">
-            <div class="page-header">
-                <h1 class="page-title">Clip Review</h1>
-                <div class="page-desc">Approve top plays to feature them on the hub and award 50 BlazeCoins.</div>
+            <div id="squad-members-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                <div style="text-align:center; padding: 20px; color:var(--text-muted);">Loading squad details...</div>
             </div>
-            <div class="admin-grid" id="clip-list">
-                <div style="color:var(--text-muted); padding:20px;">Loading submissions...</div>
+
+            <div style="text-align: center;">
+                <button type="button" id="btn-verify-squad-submit" class="btn-action"
+                    style="background: linear-gradient(90deg, #ff8a00, #e52e71); width: 100%; box-shadow: 0 4px 15px rgba(255,138,0,0.3);">VERIFY
+                    ALL MEMBERS</button>
             </div>
         </div>
-
     </div>
 
     <!-- Scripts -->
@@ -540,29 +916,30 @@
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
             element.classList.add('active');
-            
+
             localStorage.setItem('adminActiveTab', tabId);
 
             // Auto refresh specific tabs
-            if(tabId === 'users') loadUsers();
-            if(tabId === 'banned') loadBannedUsers();
-            if(tabId === 'registrations') loadRegistrations();
-            if(tabId === 'season-regs') loadSeasonRegistrations();
-            if(tabId === 'clips') loadClips();
-            if(tabId === 'daily-content') loadDailyContent();
+            if (tabId === 'users') loadUsers();
+            if (tabId === 'banned') loadBannedUsers();
+            if (tabId === 'registrations') loadRegistrations();
+            if (tabId === 'qualification') loadQualificationMatches();
+            if (tabId === 'season-regs') loadSeasonRegistrations();
+            if (tabId === 'clips') loadClips();
+            if (tabId === 'daily-content') loadDailyContent();
         }
 
         async function loadDailyContent() {
             try {
                 const res = await fetch('<%= adminPrefix %>/api/daily-content', { cache: 'no-store' });
-                if(res.ok) {
+                if (res.ok) {
                     const data = await res.json();
-                    if(data) {
+                    if (data) {
                         document.getElementById('dc-yt').value = data.youtubeLink || '';
                         document.getElementById('dc-fb').value = data.facebookLink || '';
                     }
                 }
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
 
         async function submitDailyContent(e) {
@@ -570,7 +947,7 @@
             const btn = e.target.querySelector('button');
             const originalText = btn.innerText;
             btn.innerText = 'SAVING...';
-            
+
             try {
                 const res = await fetch('<%= adminPrefix %>/api/daily-content', {
                     method: 'POST',
@@ -580,8 +957,8 @@
                         facebookLink: document.getElementById('dc-fb').value
                     })
                 });
-                
-                if(res.ok) {
+
+                if (res.ok) {
                     btn.innerText = 'SAVED SUCCESSFULLY';
                     btn.style.background = '#22c55e';
                     setTimeout(() => {
@@ -592,7 +969,7 @@
                     alert('Error saving daily content');
                     btn.innerText = originalText;
                 }
-            } catch(err) {
+            } catch (err) {
                 alert('Server error');
                 btn.innerText = originalText;
             }
@@ -602,10 +979,10 @@
             const list = document.getElementById('user-list');
             try {
                 const res = await fetch('<%= adminPrefix %>/api/users', { cache: 'no-store' });
-                if(!res.ok) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">Access Denied.</td></tr>';
+                if (!res.ok) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">Access Denied.</td></tr>';
                 const users = await res.json();
-                if(users.length === 0) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">No users found.</td></tr>';
-                
+                if (users.length === 0) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">No users found.</td></tr>';
+
                 list.innerHTML = users.map(u => `
                     <tr>
                         <td style="font-weight:600; color:#fff;">${u.username}</td>
@@ -617,23 +994,73 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:flex; justify-content:flex-end; gap:8px;">
-                                ${!u.isAdmin ? `<button class="btn-sm btn-outline" onclick="toggleVerifyUser('${u._id}')">${u.isGenuine ? 'Revoke Genuine' : 'Make Genuine'}</button>` : ''}
                                 ${!u.isAdmin ? `<button class="btn-sm btn-danger" onclick="banUser('${u._id}')">FLAG CHEATER</button>` : ''}
                             </div>
                         </td>
                     </tr>
                 `).join('');
-            } catch(e) { console.error(e); }
+
+                const trustedUsers = users.filter(u => u.isGenuine);
+                const tList = document.getElementById('trusted-list');
+                if (trustedUsers.length === 0) {
+                    tList.innerHTML = '<tr><td colspan="4" style="text-align:center;">No trusted players yet.</td></tr>';
+                } else {
+                    tList.innerHTML = trustedUsers.map(u => `
+                        <tr>
+                            <td style="font-weight:600; color:#fff;">${u.inGameName || u.username}</td>
+                            <td style="font-family:var(--font-mono); font-size:0.8rem;">${u.playerId}</td>
+                            <td style="color:var(--text-300); font-size:0.85rem;">${u.email || 'N/A'}</td>
+                            <td style="text-align:right;">
+                                <span class="badge badge-genuine" style="box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);">✔ VERIFIED</span>
+                        </tr>
+                    `).join('');
+                }
+
+                // Also load verified matches
+                const regRes = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
+                if (regRes.ok) {
+                    const regs = await regRes.json();
+                    const verifiedRegs = regs.filter(r => r.status === 'Verified' || r.status === 'Completed').sort((a, b) => (a.matchId || 0) - (b.matchId || 0));
+                    const vList = document.getElementById('verified-list');
+                    if (verifiedRegs.length === 0) {
+                        vList.innerHTML = '<tr><td colspan="6" style="text-align:center;">No verified matches yet.</td></tr>';
+                    } else {
+                        vList.innerHTML = verifiedRegs.map(r => {
+                            return `
+                            <tr>
+                                <td style="font-weight:600; color:#fff;">
+                                    ${r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown'}
+                                    ${r.userId && r.userId.email ? `<div style="color:var(--text-muted); font-size:0.75rem; font-weight:normal; margin-top:2px; user-select:all;">${r.userId.email}</div>` : ''}
+                                </td>
+                                <td style="color:var(--cyan); font-size:0.85rem;">${r.discord}</td>
+                                <td style="font-size:0.85rem;">
+                                    ${r.format.toUpperCase()} • ${r.mode.toUpperCase()}
+                                    ${r.matchId ? `<div style="color:var(--blaze-orange); font-size:0.75rem; margin-top:4px; font-weight:600;">Match #${r.matchId}</div>` : ''}
+                                    ${r.teamMembers && r.teamMembers.length > 0 ? `<div style="color:var(--orange); font-size:0.75rem; margin-top:4px;">Team: ${r.teamMembers.join(', ')}</div>` : ''}
+                                </td>
+                                <td style="font-size:0.85rem;"><div style="color:#fff;">${r.startDate || 'N/A'}</div><div style="color:var(--text-muted);">${r.timeSlot || 'N/A'}</div></td>
+                                <td><span class="badge" style="background:rgba(34,197,94,0.2);color:#22c55e;">Verified</span></td>
+                                <td style="text-align:right;">
+                                    <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                        <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">DELETE RECORD</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            `;
+                        }).join('');
+                    }
+                }
+            } catch (e) { console.error(e); }
         }
 
         async function loadBannedUsers() {
             const list = document.getElementById('banned-list');
             try {
                 const res = await fetch('<%= adminPrefix %>/api/banned-users', { cache: 'no-store' });
-                if(!res.ok) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">Failed to load.</td></tr>';
+                if (!res.ok) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">Failed to load.</td></tr>';
                 const banned = await res.json();
-                if(banned.length === 0) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">No banned users. Good job!</td></tr>';
-                
+                if (banned.length === 0) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">No banned users. Good job!</td></tr>';
+
                 list.innerHTML = banned.map(b => `
                     <tr>
                         <td style="font-weight:600; color:var(--accent);">${b.username}</td>
@@ -642,26 +1069,133 @@
                         <td style="text-align:right; font-size:0.8rem; color:var(--text-400);">${new Date(b.bannedAt).toLocaleDateString()}</td>
                     </tr>
                 `).join('');
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
+        }
+
+        function canSendCreds(dateStr, timeStr) {
+            if (!dateStr || !timeStr) return true;
+            try {
+                const [time, modifier] = timeStr.split(' ');
+                let [hours, minutes] = time.split(':');
+                if (hours === '12') hours = '00';
+                if (modifier && modifier.toUpperCase() === 'PM') hours = (parseInt(hours, 10) + 12).toString();
+
+                const slotDate = new Date(`${dateStr}T${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`);
+                const now = new Date();
+                const diffMins = (slotDate - now) / 60000;
+
+                return diffMins <= 20;
+            } catch (e) {
+                return true;
+            }
+        }
+
+        function isMatchCompleted(dateStr, timeStr) {
+            if (!dateStr || !timeStr) return false;
+            try {
+                const [time, modifier] = timeStr.split(' ');
+                let [hours, minutes] = time.split(':');
+                if (hours === '12') hours = '00';
+                if (modifier && modifier.toUpperCase() === 'PM') hours = (parseInt(hours, 10) + 12).toString();
+
+                const slotDate = new Date(`${dateStr}T${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`);
+                const now = new Date();
+                const diffMins = (slotDate - now) / 60000;
+
+                return diffMins <= -30;
+            } catch (e) {
+                return false;
+            }
         }
 
         async function loadRegistrations() {
             const list = document.getElementById('reg-list');
             try {
                 const res = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
-                if(!res.ok) return;
+                if (!res.ok) return;
                 const regs = await res.json();
-                if(regs.length === 0) return list.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending requests.</td></tr>';
-                
-                const filteredRegs = regs.filter(r => r.format !== 'Season Match');
-                if(filteredRegs.length === 0) return list.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending tournament requests.</td></tr>';
 
-                list.innerHTML = filteredRegs.map(r => {
-                    const badgeClass = r.status === 'Approved' ? 'badge-approved' : (r.status === 'Pending' ? 'badge-pending' : '');
-                    const badgeHtml = r.status !== 'Rejected' ? `<span class="badge ${badgeClass}">${r.status}</span>` : `<span class="badge" style="background:rgba(230,57,70,0.2);color:var(--accent);">${r.status}</span>`;
-                    return `
+                const baseRegs = regs.filter(r => r.format !== 'Season Match').sort((a, b) => (a.matchId || 0) - (b.matchId || 0));
+                const pendingRegs = baseRegs.filter(r => r.status !== 'Verified' && r.status !== 'Completed');
+
+                if (pendingRegs.length === 0) {
+                    list.innerHTML = '<tr><td colspan="7" style="text-align:center;">No pending queue requests.</td></tr>';
+                } else {
+                    list.innerHTML = pendingRegs.map(r => {
+                        const badgeClass = r.status === 'Approved' ? 'badge-approved' : (r.status === 'Pending' ? 'badge-pending' : (r.status === 'Awaiting Verification' ? 'badge-pending' : ''));
+                        let badgeHtml = r.status !== 'Rejected' ? `<span class="badge ${badgeClass}">${r.status}</span>` : `<span class="badge" style="background:rgba(230,57,70,0.2);color:var(--accent);">${r.status}</span>`;
+
+                        if (r.status === 'Awaiting Verification') {
+                            badgeHtml = `<span class="badge" style="background:rgba(252, 211, 77, 0.2);color:#fcd34d;">Awaiting Verification</span>`;
+                        }
+
+                        let btnHtml = '';
+                        if (r.status === 'Pending') {
+                            btnHtml = `
+                                <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                    <button class="btn-sm btn-success" onclick="updateRegistration('${r._id}', 'Approved')">APPROVE</button>
+                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">REJECT & DELETE</button>
+                                </div>
+                        `;
+                        } else if (r.status === 'Awaiting Verification') {
+                            btnHtml = `
+                                <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                    <button class="btn-sm btn-success" style="background:#fbbf24; color:#000; font-weight:bold;" onclick="verifyPlayer('${r._id}')">✨ VERIFY PLAYER ✨</button>
+                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">REJECT</button>
+                                </div>
+                        `;
+                        } else if (r.status === 'Approved') {
+                            const canSend = canSendCreds(r.startDate, r.timeSlot);
+                            const isCompleted = isMatchCompleted(r.startDate, r.timeSlot);
+                            const regData = JSON.stringify({
+                                matchId: r.matchId || 'TBA',
+                                startDate: r.startDate || 'N/A',
+                                timeSlot: r.timeSlot || 'N/A',
+                                format: r.format || 'N/A',
+                                mode: r.mode || 'N/A',
+                                inGameName: r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown',
+                                email: r.userId ? r.userId.email : 'N/A',
+                                gameUid: r.userId ? r.userId.gameUid : 'N/A',
+                                playerId: r.userId ? r.userId.playerId : 'N/A'
+                            }).replace(/\"/g, '&quot;');
+
+                            if (isCompleted) {
+                                btnHtml = `
+                                <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                    <button class="btn-sm btn-success" style="background:linear-gradient(90deg, #ff8a00, #e52e71); color:#fff; font-weight:bold; box-shadow: 0 0 10px rgba(255,138,0,0.5);" onclick="openVerifySquadModal('${r._id}', this.getAttribute('data-reg'))" data-reg="${regData}">🏆 VERIFY PLAYERS</button>
+                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">DELETE</button>
+                                </div>
+                            `;
+                            } else if (canSend) {
+                                btnHtml = `
+                                <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                    <button class="btn-sm btn-success" style="background:#00bcd4; color:#000; font-weight:bold;" onclick="openCredsModal('${r._id}', this.getAttribute('data-reg'))" data-reg="${regData}">🔑 SEND CREDS</button>
+                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">DELETE</button>
+                                </div>
+                            `;
+                            } else {
+                                btnHtml = `
+                                <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                    <button class="btn-sm" style="background:rgba(255,255,255,0.1); color:var(--text-400); font-weight:bold; cursor:not-allowed;" disabled>⏳ WAITING SLOT</button>
+                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">DELETE</button>
+                                </div>
+                            `;
+                            }
+                        } else {
+                            btnHtml = `
+                                <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                    <span style="color:var(--text-400); font-size:0.8rem; text-align:center;">Processed</span>
+                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">DELETE</button>
+                                </div>
+                        `;
+                        }
+
+                        return `
                     <tr>
-                        <td style="font-weight:600; color:#fff;">${r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown'}</td>
+                        <td style="font-weight:600; color:#fff;">
+                            ${r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown'}
+                            ${r.userId && r.userId.email ? `<div style="color:var(--text-muted); font-size:0.75rem; font-weight:normal; margin-top:2px; user-select:all;">${r.userId.email}</div>` : ''}
+                        </td>
                         <td style="color:var(--cyan); font-size:0.85rem;">${r.discord}</td>
                         <td style="font-size:0.85rem;">
                             ${r.format.toUpperCase()} • ${r.mode.toUpperCase()}
@@ -670,45 +1204,94 @@
                         </td>
                         <td style="font-size:0.85rem;"><div style="color:#fff;">${r.startDate || 'N/A'}</div><div style="color:var(--text-muted);">${r.timeSlot || 'N/A'}</div></td>
                         <td>${badgeHtml}</td>
+                        <td style="font-size:0.85rem; font-weight:600; color: ${r.playerFeedback === 'Completed' ? '#4ade80' : r.playerFeedback === 'Not Completed' ? '#f87171' : 'var(--text-400)'};">${r.playerFeedback || 'Pending'}</td>
                         <td style="text-align:right;">
-                            ${r.status === 'Pending' ? `
-                                <div style="display:flex; justify-content:flex-end; gap:8px;">
-                                    <button class="btn-sm btn-success" onclick="updateRegistration('${r._id}', 'Approved')">APPROVE</button>
-                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">REJECT & DELETE</button>
-                                </div>
-                            ` : (r.status === 'Awaiting Verification' ? `
-                                <div style="display:flex; justify-content:flex-end; gap:8px;">
-                                    <button class="btn-sm btn-success" style="background:#fbbf24; color:#000; padding: 6px 12px; font-weight: bold; border-radius: 4px;" onclick="verifyPlayer('${r._id}')">✨ VERIFY PLAYER ✨</button>
-                                    <button class="btn-sm btn-danger" style="background:#dc2626; padding: 6px 12px;" onclick="deleteRegistration('${r._id}')">REJECT</button>
-                                </div>
-                            ` : `
-                                <div style="display:flex; justify-content:flex-end; gap:8px; align-items: center;">
-                                    <span style="color:var(--text-400); font-size:0.8rem; margin-right: 8px;">Processed</span>
-                                    <button class="btn-sm btn-danger" style="background:#dc2626; padding: 4px 8px;" onclick="deleteRegistration('${r._id}')">DELETE</button>
-                                </div>
-                            `)}
+                            ${btnHtml}
                         </td>
                     </tr>
                 `}).join('');
-            } catch(e) { console.error(e); }
+                }
+            } catch (e) { console.error(e); }
         }
+
+        async function loadQualificationMatches() {
+            const list = document.getElementById('qual-list');
+            try {
+                const res = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
+                if (!res.ok) return;
+                const regs = await res.json();
+
+                const filteredRegs = regs.filter(r => r.format !== 'Season Match' && r.status !== 'Verified').sort((a, b) => (a.matchId || 0) - (b.matchId || 0));
+                if (filteredRegs.length === 0) return list.innerHTML = '<tr><td colspan="6" style="text-align:center;">No qualification matches found.</td></tr>';
+
+                list.innerHTML = filteredRegs.map(r => {
+                    const statusColor = r.isCompleted ? '#22c55e' : 'var(--text-400)';
+                    const statusText = r.isCompleted ? 'COMPLETED' : 'INCOMPLETE';
+                    return `
+                    <tr>
+                        <td style="font-weight:bold; color:var(--blaze-orange); font-size: 1.1rem;">#${r.matchId || '-'}</td>
+                        <td style="font-weight:600; color:#fff;">
+                            ${r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown'}
+                        </td>
+                        <td style="color:var(--text-300); font-size:0.85rem;">
+                            ${r.startDate || 'N/A'} <br> <span style="color:var(--cyan);">${r.timeSlot || 'N/A'}</span>
+                        </td>
+                        <td>
+                            ${r.roomId ? `
+                                <div style="font-family:var(--font-mono); font-size:0.8rem; background:rgba(0,188,212,0.1); border:1px solid rgba(0,188,212,0.3); padding:4px 8px; border-radius:4px; color:#00bcd4;">
+                                    ID: <span style="color:#fff;">${r.roomId}</span><br>
+                                    Pass: <span style="color:#fff;">${r.roomPassword}</span>
+                                </div>
+                            ` : `<span style="color:var(--text-muted); font-size:0.8rem;">Not Dispatched</span>`}
+                        </td>
+                        <td><span style="font-weight:bold; color:${statusColor};">${statusText}</span></td>
+                        <td style="font-size:0.85rem; font-weight:600; color: ${r.playerFeedback === 'Completed' ? '#4ade80' : r.playerFeedback === 'Not Completed' ? '#f87171' : 'var(--text-400)'};">${r.playerFeedback || 'Pending'}</td>
+                        <td style="text-align:right;">
+                            <div style="display:flex; flex-direction:row; justify-content:flex-end; gap:6px; flex-wrap:wrap; min-width:200px;">
+                                <button class="btn-sm btn-success" style="font-weight:bold; color:#4ade80;" onclick="markMatchCompleted('${r._id}', true)"><i class="fas fa-check"></i> COMPLETED</button>
+                                <button class="btn-sm btn-danger" style="font-weight:bold; color:#f87171;" onclick="markMatchCompleted('${r._id}', false)"><i class="fas fa-times"></i> INCOMPLETE</button>
+                            </div>
+                        </td>
+                    </tr>
+                `}).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function markMatchCompleted(id, isCompleted) {
+            try {
+                const res = await fetch(`<%= adminPrefix %>/api/registrations/${id}/completion`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isCompleted })
+                });
+                if (res.ok) {
+                    loadQualificationMatches();
+                } else {
+                    alert('Error marking match status.');
+                }
+            } catch (e) { console.error(e); }
+        }
+
 
         async function loadSeasonRegistrations() {
             const list = document.getElementById('season-reg-list');
             try {
                 const res = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
-                if(!res.ok) return;
+                if (!res.ok) return;
                 const regs = await res.json();
-                
-                const filteredRegs = regs.filter(r => r.format === 'Season Match');
-                if(filteredRegs.length === 0) return list.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending season matches.</td></tr>';
+
+                const filteredRegs = regs.filter(r => r.format === 'Season Match' && r.status !== 'Verified');
+                if (filteredRegs.length === 0) return list.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending season matches.</td></tr>';
 
                 list.innerHTML = filteredRegs.map(r => {
                     const badgeClass = r.status === 'Approved' ? 'badge-approved' : (r.status === 'Pending' ? 'badge-pending' : '');
                     const badgeHtml = r.status !== 'Rejected' ? `<span class="badge ${badgeClass}">${r.status}</span>` : `<span class="badge" style="background:rgba(230,57,70,0.2);color:var(--accent);">${r.status}</span>`;
                     return `
                     <tr>
-                        <td style="font-weight:600; color:#fff;">${r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown'}</td>
+                        <td style="font-weight:600; color:#fff;">
+                            ${r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown'}
+                            ${r.userId && r.userId.email ? `<div style="color:var(--text-muted); font-size:0.75rem; font-weight:normal; margin-top:2px; user-select:all;">${r.userId.email}</div>` : ''}
+                        </td>
                         <td style="color:var(--cyan); font-size:0.85rem;">${r.discord}</td>
                         <td style="font-size:0.85rem;">
                             <span style="color:var(--blaze-orange); font-weight:600;">${r.mode.toUpperCase()}</span>
@@ -717,28 +1300,231 @@
                         <td>${badgeHtml}</td>
                         <td style="text-align:right;">
                             ${r.status === 'Pending' ? `
-                                <div style="display:flex; justify-content:flex-end; gap:8px;">
-                                    <button class="btn-sm btn-success" onclick="updateRegistration('${r._id}', 'Approved')">APPROVE</button>
-                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">DELETE</button>
+                                <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                    <button class="btn-sm btn-success" style="background:#22c55e; color:#fff; font-weight:bold;" onclick="updateRegistration('${r._id}', 'Approved')">APPROVE</button>
+                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">REJECT / DELETE</button>
                                 </div>
                             ` : `
-                                <div style="display:flex; justify-content:flex-end; gap:8px; align-items: center;">
-                                    <span style="color:var(--text-400); font-size:0.8rem; margin-right: 8px;">Processed</span>
-                                    <button class="btn-sm btn-danger" style="background:#dc2626; padding: 4px 8px;" onclick="deleteRegistration('${r._id}')">DELETE</button>
+                                <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:140px;">
+                                    <span style="color:var(--text-400); font-size:0.8rem; text-align:center;">Processed</span>
+                                    <button class="btn-sm btn-danger" style="background:#dc2626;" onclick="deleteRegistration('${r._id}')">DELETE</button>
                                 </div>
                             `}
                         </td>
                     </tr>
                 `}).join('');
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
 
         // Action Functions
+        async function loadMatchCreds() {
+            const list = document.getElementById('approved-creds-list');
+            const select = document.getElementById('cred-match-id');
+            try {
+                const res = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
+                if (!res.ok) return;
+                const regs = await res.json();
+
+                const approvedRegs = regs.filter(r => r.format !== 'Season Match' && r.status === 'Approved');
+                if (approvedRegs.length === 0) {
+                    list.innerHTML = '<tr><td colspan="4" style="text-align:center;">No approved qualification matches found.</td></tr>';
+                    select.innerHTML = '<option value="">No approved matches available</option>';
+                    return;
+                }
+
+                // Populate Table
+                list.innerHTML = approvedRegs.map(r => {
+                    const playerStr = r.userId ? `
+                        <strong>IGN:</strong> ${r.userId.inGameName || r.userId.username}<br>
+                        <strong>UID:</strong> ${r.userId.gameUid || 'N/A'}<br>
+                        <strong>BlazeID:</strong> ${r.userId.playerId}<br>
+                        <strong>Email:</strong> ${r.userId.email || 'N/A'}
+                    ` : 'Unknown';
+
+                    const roomInfo = r.roomId ? `
+                        <span style="color:var(--cyan);">ID: ${r.roomId}</span><br>
+                        <span style="color:var(--text-muted);">Pass: ${r.roomPassword}</span>
+                    ` : `<span style="color:var(--text-400);">Not Set</span>`;
+
+                    return `
+                    <tr>
+                        <td style="font-weight:600; color:#fff;">
+                            ${r.format.toUpperCase()} • ${r.mode.toUpperCase()}<br>
+                            <span style="color:var(--blaze-orange); font-size:0.8rem;">Match #${r.matchId || 'TBA'}</span>
+                        </td>
+                        <td style="color:var(--text-300); font-size:0.85rem;">
+                            ${r.startDate}<br>
+                            <span style="color:var(--cyan);">${r.timeSlot}</span>
+                        </td>
+                        <td style="font-size:0.85rem; line-height:1.4; color:var(--text-200);">
+                            ${playerStr}
+                        </td>
+                        <td style="font-family:var(--font-mono); font-size:0.85rem;">
+                            ${roomInfo}
+                        </td>
+                    </tr>
+                `}).join('');
+
+                // Populate Select
+                select.innerHTML = '<option value="">-- Select a Match --</option>' + approvedRegs.map(r => {
+                    const pName = r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown';
+                    const title = `${r.format} ${r.mode} | ${r.startDate} ${r.timeSlot} | ${pName}`;
+                    return `<option value="${r._id}">${title}</option>`;
+                }).join('');
+
+            } catch (e) { console.error(e); }
+        }
+
+        function openCredsModal(matchId, regDataStr) {
+            let data = {};
+            try { data = JSON.parse(regDataStr); } catch (e) { console.error(e); }
+
+            document.getElementById('modal-match-id').value = matchId;
+            document.getElementById('modal-player-name').innerText = data.inGameName || 'Unknown';
+            document.getElementById('modal-m-id').innerText = data.matchId ? `#${data.matchId}` : 'N/A';
+            document.getElementById('modal-date').innerText = data.startDate || 'N/A';
+            document.getElementById('modal-slot').innerText = data.timeSlot || 'N/A';
+            document.getElementById('modal-email').innerText = data.email || 'N/A';
+            document.getElementById('modal-guid').innerText = data.gameUid || 'N/A';
+            document.getElementById('modal-bid').innerText = data.playerId || 'N/A';
+
+            document.getElementById('modal-room-id').value = '';
+            document.getElementById('modal-room-pass').value = '';
+            document.getElementById('creds-modal').style.display = 'flex';
+        }
+
+        async function openVerifySquadModal(matchId, regDataStr) {
+            let regData = {};
+            try { regData = JSON.parse(regDataStr); } catch (e) { console.error(e); }
+
+            document.getElementById('v-modal-m-id').innerText = regData.matchId ? `#${regData.matchId}` : 'N/A';
+            document.getElementById('v-modal-date').innerText = regData.startDate || 'N/A';
+            document.getElementById('v-modal-slot').innerText = regData.timeSlot || 'N/A';
+            document.getElementById('v-modal-format').innerText = regData.format ? `${regData.format} (${regData.mode})` : 'N/A';
+
+            document.getElementById('squad-members-list').innerHTML = '<div style="text-align:center; padding: 20px; color:var(--text-muted);">Loading squad details...</div>';
+            document.getElementById('squad-verify-modal').style.display = 'flex';
+
+            try {
+                const res = await fetch(`<%= adminPrefix %>/api/squad-details/${matchId}`);
+                if (!res.ok) throw new Error('Failed to load squad details');
+                const data = await res.json();
+
+                let html = '';
+                if (data.squad && data.squad.length > 0) {
+                    html = data.squad.map(u => `
+                        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:15px; font-size:0.85rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div>
+                                    <div style="color:#fff; font-weight:bold; font-size: 1rem; margin-bottom: 4px;">${u.inGameName || u.username}</div>
+                                    <div style="color:var(--text-400);">Email: <span style="color:#fff;">${u.email || 'N/A'}</span></div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color:var(--text-400);">Game UID: <span style="color:#fff;">${u.gameUid || 'N/A'}</span></div>
+                                    <div style="color:var(--text-400);">Blaze ID: <span style="color:var(--blaze-orange); font-family:var(--font-mono);">${u.playerId || 'N/A'}</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    html = '<div style="text-align:center; padding: 20px; color:var(--text-muted);">No members found.</div>';
+                }
+
+                let titleText = 'VERIFY SQUAD';
+                let btnText = 'VERIFY ALL MEMBERS';
+                if (data.squad) {
+                    if (data.squad.length === 1) {
+                        titleText = 'VERIFY PLAYER';
+                        btnText = 'VERIFY PLAYER';
+                    } else if (data.squad.length === 2) {
+                        titleText = 'VERIFY DUO';
+                        btnText = 'VERIFY BOTH MEMBERS';
+                    }
+                }
+
+                const titleEl = document.getElementById('verify-modal-title');
+                if (titleEl) titleEl.innerText = titleText;
+
+                document.getElementById('squad-members-list').innerHTML = html;
+                const btnSubmit = document.getElementById('btn-verify-squad-submit');
+                btnSubmit.innerText = btnText;
+                btnSubmit.onclick = () => verifySquadSubmit(matchId);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('squad-members-list').innerHTML = '<div style="text-align:center; padding: 20px; color:#ef4444;">Error loading squad.</div>';
+            }
+        }
+
+        async function verifySquadSubmit(matchId) {
+            const btn = document.getElementById('btn-verify-squad-submit');
+            btn.disabled = true;
+            btn.innerText = 'VERIFYING...';
+
+            try {
+                const res = await fetch(`<%= adminPrefix %>/api/verify-squad/${matchId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (res.ok) {
+                    document.getElementById('squad-verify-modal').style.display = 'none';
+                    loadRegistrations();
+                    loadQualificationMatches();
+                } else {
+                    const data = await res.json();
+                    alert(data.msg || 'Error verifying squad');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server error while verifying squad');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'VERIFY ALL MEMBERS';
+            }
+        }
+
+        async function submitCredentials(e) {
+            e.preventDefault();
+            const id = document.getElementById('modal-match-id').value;
+            const roomId = document.getElementById('modal-room-id').value;
+            const roomPassword = document.getElementById('modal-room-pass').value;
+
+            if (!id) return alert('No match selected');
+
+            const btn = e.target.querySelector('button');
+            const origText = btn.innerText;
+            btn.innerText = "DISPATCHING...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`<%= adminPrefix %>/api/registrations/${id}/credentials`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ roomId, roomPassword })
+                });
+
+                if (res.ok) {
+                    alert('Credentials sent successfully!');
+                    document.getElementById('creds-modal').style.display = 'none';
+                    loadRegistrations(); // reload registrations tab
+                } else {
+                    const data = await res.json();
+                    alert('Error: ' + data.msg);
+                }
+            } catch (err) {
+                alert('Failed to send credentials.');
+            } finally {
+                btn.innerText = origText;
+                btn.disabled = false;
+            }
+        }
+
         async function submitPotd(e) {
             e.preventDefault();
-            const playerId = document.getElementById('potd-blaze-id').value;
+            const playerId = document.getElementById('potd-player').value;
+            const playerName = document.getElementById('potd-name').value;
             const title = document.getElementById('potd-title').value;
-            const videoFile = document.getElementById('potd-video').files[0];
+            const videoFile = document.getElementById('potd-clip').files[0];
 
             if (!playerId || !videoFile) {
                 alert("Blaze ID and Video File are required!");
@@ -747,6 +1533,7 @@
 
             const formData = new FormData();
             formData.append('playerId', playerId);
+            if (playerName) formData.append('playerName', playerName);
             formData.append('title', title);
             formData.append('video', videoFile);
 
@@ -764,7 +1551,7 @@
                 const data = await response.json();
                 if (response.ok) {
                     alert('Player of the Day updated successfully!');
-                    document.getElementById('potd-upload-form').reset();
+                    document.getElementById('potd-form').reset();
                 } else {
                     alert('Error: ' + data.msg);
                 }
@@ -773,41 +1560,64 @@
                 alert('Upload failed. Please check the console.');
             } finally {
                 const btn = e.target.querySelector('button');
-                btn.innerText = "UPLOAD POTD VIDEO";
+                btn.innerText = "SET PLAYER OF THE DAY";
                 btn.disabled = false;
             }
         }
+
         async function fetchMatchDetails() {
             const matchId = document.getElementById('stat-match').value;
-            if(!matchId) return alert('Enter Match ID first');
-            
+            if (!matchId) return alert('Enter Match ID first');
+
             try {
-                const res = await fetch(`<%= adminPrefix %>/api/match/${matchId}`);
-                if(!res.ok) {
-                    alert('Match not found or error fetching details.');
+                const res = await fetch(`<%= adminPrefix %>/api/registration/match-id/${matchId}`);
+                
+                if (!res.ok) {
+                    alert('Match Registration not found.');
                     document.getElementById('match-details-panel').style.display = 'none';
-                    document.getElementById('stats-input-section').style.opacity = '0.5';
-                    document.getElementById('stats-input-section').style.pointerEvents = 'none';
                     return;
                 }
-                const match = await res.json();
                 
-                // Populate UI
-                document.getElementById('detail-series').innerText = match.seriesId ? `${match.seriesId.name} (Match #${match.matchNumber})` : 'Unknown Series';
-                document.getElementById('detail-format').innerText = match.format || 'SQUAD';
-                document.getElementById('detail-mode').innerText = match.mode || 'BR';
-                document.getElementById('detail-player').innerText = match.playerId ? (match.playerId.inGameName || match.playerId.username) : 'Unknown Player';
+                const data = await res.json();
+                const reg = data.registration;
+                const team = data.teamDetails || [];
+
+                document.getElementById('intel-format').innerText = `${reg.format} • ${reg.mode}`;
+                document.getElementById('intel-schedule').innerText = `${reg.startDate} @ ${reg.timeSlot}`;
+                document.getElementById('intel-room').innerHTML = reg.roomId ? `ID: <span style="color:#fff">${reg.roomId}</span> | Pass: <span style="color:#fff">${reg.roomPassword}</span>` : '<span style="color:var(--text-400)">Not Dispatched</span>';
+
+                const tbody = document.getElementById('intel-team-list');
+                tbody.innerHTML = '';
                 
-                const statusBadge = document.getElementById('detail-status');
-                statusBadge.innerText = match.status;
-                if(match.status === 'COMPLETED') { statusBadge.className = 'badge badge-approved'; }
-                else { statusBadge.className = 'badge badge-pending'; }
-                
+                if (team.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No player data fetched.</td></tr>`;
+                } else {
+                    team.forEach(u => {
+                        const isLeader = reg.userId && reg.userId._id === u._id;
+                        const leaderBadge = isLeader ? `<span style="background:var(--blaze-orange); color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:8px;">LEADER</span>` : '';
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <img src="${u.profilePic || '/public/blaze_avatar.png'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+                                        <span style="font-weight:600; color:#fff;">${u.username || 'Unknown'} ${leaderBadge}</span>
+                                    </div>
+                                </td>
+                                <td style="font-family:var(--font-mono); color:var(--text-300);">${u.playerId || '—'}</td>
+                                <td style="color:#fff;">${u.inGameName || '—'}</td>
+                                <td><span style="color:#5865F2; font-family:var(--font-mono);">${u.discordId || '—'}</span></td>
+                                <td style="text-align:right;">
+                                    <a href="<%= adminPrefix %>/player/${u.playerId}" target="_blank" class="btn-sm btn-outline" style="text-decoration:none; display:inline-block; border-color:var(--cyan); color:var(--cyan);">VIEW PROFILE</a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
                 document.getElementById('match-details-panel').style.display = 'block';
-                document.getElementById('stats-input-section').style.opacity = '1';
-                document.getElementById('stats-input-section').style.pointerEvents = 'auto';
-                
-            } catch(e) {
+
+            } catch (e) {
                 console.error(e);
             }
         }
@@ -821,16 +1631,16 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ kills, survivalTimeMinutes: survival, placement })
             });
-            if(res.ok) { alert('Stats submitted successfully!'); }
+            if (res.ok) { alert('Stats submitted successfully!'); }
         }
 
         async function banUser(userId) {
-            if(!confirm('CONFIRM BAN: This will permanently delete the user and migrate them to the Banned Database. Proceed?')) return;
+            if (!confirm('CONFIRM BAN: This will permanently delete the user and migrate them to the Banned Database. Proceed?')) return;
             const res = await fetch(`<%= adminPrefix %>/api/ban/${userId}`, { method: 'POST' });
-            if(res.ok) { 
-                alert('Operator Terminated.'); 
-                loadUsers(); 
-                loadBannedUsers(); 
+            if (res.ok) {
+                alert('Operator Terminated.');
+                loadUsers();
+                loadBannedUsers();
             } else {
                 const text = await res.text();
                 alert('Failed to ban user. Server says: ' + text);
@@ -839,7 +1649,7 @@
 
         async function toggleVerifyUser(userId) {
             const res = await fetch(`<%= adminPrefix %>/api/users/${userId}/verify`, { method: 'PUT' });
-            if(res.ok) { loadUsers(); }
+            if (res.ok) { loadUsers(); }
         }
 
         async function updateRegistration(id, status) {
@@ -848,7 +1658,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status })
             });
-            if(res.ok) { loadRegistrations(); }
+            if (res.ok) { loadRegistrations(); }
         }
 
         async function verifyPlayer(id) {
@@ -857,9 +1667,9 @@
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' }
             });
-            if(res.ok) { 
+            if (res.ok) {
                 alert('Player verified successfully!');
-                loadRegistrations(); 
+                loadRegistrations();
             } else {
                 const data = await res.json();
                 alert(data.msg || 'Error verifying player');
@@ -869,14 +1679,14 @@
         async function deleteRegistration(id) {
             const reason = prompt('Are you sure you want to completely delete this registration? \n\nPlease enter the reason for rejection/deletion (this will be emailed to the user):');
             if (reason === null) return; // User cancelled
-            
+
             const res = await fetch(`<%= adminPrefix %>/api/registrations/${id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reason: reason || 'No reason provided.' })
             });
-            if(res.ok) { 
-                loadRegistrations(); 
+            if (res.ok) {
+                loadRegistrations();
                 loadSeasonRegistrations();
             }
         }
@@ -891,11 +1701,11 @@
             const title = document.getElementById('news-title').value;
             const tag = document.getElementById('news-tag').value;
             const tagClass = document.getElementById('news-tagClass').value;
-            if(!title) return alert('Title required');
+            if (!title) return alert('Title required');
             const res = await fetch('<%= adminPrefix %>/api/news', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, tag, tagClass })
             });
-            if(res.ok) { alert('Intel Transmitted!'); document.getElementById('news-title').value = ''; }
+            if (res.ok) { alert('Intel Transmitted!'); document.getElementById('news-title').value = ''; }
         }
 
         async function submitPOTD(e) {
@@ -922,7 +1732,7 @@
                     method: 'POST',
                     body: formData
                 });
-                if(res.ok) {
+                if (res.ok) {
                     alert('Player of the Day Updated!');
                     e.target.reset();
                 } else {
@@ -942,10 +1752,10 @@
             const list = document.getElementById('clip-list');
             try {
                 const res = await fetch('<%= adminPrefix %>/api/clip-submissions', { cache: 'no-store' });
-                if(!res.ok) return list.innerHTML = '<div style="color:#ef4444;">Failed to load clips.</div>';
+                if (!res.ok) return list.innerHTML = '<div style="color:#ef4444;">Failed to load clips.</div>';
                 const clips = await res.json();
-                if(clips.length === 0) return list.innerHTML = '<div style="color:var(--text-muted);">No pending clip submissions.</div>';
-                
+                if (clips.length === 0) return list.innerHTML = '<div style="color:var(--text-muted);">No pending clip submissions.</div>';
+
                 list.innerHTML = clips.map(c => `
                     <div class="glass-card" style="padding:0; overflow:hidden;">
                         <video src="${c.videoUrl}" controls style="width:100%; height:200px; background:#000;"></video>
@@ -959,25 +1769,25 @@
                         </div>
                     </div>
                 `).join('');
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
 
         async function approveClip(id) {
-            if(!confirm('Approve this clip? This will publish it to the dashboard and instantly award 50 BlazeCoins.')) return;
+            if (!confirm('Approve this clip? This will publish it to the dashboard and instantly award 50 BlazeCoins.')) return;
             const res = await fetch(`<%= adminPrefix %>/api/clip-submissions/${id}/approve`, { method: 'POST' });
-            if(res.ok) { 
-                alert('Clip Approved & Rewarded!'); 
-                loadClips(); 
+            if (res.ok) {
+                alert('Clip Approved & Rewarded!');
+                loadClips();
             } else {
                 alert('Error: ' + await res.text());
             }
         }
 
         async function rejectClip(id) {
-            if(!confirm('Reject this clip?')) return;
+            if (!confirm('Reject this clip?')) return;
             const res = await fetch(`<%= adminPrefix %>/api/clip-submissions/${id}/reject`, { method: 'POST' });
-            if(res.ok) { 
-                loadClips(); 
+            if (res.ok) {
+                loadClips();
             } else {
                 alert('Error: ' + await res.text());
             }
@@ -997,4 +1807,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -24,8 +24,8 @@
         .form-body { padding: 40px; }
 
         /* Step Architecture */
-        .step-block { margin-bottom: 40px; position: relative; }
-        .step-block:last-child { margin-bottom: 0; }
+        .step-block { margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; }
+        .step-block:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
         .step-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
         .step-num { 
             color: var(--blaze-orange); font-family: var(--font-mono); font-weight: 600; 
@@ -133,10 +133,17 @@
 
         @media (max-width: 600px) {
             .page-wrap { padding: 90px 12px 40px; }
-            .fc-header, .form-body, .submit-wrapper, .success-overlay { padding: 24px; }
-            .input-group > div { flex-direction: column; }
-            .dc-btn { text-align: center; }
-            .opt-grid { grid-template-columns: 1fr; }
+            .fc-header, .form-body, .submit-wrapper, .success-overlay { padding: 20px; }
+            
+            .discord-box { flex-direction: column; text-align: center; padding: 20px 16px; gap: 16px; }
+            .discord-box .dc-info { width: 100%; }
+            .dc-btn { width: 100%; display: block; box-sizing: border-box; }
+            .input-group > div { flex-direction: column; gap: 12px; }
+            
+            .opt-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            #skills-grid { grid-template-columns: repeat(2, 1fr); }
+            .opt-btn { padding: 12px 6px; font-size: 0.8rem; text-align: center; align-items: center; }
+            .opt-btn span { font-size: 0.65rem; text-align: center; }
         }
     </style>
 </head>
@@ -253,7 +260,7 @@
         </div>
     </div>
 
-    <script src="/script.js"></script>
+    <script src="/script.js?v=1.2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('blaze_token');
@@ -418,16 +425,17 @@
 
             // Date logic setup
             const setupDateLimits = () => {
-                const today = new Date();
-                const todayStr = today.toISOString().split('T')[0];
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
                 
                 const nextWeek = new Date();
-                nextWeek.setDate(today.getDate() + 7);
+                nextWeek.setDate(tomorrow.getDate() + 7);
                 const nextWeekStr = nextWeek.toISOString().split('T')[0];
                 
                 const el = document.getElementById('selected-date');
                 if(el) {
-                    el.setAttribute('min', todayStr);
+                    el.setAttribute('min', tomorrowStr);
                     el.setAttribute('max', nextWeekStr);
                 }
             };

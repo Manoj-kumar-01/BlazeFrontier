@@ -41,25 +41,25 @@ app.use('/api/', apiLimiter);
 // View Engine
 app.set('view engine', 'ejs');
 
-// Log all incoming requests for debugging
-app.use((req, res, next) => {
-    console.log(`[REQ] ${req.method} ${req.url}`);
-    next();
-});
+
 
 // Initialize Discord Bot
-require('./discordBot');
+if (process.env.NODE_ENV !== 'test') {
+    require('./discordBot');
+}
 
 // Routes
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
 const adminApiRoutes = require('./routes/admin');
+const matchmakingRoutes = require('./routes/matchmaking');
 
 const ipWhitelist = require('./middleware/ipWhitelist');
 const adminPrefix = process.env.ADMIN_ROUTE_PREFIX || '/hidden-admin';
 
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
+app.use('/api/matchmaking', matchmakingRoutes);
 app.use(`${adminPrefix}/api`, ipWhitelist, adminApiRoutes);
 
 // Configure EJS View Engine
@@ -92,19 +92,59 @@ app.get('/dashboard/leaderboards', (req, res) => res.render('dashboard/leaderboa
 app.get('/dashboard/freefire', (req, res) => res.render('dashboard/freefire', { activePage: '/dashboard/freefire' }));
 app.get('/dashboard/content', (req, res) => res.render('dashboard/content', { activePage: '/dashboard/content' }));
 app.get(adminPrefix, ipWhitelist, (req, res) => res.render('admin/index', { adminPrefix, activePage: 'admin' }));
+app.get(`${adminPrefix}/player/:playerId`, ipWhitelist, (req, res) => res.render('admin/profile', { adminPrefix, activePage: 'admin', playerId: req.params.playerId }));
 app.get('/banned', (req, res) => res.render('onboarding/banned'));
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-.then(async () => {
-    console.log('MongoDB Connected to Blaze Frontier Cluster');
-    // Start Agenda Queue
-    const agenda = require('./utils/queue');
-    await agenda.start();
-    console.log('Agenda Job Queue Started successfully.');
-})
-.catch(err => console.log('MongoDB Connection Error:', err));
+const { ApolloServer } = require('@apollo/server');
+const { expressMiddleware } = require('@apollo/server/express4');
+const typeDefs = require('./graphql/typeDefs');
+const resolvers = require('./graphql/resolvers');
 
-const PORT = process.env.PORT || 5000;
+async function startBackend() {
+    // Initialize Apollo Server
+    const server = new ApolloServer({
+        typeDefs,
+        resolvers,
+    });
+    await server.start();
 
-app.listen(PORT, () => console.log(`Blaze Frontier Backend running on port ${PORT}`));
+    // Mount GraphQL endpoint with Context
+    const jwt = require('jsonwebtoken');
+    app.use('/graphql', expressMiddleware(server, {
+        context: async ({ req }) => {
+            const token = req.header('x-auth-token');
+            if (!token) return { user: null };
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                return { user: decoded };
+            } catch (err) {
+                return { user: null };
+            }
+        }
+    }));
+
+    // Connect to MongoDB
+    mongoose.connect(process.env.MONGO_URI)
+    .then(async () => {
+        console.log('MongoDB Connected to Blaze Frontier Cluster');
+        // Start Agenda Queue
+        const agenda = require('./utils/queue');
+        await agenda.start();
+        console.log('Agenda Job Queue Started successfully.');
+    })
+    .catch(err => console.log('MongoDB Connection Error:', err));
+
+    if (process.env.NODE_ENV !== 'test') {
+        const PORT = process.env.PORT || 5000;
+        app.listen(PORT, () => {
+            console.log(`Blaze Frontier Backend running on port ${PORT}`);
+            console.log(`GraphQL endpoint available at http://localhost:${PORT}/graphql`);
+        });
+    }
+}
+
+if (require.main === module) {
+    startBackend();
+}
+
+module.exports = { app, startBackend };

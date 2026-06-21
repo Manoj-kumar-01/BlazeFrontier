@@ -216,6 +216,20 @@
         }
         .view-link:hover { color: #fff; }
 
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+        .skeleton-text { height: 14px; width: 100%; margin-bottom: 8px; border-radius: 4px; }
+        .skeleton-title { height: 24px; width: 60%; margin-bottom: 12px; border-radius: 6px; }
+        .skeleton-val { height: 38px; width: 60px; display: inline-block; border-radius: 6px; }
+
         @media (max-width: 1100px) {
             .dash { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto auto; }
             .c-welcome { grid-column: 1 / -1; }
@@ -239,6 +253,12 @@
             
             .c-sidebar { flex-direction: column; }
             .cs-val { font-size: 1.8rem; }
+            
+            .qs-section { padding: 16px; }
+            .qs-header-container { grid-template-columns: 1fr; gap: 8px; text-align: center; }
+            .qs-title { justify-self: center; font-size: 1.4rem; text-align: center; }
+            .qs-subtitle { justify-self: center; text-align: center; }
+            .qs-view-all { justify-self: center; margin-top: 4px; }
         }
     </style>
 </head>
@@ -255,7 +275,7 @@
         </div>
 
         <!-- Featured Promo -->
-        <div class="c-featured">
+        <div class="c-featured" id="ff-promo-banner" style="display: flex;">
             <div class="cf-bg">🔥</div>
             <div class="cf-info">
                 <div class="cf-title">DOMINATE <span>THE ARENA</span></div>
@@ -264,28 +284,68 @@
             <a href="/dashboard/tournaments/register" class="cf-action">START REGISTRATION</a>
         </div>
 
+        <!-- Find A Squad Matchmaking -->
+        <div class="c-featured" id="ff-matchmaking-banner" style="display: none; background: linear-gradient(135deg, rgba(20,20,30,0.9), rgba(10,10,15,0.95)); border-color: rgba(0, 188, 212, 0.4);">
+            <div class="cf-bg" style="color: rgba(0, 188, 212, 0.1);">⚔️</div>
+            <div class="cf-info">
+                <div class="cf-title" style="color: #00bcd4;">FIND A <span>SQUAD</span> <span id="mm-daily-limit" style="font-size:0.8rem; color:var(--text-muted); margin-left:8px; vertical-align:middle;">(3/3 left)</span></div>
+                <div class="cf-sub">Wanna play a Room match but do not have an opponent Squad? Broadcast a request to find an opponent.<br><span style="color:var(--text-muted);font-size:0.75rem;">(Costs 20 BlazeCoins if someone accepts. 30s timeout.)</span></div>
+            </div>
+            <button id="find-squad-btn" class="cf-action" style="background: #00bcd4; box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3);">FIND A SQUAD</button>
+            
+            <div id="ff-mm-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 10; flex-direction: column; justify-content: center; align-items: center; cursor: not-allowed;" title="Not available to find">
+                <div id="ff-mm-overlay-text" style="color: #ef4444; font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">COOLDOWN</div>
+                <div id="ff-mm-overlay-sub" style="color: #fff; font-family: var(--font-mono); font-size: 1.2rem; font-weight: bold; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">--:--</div>
+            </div>
+        </div>
+
+        <script>
+            (function() {
+                try {
+                    const cached = localStorage.getItem('blaze_profile_cache');
+                    if (cached) {
+                        const u = JSON.parse(cached);
+                        if (u.isGenuine) {
+                            const promo = document.getElementById('ff-promo-banner');
+                            if (promo) promo.style.display = 'none';
+                            const mm = document.getElementById('ff-matchmaking-banner');
+                            if (mm) mm.style.display = 'flex';
+                            
+                            // The elements below might not be parsed yet, wait for DOM
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const qs = document.getElementById('ff-qs-section');
+                                if (qs) qs.style.display = 'none';
+                                const tc = document.getElementById('ff-trusted-section');
+                                if (tc) tc.style.display = 'block';
+                            });
+                        }
+                    }
+                } catch(e) {}
+            })();
+        </script>
+
         <!-- Stats row -->
         <div class="card c-stat">
             <div class="cs-label">Active Players</div>
-            <div class="cs-val" id="ff-stat-operators">...</div>
+            <div class="cs-val" id="ff-stat-operators"><div class="skeleton skeleton-val"></div></div>
             <div class="cs-sub">Global players</div>
         </div>
         <div class="card c-stat">
             <div class="cs-label">Participated Tourneys</div>
-            <div class="cs-val" style="color:#22c55e" id="ff-stat-participated">...</div>
+            <div class="cs-val" style="color:#22c55e" id="ff-stat-participated"><div class="skeleton skeleton-val"></div></div>
             <div class="cs-sub">Your lifetime entries</div>
         </div>
         <div class="card c-stat">
             <div class="cs-label">Active Tourneys</div>
-            <div class="cs-val" id="ff-stat-tourneys">...</div>
+            <div class="cs-val" id="ff-stat-tourneys"><div class="skeleton skeleton-val"></div></div>
             <div class="cs-sub">Open for registration</div>
         </div>
 
         <!-- Main Content -->
         <div class="c-main">
             <div class="grid-1">
-                <!-- Active Tournaments -->
-                <div class="qs-section">
+                <!-- Active Tournaments (Qualification Series) -->
+                <div class="qs-section" id="ff-qs-section">
                     <div class="qs-header-container">
                         <div class="qs-title">Qualification Series</div>
                         <div class="qs-subtitle">Play to unlock Elite Tournaments</div>
@@ -293,7 +353,36 @@
                     </div>
                     
                     <div id="ff-tourneys-container">
-                        <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">Loading matches...</div>
+                        <div class="pro-match-card">
+                            <div class="pmc-header" style="border:none; margin-bottom:0; padding-bottom:0;">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-val" style="height:24px; width:80px; border-radius:6px;"></div>
+                            </div>
+                            <div class="pmc-grid" style="margin-top:16px;">
+                                <div class="skeleton skeleton-text"></div>
+                                <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                                <div class="skeleton skeleton-text" style="width: 90%;"></div>
+                                <div class="skeleton skeleton-text" style="width: 70%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Elite Member Section (Replaces QS for Trusted Players) -->
+                <div class="qs-section" id="ff-trusted-section" style="display: none; background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(10,10,15,0.95) 100%); border-color: rgba(212, 175, 55, 0.3); box-shadow: 0 8px 32px rgba(212, 175, 55, 0.05);">
+                    <div class="qs-header-container">
+                        <div class="qs-title" style="color: #d4af37; text-shadow: 0 0 10px rgba(212,175,55,0.3);">ELITE CIRCUIT UNLOCKED</div>
+                        <div class="qs-subtitle" style="color: #fef08a;">Trusted Player Perks Active</div>
+                        <a href="/dashboard/tournaments" class="qs-view-all" style="border-color: rgba(212, 175, 55, 0.3); color: #d4af37; background: rgba(212,175,55,0.05);">ENTER TOURNAMENTS <span>→</span></a>
+                    </div>
+                    <div class="pro-match-card" style="border-color: rgba(212, 175, 55, 0.2); background: rgba(0,0,0,0.4); overflow: visible;">
+                        <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+                            <div style="font-size: 4rem; text-shadow: 0 0 30px rgba(212, 175, 55, 0.6); animation: pulse 2s infinite;">🌟</div>
+                            <div style="flex: 1; min-width: 250px;">
+                                <h3 style="color: #fff; font-family: var(--font-display); font-size: 1.8rem; letter-spacing: 1px; margin-bottom: 8px;">Access Granted: Pro Scrims & Major Operations</h3>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem; line-height: 1.6;">Your operational skills have been verified by Command. You now have unrestricted access to all major platform tournaments, premium reward pools, and the Seasons Hub.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -308,39 +397,31 @@
                     <span style="font-size: 0.65rem; color: var(--blaze-orange); background: rgba(255,87,34,0.1); padding: 3px 6px; border-radius: 4px;">DAILY REWARDS</span>
                 </div>
                 <div id="top-clips-container">
-                    <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">Loading top clips...</div>
+                    <div class="clip-item">
+                        <div class="skeleton" style="width:32px; height:32px; border-radius:50%; flex-shrink:0;"></div>
+                        <div class="ci-info" style="width:100%;">
+                            <div class="skeleton skeleton-text" style="height:14px; margin-bottom:6px; width:80%;"></div>
+                            <div class="skeleton skeleton-text" style="height:10px; margin-bottom:0; width:50%;"></div>
+                        </div>
+                    </div>
+                    <div class="clip-item">
+                        <div class="skeleton" style="width:32px; height:32px; border-radius:50%; flex-shrink:0;"></div>
+                        <div class="ci-info" style="width:100%;">
+                            <div class="skeleton skeleton-text" style="height:14px; margin-bottom:6px; width:70%;"></div>
+                            <div class="skeleton skeleton-text" style="height:10px; margin-bottom:0; width:60%;"></div>
+                        </div>
+                    </div>
                 </div>
                 <a href="#" class="view-link" onclick="event.preventDefault(); document.getElementById('clip-submit-modal').style.display='flex';">SUBMIT YOUR CLIP</a>
             </div>
 
-            <!-- Clip Submission Modal -->
-            <div id="clip-submit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center;">
-                <div style="background:#111116; border:1px solid rgba(255,87,34,0.3); border-radius:12px; padding:30px; width: 90%; max-width:450px; box-shadow:0 10px 40px rgba(0,0,0,0.5); position:relative;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                        <h2 style="font-family:var(--font-display); color:#fff; font-size:1.5rem; letter-spacing:1px; margin:0;">SUBMIT CLIP</h2>
-                        <button onclick="document.getElementById('clip-submit-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">×</button>
-                    </div>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Submit your best 5-10s clip! Top 3 clips will be featured and awarded <span style="color:var(--blaze-orange); font-weight:bold;">50 BlazeCoins</span>. (Limit 1 submission per day)</p>
-                    <form id="clip-submit-form">
-                        <div style="margin-bottom: 15px;">
-                            <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Highlight Title</label>
-                            <input type="text" id="cs-title" required style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;" placeholder="e.g., Insane 1v4 Clutch">
-                        </div>
-                        <div style="margin-bottom: 20px;">
-                            <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Video File (MP4/WebM, Max 10s)</label>
-                            <input type="file" id="cs-file" required accept="video/mp4,video/webm" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;">
-                            <div id="cs-duration-error" style="color: #ef4444; font-size: 0.75rem; margin-top: 5px; display: none;">Video duration exceeds 10 seconds! Please select a shorter clip.</div>
-                        </div>
-                        <button type="submit" id="cs-submit-btn" style="width: 100%; background:var(--blaze-orange); color:#fff; border:none; padding:14px; border-radius:8px; font-weight:bold; cursor:pointer; transition:transform 0.2s;">SUBMIT CLIP FOR REVIEW</button>
-                    </form>
-                </div>
-            </div>
+
 
 
         </div>
     </div>
 
-    <script src="/script.js"></script>
+    <script src="/script.js?v=1.2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -357,6 +438,8 @@
 
             let isGenuine = false;
             let totalMatches = 0;
+            let blockedUntil = null;
+            let dailyCount = 0;
             try {
                 const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
                 if (profRes.status === 401) {
@@ -368,10 +451,27 @@
                     const prof = await profRes.json();
                     isGenuine = prof.isGenuine === true;
                     totalMatches = prof.totalMatches || 0;
+                    blockedUntil = prof.matchmakingBlockedUntil;
+                    dailyCount = prof.matchmakingDailyCount || 0;
                 }
             } catch(e) {}
 
             document.getElementById('ff-stat-participated').innerText = totalMatches;
+            
+            const reqsLeft = Math.max(0, 3 - dailyCount);
+            const limitSpan = document.getElementById('mm-daily-limit');
+            if (limitSpan) limitSpan.innerText = `(${reqsLeft}/3 Left)`;
+
+            if (dailyCount >= 3) {
+                const overlay = document.getElementById('ff-mm-overlay');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    document.getElementById('ff-mm-overlay-text').innerText = 'DAILY LIMIT REACHED';
+                    document.getElementById('ff-mm-overlay-sub').innerText = '0/3 left. Come back tomorrow!';
+                }
+            } else if (blockedUntil && new Date() < new Date(blockedUntil)) {
+                startCooldownTimer(new Date(blockedUntil));
+            }
 
             // Fetch dynamic HUB stats
             try {
@@ -401,8 +501,20 @@
                     const tData = await tRes.json();
                     let html = '';
                     
-                    const activeReq = tData.requests && tData.requests.find(r => r.status === 'Approved' || r.status === 'Pending');
+                    const activeReq = tData.requests && tData.requests.find(r => r.status === 'Approved' || r.status === 'Pending' || r.status === 'Awaiting Verification');
                     
+                    const promoBanner = document.getElementById('ff-promo-banner');
+                    const matchBanner = document.getElementById('ff-matchmaking-banner');
+                    if (promoBanner) {
+                        if (activeReq || isGenuine) {
+                            promoBanner.style.display = 'none';
+                            if (matchBanner) matchBanner.style.display = 'flex';
+                        } else {
+                            promoBanner.style.display = 'flex';
+                            if (matchBanner) matchBanner.style.display = 'none';
+                        }
+                    }
+
                     if (activeReq) {
                         const formatStr = activeReq.format ? activeReq.format.toUpperCase() : 'UNKNOWN';
                         const modeStr = activeReq.mode ? activeReq.mode.toUpperCase() : 'UNKNOWN';
@@ -456,15 +568,31 @@
                                 </div>
                                 `;
                             } else {
-                                html += `
-                                <div class="pmc-alert">
-                                    <span style="font-size: 1.2rem;">🛡️</span>
-                                    <div>
-                                        <strong style="color: #00bcd4; display:block; margin-bottom:2px;">Match Credentials</strong>
-                                        Room ID & Password will be shared 10 mins prior.
+                                if (activeReq.roomId) {
+                                    html += `
+                                    <div class="pmc-alert" style="background: rgba(0, 188, 212, 0.1); border-color: rgba(0, 188, 212, 0.3);">
+                                        <span style="font-size: 1.2rem;">🔑</span>
+                                        <div style="width: 100%;">
+                                            <strong style="color: #00bcd4; display:block; margin-bottom:6px; font-size:1.1rem;">Match Credentials Available!</strong>
+                                            <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 6px; border-left: 3px solid #00bcd4;">
+                                                <div style="color: var(--text-200); font-family: var(--font-mono); font-size: 1.1rem; margin-bottom: 4px;"><strong>Room ID:</strong> <span style="color:#fff;">${activeReq.roomId}</span></div>
+                                                <div style="color: var(--text-200); font-family: var(--font-mono); font-size: 1.1rem;"><strong>Password:</strong> <span style="color:#fff;">${activeReq.roomPassword}</span></div>
+                                            </div>
+                                            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;">Ensure you join before the match start time!</div>
+                                        </div>
                                     </div>
-                                </div>
-                                `;
+                                    `;
+                                } else {
+                                    html += `
+                                    <div class="pmc-alert">
+                                        <span style="font-size: 1.2rem;">🛡️</span>
+                                        <div>
+                                            <strong style="color: #00bcd4; display:block; margin-bottom:2px;">Match Credentials</strong>
+                                            Room ID & Password will be shared 10 mins prior.
+                                        </div>
+                                    </div>
+                                    `;
+                                }
                             }
 
                             html += `</div>`;
@@ -507,6 +635,19 @@
                 viewAllQsBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
                     document.getElementById('qs-side-panel').style.right = '0';
+                    document.getElementById('qs-panel-content').innerHTML = `
+            <div style="background: rgba(255,255,255,0.02); border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div class="skeleton skeleton-title" style="height:20px; width:50%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:80%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:70%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:60%;"></div>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div class="skeleton skeleton-title" style="height:20px; width:40%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:75%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:65%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:55%;"></div>
+            </div>`;
                     
                     try {
                         const token = localStorage.getItem('blaze_token');
@@ -707,7 +848,18 @@
             <button id="close-qs-panel" onclick="document.getElementById('qs-side-panel').style.right = '-450px';" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-muted)'">&times;</button>
         </div>
         <div id="qs-panel-content" style="flex: 1; overflow-y: auto; padding: 20px;">
-            <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">Loading...</div>
+            <div style="background: rgba(255,255,255,0.02); border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div class="skeleton skeleton-title" style="height:20px; width:50%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:80%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:70%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:60%;"></div>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div class="skeleton skeleton-title" style="height:20px; width:40%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:75%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:65%;"></div>
+                <div class="skeleton skeleton-text" style="height:12px; width:55%;"></div>
+            </div>
         </div>
     </div>
     <style>
@@ -715,5 +867,351 @@
         #qs-panel-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         #qs-panel-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
     </style>
+    <!-- Clip Submission Modal -->
+    <div id="clip-submit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:#111116; border:1px solid rgba(255,87,34,0.3); border-radius:12px; padding:30px; width: 90%; max-width:450px; box-shadow:0 10px 40px rgba(0,0,0,0.5); position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <h2 style="font-family:var(--font-display); color:#fff; font-size:1.5rem; letter-spacing:1px; margin:0;">SUBMIT CLIP</h2>
+                <button onclick="document.getElementById('clip-submit-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">×</button>
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Submit your best 5-10s clip! Top 3 clips will be featured and awarded <span style="color:var(--blaze-orange); font-weight:bold;">50 BlazeCoins</span>. (Limit 1 submission per day)</p>
+            <form id="clip-submit-form">
+                <div style="margin-bottom: 15px;">
+                    <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Highlight Title</label>
+                    <input type="text" id="cs-title" required style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;" placeholder="e.g., Insane 1v4 Clutch">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Video File (MP4/WebM, Max 10s)</label>
+                    <input type="file" id="cs-file" required accept="video/mp4,video/webm" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;">
+                    <div id="cs-duration-error" style="color: #ef4444; font-size: 0.75rem; margin-top: 5px; display: none;">Video duration exceeds 10 seconds! Please select a shorter clip.</div>
+                </div>
+                <button type="submit" id="cs-submit-btn" style="width: 100%; background:var(--blaze-orange); color:#fff; border:none; padding:14px; border-radius:8px; font-weight:bold; cursor:pointer; transition:transform 0.2s;">SUBMIT CLIP FOR REVIEW</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Matchmaking Request Popup -->
+    <div id="mm-request-popup" style="display:none; position:fixed; bottom:-100px; right:20px; width:350px; background:linear-gradient(135deg, rgba(20,20,28,0.95), rgba(10,10,15,0.98)); border:1px solid #00bcd4; border-radius:12px; padding:20px; box-shadow:0 10px 40px rgba(0,188,212,0.3); z-index:9999; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="color:#00bcd4; font-family:var(--font-display); font-size:1.1rem;">SQUAD REQUEST</div>
+            <div id="mm-timer" style="color:#fff; font-family:var(--font-mono); font-size:1rem; font-weight:bold;">30s</div>
+        </div>
+        <p style="color:#fff; font-size:0.9rem; margin-bottom:15px; line-height:1.4;"><span id="mm-requester" style="font-weight:bold; color:var(--blaze-orange);">Blz-xxxxx</span> is requesting a squad room Match!</p>
+        <div style="display:flex; gap:10px;">
+            <button id="mm-accept-btn" style="flex:1; background:#22c55e; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">ACCEPT</button>
+            <button onclick="hideMmPopup()" style="flex:1; background:rgba(255,255,255,0.1); color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">DECLINE</button>
+        </div>
+    </div>
+
+    <!-- Matchmaking Chat Modal -->
+    <div id="mm-chat-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:99999; justify-content:center; align-items:center;">
+        <div style="background:#111116; border:1px solid #00bcd4; border-radius:12px; width: 90%; max-width:500px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+            <div style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; background:rgba(0,188,212,0.1);">
+                <div style="font-family:var(--font-display); color:#fff; font-size:1.3rem; letter-spacing:1px;">MATCH ROOM <span id="mm-chat-opponent" style="color:#00bcd4; font-size:0.9rem; margin-left:10px;">Opponent</span></div>
+                <button id="mm-leave-room-btn" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.8rem;">LEAVE</button>
+            </div>
+            
+            <div id="mm-chat-box" style="flex:1; height:300px; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:10px; background:rgba(0,0,0,0.3);">
+                <div style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Match confirmed! You may now share credentials. Chat is restricted to pre-defined phrases.</div>
+            </div>
+
+            <div style="padding:20px; background:rgba(255,255,255,0.02); border-top:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap;">
+                    <button class="mm-quick-msg" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; flex:1;">Who will create the room?</button>
+                    <button class="mm-quick-msg" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; flex:1;">I will create the room</button>
+                    <button class="mm-quick-msg" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; flex:1;">You create the room</button>
+                    <button class="mm-quick-msg" style="background:rgba(34,197,94,0.2); border:1px solid #22c55e; color:#22c55e; padding:8px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; flex:1;">Joined!</button>
+                </div>
+                
+                <div style="display:flex; gap:10px; align-items:flex-end;">
+                    <div style="flex:1;">
+                        <label style="color:var(--text-300); font-size:0.75rem; margin-bottom:4px; display:block;">Room ID (Max 10 digits)</label>
+                        <input type="text" id="mm-room-id" maxlength="10" pattern="\\d*" placeholder="0000000000" style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff; font-family:var(--font-mono);">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="color:var(--text-300); font-size:0.75rem; margin-bottom:4px; display:block;">Password (Max 10 digits)</label>
+                        <input type="text" id="mm-room-pass" maxlength="10" pattern="\\d*" placeholder="0000000000" style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff; font-family:var(--font-mono);">
+                    </div>
+                    <button id="mm-send-creds-btn" style="background:#00bcd4; color:#fff; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer;">SEND</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matchmaking Logic
+        let mmEventSource = null;
+        let currentRequestId = null;
+        let currentMatchId = null;
+        let mmTimerInterval = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('blaze_token');
+            if (!token) return;
+
+            // Establish SSE connection
+            mmEventSource = new EventSource(`/api/matchmaking/stream?token=${token}`);
+
+            mmEventSource.onmessage = (e) => {
+                const payload = JSON.parse(e.data);
+                
+                // Handle different events
+                if (e.type === 'incoming_request') {
+                    showMmPopup(payload.requestId, payload.requesterBlz);
+                } else if (e.type === 'request_cleared') {
+                    if (currentRequestId === payload.requestId) {
+                        hideMmPopup();
+                    }
+                } else if (e.type === 'request_expired') {
+                    // Only re-enable if there is no overlay
+                    const overlay = document.getElementById('ff-mm-overlay');
+                    const isBlocked = overlay && overlay.style.display === 'flex';
+                    
+                    if (!isBlocked) {
+                        alert(payload.msg);
+                        const findBtn = document.getElementById('find-squad-btn');
+                        if (findBtn) {
+                            findBtn.innerText = 'FIND A SQUAD';
+                            findBtn.disabled = false;
+                            findBtn.style.opacity = '1';
+                        }
+                    }
+                } else if (e.type === 'match_formed') {
+                    currentMatchId = payload.matchId;
+                    hideMmPopup();
+                    openChatModal(payload.opponent);
+                } else if (e.type === 'chat_message') {
+                    appendChatMessage(payload.sender, payload.type, payload.message);
+                } else if (e.type === 'chat_ended') {
+                    alert(payload.msg);
+                    closeChatModal();
+                }
+            };
+
+            // Custom event listeners for named events
+            const eventTypes = ['incoming_request', 'request_cleared', 'request_expired', 'match_formed', 'chat_message', 'chat_ended'];
+            eventTypes.forEach(type => {
+                mmEventSource.addEventListener(type, (e) => {
+                    mmEventSource.onmessage({ type: e.type, data: e.data });
+                });
+            });
+
+            // Find a Squad Button
+            document.getElementById('find-squad-btn').addEventListener('click', async () => {
+                if (!confirm('This will broadcast your request to all online players. 20 BlazeCoins will be deducted if someone accepts. Proceed?')) return;
+
+                const btn = document.getElementById('find-squad-btn');
+                btn.disabled = true;
+                btn.innerText = 'SEARCHING...';
+
+                try {
+                    const res = await fetch('/api/matchmaking/request', {
+                        method: 'POST',
+                        headers: { 'x-auth-token': token }
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                        if (res.status === 403 && data.msg.includes('recently played')) {
+                            // Already on cooldown, wait for timer
+                        } else if (res.status === 403 && data.msg.includes('Limit Reached')) {
+                            const overlay = document.getElementById('ff-mm-overlay');
+                            if (overlay) {
+                                overlay.style.display = 'flex';
+                                document.getElementById('ff-mm-overlay-text').innerText = 'DAILY LIMIT REACHED';
+                                document.getElementById('ff-mm-overlay-sub').innerText = '0/3 left. Come back tomorrow!';
+                            }
+                        } else {
+                            alert(data.msg);
+                            btn.disabled = false;
+                            btn.innerText = 'FIND A SQUAD';
+                        }
+                    } else {
+                        // Request sent successfully, decrement visually
+                        const limitSpan = document.getElementById('mm-daily-limit');
+                        if (limitSpan) {
+                            const match = limitSpan.innerText.match(/\d+/);
+                            if (match) {
+                                const currentLeft = parseInt(match[0]);
+                                if (currentLeft > 0) {
+                                    limitSpan.innerText = `(${currentLeft - 1}/3 Left)`;
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {
+                    console.error(e);
+                    btn.disabled = false;
+                    btn.innerText = 'FIND A SQUAD';
+                }
+            });
+
+            // Accept Match Button
+            document.getElementById('mm-accept-btn').addEventListener('click', async () => {
+                if (!currentRequestId) return;
+                try {
+                    const res = await fetch(`/api/matchmaking/accept/${currentRequestId}`, {
+                        method: 'POST',
+                        headers: { 'x-auth-token': token }
+                    });
+                    const data = await res.json();
+                    if (!res.ok) alert(data.msg);
+                } catch(e) { console.error(e); }
+            });
+
+            // Leave Room
+            document.getElementById('mm-leave-room-btn').addEventListener('click', async () => {
+                if (currentMatchId) {
+                    await fetch(`/api/matchmaking/leave/${currentMatchId}`, { method: 'POST', headers: { 'x-auth-token': token }});
+                }
+                closeChatModal();
+            });
+
+            // Send Quick Message
+            document.querySelectorAll('.mm-quick-msg').forEach(btn => {
+                btn.addEventListener('click', () => sendChat('predefined', btn.innerText));
+            });
+
+            // Send Credentials
+            document.getElementById('mm-send-creds-btn').addEventListener('click', () => {
+                const roomId = document.getElementById('mm-room-id').value;
+                const pass = document.getElementById('mm-room-pass').value;
+                if (!roomId || !pass) return alert('Enter both ID and Password');
+                sendChat('credentials', null, roomId, pass);
+                document.getElementById('mm-room-id').value = '';
+                document.getElementById('mm-room-pass').value = '';
+            });
+        });
+
+        function showMmPopup(reqId, blz) {
+            currentRequestId = reqId;
+            document.getElementById('mm-requester').innerText = blz;
+            const popup = document.getElementById('mm-request-popup');
+            popup.style.display = 'block';
+            setTimeout(() => popup.style.bottom = '20px', 10);
+            
+            const findBtn = document.getElementById('find-squad-btn');
+            if (findBtn) {
+                findBtn.disabled = true;
+                findBtn.style.opacity = '0.5';
+                findBtn.innerText = 'SEARCHING...';
+            }
+            
+            let timeLeft = 30;
+            document.getElementById('mm-timer').innerText = timeLeft + 's';
+            clearInterval(mmTimerInterval);
+            mmTimerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('mm-timer').innerText = timeLeft + 's';
+                if (timeLeft <= 0) {
+                    clearInterval(mmTimerInterval);
+                    hideMmPopup();
+                }
+            }, 1000);
+        }
+
+        function hideMmPopup() {
+            currentRequestId = null;
+            clearInterval(mmTimerInterval);
+            const popup = document.getElementById('mm-request-popup');
+            popup.style.bottom = '-200px';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 400);
+
+            const findBtn = document.getElementById('find-squad-btn');
+            if (findBtn) {
+                // If it was searching for ourselves, we don't restore it here, but request_expired/match_formed handles it.
+                // However, if we're just restoring from another person's request expiring/clearing:
+                if (findBtn.innerText === 'SEARCHING...') {
+                    findBtn.disabled = false;
+                    findBtn.style.opacity = '1';
+                    findBtn.innerText = 'FIND A SQUAD';
+                }
+            }
+        }
+
+        function openChatModal(opponent) {
+            document.getElementById('mm-chat-opponent').innerText = `vs ${opponent}`;
+            document.getElementById('mm-chat-box').innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Match confirmed! You may now share credentials. Chat is restricted to pre-defined phrases.</div>';
+            document.getElementById('mm-chat-modal').style.display = 'flex';
+            
+            // Cooldown starts for 30 minutes from now
+            startCooldownTimer(new Date(Date.now() + 30 * 60 * 1000));
+            
+            // Decrement visually
+            const limitSpan = document.getElementById('mm-daily-limit');
+            if (limitSpan) {
+                const match = limitSpan.innerText.match(/\d+/);
+                if (match) {
+                    const currentLeft = parseInt(match[0]);
+                    if (currentLeft > 0) {
+                        limitSpan.innerText = `(${currentLeft - 1}/3 Left)`;
+                    }
+                }
+            }
+        }
+        
+        let mmBlockInterval = null;
+        function startCooldownTimer(targetDate) {
+            const overlay = document.getElementById('ff-mm-overlay');
+            const sub = document.getElementById('ff-mm-overlay-sub');
+            const text = document.getElementById('ff-mm-overlay-text');
+            
+            if (overlay && sub && text) {
+                overlay.style.display = 'flex';
+                text.innerText = 'COOLDOWN';
+                
+                clearInterval(mmBlockInterval);
+                const updateTimer = () => {
+                    const diff = targetDate - new Date();
+                    if (diff <= 0) {
+                        clearInterval(mmBlockInterval);
+                        overlay.style.display = 'none';
+                    } else {
+                        const m = Math.floor(diff / 60000).toString().padStart(2, '0');
+                        const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                        sub.innerText = `${m}:${s}`;
+                    }
+                };
+                updateTimer();
+                mmBlockInterval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function closeChatModal() {
+            currentMatchId = null;
+            document.getElementById('mm-chat-modal').style.display = 'none';
+        }
+
+        async function sendChat(type, message = null, roomId = null, password = null) {
+            if (!currentMatchId) return;
+            const token = localStorage.getItem('blaze_token');
+            await fetch(`/api/matchmaking/chat/${currentMatchId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                body: JSON.stringify({ type, message, roomId, password })
+            });
+        }
+
+        function appendChatMessage(senderId, type, message) {
+            const box = document.getElementById('mm-chat-box');
+            const token = localStorage.getItem('blaze_token');
+            const myUserId = JSON.parse(atob(token.split('.')[1])).id; // Basic JWT decode
+            
+            const isMe = senderId === myUserId;
+            const align = isMe ? 'flex-end' : 'flex-start';
+            const bg = isMe ? 'rgba(0,188,212,0.2)' : 'rgba(255,255,255,0.05)';
+            const color = isMe ? '#00bcd4' : '#fff';
+            const border = isMe ? '1px solid rgba(0,188,212,0.4)' : '1px solid rgba(255,255,255,0.1)';
+
+            let html = `<div style="display:flex; flex-direction:column; align-items:${align}; margin-bottom:8px;">
+                <div style="background:${bg}; color:${color}; border:${border}; padding:10px 14px; border-radius:12px; font-size:0.85rem; max-width:80%; word-break:break-word;">
+                    ${message}
+                </div>
+            </div>`;
+            box.innerHTML += html;
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
 </body>
 </html>

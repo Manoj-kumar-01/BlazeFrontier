@@ -19,7 +19,7 @@
         initParallaxRings();
         initCardDepthHover();
         initDeepParallax();
-        initShowcaseTabs();
+        // initShowcaseTabs(); // Commented out to prevent JS crash (function undefined)
         initVideoSpeed();
         initMobile();
     }
@@ -523,7 +523,9 @@
 
         const navLinks = document.querySelectorAll('.nav-item');
         navLinks.forEach(link => {
-            link.addEventListener('click', closeMenu);
+            if (!link.classList.contains('notif-wrapper')) {
+                link.addEventListener('click', closeMenu);
+            }
         });
 
         const videoSource = document.querySelector('#hero-bg-video source');
@@ -533,12 +535,12 @@
             function updateVideoSource() {
                 if (window.innerWidth <= 768) {
                     if (!videoSource.src.includes('MobileBG')) {
-                        videoSource.src = 'public/MobileBG.mp4';
+                        videoSource.src = '../public/MobileBG.mp4';
                         video.load();
                     }
                 } else {
                     if (!videoSource.src.includes('DesktopBG')) {
-                        videoSource.src = 'public/DesktopBG.mp4';
+                        videoSource.src = '../public/DesktopBG.mp4';
                         video.load();
                     }
                 }

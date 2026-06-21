@@ -5,12 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IGNITE · Blaze Frontier</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/style.css">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --font-display: 'Bebas Neue', cursive;
@@ -29,7 +35,8 @@
             --text-muted: rgba(255, 255, 255, 0.25);
         }
 
-        body, html {
+        body,
+        html {
             background: var(--bg-body);
             font-family: var(--font-main);
             color: var(--text-primary);
@@ -41,7 +48,7 @@
         .pride-page {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 24px 32px 80px;
+            padding: 90px 32px 80px;
         }
 
         /* ═══════════════ TOP BAR ═══════════════ */
@@ -65,7 +72,10 @@
             align-items: center;
             gap: 8px;
         }
-        .return-link:hover { color: var(--red-light); }
+
+        .return-link:hover {
+            color: var(--red-light);
+        }
 
         .season-pill {
             display: flex;
@@ -83,15 +93,25 @@
         }
 
         .season-pill .dot {
-            width: 8px; height: 8px;
+            width: 8px;
+            height: 8px;
             background: var(--red-accent);
             border-radius: 50%;
             animation: pulse 1.8s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.4; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.15); }
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(0.9);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.15);
+            }
         }
 
         /* ═══════════════ HEADER ═══════════════ */
@@ -162,8 +182,15 @@
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(14px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ═══════════════ SECTION HEADER ═══════════════ */
@@ -238,8 +265,10 @@
         .card-visual::after {
             content: '';
             position: absolute;
-            top: 50%; left: 50%;
-            width: 200px; height: 200px;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
             background: radial-gradient(circle, rgba(198, 40, 40, 0.15) 0%, transparent 70%);
             transform: translate(-50%, -50%);
             pointer-events: none;
@@ -332,8 +361,13 @@
             letter-spacing: 1px;
         }
 
-        .stat .stat-value.red { color: var(--red-light); }
-        .stat .stat-value.white { color: var(--text-primary); }
+        .stat .stat-value.red {
+            color: var(--red-light);
+        }
+
+        .stat .stat-value.white {
+            color: var(--text-primary);
+        }
 
         /* ═══════════════ LEVELS VIEW ═══════════════ */
         .levels-wrapper {
@@ -399,8 +433,13 @@
             width: 100%;
         }
 
-        .timeline-item.right { justify-content: flex-end; }
-        .timeline-item.left { justify-content: flex-start; }
+        .timeline-item.right {
+            justify-content: flex-end;
+        }
+
+        .timeline-item.left {
+            justify-content: flex-start;
+        }
 
         .timeline-item.right .timeline-content {
             margin-left: 50%;
@@ -438,8 +477,13 @@
             background: var(--red-light);
         }
 
-        .timeline-dot.locked { border-color: var(--border); }
-        .timeline-dot.locked::after { background: var(--border); }
+        .timeline-dot.locked {
+            border-color: var(--border);
+        }
+
+        .timeline-dot.locked::after {
+            background: var(--border);
+        }
 
         .timeline-connector {
             position: absolute;
@@ -450,9 +494,17 @@
             z-index: 0;
         }
 
-        .timeline-item.right .timeline-connector { left: 50%; }
-        .timeline-item.left .timeline-connector { right: 50%; }
-        .timeline-item .locked-connector { background: var(--border); }
+        .timeline-item.right .timeline-connector {
+            left: 50%;
+        }
+
+        .timeline-item.left .timeline-connector {
+            right: 50%;
+        }
+
+        .timeline-item .locked-connector {
+            background: var(--border);
+        }
 
         .timeline-card {
             background: rgba(23, 23, 23, 0.8);
@@ -466,7 +518,9 @@
             width: 100%;
         }
 
-        .timeline-item.left .timeline-card { border-color: var(--border); }
+        .timeline-item.left .timeline-card {
+            border-color: var(--border);
+        }
 
         .timeline-card:hover {
             box-shadow: 0 0 20px rgba(198, 40, 40, 0.15);
@@ -481,7 +535,9 @@
             margin-bottom: 12px;
         }
 
-        .timeline-item.left .timeline-header { flex-direction: row-reverse; }
+        .timeline-item.left .timeline-header {
+            flex-direction: row-reverse;
+        }
 
         .timeline-stage {
             font-family: var(--font-display);
@@ -506,7 +562,7 @@
         }
 
         .timeline-badge.locked {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             color: var(--text-muted);
             border: 1px solid var(--border);
         }
@@ -517,8 +573,10 @@
             color: var(--text-secondary);
             margin-bottom: 8px;
         }
-        
-        .timeline-item.right .timeline-title { color: var(--text-primary); }
+
+        .timeline-item.right .timeline-title {
+            color: var(--text-primary);
+        }
 
         .timeline-desc {
             font-size: 0.9rem;
@@ -551,7 +609,10 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
-        .timeline-item.left .timeline-meta-value { color: var(--text-secondary); }
+
+        .timeline-item.left .timeline-meta-value {
+            color: var(--text-secondary);
+        }
 
         .back-row {
             text-align: center;
@@ -585,9 +646,24 @@
             border-radius: 12px;
         }
 
-        .empty-state .icon { font-size: 2.5rem; opacity: 0.15; margin-bottom: 12px; }
-        .empty-state h3 { font-family: var(--font-display); font-size: 1.6rem; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 4px; }
-        .empty-state p { font-size: 0.85rem; color: var(--text-muted); }
+        .empty-state .icon {
+            font-size: 2.5rem;
+            opacity: 0.15;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
 
         /* ═══════════════ REWARD TEXT ═══════════════ */
         .card-reward {
@@ -639,7 +715,7 @@
             font-size: 3rem;
             color: var(--text-primary);
             z-index: 10;
-            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
         }
 
         .locked-register-box {
@@ -685,8 +761,8 @@
         }
 
         .guild-cta {
-            background: linear-gradient(135deg, rgba(198,40,40,0.1) 0%, rgba(10,10,10,1) 100%);
-            border: 1px solid rgba(198,40,40,0.3);
+            background: linear-gradient(135deg, rgba(198, 40, 40, 0.1) 0%, rgba(10, 10, 10, 1) 100%);
+            border: 1px solid rgba(198, 40, 40, 0.3);
             border-radius: 12px;
             padding: 32px;
             text-align: center;
@@ -708,7 +784,8 @@
 
         .guild-link {
             display: inline-block;
-            background: #5865F2; /* Discord color */
+            background: #5865F2;
+            /* Discord color */
             color: #fff;
             text-decoration: none;
             padding: 12px 24px;
@@ -725,24 +802,69 @@
 
         /* ═══════════════ RESPONSIVE ═══════════════ */
         @media (max-width: 768px) {
-            .pride-page { padding: 16px 16px 60px; }
-            .page-header h1 { font-size: 3.5rem; }
-            .card-grid { grid-template-columns: 1fr; }
-            .tabs-row { overflow-x: auto; }
-            .tab-btn { padding: 12px 20px; font-size: 1.1rem; white-space: nowrap; }
-            .section-head h2 { font-size: 2rem; }
-            
-            .timeline-axis { left: 24px; }
-            .timeline-item.left, .timeline-item.right { justify-content: flex-start; }
-            .timeline-item.right .timeline-content, .timeline-item.left .timeline-content {
+            .pride-page {
+                padding: 16px 16px 60px;
+            }
+
+            .page-header h1 {
+                font-size: 3.5rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs-row {
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .tabs-row::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab-btn {
+                padding: 12px 20px;
+                font-size: 1.1rem;
+                white-space: nowrap;
+            }
+
+            .section-head h2 {
+                font-size: 2rem;
+            }
+
+            .timeline-axis {
+                left: 24px;
+            }
+
+            .timeline-item.left,
+            .timeline-item.right {
+                justify-content: flex-start;
+            }
+
+            .timeline-item.right .timeline-content,
+            .timeline-item.left .timeline-content {
                 margin-left: 48px;
                 width: calc(100% - 48px);
                 padding: 0;
                 text-align: left;
             }
-            .timeline-dot { left: 24px; }
-            .timeline-item.right .timeline-connector, .timeline-item.left .timeline-connector { left: 24px; width: 24px; right: auto; }
-            .timeline-item.left .timeline-header { flex-direction: row; }
+
+            .timeline-dot {
+                left: 24px;
+            }
+
+            .timeline-item.right .timeline-connector,
+            .timeline-item.left .timeline-connector {
+                left: 24px;
+                width: 24px;
+                right: auto;
+            }
+
+            .timeline-item.left .timeline-header {
+                flex-direction: row;
+            }
         }
     </style>
 </head>
@@ -756,21 +878,19 @@
 
     <div class="pride-page">
 
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <a href="/dashboard/seasons" class="return-link">
-                <i class="fas fa-arrow-left"></i> Return to Hub
-            </a>
-            <div class="season-pill">
-                <span class="dot"></span> Season Active
-            </div>
-        </div>
+        <!-- Top Bar removed per user request -->
 
         <!-- Page Header -->
         <div class="page-header">
-            <div class="overline">Season</div>
-            <h1>IGNITE <span style="font-size: 4rem;">🔥</span></h1>
-            <p class="desc">Your battleground awaits. Compete in live matches, track upcoming events, and review your completed operations.</p>
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap;">
+                <div class="overline"
+                    style="font-family: var(--font-display); letter-spacing: 1px; font-size: 3rem; margin-bottom: 0;">
+                    SEASON</div>
+                <img src="/public/ignite.webp" alt="IGNITE"
+                    style="height: 4.5rem; width: auto; display: block; filter: drop-shadow(0 0 15px rgba(255, 87, 34, 0.4)); transform: translateY(1.5px);">
+            </div>
+            <p class="desc">Your battleground awaits. Compete in live matches, track upcoming events, and review your
+                completed operations.</p>
         </div>
 
         <!-- Tabs -->
@@ -793,37 +913,49 @@
             <div class="card-grid">
                 <!-- Card 1: Shield Sniper -->
                 <div class="tourney-card" onclick="showLevels('Shield Sniper')">
-                    <div class="card-visual" style="background: url('/public/shield_sniper.png') center/cover no-repeat;">
+                    <div class="card-visual"
+                        style="background: url('/public/shield_sniper.png') center/cover no-repeat;">
                         <span class="badge live">Live</span>
                         <span class="badge game-name">Sniper Clash</span>
                     </div>
                     <div class="card-body">
                         <h3>Shield Sniper</h3>
-                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.</p>
+                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure
+                            your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks
+                            <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.
+                        </p>
                     </div>
                 </div>
 
                 <!-- Card 2: Inflammable UMP -->
                 <div class="tourney-card" onclick="showLevels('Inflammable UMP')">
-                    <div class="card-visual" style="background: url('/public/inflammable_ump.png') center/cover no-repeat;">
+                    <div class="card-visual"
+                        style="background: url('/public/inflammable_ump.png') center/cover no-repeat;">
                         <span class="badge live">Live</span>
                         <span class="badge game-name">Arena</span>
                     </div>
                     <div class="card-body">
                         <h3>Inflammable UMP <span class="headshot-badge">ONLY HEADSHOTS</span></h3>
-                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.</p>
+                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure
+                            your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks
+                            <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.
+                        </p>
                     </div>
                 </div>
 
                 <!-- Card 3: Sahara Desert -->
                 <div class="tourney-card" onclick="showLevels('Sahara Desert')">
-                    <div class="card-visual" style="background: url('/public/sahara_desert.png') center/cover no-repeat;">
+                    <div class="card-visual"
+                        style="background: url('/public/sahara_desert.png') center/cover no-repeat;">
                         <span class="badge live">Live</span>
                         <span class="badge game-name">Bounty</span>
                     </div>
                     <div class="card-body">
                         <h3>Sahara Desert <span class="headshot-badge">ONLY HEADSHOTS</span></h3>
-                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.</p>
+                        <p class="card-reward"><i class="fas fa-trophy"></i> Be the first to claim victory to secure
+                            your position in <span class="highlight">Team BLZ</span>. Only the 1st place winner unlocks
+                            <span class="highlight">500 BlazeCoins</span> and exclusive access to the Official Guild.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -890,11 +1022,13 @@
                     <p class="desc">Complete stages sequentially to unlock elite rewards.</p>
                 </div>
 
-                <div id="dynamic-registration-box" class="locked-register-box" style="margin-bottom: 30px; transition: all 0.3s ease;">
+                <div id="dynamic-registration-box" class="locked-register-box"
+                    style="margin-bottom: 30px; transition: all 0.3s ease;">
                     <div id="reg-status-icon"><i class="fas fa-spinner fa-spin"></i></div>
                     <h3 id="reg-status-title">Checking Eligibility...</h3>
                     <p id="reg-status-text">Verifying your operator status...</p>
-                    <button id="btn-season-register" class="btn-register locked" disabled onclick="registerForSeason()">Register Now</button>
+                    <button id="btn-season-register" class="btn-register locked" disabled
+                        onclick="registerForSeason()">Register Now</button>
                 </div>
 
                 <div class="timeline-container">
@@ -950,11 +1084,13 @@
                                     <div class="timeline-stage">LEVEL 3</div>
                                     <div class="timeline-badge locked">Locked</div>
                                 </div>
-                                <div class="timeline-title" style="color: var(--text-secondary);">Ghost Protocol (1v4)</div>
+                                <div class="timeline-title" style="color: var(--text-secondary);">Ghost Protocol (1v4)
+                                </div>
                                 <p class="timeline-desc">The ultimate test. 1v4 against Official Blaze Members.</p>
                                 <div class="timeline-meta">
                                     <span class="timeline-meta-label">Win Condition</span>
-                                    <span class="timeline-meta-value" style="color: var(--text-secondary);">Win minimum 5 out of 7 rounds</span>
+                                    <span class="timeline-meta-value" style="color: var(--text-secondary);">Win minimum
+                                        5 out of 7 rounds</span>
                                 </div>
                             </div>
                         </div>
@@ -1012,50 +1148,51 @@
         let currentMatchName = '';
         let isEligible = false;
 
-        async function fetchUserStatus() {
-            try {
-                const res = await fetch('/api/profile', {
-                    headers: { 'x-auth-token': token }
-                });
-                if(res.ok) {
-                    const user = await res.json();
-                    const box = document.getElementById('dynamic-registration-box');
-                    const icon = document.getElementById('reg-status-icon');
-                    const title = document.getElementById('reg-status-title');
-                    const text = document.getElementById('reg-status-text');
-                    const btn = document.getElementById('btn-season-register');
+        function applyUserStatus(user) {
+            const box = document.getElementById('dynamic-registration-box');
+            const icon = document.getElementById('reg-status-icon');
+            const title = document.getElementById('reg-status-title');
+            const text = document.getElementById('reg-status-text');
+            const btn = document.getElementById('btn-season-register');
 
-                    if(user.isGenuine && user.hasCompletedTwoSeries) {
-                        isEligible = true;
-                        box.style.filter = 'none';
-                        icon.innerHTML = '<i class="fas fa-unlock" style="color: #4ade80;"></i>';
-                        title.innerHTML = 'Registration Unlocked';
-                        title.style.color = '#4ade80';
-                        text.innerHTML = 'You are a verified operator. You may deploy into this match.';
-                        btn.classList.remove('locked');
-                        btn.disabled = false;
-                        btn.style.background = 'var(--accent)';
-                    } else {
-                        isEligible = false;
-                        icon.innerHTML = '<i class="fas fa-lock"></i>';
-                        title.innerHTML = 'Registration Locked';
-                        title.style.color = '';
-                        text.innerHTML = 'Complete the 2-series challenge to unlock the season. Status: <span style="color:var(--text-muted);">Unverified / Challenge Incomplete</span>';
-                        btn.classList.add('locked');
-                        btn.disabled = true;
-                        btn.style.background = '';
-                    }
-                }
-            } catch(e) { console.error(e); }
+            if (user.isGenuine && user.hasCompletedTwoSeries) {
+                isEligible = true;
+                box.style.filter = 'none';
+                icon.innerHTML = '<i class="fas fa-unlock" style="color: #4ade80;"></i>';
+                title.innerHTML = 'Registration Unlocked';
+                title.style.color = '#4ade80';
+                text.innerHTML = 'You are a verified operator. You may deploy into this match.';
+                btn.classList.remove('locked');
+                btn.disabled = false;
+                btn.style.background = 'var(--accent)';
+            } else {
+                isEligible = false;
+                icon.innerHTML = '<i class="fas fa-lock"></i>';
+                title.innerHTML = 'Registration Locked';
+                title.style.color = '';
+                text.innerHTML = 'Active members of the platform and those approved by the Admin will be allowed to play seasonal matches.';
+                btn.classList.add('locked');
+                btn.disabled = true;
+                btn.style.background = '';
+            }
         }
 
-        function showLevels(matchName) { 
-            if(matchName) currentMatchName = matchName;
-            switchPane('levels'); 
+        // Wait for navbar to fetch the global data
+        if (window.globalUserData) {
+            applyUserStatus(window.globalUserData);
+        } else {
+            window.addEventListener('globalUserDataReady', () => {
+                if (window.globalUserData) applyUserStatus(window.globalUserData);
+            });
+        }
+
+        function showLevels(matchName) {
+            if (matchName) currentMatchName = matchName;
+            switchPane('levels');
         }
 
         async function registerForSeason() {
-            if(!isEligible || !currentMatchName) return;
+            if (!isEligible || !currentMatchName) return;
             const btn = document.getElementById('btn-season-register');
             const originalText = btn.innerText;
             btn.innerText = 'Registering...';
@@ -1071,7 +1208,7 @@
                     body: JSON.stringify({ matchName: currentMatchName })
                 });
                 const data = await res.json();
-                if(res.ok) {
+                if (res.ok) {
                     alert('Registration Submitted successfully!');
                     btn.innerText = 'Registered';
                     btn.style.background = '#4ade80';
@@ -1080,7 +1217,7 @@
                     btn.innerText = originalText;
                     btn.disabled = false;
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 alert('Server error');
                 btn.innerText = originalText;
@@ -1088,8 +1225,6 @@
             }
         }
 
-        // Fetch on load
-        fetchUserStatus();
     </script>
 </body>
 

@@ -6,6 +6,9 @@ const PlayerOfTheDaySchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    playerName: {
+        type: String
+    },
     title: {
         type: String,
         required: true

@@ -83,6 +83,18 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    matchmakingBlockedUntil: {
+        type: Date,
+        default: null
+    },
+    matchmakingDailyCount: {
+        type: Number,
+        default: 0
+    },
+    matchmakingLastReset: {
+        type: Date,
+        default: Date.now
+    },
     createdAt: {
         type: Date,
         default: Date.now

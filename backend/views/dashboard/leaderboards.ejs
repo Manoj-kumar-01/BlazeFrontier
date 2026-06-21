@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <script src="/script.js"></script>
+    <script src="/script.js?v=1.2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('blaze_token');
@@ -180,7 +180,7 @@
                             </div>`;
                         }).join('');
                     } else {
-                        podEl.innerHTML = '<div style="text-align:center;width:100%;color:var(--text-muted)">No ranked players yet.</div>';
+                        podEl.innerHTML = '<div style="text-align:center; width:100%; padding: 40px 20px; background: rgba(30,30,35,0.4); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; margin: 20px 0;"><div style="font-size: 2.5rem; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3));">🏆</div><div style="font-family: var(--font-display); font-size: 1.8rem; letter-spacing: 1px; color: #fff; margin-bottom: 8px;">AWAITING CHAMPIONS</div><div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; max-width: 300px; margin: 0 auto;">Complete Seasonal matches to attain leaderboard ranking.</div></div>';
                     }
 
                     // Showcases
@@ -226,7 +226,7 @@
                         if (res.ok) {
                             const lb = await res.json();
                             if (lb.length === 0) {
-                                tbody.innerHTML = `<tr class="empty-row"><td colspan="4">No ranked players${region ? ' in ' + region : ''} yet.</td></tr>`;
+                                tbody.innerHTML = `<tr class="empty-row"><td colspan="5" style="text-align:center; padding: 60px 20px;"><div style="font-size: 2rem; margin-bottom: 12px; opacity: 0.8; filter: drop-shadow(0 0 8px rgba(255,100,100,0.3));">⚔️</div><div style="font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 1.5px; color: var(--text-primary); margin-bottom: 8px;">LEADERBOARD UNCHARTED</div><div style="font-size: 0.9rem; color: var(--text-muted);">Complete Seasonal matches to establish your dominance${region ? ' in ' + region : ''}.</div></td></tr>`;
                                 return;
                             }
                             tbody.innerHTML = lb.map(p => `

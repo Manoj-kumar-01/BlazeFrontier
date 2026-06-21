@@ -223,6 +223,20 @@ router.get('/profile', authMiddleware, async (req, res) => {
             updated = true;
         }
 
+        // Reset matchmaking daily limit if it's a new day
+        if (user.matchmakingLastReset) {
+            const lastReset = new Date(user.matchmakingLastReset);
+            if (lastReset.toDateString() !== now.toDateString()) {
+                user.matchmakingDailyCount = 0;
+                user.matchmakingLastReset = now;
+                updated = true;
+            }
+        } else {
+            user.matchmakingDailyCount = 0;
+            user.matchmakingLastReset = now;
+            updated = true;
+        }
+
         if (updated) {
             await user.save();
             const agenda = require('../utils/queue');
@@ -253,6 +267,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
         res.json({
             ...user._doc,
             blazeCoins: user.blazeCoins || 0,
+            matchmakingDailyCount: user.matchmakingDailyCount || 0,
             globalRankPercentile: percentile,
             rankText: `TOP ${percentile}% GLOBAL`,
             totalMatches: userMatches.length,
@@ -780,6 +795,8 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
                 discord: r.discord,
                 matchNumber: r.matchId || 'TBA',
                 timeSlot: r.timeSlot || 'TBA',
+                roomId: r.roomId,
+                roomPassword: r.roomPassword,
                 isTimeCompleted
             };
         });
@@ -1091,6 +1108,41 @@ router.post('/tournaments/register', authMiddleware, async (req, res) => {
     }
 });
 
+// @route   POST /api/tournaments/confirm-play
+// @desc    Submit user feedback on match completion
+router.post('/tournaments/confirm-play', authMiddleware, async (req, res) => {
+    try {
+        const { regId, played } = req.body;
+        const feedbackMap = { 'yes': 'Completed', 'no': 'Not Completed' };
+        const feedback = feedbackMap[played];
+        
+        if (!feedback) {
+            return res.status(400).json({ msg: 'Invalid feedback.' });
+        }
+
+        const Registration = require('../models/Registration');
+        const reg = await Registration.findById(regId);
+        
+        if (!reg) return res.status(404).json({ msg: 'Registration not found' });
+        
+        if (reg.userId.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'Unauthorized' });
+        }
+
+        if (reg.playerFeedback !== 'Pending') {
+            return res.status(400).json({ msg: 'Feedback already submitted.' });
+        }
+
+        reg.playerFeedback = feedback;
+        await reg.save();
+
+        res.json({ msg: 'Feedback submitted successfully.', reg });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // @route   GET /api/game/:gameId/overview
 // @desc    Get dynamic game overview stats
 router.get('/game/:gameId/overview', async (req, res) => {
@@ -1159,8 +1211,9 @@ router.get('/game/:gameId/leaderboard', async (req, res) => {
 // @desc    Get dynamic dashboard stats
 router.get('/dashboard/stats', async (req, res) => {
     try {
+        let payload = null;
         if (statsCache.data && (Date.now() - statsCache.lastFetched < CACHE_DURATION_MS)) {
-            return res.json(statsCache.data);
+            payload = { ...statsCache.data };
         }
 
         const User = require('../models/User');
@@ -1172,146 +1225,140 @@ router.get('/dashboard/stats', async (req, res) => {
         const Registration = require('../models/Registration');
         const mongoose = require('mongoose');
         
-        const activeCommanders = await User.countDocuments();
-        
-        const today = new Date();
-        // Adjust for local timezone to get the correct YYYY-MM-DD format
-        const tzOffset = today.getTimezoneOffset() * 60000;
-        const localISOTime = new Date(today.getTime() - tzOffset).toISOString().split('T')[0];
-        
-        const todaysRegs = await Registration.find({
-            startDate: localISOTime,
-            status: { $in: ['Pending', 'Approved'] }
-        });
-        
-        const uniqueSlots = new Set(todaysRegs.map(r => r.timeSlot).filter(Boolean));
-        const matchesToday = `${uniqueSlots.size} / 5`;
-        
-        const load = Math.floor(Math.random() * (85 - 45 + 1) + 45);
-        
-        // Network Stats
-        const activeTournaments = await Tournament.countDocuments({ status: 'ACTIVE' });
-        const totalBPAgg = await Match.aggregate([{ $match: { status: 'COMPLETED' } }, { $group: { _id: null, total: { $sum: "$blazePoints" } } }]);
-        const totalBP = totalBPAgg.length > 0 ? (totalBPAgg[0].total / 1000).toFixed(1) + 'K' : '0';
-        
-        const DailyContent = require('../models/DailyContent');
-        let dailyContentRecord = await DailyContent.findOne();
-        if (!dailyContentRecord) {
-            dailyContentRecord = {
-                title: 'Daily Showcase',
-                youtubeLink: 'https://www.youtube.com/embed/live_stream?channel=UCYOURCHANNELID',
-                facebookLink: 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379946729%2F&show_text=false'
-            };
-        }
-
-        const formattedSeries = [
-            {
-                id: 'main-broadcast',
-                game: 'DAILY HIGHLIGHTS',
-                name: dailyContentRecord.title,
-                status: 'NEW CONTENT',
-                isLive: true,
-                color: 'var(--blaze-orange)',
-                streamUrl: '/dashboard/content',
-                youtubeLink: dailyContentRecord.youtubeLink,
-                facebookLink: dailyContentRecord.facebookLink
+        if (!payload) {
+            const activeCommanders = await User.countDocuments();
+            
+            const today = new Date();
+            const tzOffset = today.getTimezoneOffset() * 60000;
+            const localISOTime = new Date(today.getTime() - tzOffset).toISOString().split('T')[0];
+            
+            const todaysRegs = await Registration.find({
+                startDate: localISOTime,
+                status: { $in: ['Pending', 'Approved'] }
+            });
+            
+            const uniqueSlots = new Set(todaysRegs.map(r => r.timeSlot).filter(Boolean));
+            const matchesToday = `${uniqueSlots.size} / 5`;
+            
+            const load = Math.floor(Math.random() * (85 - 45 + 1) + 45);
+            
+            const activeTournaments = await Tournament.countDocuments({ status: 'ACTIVE' });
+            const totalBPAgg = await Match.aggregate([{ $match: { status: 'COMPLETED' } }, { $group: { _id: null, total: { $sum: "$blazePoints" } } }]);
+            const totalBP = totalBPAgg.length > 0 ? (totalBPAgg[0].total / 1000).toFixed(1) + 'K' : '0';
+            
+            const DailyContent = require('../models/DailyContent');
+            let dailyContentRecord = await DailyContent.findOne();
+            if (!dailyContentRecord) {
+                dailyContentRecord = {
+                    title: 'Daily Showcase',
+                    youtubeLink: 'https://www.youtube.com/embed/live_stream?channel=UCYOURCHANNELID',
+                    facebookLink: 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379946729%2F&show_text=false'
+                };
             }
-        ];
-        const upcomingMatches = []; // Clear out upcoming matches, we don't need them if we pivot away from Live
-        
-        // News (Dynamic Platform Updates)
-        
-        // 1. Fetch recent registrations
-        const recentRegs = await Registration.find()
-            .populate('userId', 'inGameName username')
-            .sort({ createdAt: -1 })
-            .limit(3);
 
-        // 2. Fetch recently trusted players
-        const recentTrusted = await User.find({ isGenuine: true })
-            .sort({ createdAt: -1 }) // Ideally we'd sort by a trustedAt date, but createdAt works for now
-            .limit(2);
+            const formattedSeries = [
+                {
+                    id: 'main-broadcast',
+                    game: 'DAILY HIGHLIGHTS',
+                    name: dailyContentRecord.title,
+                    status: 'NEW CONTENT',
+                    isLive: true,
+                    color: 'var(--blaze-orange)',
+                    streamUrl: '/dashboard/content',
+                    youtubeLink: dailyContentRecord.youtubeLink,
+                    facebookLink: dailyContentRecord.facebookLink
+                }
+            ];
+            const upcomingMatches = [];
+            
+            const recentRegs = await Registration.find()
+                .populate('userId', 'inGameName username')
+                .sort({ createdAt: -1 })
+                .limit(3);
 
-        let dynamicNews = [];
+            const recentTrusted = await User.find({ isGenuine: true })
+                .sort({ createdAt: -1 })
+                .limit(2);
 
-        recentRegs.forEach(reg => {
-            const playerName = reg.userId ? (reg.userId.inGameName || reg.userId.username) : 'A player';
-            const action = reg.status === 'Approved' ? 'was APPROVED for' : 'REGISTERED for';
-            dynamicNews.push({
-                tag: 'EVENT',
-                tagClass: 'event',
-                title: `${playerName.toUpperCase()} ${action} the ${reg.format.toUpperCase()} ${reg.mode.toUpperCase()} Qualification Series!`,
-                date: new Date(reg.createdAt).toLocaleDateString(),
-                timestamp: new Date(reg.createdAt).getTime()
+            let dynamicNews = [];
+
+            recentRegs.forEach(reg => {
+                const playerName = reg.userId ? (reg.userId.inGameName || reg.userId.username) : 'A player';
+                const action = reg.status === 'Approved' ? 'was APPROVED for' : 'REGISTERED for';
+                dynamicNews.push({
+                    tag: 'EVENT',
+                    tagClass: 'event',
+                    title: `${playerName.toUpperCase()} ${action} the ${reg.format.toUpperCase()} ${reg.mode.toUpperCase()} Qualification Series!`,
+                    date: new Date(reg.createdAt).toLocaleDateString(),
+                    timestamp: new Date(reg.createdAt).getTime()
+                });
             });
-        });
 
-        recentTrusted.forEach(user => {
-            const playerName = user.inGameName || user.username;
-            dynamicNews.push({
-                tag: 'UPDATE',
-                tagClass: 'update',
-                title: `${playerName.toUpperCase()} just became a TRUSTED PLAYER of BlazeFrontier!`,
-                date: new Date(user.createdAt).toLocaleDateString(),
-                timestamp: new Date(user.createdAt).getTime()
+            recentTrusted.forEach(user => {
+                const playerName = user.inGameName || user.username;
+                dynamicNews.push({
+                    tag: 'UPDATE',
+                    tagClass: 'update',
+                    title: `${playerName.toUpperCase()} just became a TRUSTED PLAYER of BlazeFrontier!`,
+                    date: new Date(user.createdAt).toLocaleDateString(),
+                    timestamp: new Date(user.createdAt).getTime()
+                });
             });
-        });
 
-        // Add some actual News items if any exist
-        const dbNews = await News.find().sort({ createdAt: -1 }).limit(2);
-        dbNews.forEach(n => {
-            dynamicNews.push({
-                tag: n.tag || 'ANNOUNCE',
-                tagClass: n.tagClass || 'announce',
-                title: n.title,
-                date: n.date || new Date(n.createdAt).toLocaleDateString(),
-                timestamp: new Date(n.createdAt).getTime() || Date.now()
+            const dbNews = await News.find().sort({ createdAt: -1 }).limit(2);
+            dbNews.forEach(n => {
+                dynamicNews.push({
+                    tag: n.tag || 'ANNOUNCE',
+                    tagClass: n.tagClass || 'announce',
+                    title: n.title,
+                    date: n.date || new Date(n.createdAt).toLocaleDateString(),
+                    timestamp: new Date(n.createdAt).getTime() || Date.now()
+                });
             });
-        });
 
-        // Sort combined array by timestamp descending and take top 5
-        dynamicNews.sort((a, b) => b.timestamp - a.timestamp);
-        dynamicNews = dynamicNews.slice(0, 5);
+            dynamicNews.sort((a, b) => b.timestamp - a.timestamp);
+            dynamicNews = dynamicNews.slice(0, 5);
 
-        // Fetch Active Player of the Day
-        const potdRecord = await PlayerOfTheDay.findOne({ isActive: true }).populate('userId', 'inGameName username playerId').lean();
-        let potd = null;
-        if (potdRecord && potdRecord.userId) {
-            potd = {
-                videoUrl: potdRecord.videoUrl,
-                playerName: potdRecord.userId.inGameName || potdRecord.userId.username,
-                playerId: potdRecord.userId.playerId || 'N/A',
-                title: potdRecord.title
+            const potdRecord = await PlayerOfTheDay.findOne({ isActive: true }).populate('userId', 'inGameName username playerId').lean();
+            let potd = null;
+            if (potdRecord && potdRecord.userId) {
+                potd = {
+                    videoUrl: potdRecord.videoUrl,
+                    playerName: potdRecord.userId.inGameName || potdRecord.userId.username,
+                    playerId: potdRecord.userId.playerId || 'N/A',
+                    title: potdRecord.title
+                };
+            }
+            
+            payload = {
+                serverLoad: `${load}%`,
+                activeCommanders: activeCommanders.toLocaleString(),
+                matchesToday: matchesToday,
+                network: {
+                    activeTournaments: activeTournaments || 0,
+                    totalBCAwarded: totalBPAgg.length > 0 ? totalBP : '0',
+                    region: 'IN-SOUTH',
+                    latency: Math.floor(Math.random() * 15 + 15) + 'ms'
+                },
+                liveMatches: formattedSeries,
+                upcomingMatches: upcomingMatches,
+                news: dynamicNews,
+                potd: potd
             };
+
+            statsCache.data = payload;
+            statsCache.lastFetched = Date.now();
         }
+
+        // ALWAYS fetch top player fresh
+        const topPlayers = await User.find().sort({ blazeCoins: -1 }).limit(1).lean();
+        const topPlayer = topPlayers.length > 0 ? topPlayers[0] : null;
         
-        // Find Player of the Day (User with most BlazeCoins)
-        const topPlayer = await User.findOne({}).sort({ blazeCoins: -1 }).lean();
-        const topCommander = topPlayer ? {
+        payload.topCommander = topPlayer ? {
             name: (topPlayer.inGameName || topPlayer.username).toUpperCase(),
             id: topPlayer.playerId || 'N/A',
             coins: topPlayer.blazeCoins || 0
         } : null;
-
-        const payload = {
-            topCommander,
-            serverLoad: `${load}%`,
-            activeCommanders: activeCommanders.toLocaleString(),
-            matchesToday: matchesToday,
-            network: {
-                activeTournaments: activeTournaments || 0,
-                totalBCAwarded: totalBPAgg.length > 0 ? totalBP : '0',
-                region: 'IN-SOUTH',
-                latency: Math.floor(Math.random() * 15 + 15) + 'ms'
-            },
-            liveMatches: formattedSeries,
-            upcomingMatches: upcomingMatches,
-            news: dynamicNews,
-            potd: potd
-        };
-
-        statsCache.data = payload;
-        statsCache.lastFetched = Date.now();
 
         res.json(payload);
     } catch (err) {

@@ -344,14 +344,17 @@
             <!-- SIDEBAR -->
             <div class="profile-sidebar">
                 <!-- Header -->
-                <div class="profile-header" id="profile-header">
-                    <div style="position: relative; display: inline-block;">
-                        <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar" style="transition: all 0.3s ease; display: block;">
-                        <button onclick="openEditProfileModal()" style="position: absolute; bottom: 16px; right: 0; background: var(--blaze-orange); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <div class="profile-header" id="profile-header" style="position: relative; overflow: hidden;">
+                    <div id="ph-watermark" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                        <div style="font-family: var(--font-display); font-size: 6.5rem; color: rgba(255, 215, 0, 0.04); font-weight: 800; letter-spacing: 10px; white-space: nowrap; user-select: none; transform: translateY(-10px);">TRUSTED</div>
+                    </div>
+                    <div style="position: relative; display: inline-block; padding: 10px; z-index: 1;">
+                        <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar" style="transition: all 0.3s ease; display: block; position: relative; z-index: 1; margin: 0;">
+                        <button onclick="openEditProfileModal()" style="position: absolute; bottom: 6px; right: 6px; background: var(--blaze-orange); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.2s; z-index: 2;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                         </button>
                     </div>
-                    <div class="ph-info">
+                    <div class="ph-info" style="margin-top: 16px; position: relative; z-index: 1;">
                         <div
                             style="display:flex; align-items:center; gap: 12px; margin-bottom: 24px; justify-content:center;">
                             <div class="ph-name" id="ph-name" style="margin-bottom:0;">—</div>
@@ -470,7 +473,7 @@
                         <div class="dp-title" style="display:flex; justify-content:space-between; align-items:center;">
                             <span>EARN REWARDS</span>
                         </div>
-                        <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">First Login (100
+                        <div class="dp-item reward-item" id="first-login-container" style="align-items: center;"><span class="dp-key">First Login (100
                                 BC)</span><button id="first-login-btn" class="action-btn action-primary"
                                 style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
                         </div>
@@ -485,11 +488,6 @@
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="action-row" style="margin-top: 12px;">
-                    <a href="/dashboard/tournaments" class="action-btn action-primary">Browse Tournaments</a>
-                    <a href="/dashboard/leaderboards" class="action-btn action-ghost">VIEW LEADERBOARD</a>
-                </div>
             </div>
 
         </div>
@@ -522,7 +520,7 @@
         </div>
     </div>
 
-    <script src="/public/script.js"></script>
+    <script src="/script.js?v=1.2"></script>
     <script>
         function openEditProfileModal() {
             const modal = document.getElementById('editProfileModal');
@@ -603,16 +601,8 @@
                 const token = localStorage.getItem('blaze_token');
                 if (!token) { window.location.href = '/auth'; return; }
 
-                try {
-                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
-                    if (res.status === 401 || res.status === 404) {
-                        localStorage.removeItem('blaze_token');
-                        window.location.href = '/auth';
-                        return;
-                    }
-                    if (!res.ok) throw new Error();
-                    const u = await res.json();
-
+                // --- UI Rendering Function ---
+                const renderProfile = (u) => {
                     document.getElementById('ph-name').textContent = u.inGameName || u.username;
                     document.getElementById('ph-region').textContent = u.location || '—';
                     document.getElementById('ph-uid').textContent = u.gameUid || '—';
@@ -623,10 +613,11 @@
                     document.getElementById('st-bp').textContent = u.blazeCoins || 0;
                     document.getElementById('st-matches').textContent = u.totalMatches || 0;
                     document.getElementById('st-wins').textContent = u.tournamentsWon || 0;
-                    const pct = u.globalRankPercentile || 0;
-                    document.getElementById('rank-text').textContent = u.rankText || 'UNRANKED';
-                    document.getElementById('rank-icon').textContent = pct > 0 ? `TOP ${pct}%` : '#—';
-                    document.getElementById('rank-prog').style.width = `${100 - pct}%`;
+                    
+                    // Platform Ranking logic (Temp hardcoded to 0 until tournaments)
+                    document.getElementById('rank-text').textContent = 'Unranked';
+                    document.getElementById('rank-icon').textContent = '#0';
+                    document.getElementById('rank-prog').style.width = '0%';
 
                     document.getElementById('dp-user').textContent = u.username || '—';
                     document.getElementById('dp-ign').textContent = u.inGameName || '—';
@@ -639,132 +630,155 @@
                     if (u.isGenuine) {
                         document.getElementById('ph-avatar').style.borderColor = '#ffd700';
                         document.getElementById('ph-avatar').style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.4)';
-                        document.getElementById('ph-badge').innerHTML = '<span style="margin-right:4px;">★</span> TRUSTED PLAYER';
-                        document.getElementById('ph-badge').style.background = 'rgba(255, 215, 0, 0.1)';
-                        document.getElementById('ph-badge').style.color = '#ffd700';
-                        document.getElementById('ph-badge').style.border = '1px solid rgba(255, 215, 0, 0.3)';
+                        document.getElementById('ph-badge').style.display = 'none'; // Hide the badge
+                        document.getElementById('ph-watermark').style.display = 'block'; // Show watermark
+                        document.getElementById('dp-pid').style.color = '#ffd700'; // Make Blaze ID golden
+                        document.getElementById('dp-pid').style.textShadow = '0 0 8px rgba(255,215,0,0.3)';
                         document.getElementById('profile-header').style.background = 'linear-gradient(180deg, rgba(255, 215, 0, 0.15) 0%, #111116 100%)';
                     } else {
+                        document.getElementById('ph-badge').style.display = 'block';
                         document.getElementById('ph-badge').textContent = 'UNVERIFIED';
                         document.getElementById('ph-badge').style.background = 'rgba(255, 255, 255, 0.05)';
                         document.getElementById('ph-badge').style.color = 'var(--text-muted)';
                         document.getElementById('ph-badge').style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                        document.getElementById('ph-watermark').style.display = 'none';
+                        document.getElementById('dp-pid').style.color = '#fff';
+                        document.getElementById('dp-pid').style.textShadow = 'none';
                     }
 
-                    // Update rewards status
-                    const updateRewardsStatus = (userData) => {
-                        const firstBtn = document.getElementById('first-login-btn');
-                        const dailyBtn = document.getElementById('daily-login-btn');
-                        const trustedBtn = document.getElementById('trusted-player-btn');
-
-                        if (userData.firstLoginClaimed) {
-                            firstBtn.textContent = 'CLAIMED';
-                            firstBtn.disabled = true;
-                            firstBtn.style.background = 'rgba(255,255,255,0.05)';
-                            firstBtn.style.color = 'var(--text-muted)';
-                            firstBtn.style.cursor = 'not-allowed';
-                            firstBtn.style.boxShadow = 'none';
-                        } else {
-                            firstBtn.textContent = 'CLAIM';
-                            firstBtn.disabled = false;
-                            firstBtn.style.background = 'var(--blaze-orange)';
-                            firstBtn.style.color = '#fff';
-                            firstBtn.style.cursor = 'pointer';
-                        }
-
-                        if (!userData.isGenuine) {
-                            trustedBtn.textContent = 'NOT ELIGIBLE';
-                            trustedBtn.disabled = true;
-                            trustedBtn.style.background = 'rgba(255,255,255,0.05)';
-                            trustedBtn.style.color = 'var(--text-muted)';
-                            trustedBtn.style.cursor = 'not-allowed';
-                            trustedBtn.style.boxShadow = 'none';
-                        } else if (userData.trustedPlayerClaimed) {
-                            trustedBtn.textContent = 'CLAIMED';
-                            trustedBtn.disabled = true;
-                            trustedBtn.style.background = 'rgba(255,255,255,0.05)';
-                            trustedBtn.style.color = 'var(--text-muted)';
-                            trustedBtn.style.cursor = 'not-allowed';
-                            trustedBtn.style.boxShadow = 'none';
-                        } else {
-                            trustedBtn.textContent = 'CLAIM';
-                            trustedBtn.disabled = false;
-                            trustedBtn.style.background = 'var(--blaze-orange)';
-                            trustedBtn.style.color = '#fff';
-                            trustedBtn.style.cursor = 'pointer';
-                        }
-
-                        let canClaimDaily = false;
-                        if (!userData.lastLoginClaimDate) {
-                            canClaimDaily = true;
-                        } else {
-                            const lastClaim = new Date(userData.lastLoginClaimDate);
-                            const now = new Date();
-                            if (lastClaim.toDateString() !== now.toDateString()) {
-                                canClaimDaily = true;
-                            }
-                        }
-
-                        if (!canClaimDaily) {
-                            dailyBtn.textContent = 'CLAIMED';
-                            dailyBtn.disabled = true;
-                            dailyBtn.style.background = 'rgba(255,255,255,0.05)';
-                            dailyBtn.style.color = 'var(--text-muted)';
-                            dailyBtn.style.cursor = 'not-allowed';
-                            dailyBtn.style.boxShadow = 'none';
-                        } else {
-                            dailyBtn.textContent = 'CLAIM';
-                            dailyBtn.disabled = false;
-                            dailyBtn.style.background = 'var(--blaze-orange)';
-                            dailyBtn.style.color = '#fff';
-                            dailyBtn.style.cursor = 'pointer';
-                        }
-                    };
-
                     updateRewardsStatus(u);
+                };
 
-                    const handleClaim = async (type, btnId) => {
-                        const btn = document.getElementById(btnId);
-                        if (btn.disabled) return;
+                // Update rewards status function
+                const updateRewardsStatus = (userData) => {
+                    const firstBtn = document.getElementById('first-login-btn');
+                    const dailyBtn = document.getElementById('daily-login-btn');
+                    const trustedBtn = document.getElementById('trusted-player-btn');
 
-                        try {
-                            btn.textContent = '...';
-                            const claimRes = await fetch('/api/user/claim-bonus', {
-                                method: 'POST',
-                                headers: {
-                                    'x-auth-token': token,
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ type })
-                            });
-                            const claimData = await claimRes.json();
-                            
-                            if (claimData.claimed) {
-                                // Update total BC in UI
-                                document.getElementById('st-bp').textContent = claimData.totalBonus;
-                                
-                                // Re-fetch profile to update statuses properly
-                                const freshRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
-                                if (freshRes.ok) {
-                                    const freshU = await freshRes.json();
-                                    updateRewardsStatus(freshU);
-                                }
-                            } else {
-                                btn.textContent = 'CLAIMED';
-                            }
-                        } catch (err) {
-                            console.error('Failed to claim bonus', err);
-                            alert('Error claiming bonus. Please try again later.');
-                            btn.textContent = 'CLAIM';
+                    if (userData.firstLoginClaimed) {
+                        document.getElementById('first-login-container').style.display = 'none';
+                    } else {
+                        document.getElementById('first-login-container').style.display = 'flex';
+                        firstBtn.textContent = 'CLAIM';
+                        firstBtn.disabled = false;
+                        firstBtn.style.background = 'var(--blaze-orange)';
+                        firstBtn.style.color = '#fff';
+                        firstBtn.style.cursor = 'pointer';
+                    }
+
+                    if (!userData.isGenuine) {
+                        trustedBtn.textContent = 'NOT ELIGIBLE';
+                        trustedBtn.disabled = true;
+                        trustedBtn.style.background = 'rgba(255,255,255,0.05)';
+                        trustedBtn.style.color = 'var(--text-muted)';
+                        trustedBtn.style.cursor = 'not-allowed';
+                        trustedBtn.style.boxShadow = 'none';
+                    } else if (userData.trustedPlayerClaimed) {
+                        trustedBtn.textContent = 'CLAIMED';
+                        trustedBtn.disabled = true;
+                        trustedBtn.style.background = 'rgba(255,255,255,0.05)';
+                        trustedBtn.style.color = 'var(--text-muted)';
+                        trustedBtn.style.cursor = 'not-allowed';
+                        trustedBtn.style.boxShadow = 'none';
+                    } else {
+                        trustedBtn.textContent = 'CLAIM';
+                        trustedBtn.disabled = false;
+                        trustedBtn.style.background = 'var(--blaze-orange)';
+                        trustedBtn.style.color = '#fff';
+                        trustedBtn.style.cursor = 'pointer';
+                    }
+
+                    let canClaimDaily = false;
+                    if (!userData.lastLoginClaimDate) {
+                        canClaimDaily = true;
+                    } else {
+                        const lastClaim = new Date(userData.lastLoginClaimDate);
+                        const now = new Date();
+                        if (lastClaim.toDateString() !== now.toDateString()) {
+                            canClaimDaily = true;
                         }
-                    };
+                    }
 
-                    document.getElementById('first-login-btn').addEventListener('click', () => handleClaim('first', 'first-login-btn'));
-                    document.getElementById('daily-login-btn').addEventListener('click', () => handleClaim('daily', 'daily-login-btn'));
-                    document.getElementById('trusted-player-btn').addEventListener('click', () => handleClaim('trusted', 'trusted-player-btn'));
+                    if (!canClaimDaily) {
+                        dailyBtn.textContent = 'CLAIMED';
+                        dailyBtn.disabled = true;
+                        dailyBtn.style.background = 'rgba(255,255,255,0.05)';
+                        dailyBtn.style.color = 'var(--text-muted)';
+                        dailyBtn.style.cursor = 'not-allowed';
+                        dailyBtn.style.boxShadow = 'none';
+                    } else {
+                        dailyBtn.textContent = 'CLAIM';
+                        dailyBtn.disabled = false;
+                        dailyBtn.style.background = 'var(--blaze-orange)';
+                        dailyBtn.style.color = '#fff';
+                        dailyBtn.style.cursor = 'pointer';
+                    }
+                };
 
-                } catch (e) {
-                    console.error(e);
+                // Attach claim handlers (global function)
+                window.handleClaim = async (type, btnId) => {
+                    const btn = document.getElementById(btnId);
+                    if (btn.disabled) return;
+
+                    try {
+                        btn.textContent = '...';
+                        const claimRes = await fetch('/api/user/claim-bonus', {
+                            method: 'POST',
+                            headers: {
+                                'x-auth-token': token,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ type })
+                        });
+                        const claimData = await claimRes.json();
+                        
+                        if (claimData.claimed) {
+                            document.getElementById('st-bp').textContent = claimData.totalBonus;
+                            const freshRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                            if (freshRes.ok) {
+                                const freshU = await freshRes.json();
+                                localStorage.setItem('blaze_profile_cache', JSON.stringify(freshU));
+                                renderProfile(freshU);
+                            }
+                        } else {
+                            btn.textContent = 'CLAIMED';
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        btn.textContent = 'ERROR';
+                    }
+                };
+
+                document.getElementById('first-login-btn').addEventListener('click', () => window.handleClaim('first', 'first-login-btn'));
+                document.getElementById('daily-login-btn').addEventListener('click', () => window.handleClaim('daily', 'daily-login-btn'));
+                document.getElementById('trusted-player-btn').addEventListener('click', () => window.handleClaim('trusted', 'trusted-player-btn'));
+
+                // --- Execution Logic ---
+                // 1. Immediately load from cache
+                const cached = localStorage.getItem('blaze_profile_cache');
+                if (cached) {
+                    try {
+                        renderProfile(JSON.parse(cached));
+                    } catch (e) { console.error('Cache parse error', e); }
+                }
+
+                // 2. Fetch fresh data in the background
+                try {
+                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                    if (res.status === 401 || res.status === 404) {
+                        localStorage.removeItem('blaze_token');
+                        localStorage.removeItem('blaze_profile_cache');
+                        window.location.href = '/auth';
+                        return;
+                    }
+                    if (!res.ok) throw new Error();
+                    const u = await res.json();
+                    
+                    // Save to cache and re-render
+                    localStorage.setItem('blaze_profile_cache', JSON.stringify(u));
+                    renderProfile(u);
+                } catch (err) {
+                    console.error('Failed to fetch profile', err);
                 }
             });
         </script>

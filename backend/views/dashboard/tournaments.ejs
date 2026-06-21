@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
     <style>
-        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 100px 24px 60px; }
+        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 100px 24px 60px; display: none; }
         .page-head { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
         .page-head h1 { font-family: var(--font-display); font-size: 2.8rem; color: #fff; letter-spacing: 1px; }
         .page-head p { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
@@ -123,16 +123,9 @@
             <div style="text-align:center;padding:60px"><div class="spinner-ring"></div></div>
         </div>
 
-        <div class="cta-banner" id="registration-cta">
-            <div class="cta-content">
-                <h2>Wanna see your name on the Leaderboards?</h2>
-                <p>Register for a 2-match Series to prove your worth. Earn Blaze Coins, rank up, and establish dominance in your arena.</p>
-            </div>
-            <a href="/dashboard/tournaments/register" class="cta-btn">START REGISTRATION</a>
-        </div>
     </div>
 
-    <script src="/script.js"></script>
+    <script src="/script.js?v=1.2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('blaze_token');
@@ -140,31 +133,29 @@
 
             let userGame = null;
 
-            // Get user's game
-            try {
-                const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
-                if (profRes.status === 401 || profRes.status === 404) {
-                    localStorage.removeItem('blaze_token');
-                    window.location.href = '/auth';
-                    return;
-                }
-                if (profRes.ok) {
-                    const prof = await profRes.json();
-                    if (!prof.isGenuine) {
-                        document.querySelector('.page-wrap').style.display = 'none';
-                        const modal = document.getElementById('tournaments-lock-modal');
-                        if (modal) {
-                            modal.style.display = 'flex';
-                            const btn = modal.querySelector('button');
-                            if(btn) btn.onclick = () => { window.location.href = '/dashboard'; };
-                        } else {
-                            window.location.href = '/dashboard';
-                        }
-                        return;
+            const applyUserStatus = (prof) => {
+                if (!prof.isGenuine) {
+                    const modal = document.getElementById('tournaments-lock-modal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        const btn = modal.querySelector('button');
+                        if(btn) btn.onclick = () => { window.location.href = '/dashboard'; };
+                    } else {
+                        window.location.href = '/dashboard';
                     }
-                    userGame = prof.game;
+                } else {
+                    document.querySelector('.page-wrap').style.display = 'block';
+                    userGame = prof.game || 'Free Fire';
                 }
-            } catch (e) {}
+            };
+
+            if (window.globalUserData) {
+                applyUserStatus(window.globalUserData);
+            } else {
+                window.addEventListener('globalUserDataReady', () => {
+                    if (window.globalUserData) applyUserStatus(window.globalUserData);
+                });
+            }
 
 
 
@@ -178,14 +169,6 @@
                     if (res.ok) {
                         let data = await res.json();
                         window.tournamentData = data;
-
-                        // Check if user has an active or pending request
-                        const hasActive = data.requests && data.requests.some(r => r.status === 'Approved' || r.status === 'Pending');
-                        if (hasActive) {
-                            const cta = document.getElementById('registration-cta');
-                            if (cta) cta.style.display = 'none';
-                        }
-
                         renderView('live');
                     }
                 } catch (e) {

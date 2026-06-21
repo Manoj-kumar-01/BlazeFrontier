@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Blaze Frontier</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .page-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 24px 60px;
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .profile-sidebar {
+            width: 340px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .profile-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        /* Sidebar: Header card */
+        .profile-header {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 36px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .ph-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 87, 34, 0.4);
+            object-fit: cover;
+            margin-bottom: 16px;
+        }
+
+        .ph-info {
+            width: 100%;
+        }
+
+        .ph-name {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: #fff;
+            letter-spacing: 1px;
+            line-height: 1;
+            margin-bottom: 24px;
+        }
+
+        .ph-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .ph-tag {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ph-tag span {
+            color: #fff;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        /* Sidebar: Rank progress */
+        .rank-bar {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .rank-badge {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            color: var(--blaze-orange);
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .rank-info {
+            width: 100%;
+        }
+
+        .rank-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .rank-text {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: #fff;
+            margin: 8px 0 20px;
+        }
+
+        .prog-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .prog-fill {
+            height: 100%;
+            background: var(--blaze-orange);
+            border-radius: 4px;
+            transition: width 1s ease-out;
+            width: 0%;
+        }
+
+        /* Main: Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-val {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Main: Two-column details */
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .detail-panel {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .dp-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: #fff;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .dp-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .dp-item:last-child {
+            border-bottom: none;
+        }
+
+        .dp-key {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .dp-val {
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Main: Actions */
+        .action-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 10px;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+            border: none;
+        }
+
+        .action-primary {
+            background: var(--blaze-orange);
+            color: #fff;
+        }
+
+        .action-primary:hover {
+            box-shadow: 0 4px 16px rgba(255, 87, 34, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .action-ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .action-ghost:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        @media (max-width: 1000px) {
+            .page-wrap {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .profile-sidebar, .profile-main {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .detail-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .page-wrap {
+                padding: 90px 12px 40px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .action-row {
+                flex-direction: column;
+            }
+            .reward-item {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px;
+            }
+            .dp-item { flex-direction: row; align-items: center; }
+            .dp-val { text-align: right; }
+        }
+
+        /* Modal CSS */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #111116; padding: 32px; border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%; max-width: 400px;
+        }
+        .modal-title { font-family: var(--font-display); color: #fff; font-size: 1.8rem; margin-bottom: 24px; text-align: center; }
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-input { width: 100%; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 12px; border-radius: 8px; font-family: var(--font-mono); outline: none; }
+        .form-input:focus { border-color: var(--blaze-orange); }
+        .btn { padding: 12px 24px; font-family: var(--font-display); font-size: 1.1rem; border-radius: 8px; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary { background: var(--blaze-orange); color: #fff; }
+        .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+    </style>
+</head>
+
+<body>
+
+<body>
+
+    <div style="background: rgba(0,0,0,0.8); padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center;">
+        <a href="<%= adminPrefix %>" style="color: var(--text-300); text-decoration: none; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px;">&larr; BACK TO OPERATIONS CENTER</a>
+    </div>
+
+        <div class="page-wrap">
+
+            <!-- SIDEBAR -->
+            <div class="profile-sidebar">
+                <!-- Header -->
+                <div class="profile-header" id="profile-header" style="position: relative; overflow: hidden;">
+                    <div id="ph-watermark" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                        <div style="font-family: var(--font-display); font-size: 6.5rem; color: rgba(255, 215, 0, 0.04); font-weight: 800; letter-spacing: 10px; white-space: nowrap; user-select: none; transform: translateY(-10px);">TRUSTED</div>
+                    </div>
+                    <div style="position: relative; display: inline-block; padding: 10px; z-index: 1;">
+                        <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar" style="transition: all 0.3s ease; display: block; position: relative; z-index: 1; margin: 0;">
+                    </div>
+                    <div class="ph-info" style="margin-top: 16px; position: relative; z-index: 1;">
+                        <div
+                            style="display:flex; align-items:center; gap: 12px; margin-bottom: 24px; justify-content:center;">
+                            <div class="ph-name" id="ph-name" style="margin-bottom:0;">—</div>
+                            <div id="ph-badge"
+                                style="font-size:0.75rem; font-weight:700; padding:4px 8px; border-radius:4px; font-family:var(--font-mono); letter-spacing:1px;">
+                            </div>
+                        </div>
+                        <div class="ph-meta">
+                            <div class="ph-tag">Region <span><span id="ph-region">—</span></span></div>
+                            <div class="ph-tag">Game UID <span><span id="ph-uid">—</span></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rank bar -->
+                <div class="rank-bar">
+                    <div class="rank-badge" id="rank-icon">#—</div>
+                    <div class="rank-info">
+                        <div class="rank-label">Platform Ranking</div>
+                        <div class="rank-text" id="rank-text">Calculating…</div>
+                        <div class="prog-track">
+                            <div class="prog-fill" id="rank-prog"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="profile-main">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 215, 0, 0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">💰</div>
+                        <div class="stat-label" style="color: #fcd34d; position: relative; z-index: 1;">Blaze Coins</div>
+                        <div class="stat-val" id="st-bp" style="color: #fff; position: relative; z-index: 1;">—</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(34, 197, 94, 0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🎮</div>
+                        <div class="stat-label" style="color: #86efac; position: relative; z-index: 1;">Matches</div>
+                        <div class="stat-val" id="st-matches" style="color: #fff; position: relative; z-index: 1;">—</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 87, 34, 0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🏆</div>
+                        <div class="stat-label" style="color: #fdba74; position: relative; z-index: 1;">Championships</div>
+                        <div class="stat-val" id="st-wins" style="color: #fff; position: relative; z-index: 1;">—</div>
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="detail-row">
+                    <div class="detail-panel">
+                        <div class="dp-title">ACCOUNT</div>
+                        <div class="dp-item"><span class="dp-key">Username</span><span class="dp-val"
+                                id="dp-user">—</span></div>
+                        <div class="dp-item"><span class="dp-key">In-Game Name</span><span class="dp-val"
+                                id="dp-ign">—</span></div>
+                        <div class="dp-item"><span class="dp-key">Setup</span><span class="dp-val" style="color:#22c55e"
+                                id="dp-setup">—</span></div>
+                    </div>
+                    <div class="detail-panel">
+                        <div class="dp-title">SERVER</div>
+                        <div class="dp-item"><span class="dp-key">Region</span><span class="dp-val"
+                                id="dp-region">—</span></div>
+                        <div class="dp-item"><span class="dp-key">Game UID</span><span class="dp-val"
+                                id="dp-uid">—</span></div>
+                        <div class="dp-item"><span class="dp-key">Player ID</span><span class="dp-val" id="dp-pid"
+                                style="font-size:0.75rem">—</span></div>
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script src="/script.js?v=1.2"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const renderProfile = (u) => {
+                    document.getElementById('ph-name').textContent = u.inGameName || u.username;
+                    document.getElementById('ph-region').textContent = u.location || '—';
+                    document.getElementById('ph-uid').textContent = u.gameUid || '—';
+                    if (u.profilePic) {
+                        document.getElementById('ph-avatar').src = u.profilePic;
+                    }
+
+                    document.getElementById('st-bp').textContent = u.blazeCoins || 0;
+                    document.getElementById('st-matches').textContent = u.totalMatches || 0;
+                    document.getElementById('st-wins').textContent = u.tournamentsWon || 0;
+                    
+                    document.getElementById('rank-text').textContent = 'Unranked';
+                    document.getElementById('rank-icon').textContent = '#0';
+                    document.getElementById('rank-prog').style.width = '0%';
+
+                    document.getElementById('dp-user').textContent = u.username || '—';
+                    document.getElementById('dp-ign').textContent = u.inGameName || '—';
+                    document.getElementById('dp-setup').textContent = u.isSetupComplete ? 'COMPLETE' : 'PENDING';
+                    document.getElementById('dp-region').textContent = u.location || '—';
+                    document.getElementById('dp-uid').textContent = u.gameUid || '—';
+                    document.getElementById('dp-pid').textContent = u.playerId || '—';
+
+                    if (u.isGenuine) {
+                        document.getElementById('ph-avatar').style.borderColor = '#ffd700';
+                        document.getElementById('ph-avatar').style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.4)';
+                        document.getElementById('ph-badge').style.display = 'none'; 
+                        document.getElementById('ph-watermark').style.display = 'block'; 
+                        document.getElementById('dp-pid').style.color = '#ffd700'; 
+                        document.getElementById('dp-pid').style.textShadow = '0 0 8px rgba(255,215,0,0.3)';
+                        document.getElementById('profile-header').style.background = 'linear-gradient(180deg, rgba(255, 215, 0, 0.15) 0%, #111116 100%)';
+                    } else {
+                        document.getElementById('ph-badge').style.display = 'block';
+                        document.getElementById('ph-badge').textContent = 'UNVERIFIED';
+                        document.getElementById('ph-badge').style.background = 'rgba(255, 255, 255, 0.05)';
+                        document.getElementById('ph-badge').style.color = 'var(--text-muted)';
+                        document.getElementById('ph-badge').style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                        document.getElementById('ph-watermark').style.display = 'none';
+                        document.getElementById('dp-pid').style.color = '#fff';
+                        document.getElementById('dp-pid').style.textShadow = 'none';
+                    }
+                };
+
+                try {
+                    const res = await fetch(`<%= adminPrefix %>/api/user/player-id/<%= playerId %>`);
+                    if (!res.ok) throw new Error('Failed to fetch user');
+                    const u = await res.json();
+                    renderProfile(u);
+                } catch (err) {
+                    console.error('Failed to fetch profile', err);
+                    alert("Failed to load user profile");
+                }
+            });
+        </script>
+</body>
+
+</html>
