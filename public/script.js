@@ -201,9 +201,10 @@
         window.addEventListener('scroll', () => {
             nav.classList.toggle('scrolled', window.scrollY > 40);
 
-            let current = '';
+            let current = 'hero';
             sections.forEach(s => {
-                if (window.scrollY >= s.offsetTop - 200) {
+                const rect = s.getBoundingClientRect();
+                if (rect.top <= 250 && rect.bottom >= 250) {
                     current = s.id;
                 }
             });
@@ -240,6 +241,9 @@
                 menu.classList.toggle('open');
             });
         }
+        
+        // Trigger once on load to set initial active state
+        window.dispatchEvent(new Event('scroll'));
     }
 
     /* ============================================================
