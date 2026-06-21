@@ -20,10 +20,11 @@
             --font-mono: 'JetBrains Mono', monospace;
         }
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; overflow: hidden; }
+        html, body { min-height: 100%; overflow-x: hidden; }
         body {
             font-family: var(--font-body); background: var(--bg); color: var(--text);
             display: flex; align-items: center; justify-content: center;
+            padding: 40px 0;
         }
 
         /* Subtle background — no heavy animations */
