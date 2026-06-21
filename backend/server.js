@@ -35,6 +35,19 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Express Session for Admin Panel
+const session = require('express-session');
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'blaze_default_session_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production', 
+        httpOnly: true, 
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    }
+}));
+
 // Apply rate limiter specifically to API routes
 app.use('/api/', apiLimiter);
 
@@ -54,13 +67,55 @@ const apiRoutes = require('./routes/api');
 const adminApiRoutes = require('./routes/admin');
 const matchmakingRoutes = require('./routes/matchmaking');
 
-const ipWhitelist = require('./middleware/ipWhitelist');
+const adminAuth = require('./middleware/adminAuth');
 const adminPrefix = process.env.ADMIN_ROUTE_PREFIX || '/hidden-admin';
+
+// Admin Login Rate Limiter
+const adminLoginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 login requests per 15 mins
+    message: 'Too many login attempts, please try again later.'
+});
+const speakeasy = require('speakeasy');
 
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/matchmaking', matchmakingRoutes);
-app.use(`${adminPrefix}/api`, ipWhitelist, adminApiRoutes);
+app.use(`${adminPrefix}/api`, adminAuth, adminApiRoutes);
+
+// --- Admin Login Routes ---
+app.get(`${adminPrefix}/login`, (req, res) => {
+    if (req.session && req.session.adminAuthenticated) {
+        return res.redirect(adminPrefix);
+    }
+    res.render('admin/login', { adminPrefix, error: null });
+});
+
+app.post(`${adminPrefix}/login`, adminLoginLimiter, (req, res) => {
+    const { password, mfaCode } = req.body;
+    
+    if (password !== process.env.ADMIN_PASSWORD) {
+        return res.render('admin/login', { adminPrefix, error: 'Invalid password.' });
+    }
+    
+    const isValid = speakeasy.totp.verify({
+        secret: process.env.ADMIN_MFA_SECRET,
+        encoding: 'base32',
+        token: mfaCode
+    });
+    
+    if (!isValid) {
+        return res.render('admin/login', { adminPrefix, error: 'Invalid 2FA code.' });
+    }
+    
+    req.session.adminAuthenticated = true;
+    res.redirect(adminPrefix);
+});
+
+app.get(`${adminPrefix}/logout`, (req, res) => {
+    req.session.destroy();
+    res.redirect(`${adminPrefix}/login`);
+});
 
 // Configure EJS View Engine
 const path = require('path');
@@ -91,8 +146,8 @@ app.get('/dashboard/tournaments/register', (req, res) => res.render('dashboard/t
 app.get('/dashboard/leaderboards', (req, res) => res.render('dashboard/leaderboards', { activePage: '/dashboard/leaderboards' }));
 app.get('/dashboard/freefire', (req, res) => res.render('dashboard/freefire', { activePage: '/dashboard/freefire' }));
 app.get('/dashboard/content', (req, res) => res.render('dashboard/content', { activePage: '/dashboard/content' }));
-app.get(adminPrefix, ipWhitelist, (req, res) => res.render('admin/index', { adminPrefix, activePage: 'admin' }));
-app.get(`${adminPrefix}/player/:playerId`, ipWhitelist, (req, res) => res.render('admin/profile', { adminPrefix, activePage: 'admin', playerId: req.params.playerId }));
+app.get(adminPrefix, adminAuth, (req, res) => res.render('admin/index', { adminPrefix, activePage: 'admin' }));
+app.get(`${adminPrefix}/player/:playerId`, adminAuth, (req, res) => res.render('admin/profile', { adminPrefix, activePage: 'admin', playerId: req.params.playerId }));
 app.get('/banned', (req, res) => res.render('onboarding/banned'));
 
 const { ApolloServer } = require('@apollo/server');

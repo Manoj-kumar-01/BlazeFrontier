@@ -1,47 +1,55 @@
 const request = require('supertest');
 const { app } = require('../server');
 const process = require('process');
+const speakeasy = require('speakeasy');
 require('dotenv').config();
 
-describe('Admin Routes & IP Whitelisting Tests', () => {
-    let originalAdminIps;
+describe('Admin Security & Session Auth Tests', () => {
     let adminRoute;
 
     beforeAll(() => {
-        originalAdminIps = process.env.ADMIN_IPS;
-        process.env.ADMIN_IPS = '127.0.0.1,::1,192.168.1.100,::ffff:127.0.0.1,::ffff:192.168.1.100'; // Set dummy IPs for test including mapped ones
         adminRoute = process.env.ADMIN_ROUTE_PREFIX || '/hidden-admin';
+        // Need to set env variables for testing to ensure they are present
+        process.env.ADMIN_PASSWORD = 'testpassword';
+        process.env.ADMIN_MFA_SECRET = 'JBSWY3DPEHPK3PXP'; // Valid base32 secret
+        process.env.SESSION_SECRET = 'testsecret';
     });
 
-    afterAll(() => {
-        process.env.ADMIN_IPS = originalAdminIps;
+    it('should redirect unauthenticated users to the login page', async () => {
+        const res = await request(app).get(adminRoute);
+        expect(res.statusCode).toBe(302);
+        expect(res.header.location).toBe(`${adminRoute}/login`);
     });
 
-    it('should block non-whitelisted IP with a 404', async () => {
+    it('should reject login with wrong password', async () => {
         const res = await request(app)
-            .get(adminRoute)
-            .set('x-forwarded-for', '10.0.0.5'); // Mocking an unauthorized IP
+            .post(`${adminRoute}/login`)
+            .send({ password: 'wrongpassword', mfaCode: '000000' });
             
-        // The middleware returns a fake 404 page
-        expect(res.statusCode).toBe(404);
-        expect(res.text).toContain('Cannot GET');
+        expect(res.text).toContain('Invalid password');
     });
 
-    it('should allow whitelisted IP', async () => {
+    it('should reject login with wrong MFA code', async () => {
         const res = await request(app)
-            .get(adminRoute)
-            .set('x-forwarded-for', '192.168.1.100'); // Mocking an authorized IP
+            .post(`${adminRoute}/login`)
+            .send({ password: 'testpassword', mfaCode: '000000' });
             
-        // Assuming the admin page renders successfully (status 200 or 500 if DB not connected)
-        // We mainly want to ensure it doesn't return 404 from our ipWhitelist middleware
-        expect(res.statusCode).not.toBe(404);
+        expect(res.text).toContain('Invalid 2FA code');
     });
 
-    it('should allow loopback (localhost) if in ADMIN_IPS', async () => {
+    it('should allow login with valid credentials', async () => {
+        const validMfaCode = speakeasy.totp({
+            secret: process.env.ADMIN_MFA_SECRET,
+            encoding: 'base32'
+        });
+        
         const res = await request(app)
-            .get(adminRoute)
-            .set('x-forwarded-for', '127.0.0.1'); 
+            .post(`${adminRoute}/login`)
+            .send({ password: 'testpassword', mfaCode: validMfaCode });
             
-        expect(res.statusCode).not.toBe(404);
+        // Should set a cookie and redirect to the dashboard
+        expect(res.statusCode).toBe(302);
+        expect(res.header.location).toBe(adminRoute);
+        expect(res.header['set-cookie']).toBeDefined();
     });
 });
