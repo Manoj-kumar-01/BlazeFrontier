@@ -1732,8 +1732,18 @@ img {
     }
 
     .footer-links {
-        flex-wrap: wrap;
-        gap: 32px;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .footer-col h5 {
+        font-size: 0.6rem;
+    }
+    
+    .footer-col a {
+        font-size: 0.75rem;
     }
 
     .footer-bottom {
