@@ -101,7 +101,8 @@ app.post(`${adminPrefix}/login`, adminLoginLimiter, (req, res) => {
     const isValid = speakeasy.totp.verify({
         secret: process.env.ADMIN_MFA_SECRET,
         encoding: 'base32',
-        token: mfaCode
+        token: mfaCode,
+        window: 2
     });
     
     if (!isValid) {
