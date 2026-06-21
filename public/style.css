@@ -199,8 +199,6 @@ img {
     font-size: 1.8rem;
     font-weight: 800;
     letter-spacing: 2px;
-    margin-top: 3px;
-    transform: skewX(-12deg);
     display: inline-block;
     /* Red Metallic Gradient for BLAZE */
     background: linear-gradient(to bottom, #ff3b3f 0%, #d91c1f 40%, #5c0000 100%);
@@ -1635,7 +1633,6 @@ img {
 
     .logo-name {
         font-size: 1.4rem;
-        margin-top: 2px;
     }
 
     .logo-img {
