@@ -28,7 +28,7 @@
     --green: #2ec4b6;
     --silver: #a0a0b8;
 
-    --font-display: 'Bebas Neue', sans-serif;
+    --font-display: 'Montserrat', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
@@ -197,10 +197,9 @@ img {
 .logo-name {
     font-family: var(--font-display);
     font-size: 1.8rem;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: 2px;
-    margin-top: 4px;
-    transform: skewX(-12deg);
+    transform: skewX(-5deg);
     display: inline-block;
     /* Red Metallic Gradient for BLAZE */
     background: linear-gradient(to bottom, #ff3b3f 0%, #d91c1f 40%, #5c0000 100%);
@@ -1630,7 +1629,6 @@ img {
 
     .logo-name {
         font-size: 1.4rem;
-        margin-top: 3px;
     }
 
     .logo-img {
