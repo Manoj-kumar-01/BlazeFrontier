@@ -416,7 +416,7 @@
                                     </div>
 
                                     <!-- Bottom Section: Info -->
-                                    <div style="z-index: 1;">
+                                    <div style="z-index: 1; margin-top: -8px;">
                                         <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">LATEST CONTENT</div>
                                         <div style="font-size: 1.15rem; font-family: var(--font-display); font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 8px; letter-spacing: 0.5px;">${m.name}</div>
                                         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--cyan); font-weight: 600;">
@@ -450,7 +450,7 @@
                         const activeNews = stats.news.filter(n => !dismissedNews.includes(String(n.timestamp)));
 
                         if (activeNews.length === 0) {
-                            newsCont.innerHTML = '<div class="n-item" style="justify-content: center; border: 1px dashed rgba(255,255,255,0.1);"><div class="n-title" style="color:var(--text-muted); text-align:center; font-size: 0.9rem;">You\'re all caught up!</div></div>';
+                            newsCont.innerHTML = '<div class="n-item" style="justify-content: center; border: none;"><div class="n-title" style="color:var(--text-muted); text-align:center; font-size: 0.9rem;">You\'re all caught up!</div></div>';
                         } else {
                             newsCont.innerHTML = activeNews.map(n => `
                                 <div class="n-item" id="news-${n.timestamp}" style="position: relative; padding-right: 40px; transition: all 0.3s var(--ease);">
