@@ -289,13 +289,13 @@
 
         <!-- Sidebar -->
         <div class="c-sidebar">
-            <div style="margin-bottom: 0;">
-                <div class="sp-title" style="margin-bottom: 4px; border-bottom: none; font-size: 1.15rem; font-family: var(--font-display); letter-spacing: 1px; color: #fff; padding-left: 4px;">DAILY HIGHLIGHTS</div>
-                <div id="live-matches-container" style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 300px; padding-right: 4px;">
+            <div style="margin-bottom: 0; display: flex; flex-direction: column; flex: 1; min-height: 0;">
+                <div class="sp-title" style="margin-bottom: 4px; border-bottom: none; font-size: 1.15rem; font-family: var(--font-display); letter-spacing: 1px; color: #fff; padding-left: 4px; flex-shrink: 0;">DAILY HIGHLIGHTS</div>
+                <div id="live-matches-container" style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; min-height: 0; padding-right: 4px;">
                     <div class="live-item"><div class="li-name" style="color:var(--text-muted)">Loading...</div></div>
                 </div>
             </div>
-            <div class="side-panel potd-panel" id="potd-container" style="padding: 0; overflow: hidden; position: relative; flex: 1; min-height: 180px; display: flex; align-items: flex-end; justify-content: flex-start; border: 1px solid rgba(255,215,0,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s; margin-top: auto;">
+            <div class="side-panel potd-panel" id="potd-container" style="padding: 0; overflow: hidden; position: relative; height: 160px; min-height: 160px; display: flex; align-items: flex-end; justify-content: flex-start; border: 1px solid rgba(255,215,0,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s; margin-top: auto;">
                 <video id="potd-video" autoplay loop muted playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; filter: brightness(0.5); transition: filter 0.3s;"></video>
                 <div style="position: relative; z-index: 2; padding: 20px; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);">
                     <div style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #FFD700; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">★ PLAYER OF THE DAY ★</div>
@@ -404,18 +404,10 @@
                         document.getElementById('potd-container').style.background = 'linear-gradient(rgba(10,10,15,0.7), rgba(10,10,15,0.9)), url("/public/potd_empty.png") center/cover no-repeat';
                         document.getElementById('potd-container').style.border = '1px solid rgba(255,215,0,0.15)';
                         document.getElementById('potd-container').innerHTML = `
-                            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; z-index: 2; position: relative; box-shadow: inset 0 0 60px rgba(0,0,0,0.8);">
-                                <div>
-                                    <div style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #FFD700; margin-bottom: 8px;">★ PLAYER OF THE DAY ★</div>
-                                    <div style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1.1; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">NO RECORDING YET</div>
-                                    <div style="display: flex; align-items: center; gap: 6px;">
-                                        <span style="color: var(--text-muted); font-size: 0.8rem;">Blaze ID:</span>
-                                        <div style="color: var(--cyan); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;">AWAITING UPLOAD</div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: center; width: 100%;">
-                                    <button onclick="window.location.href='/dashboard/freefire'" style="width: 100%; background: transparent; border: 1px solid rgba(255,215,0,0.4); color: #FFD700; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; font-size: 0.8rem; letter-spacing: 1px;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='transparent'">UPLOAD RECORDING <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
-                                </div>
+                            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px; z-index: 2; position: relative; box-shadow: inset 0 0 60px rgba(0,0,0,0.8);">
+                                <div style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #FFD700; margin-bottom: 6px;">★ PLAYER OF THE DAY ★</div>
+                                <div style="font-family: var(--font-display); font-size: 1.4rem; color: #fff; line-height: 1.1; margin-bottom: 12px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">NO RECORDING YET</div>
+                                <button onclick="window.location.href='/dashboard/freefire'" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.4); color: #FFD700; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; font-size: 0.75rem; letter-spacing: 1px;" onmouseover="this.style.background='rgba(255,215,0,0.2)'" onmouseout="this.style.background='rgba(255,215,0,0.1)'">UPLOAD <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
                             </div>
                         `;
                     }
