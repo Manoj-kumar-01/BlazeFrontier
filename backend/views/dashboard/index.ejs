@@ -401,9 +401,23 @@
                             this.style.transform = 'none';
                         }
                     } else {
-                        document.getElementById('potd-player').innerText = "NO RECORDING YET";
-                        document.getElementById('potd-title').innerText = "AWAITING UPLOAD";
-                        document.getElementById('potd-video').style.display = 'none';
+                        document.getElementById('potd-container').style.background = 'linear-gradient(rgba(10,10,15,0.7), rgba(10,10,15,0.9)), url("/public/potd_empty.png") center/cover no-repeat';
+                        document.getElementById('potd-container').style.border = '1px solid rgba(255,215,0,0.15)';
+                        document.getElementById('potd-container').innerHTML = `
+                            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; z-index: 2; position: relative; box-shadow: inset 0 0 60px rgba(0,0,0,0.8);">
+                                <div>
+                                    <div style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #FFD700; margin-bottom: 8px;">★ PLAYER OF THE DAY ★</div>
+                                    <div style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1.1; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">NO RECORDING YET</div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="color: var(--text-muted); font-size: 0.8rem;">Blaze ID:</span>
+                                        <div style="color: var(--cyan); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;">AWAITING UPLOAD</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: center; width: 100%;">
+                                    <button onclick="window.location.href='/dashboard/freefire'" style="width: 100%; background: transparent; border: 1px solid rgba(255,215,0,0.4); color: #FFD700; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; font-size: 0.8rem; letter-spacing: 1px;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='transparent'">UPLOAD RECORDING <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
+                                </div>
+                            </div>
+                        `;
                     }
                     
                     // Daily Highlights
@@ -471,7 +485,7 @@
                         const activeNews = stats.news.filter(n => !dismissedNews.includes(String(n.timestamp)));
 
                         if (activeNews.length === 0) {
-                            newsCont.innerHTML = '<div class="n-item" style="justify-content: center; border: none;"><div class="n-title" style="color:var(--text-muted); text-align:center; font-size: 0.9rem;">You\'re all caught up!</div></div>';
+                            newsCont.innerHTML = '<div style="height: 100%; min-height: 250px; background: url(\'/public/platform_updates_empty.png\') center/cover no-repeat; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 40px; text-align: center; box-shadow: inset 0 -60px 80px -20px rgba(8,8,14,0.9);"><div style="font-size: 1.5rem; font-family: var(--font-display); color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); margin-bottom: 10px; font-weight: 600;">You\\'re all caught up!</div><div style="font-size: 0.9rem; color: #a1a1b5;">Check back later for new updates and announcements.</div></div>';
                         } else {
                             newsCont.innerHTML = activeNews.map(n => `
                                 <div class="n-item" id="news-${n.timestamp}" style="position: relative; padding-right: 40px; transition: all 0.3s var(--ease);">
