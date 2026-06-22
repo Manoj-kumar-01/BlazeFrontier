@@ -52,19 +52,21 @@
         .cs-val { font-family: var(--font-display); font-size: 2.4rem; color: #fff; line-height: 1; }
         .cs-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-family: var(--font-mono); }
 
-        /* News — spans 3 cols, fills remaining height */
-        .c-news { grid-column: 1 / 4; grid-row: 3; overflow-y: auto; }
+        /* News — spans 2 cols, fixed height to prevent expanding down */
+        .c-news { grid-column: 1 / 3; grid-row: 3; height: 360px; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
         .cn-title {
             font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px;
-            margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin: 0; padding: 20px 24px 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
         }
-        .news-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; scrollbar-width: none; -ms-overflow-style: none; }
-        .news-grid::-webkit-scrollbar { display: none; }
+        .news-grid { display: flex; flex-direction: column; gap: 0; flex: 1; overflow-y: auto; }
+        .news-grid::-webkit-scrollbar { width: 4px; }
+        .news-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
         .n-item {
-            background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.04);
-            border-radius: 10px; padding: 10px 14px; transition: border-color 0.2s;
+            background: transparent; border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-radius: 0; padding: 14px 24px; transition: background 0.2s;
         }
-        .n-item:hover { border-color: rgba(255,255,255,0.1); }
+        .n-item:last-child { border-bottom: none; }
+        .n-item:hover { background: rgba(255,255,255,0.02); }
         .n-tag {
             display: inline-block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
             letter-spacing: 1.5px; padding: 2px 6px; border-radius: 3px; margin-bottom: 4px;
@@ -429,9 +431,9 @@
                     // News
                     if(stats.news) {
                         const newsCont = document.getElementById('news-container');
-                        newsCont.style.maxHeight = "350px";
-                        newsCont.style.overflowY = "auto";
-                        newsCont.style.paddingRight = "8px";
+                        // maxHeight handled by CSS flex now
+                        // paddingRight not needed since scrollbar is styled globally
+
                         
                         let dismissedNews = [];
                         try {
