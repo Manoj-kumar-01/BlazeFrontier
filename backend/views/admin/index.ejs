@@ -804,24 +804,8 @@
             <div class="page-desc">Approve top plays to feature them on the hub and award 50 BlazeCoins to the player.
             </div>
         </div>
-        <div class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Submitter</th>
-                        <th>Clip Title</th>
-                        <th>Date Submitted</th>
-                        <th>Status</th>
-                        <th style="text-align:right;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="clip-list">
-                    <tr>
-                        <td colspan="5" style="text-align:center; padding: 20px; color:var(--text-muted);">Loading
-                            submissions...</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div id="clip-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px;">
+            <div style="text-align:center; padding: 20px; color:var(--text-muted); grid-column: 1 / -1;">Loading submissions...</div>
         </div>
     </div>
 
