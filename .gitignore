@@ -12,4 +12,4 @@ yarn-error.log*
 Thumbs.db
 
 # Optional: Uploads folder if we don't want to track user uploads
-# public/uploads/
+public/uploads/

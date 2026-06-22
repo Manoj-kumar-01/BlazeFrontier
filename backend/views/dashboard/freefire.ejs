@@ -8,26 +8,34 @@
     <link rel="stylesheet" href="/style.css">
     <style>
         .dash {
-            display: grid; grid-template-columns: 1fr 1fr 1fr 340px;
+            display: grid; grid-template-columns: repeat(6, 1fr);
             grid-template-rows: auto auto 1fr;
             gap: 14px; padding: 88px 20px 20px; min-height: 100vh;
             max-width: 1500px; margin: 0 auto;
         }
 
         .card {
-            background: #111116; border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(15, 10, 12, 0.45);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 2px 20px rgba(255, 255, 255, 0.03);
             border-radius: 12px; padding: 24px;
         }
 
         /* Welcome — left half */
         .c-welcome {
-            grid-column: 1 / 3;
+            grid-column: 1 / 4;
             display: flex; justify-content: space-between; align-items: center; gap: 20px;
-            padding: 28px 32px;
-            background: linear-gradient(90deg, rgba(17,17,22,0.95) 0%, rgba(17,17,22,0.1) 70%), url('/public/ff_multiplayer_bg.png') center/cover no-repeat;
+            padding: 28px 40px;
+            background: rgba(15, 10, 12, 0.45);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 2px 20px rgba(255, 255, 255, 0.03);
+            border-radius: 0;
+            clip-path: polygon(0 0, 100% 0, calc(100% - 30px) 100%, 0 100%);
         }
         .c-welcome > div {
             position: relative;
@@ -39,41 +47,45 @@
 
         /* Featured Promo — right half */
         .c-featured {
-            grid-column: 3 / -1;
-            background: linear-gradient(135deg, rgba(255,87,34,0.15) 0%, #111116 100%);
-            border: 1px solid rgba(255,87,34,0.3);
-            border-radius: 12px;
-            padding: 24px 32px;
+            grid-column: 4 / 7;
+            background: rgba(15, 10, 12, 0.45);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 2px 20px rgba(255, 255, 255, 0.03);
+            padding: 24px 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: relative;
             overflow: hidden;
+            border-radius: 0;
+            clip-path: polygon(30px 0, 100% 0, 100% 100%, 0 100%);
         }
-        .cf-info { position: relative; z-index: 1; }
-        .cf-title { font-family: var(--font-display); font-size: 1.8rem; color: #fff; margin-bottom: 6px; letter-spacing: 1px; }
-        .cf-title span { color: var(--blaze-orange); }
+        .cf-info { position: relative; z-index: 1; margin-left: 10px; }
+        .cf-title { font-family: var(--font-display); font-size: 1.8rem; color: #fff; margin-bottom: 6px; letter-spacing: 1px; text-transform: uppercase; }
+        .cf-title span { color: var(--blaze-orange); text-shadow: 0 0 10px rgba(255,87,34,0.4); }
         .cf-sub { color: var(--text-muted); font-size: 0.85rem; max-width: 280px; line-height: 1.4; }
         .cf-action {
             background: var(--blaze-orange); color: #fff; font-family: var(--font-display);
             padding: 12px 28px; border-radius: 6px; text-decoration: none; font-size: 1.2rem;
             letter-spacing: 1px; transition: transform 0.2s, box-shadow 0.2s;
-            position: relative; z-index: 1; white-space: nowrap;
+            position: relative; z-index: 1; white-space: nowrap; border: none; cursor: pointer;
         }
         .cf-action:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,87,34,0.4); }
         .cf-bg {
-            position: absolute; right: -10px; bottom: -30px; font-size: 8rem; opacity: 0.05;
-            transform: rotate(-15deg); pointer-events: none;
+            position: absolute; left: 10px; bottom: -30px; font-size: 8rem; opacity: 0.05;
+            transform: rotate(15deg); pointer-events: none; color: rgba(255, 87, 34, 1);
         }
         
         /* Stat cards — top row */
-        .c-stat { display: flex; flex-direction: column; justify-content: center; }
+        .c-stat { display: flex; flex-direction: column; justify-content: center; grid-column: span 2; }
         .cs-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
         .cs-val { font-family: var(--font-display); font-size: 2.4rem; color: #fff; line-height: 1; }
         .cs-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-family: var(--font-mono); }
 
         /* Main Content Grid */
-        .c-main { grid-column: 1 / 4; grid-row: 3; display: flex; flex-direction: column; gap: 14px; }
+        .c-main { grid-column: 1 / 5; grid-row: 3; display: flex; flex-direction: column; gap: 14px; }
         
         .section-header {
             font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px;
@@ -83,13 +95,16 @@
 
         /* Qualification Series Section */
         .qs-section {
-            margin-bottom: 24px;
+            margin-bottom: 0;
             padding: 24px;
             border-radius: 12px;
-            background: linear-gradient(135deg, rgba(15,15,20,0.6) 0%, rgba(10,10,15,0.75) 100%), url('/public/qs_match_bg.png') center/cover no-repeat;
+            background: rgba(15, 10, 12, 0.55);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             position: relative;
+            height: 100%; display: flex; flex-direction: column;
         }
         .qs-header-container {
             display: grid;
@@ -188,12 +203,67 @@
         .pmc-stat-val { font-family: var(--font-mono); color: #fff; font-size: 1rem; font-weight: 600; }
         .pmc-alert { background: rgba(0, 188, 212, 0.1); border-left: 3px solid #00bcd4; padding: 10px 14px; border-radius: 4px; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: #e0f7fa; }
 
+        /* Submit Clip Button Animation */
+        #submit-clip-btn {
+            background: rgba(255, 60, 30, 0.15);
+            border: 1px solid rgba(255, 60, 30, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+            padding: 14px 28px;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            margin-top: auto;
+        }
+
+        #submit-clip-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+            z-index: 1;
+        }
+
+        #submit-clip-btn:hover::before {
+            left: 100%;
+        }
+
+        #submit-clip-btn:hover {
+            background: rgba(255, 60, 30, 0.35);
+            border-color: #ff7a63;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 60, 30, 0.3), inset 0 1px 15px rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        #submit-clip-btn span {
+            position: relative;
+            z-index: 2;
+        }
+
         /* Sidebar — right column */
-        .c-sidebar { grid-column: 4; grid-row: 2 / 4; display: flex; flex-direction: column; gap: 14px; }
+        .c-sidebar { grid-column: 5 / 7; grid-row: 3; display: flex; flex-direction: column; gap: 14px; }
 
         .side-panel {
-            background: #111116; border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px; padding: 20px; flex: 1;
+            background: rgba(15, 10, 12, 0.45);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 2px 20px rgba(255, 255, 255, 0.03);
+            border-radius: 12px; padding: 24px;
+            height: 100%; display: flex; flex-direction: column;
         }
         .sp-title {
             font-family: var(--font-display); font-size: 1.1rem; color: #fff; letter-spacing: 1px;
@@ -260,9 +330,27 @@
             .qs-subtitle { justify-self: center; text-align: center; }
             .qs-view-all { justify-self: center; margin-top: 4px; }
         }
+        /* ═══════ NEON BACKGROUND SYSTEM ═══════ */
+        body { background-color: #08080e; margin: 0; position: relative; overflow-x: hidden; }
+        .bg-scene { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); will-change: transform; }
+        .blob-1 { width: 500px; height: 500px; top: -10%; left: -5%; background: radial-gradient(circle, rgba(255, 20, 0, 0.25) 0%, transparent 70%); animation: driftBlob1 15s ease-in-out infinite alternate; }
+        .blob-2 { width: 400px; height: 400px; bottom: 10%; right: -5%; background: radial-gradient(circle, rgba(255, 80, 0, 0.2) 0%, transparent 70%); animation: driftBlob2 18s ease-in-out infinite alternate; }
+        .blob-3 { width: 350px; height: 350px; top: 40%; left: 30%; background: radial-gradient(circle, rgba(200, 0, 0, 0.12) 0%, transparent 70%); animation: driftBlob3 22s ease-in-out infinite alternate; }
+        .stripe-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; pointer-events: none; background: repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(255, 30, 0, 0.025) 60px, rgba(255, 30, 0, 0.025) 61px); }
+        .scanlines { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px); }
+        .neon-bar-top { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #ff2200, #ff5500, #ff2200, transparent); z-index: 1000; pointer-events: none; box-shadow: 0 0 15px rgba(255, 34, 0, 0.6), 0 0 40px rgba(255, 34, 0, 0.3), 0 0 80px rgba(255, 34, 0, 0.15); }
+        @keyframes driftBlob1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(80px, 60px) scale(1.15); } }
+        @keyframes driftBlob2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-60px, -80px) scale(1.2); } }
+        @keyframes driftBlob3 { 0% { transform: translate(0, 0) scale(0.9); } 100% { transform: translate(50px, -40px) scale(1.1); } }
     </style>
 </head>
 <body>
+    <div class="bg-scene"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
+    <div class="stripe-overlay"></div>
+    <div class="scanlines"></div>
+    <div class="neon-bar-top"></div>
+
     <%- include('../partials/navbar') %>
 
     <div class="dash">
@@ -275,17 +363,18 @@
         </div>
 
         <!-- Find A Squad Matchmaking -->
-        <div class="c-featured" id="ff-matchmaking-banner" style="display: flex; background: linear-gradient(135deg, rgba(20,20,30,0.9), rgba(10,10,15,0.95)); border-color: rgba(0, 188, 212, 0.4);">
-            <div class="cf-bg" style="color: rgba(0, 188, 212, 0.1);">⚔️</div>
+        <div class="c-featured" id="ff-matchmaking-banner">
+            <div class="cf-bg">⚔️</div>
             <div class="cf-info">
-                <div class="cf-title" style="color: #00bcd4;">FIND A <span>SQUAD</span> <span id="mm-daily-limit" style="font-size:0.8rem; color:var(--text-muted); margin-left:8px; vertical-align:middle;">(3/3 left)</span></div>
+                <div class="cf-title">FIND A <span>SQUAD</span> <span id="mm-daily-limit" style="font-size:0.8rem; color:var(--text-muted); margin-left:8px; vertical-align:middle; font-family: var(--font-display); letter-spacing: 1px;">(3/3 left)</span></div>
                 <div class="cf-sub">Wanna play a Room match but do not have an opponent Squad? Broadcast a request to find an opponent.<br><span style="color:var(--text-muted);font-size:0.75rem;">(Costs 20 BlazeCoins if someone accepts. 30s timeout.)</span></div>
             </div>
-            <button id="find-squad-btn" class="cf-action" style="background: #00bcd4; box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3);">FIND A SQUAD</button>
+            <button id="find-squad-btn" class="cf-action">FIND A SQUAD</button>
             
-            <div id="ff-mm-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 10; flex-direction: column; justify-content: center; align-items: center; cursor: not-allowed;" title="Not available to find">
-                <div id="ff-mm-overlay-text" style="color: #ef4444; font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">COOLDOWN</div>
-                <div id="ff-mm-overlay-sub" style="color: #fff; font-family: var(--font-mono); font-size: 1.2rem; font-weight: bold; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">--:--</div>
+            <div id="ff-mm-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 10; flex-direction: column; justify-content: center; align-items: center; cursor: not-allowed; text-align: center;" title="Not available to find">
+                <div style="font-size: 6rem; opacity: 0.05; position: absolute; z-index: 0; filter: grayscale(100%);">🔒</div>
+                <div id="ff-mm-overlay-text" style="color: var(--blaze-orange); font-family: var(--font-display); font-size: 2rem; letter-spacing: 2px; text-shadow: 0 0 15px rgba(255,87,34,0.4); z-index: 1; text-transform: uppercase;">COOLDOWN</div>
+                <div id="ff-mm-overlay-sub" style="color: rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1rem; letter-spacing: 1px; margin-top: 6px; z-index: 1;">--:--</div>
             </div>
         </div>
 
@@ -310,20 +399,43 @@
         </script>
 
         <!-- Stats row -->
-        <div class="card c-stat">
-            <div class="cs-label">Active Players</div>
-            <div class="cs-val" id="ff-stat-operators"><div class="skeleton skeleton-val"></div></div>
-            <div class="cs-sub">Global players</div>
+        <div class="card c-stat c-stat-active" style="position: relative; background: rgba(20,10,12,0.85); border: 1px solid rgba(255, 87, 34, 0.15); border-radius: 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%); display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24px; box-shadow: inset 0 0 30px rgba(255, 87, 34, 0.05); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, #ff5722, transparent);"></div>
+            <div style="position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-bottom: 2px solid #ff5722; border-right: 2px solid #ff5722;"></div>
+            <div style="position: relative; z-index: 1;">
+                <div class="cs-label" style="color: #ff5722; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;">Active Players</div>
+                <div class="cs-val" id="ff-stat-operators" style="color: #fff; font-size: 2.4rem; text-shadow: 0 0 10px rgba(255,87,34,0.4);"><div class="skeleton skeleton-val"></div></div>
+                <div class="cs-sub" style="color: rgba(255,255,255,0.4);">Global players</div>
+            </div>
+            <div style="position: relative; z-index: 1; width: 48px; height: 48px; background: linear-gradient(135deg, rgba(255, 87, 34, 0.2), transparent); border: 1px solid rgba(255,87,34,0.4); transform: rotate(45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(255,87,34,0.3);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff5722" stroke-width="2" style="transform: rotate(-45deg); filter: drop-shadow(0 0 5px #ff5722);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
         </div>
-        <div class="card c-stat">
-            <div class="cs-label">Participated Tourneys</div>
-            <div class="cs-val" style="color:#22c55e" id="ff-stat-participated"><div class="skeleton skeleton-val"></div></div>
-            <div class="cs-sub">Your lifetime entries</div>
+        
+        <div class="card c-stat c-stat-matches" style="position: relative; background: rgba(10,20,15,0.85); border: 1px solid rgba(34, 197, 94, 0.15); border-radius: 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%); display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24px; box-shadow: inset 0 0 30px rgba(34, 197, 94, 0.05); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, #22c55e, transparent);"></div>
+            <div style="position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-bottom: 2px solid #22c55e; border-right: 2px solid #22c55e;"></div>
+            <div style="position: relative; z-index: 1;">
+                <div class="cs-label" style="color: #22c55e; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;">Participated Tourneys</div>
+                <div class="cs-val" id="ff-stat-participated" style="color: #fff; font-size: 2.4rem; text-shadow: 0 0 10px rgba(34, 197, 94, 0.4);"><div class="skeleton skeleton-val"></div></div>
+                <div class="cs-sub" style="color: rgba(255,255,255,0.4);">Your lifetime entries</div>
+            </div>
+            <div style="position: relative; z-index: 1; width: 48px; height: 48px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), transparent); border: 1px solid rgba(34, 197, 94, 0.4); transform: rotate(45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="transform: rotate(-45deg); filter: drop-shadow(0 0 5px #22c55e);"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
         </div>
-        <div class="card c-stat">
-            <div class="cs-label">Active Tourneys</div>
-            <div class="cs-val" id="ff-stat-tourneys"><div class="skeleton skeleton-val"></div></div>
-            <div class="cs-sub">Open for registration</div>
+
+        <div class="card c-stat c-stat-active" style="position: relative; background: rgba(20,15,10,0.85); border: 1px solid rgba(255, 183, 0, 0.15); border-radius: 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%); display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24px; box-shadow: inset 0 0 30px rgba(255, 183, 0, 0.05); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, #ffb700, transparent);"></div>
+            <div style="position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-bottom: 2px solid #ffb700; border-right: 2px solid #ffb700;"></div>
+            <div style="position: relative; z-index: 1;">
+                <div class="cs-label" style="color: #ffb700; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;">Active Tourneys</div>
+                <div class="cs-val" id="ff-stat-tourneys" style="color: #fff; font-size: 2.4rem; text-shadow: 0 0 10px rgba(255,183,0,0.4);"><div class="skeleton skeleton-val"></div></div>
+                <div class="cs-sub" style="color: rgba(255,255,255,0.4);">Open for registration</div>
+            </div>
+            <div style="position: relative; z-index: 1; width: 48px; height: 48px; background: linear-gradient(135deg, rgba(255, 183, 0, 0.2), transparent); border: 1px solid rgba(255,183,0,0.4); transform: rotate(45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(255,183,0,0.3);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffb700" stroke-width="2" style="transform: rotate(-45deg); filter: drop-shadow(0 0 5px #ffb700);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -377,34 +489,76 @@
         <!-- Sidebar -->
         <div class="c-sidebar">
             <div class="side-panel">
-                <div class="sp-title" style="display: flex; justify-content: space-between; align-items: center;">
-                    TOP CLIPS
-                    <span style="font-size: 0.65rem; color: var(--blaze-orange); background: rgba(255,87,34,0.1); padding: 3px 6px; border-radius: 4px;">DAILY REWARDS</span>
+                <div class="sp-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <span style="color: #fff; font-family: var(--font-display); letter-spacing: 1px; font-size: 1.2rem;">HIGHLIGHTS</span>
+                    <span style="font-size: 0.65rem; color: var(--blaze-orange); background: rgba(255,87,34,0.1); padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(255,87,34,0.3);">TOP 3</span>
                 </div>
-                <div id="top-clips-container">
-                    <div class="clip-item">
-                        <div class="skeleton" style="width:32px; height:32px; border-radius:50%; flex-shrink:0;"></div>
+                
+                <div id="dynamic-clips-container" style="flex: 1; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+                    <!-- Skeletons while loading -->
+                    <div class="clip-item skeleton-clip" style="display: flex; gap: 12px; padding: 8px; align-items: center;">
+                        <div class="skeleton" style="width:40px; height:40px; border-radius:6px; flex-shrink:0;"></div>
                         <div class="ci-info" style="width:100%;">
                             <div class="skeleton skeleton-text" style="height:14px; margin-bottom:6px; width:80%;"></div>
                             <div class="skeleton skeleton-text" style="height:10px; margin-bottom:0; width:50%;"></div>
                         </div>
                     </div>
-                    <div class="clip-item">
-                        <div class="skeleton" style="width:32px; height:32px; border-radius:50%; flex-shrink:0;"></div>
+                    <div class="clip-item skeleton-clip" style="display: flex; gap: 12px; padding: 8px; align-items: center;">
+                        <div class="skeleton" style="width:40px; height:40px; border-radius:6px; flex-shrink:0;"></div>
                         <div class="ci-info" style="width:100%;">
                             <div class="skeleton skeleton-text" style="height:14px; margin-bottom:6px; width:70%;"></div>
                             <div class="skeleton skeleton-text" style="height:10px; margin-bottom:0; width:60%;"></div>
                         </div>
                     </div>
                 </div>
-                <a href="#" class="view-link" onclick="event.preventDefault(); document.getElementById('clip-submit-modal').style.display='flex';">SUBMIT YOUR CLIP</a>
+
+                <div style="text-align: center; margin-bottom: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <div style="color: rgba(255,255,255,0.7); font-size: 0.8rem; line-height: 1.4;">
+                        Submit your best FF moments & become the <span style="color: var(--blaze-orange); font-weight: bold;">1st person</span> to showcase to the world & earn BlazeCoins!
+                    </div>
+                </div>
+
+                <a href="#" id="submit-clip-btn" onclick="event.preventDefault(); document.getElementById('clip-submit-modal').style.display='flex';">
+                    <span>SUBMIT YOUR CLIP</span>
+                </a>
             </div>
-
-
-
-
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('dynamic-clips-container');
+            if (!container) return;
+            try {
+                const res = await fetch('/api/game/Free Fire/clips');
+                if (res.ok) {
+                    const clips = await res.json();
+                    if (clips && clips.length > 0) {
+                        container.innerHTML = '';
+                        clips.forEach(clip => {
+                            container.innerHTML += `
+                                <div class="clip-item" style="display: flex; gap: 12px; align-items: center; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,87,34,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'" onclick="window.open('${clip.url}', '_blank')">
+                                    <div style="width: 40px; height: 40px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,87,34,0.3); flex-shrink: 0;">
+                                        <img src="${clip.thumbnail || '/public/clip-thumb.jpg'}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="color: #fff; font-size: 0.85rem; font-family: var(--font-display); letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;">${clip.title}</div>
+                                        <div style="color: rgba(255,255,255,0.5); font-size: 0.7rem;">By <span style="color: var(--blaze-orange);">${clip.author}</span> • ${clip.views} views</div>
+                                    </div>
+                                    <div style="color: rgba(255,255,255,0.3); font-size: 1.2rem;">▶</div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        container.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: auto;">No clips found. Be the first!</div>';
+                    }
+                }
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: auto;">Error loading clips</div>';
+            }
+        });
+    </script>
 
     <script src="/script.js?v=1.2"></script>
     <script>
@@ -451,8 +605,32 @@
                 const overlay = document.getElementById('ff-mm-overlay');
                 if (overlay) {
                     overlay.style.display = 'flex';
-                    document.getElementById('ff-mm-overlay-text').innerText = 'DAILY LIMIT REACHED';
-                    document.getElementById('ff-mm-overlay-sub').innerText = '0/3 left. Come back tomorrow!';
+                    document.getElementById('ff-mm-overlay-text').innerText = 'LIMIT REACHED';
+                    
+                    // Add an extra lock icon overlay class to completely hide the red
+                    const banner = document.getElementById('ff-matchmaking-banner');
+                    if(banner) {
+                        banner.style.background = 'rgba(15, 10, 12, 0.4)';
+                        banner.style.borderColor = 'rgba(255,255,255,0.1)';
+                    }
+
+                    const midnight = new Date();
+                    midnight.setHours(24, 0, 0, 0); // Next midnight
+                    const sub = document.getElementById('ff-mm-overlay-sub');
+
+                    const updateMidnightTimer = () => {
+                        const diff = midnight - new Date();
+                        if (diff <= 0) {
+                            window.location.reload();
+                        } else {
+                            const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
+                            const m = Math.floor((diff % (1000 * 60 * 60)) / 60000).toString().padStart(2, '0');
+                            const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                            sub.innerHTML = `<span style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; letter-spacing: 2px;">0/3 LEFT</span><br><span style="color:var(--blaze-orange); font-size:0.9rem; font-weight:bold; letter-spacing:1px;">RESETS IN ${h}:${m}:${s}</span>`;
+                        }
+                    };
+                    updateMidnightTimer();
+                    setInterval(updateMidnightTimer, 1000);
                 }
             } else if (blockedUntil && new Date() < new Date(blockedUntil)) {
                 startCooldownTimer(new Date(blockedUntil));
@@ -1134,6 +1312,13 @@
                 overlay.style.display = 'flex';
                 text.innerText = 'COOLDOWN';
                 
+                // Add the extra lock icon overlay styling
+                const banner = document.getElementById('ff-matchmaking-banner');
+                if(banner) {
+                    banner.style.background = 'rgba(15, 10, 12, 0.4)';
+                    banner.style.borderColor = 'rgba(255,255,255,0.1)';
+                }
+                
                 clearInterval(mmBlockInterval);
                 const updateTimer = () => {
                     const diff = targetDate - new Date();
@@ -1143,7 +1328,7 @@
                     } else {
                         const m = Math.floor(diff / 60000).toString().padStart(2, '0');
                         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-                        sub.innerText = `${m}:${s}`;
+                        sub.innerHTML = `<span style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; letter-spacing: 2px;">${m}:${s}</span><br><span style="color:var(--text-muted); font-size:0.9rem;">REMAINING</span>`;
                     }
                 };
                 updateTimer();

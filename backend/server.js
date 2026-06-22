@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 // Express Session for Admin Panel
 const session = require('express-session');
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'blaze_default_session_secret',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { 
