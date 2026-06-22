@@ -13,10 +13,10 @@ const cacheMiddleware = (durationInSeconds) => {
         const cachedResponse = cache.get(key);
 
         if (cachedResponse) {
-            console.log(`[Cache Hit] ${key}`);
+            // console.log(`[Cache Hit] ${key}`);
             return res.json(cachedResponse);
         } else {
-            console.log(`[Cache Miss] ${key}`);
+            // console.log(`[Cache Miss] ${key}`);
             // Intercept res.json to cache the response before sending it
             const originalJson = res.json.bind(res);
             res.json = (body) => {

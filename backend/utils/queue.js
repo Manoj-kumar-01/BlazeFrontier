@@ -18,7 +18,7 @@ agenda.define('send-inapp-notification', async (job) => {
             message,
             type: type || 'info'
         });
-        console.log(`[Queue] In-app notification created for User ${userId}: ${title}`);
+        // console.log(`[Queue] In-app notification created for User ${userId}: ${title}`);
     } catch (err) {
         console.error(`[Queue Error] Failed to create notification: ${err.message}`);
         throw err;

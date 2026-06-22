@@ -203,29 +203,41 @@
         .pmc-stat-val { font-family: var(--font-mono); color: #fff; font-size: 1rem; font-weight: 600; }
         .pmc-alert { background: rgba(0, 188, 212, 0.1); border-left: 3px solid #00bcd4; padding: 10px 14px; border-radius: 4px; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: #e0f7fa; }
 
-        /* Submit Clip Button Animation */
-        #submit-clip-btn {
+        /* Submit Clip & Registration Button Animation */
+        #submit-clip-btn, #start-reg-btn {
             background: rgba(255, 60, 30, 0.15);
             border: 1px solid rgba(255, 60, 30, 0.4);
             backdrop-filter: blur(8px);
             border-radius: 8px;
-            padding: 14px 28px;
             font-family: var(--font-display);
-            font-size: 1.2rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: #fff;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
             text-decoration: none;
+        }
+
+        #submit-clip-btn {
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-top: auto;
         }
 
-        #submit-clip-btn::before {
+        #start-reg-btn {
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+        }
+
+        #submit-clip-btn::before, #start-reg-btn::before {
             content: '';
             position: absolute;
             top: 0;
@@ -237,11 +249,11 @@
             z-index: 1;
         }
 
-        #submit-clip-btn:hover::before {
+        #submit-clip-btn:hover::before, #start-reg-btn:hover::before {
             left: 100%;
         }
 
-        #submit-clip-btn:hover {
+        #submit-clip-btn:hover, #start-reg-btn:hover {
             background: rgba(255, 60, 30, 0.35);
             border-color: #ff7a63;
             transform: translateY(-2px);
@@ -249,7 +261,7 @@
             cursor: pointer;
         }
 
-        #submit-clip-btn span {
+        #submit-clip-btn span, #start-reg-btn span {
             position: relative;
             z-index: 2;
         }
@@ -580,7 +592,7 @@
             let blockedUntil = null;
             let dailyCount = 0;
             try {
-                const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                 if (profRes.status === 401) {
                     localStorage.removeItem('blaze_token');
                     window.location.href = '/auth';
@@ -761,7 +773,7 @@
                             <div style="font-size: 2rem; margin-bottom: 12px;">🔥</div>
                             <div style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px;">BECOME A TRUSTED PLAYER</div>
                             <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Register for a Qualification Series to prove your skills and unlock Elite Tournaments.</div>
-                            <a href="/dashboard/tournaments/register" style="display:inline-block; background: var(--blaze-orange); color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-family: var(--font-display); font-size: 0.9rem;">START REGISTRATION</a>
+                            <a href="/dashboard/tournaments/register" id="start-reg-btn"><span>START REGISTRATION</span></a>
                         </div>
                         `;
                     }
@@ -876,7 +888,7 @@
             let isDurationValid = false;
             let playerBlazeId = '';
             try {
-                const pRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                const pRes = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                 if (pRes.ok) {
                     const pData = await pRes.json();
                     playerBlazeId = pData.playerId || '';
@@ -1071,7 +1083,7 @@
             let isDurationValid = false;
             let playerBlazeId = '';
             try {
-                const pRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                const pRes = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                 if (pRes.ok) {
                     const pData = await pRes.json();
                     playerBlazeId = pData.playerId || '';
@@ -1236,6 +1248,7 @@
         </div>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('blaze_token');
@@ -1247,7 +1260,6 @@
 
                 const btn = document.getElementById('find-squad-btn');
                 btn.disabled = true;
-                btn.innerText = 'SEARCHING...';
 
                 try {
                     const res = await fetch('/api/matchmaking/request', {
@@ -1257,7 +1269,8 @@
                     const data = await res.json();
                     if (!res.ok) {
                         if (res.status === 403 && data.msg.includes('recently played')) {
-                            // Already on cooldown, wait for timer
+                            alert(data.msg);
+                            btn.disabled = false;
                         } else if (res.status === 403 && data.msg.includes('Limit Reached')) {
                             const overlay = document.getElementById('ff-mm-overlay');
                             if (overlay) {
@@ -1268,10 +1281,23 @@
                         } else {
                             alert(data.msg);
                             btn.disabled = false;
-                            btn.innerText = 'FIND A SQUAD';
                         }
                     } else {
-                        // Request sent successfully, decrement visually
+                        // Success! Global matchmaking JS handles the popup timer
+                        // Start Local 30s timer for sender!
+                        let timeLeft = 30;
+                        btn.innerText = `SEARCHING (${timeLeft}s)`;
+                        const timerInterval = setInterval(() => {
+                            timeLeft--;
+                            if (timeLeft <= 0) {
+                                clearInterval(timerInterval);
+                                btn.innerText = 'SEARCHING...';
+                            } else {
+                                btn.innerText = `SEARCHING (${timeLeft}s)`;
+                            }
+                        }, 1000);
+
+                        // Decrement visually
                         const limitSpan = document.getElementById('mm-daily-limit');
                         if (limitSpan) {
                             const match = limitSpan.innerText.match(/\d+/);

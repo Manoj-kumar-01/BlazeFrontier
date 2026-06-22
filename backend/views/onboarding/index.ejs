@@ -271,6 +271,13 @@
         // Auto detect location on load
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(detectLocation, 500);
+
+            // Prevent Back Button Navigation
+            history.pushState(null, null, location.href);
+            window.addEventListener('popstate', function () {
+                history.pushState(null, null, location.href);
+                alert("Please complete the setup to proceed. You cannot go back.");
+            });
         });
 
         // Location detection

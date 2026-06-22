@@ -5,67 +5,19 @@ const User = require('../models/User');
 
 // Global In-Memory State for Matchmaking
 // Note: In a true multi-server production environment, Redis pub/sub would be used here.
-let clients = []; 
 let activeRequests = new Map(); // requestId => { requesterId, requesterBlz, timer }
 let activeMatches = new Map();  // matchId => { player1Id, player2Id }
 
-// Heartbeat every 20 seconds to keep SSE connections alive and prevent proxy timeouts (Fixes infinite reconnects)
-setInterval(() => {
-    clients.forEach((client, index) => {
-        try {
-            client.res.write(': heartbeat\n\n');
-            if (typeof client.res.flush === 'function') client.res.flush();
-        } catch (e) {
-            clients.splice(index, 1);
-        }
-    });
-}, 20000);
-
-// Helper to broadcast to all connected clients or a specific client
-function broadcast(event, data, targetUserId = null) {
-    const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
-    clients.forEach(client => {
-        if (!targetUserId || client.userId === targetUserId) {
-            client.res.write(payload);
-            if (typeof client.res.flush === 'function') {
-                client.res.flush();
-            }
-        }
-    });
-}
-
-// @route   GET /api/matchmaking/stream
-// @desc    Connect to SSE stream for real-time matchmaking events
-router.get('/stream', authMiddleware, (req, res) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('X-Accel-Buffering', 'no'); // Prevent NGINX/Proxy buffering to fix delayed/missing events
-    res.flushHeaders();
-
-    const userId = req.user.id;
-
-    // Add to clients list
-    clients.push({ userId, res });
-
-    // Send initial connected event
-    res.write(`event: connected\ndata: ${JSON.stringify({ msg: 'SSE Connected' })}\n\n`);
-    
-    // Send active requests if any
-    activeRequests.forEach((reqData, reqId) => {
-        if (reqId !== userId) {
-            res.write(`event: incoming_request\ndata: ${JSON.stringify({ requestId: reqId, requesterBlz: reqData.requesterBlz })}\n\n`);
-        }
-    });
-
-    if (typeof res.flush === 'function') {
-        res.flush();
+// Helper to broadcast using Socket.IO
+function broadcast(req, event, data, targetUserId = null) {
+    const io = req.app.get('io');
+    if (!io) return;
+    if (targetUserId) {
+        io.to(targetUserId).emit(event, data);
+    } else {
+        io.emit(event, data);
     }
-
-    req.on('close', () => {
-        clients = clients.filter(c => c.res !== res);
-    });
-});
+}
 
 // @route   POST /api/matchmaking/request
 // @desc    Broadcast a squad match request to all users
@@ -132,10 +84,10 @@ router.post('/request', authMiddleware, async (req, res) => {
                 }
 
                 // Notify the requester that it expired
-                broadcast('request_expired', { msg: 'No one accepted. You must wait 10 minutes before requesting again.' }, userId);
+                broadcast(req, 'request_expired', { msg: 'No one accepted. You must wait 10 minutes before requesting again.' }, userId);
                 
                 // Tell everyone else the request is gone
-                broadcast('request_cleared', { requestId });
+                broadcast(req, 'request_cleared', { requestId });
             }
         }, 30000); // 30 seconds
 
@@ -145,15 +97,8 @@ router.post('/request', authMiddleware, async (req, res) => {
         user.matchmakingDailyCount = (user.matchmakingDailyCount || 0) + 1;
         await user.save();
 
-        // 5. Broadcast to ALL OTHER connected clients
-        clients.forEach(client => {
-            if (client.userId !== userId) {
-                client.res.write(`event: incoming_request\ndata: ${JSON.stringify({ requestId, requesterBlz })}\n\n`);
-                if (typeof client.res.flush === 'function') {
-                    client.res.flush();
-                }
-            }
-        });
+        // 5. Broadcast to ALL connected clients (frontend filters its own)
+        broadcast(req, 'incoming_request', { requestId, requesterBlz, requesterId: userId });
 
         res.json({ msg: 'Request sent. Waiting for 30 seconds...' });
 
@@ -188,8 +133,8 @@ router.post('/accept/:requestId', authMiddleware, async (req, res) => {
         const requester = await User.findById(request.requesterId);
         if (requester.blazeCoins < 20) {
             // Technically, we should check this BEFORE they request, but we enforce it here
-            broadcast('request_expired', { msg: 'Match failed. You do not have enough BlazeCoins.' }, request.requesterId);
-            broadcast('request_cleared', { requestId });
+            broadcast(req, 'request_expired', { msg: 'Match failed. You do not have enough BlazeCoins.' }, request.requesterId);
+            broadcast(req, 'request_cleared', { requestId });
             return res.status(400).json({ msg: 'The requester does not have enough BlazeCoins.' });
         }
         
@@ -224,14 +169,14 @@ router.post('/accept/:requestId', authMiddleware, async (req, res) => {
         activeMatches.set(matchId, { player1Id: request.requesterId, player2Id: acceptorId });
 
         // 4. Notify everyone else to clear the popup
-        broadcast('request_cleared', { requestId });
+        broadcast(req, 'request_cleared', { requestId });
 
         // 5. Notify the two players that the match is formed
         const matchData1 = { matchId, opponent: acceptor.playerId, role: 'requester' };
         const matchData2 = { matchId, opponent: requester.playerId, role: 'acceptor' };
         
-        broadcast('match_formed', matchData1, request.requesterId);
-        broadcast('match_formed', matchData2, acceptorId);
+        broadcast(req, 'match_formed', matchData1, request.requesterId);
+        broadcast(req, 'match_formed', matchData2, acceptorId);
 
         res.json({ msg: 'Match accepted!' });
 
@@ -263,8 +208,8 @@ router.post('/chat/:matchId', authMiddleware, (req, res) => {
             const allowed = ['Who will create the room?', 'I will create the room', 'You create the room', 'Credentials Sent', 'Joined!'];
             if (!allowed.includes(message)) return res.status(400).json({ msg: 'Invalid message.' });
             
-            broadcast('chat_message', { sender: userId, type: 'text', message }, targetId);
-            broadcast('chat_message', { sender: userId, type: 'text', message }, userId); // echo back to sender
+            broadcast(req, 'chat_message', { sender: userId, type: 'text', message }, targetId);
+            broadcast(req, 'chat_message', { sender: userId, type: 'text', message }, userId); // echo back to sender
 
         } else if (type === 'credentials') {
             // Validate 10-digit numbers for ID and Pass
@@ -274,8 +219,8 @@ router.post('/chat/:matchId', authMiddleware, (req, res) => {
             }
 
             const credMsg = `Room ID: ${roomId} | Pass: ${password}`;
-            broadcast('chat_message', { sender: userId, type: 'credentials', message: credMsg }, targetId);
-            broadcast('chat_message', { sender: userId, type: 'credentials', message: credMsg }, userId);
+            broadcast(req, 'chat_message', { sender: userId, type: 'credentials', message: credMsg }, targetId);
+            broadcast(req, 'chat_message', { sender: userId, type: 'credentials', message: credMsg }, userId);
         }
 
         res.json({ msg: 'Message sent' });
@@ -292,7 +237,7 @@ router.post('/leave/:matchId', authMiddleware, (req, res) => {
     if (activeMatches.has(matchId)) {
         const match = activeMatches.get(matchId);
         const targetId = match.player1Id === req.user.id ? match.player2Id : match.player1Id;
-        broadcast('chat_ended', { msg: 'Opponent has left the room.' }, targetId);
+        broadcast(req, 'chat_ended', { msg: 'Opponent has left the room.' }, targetId);
         activeMatches.delete(matchId);
     }
     res.json({ msg: 'Left room' });

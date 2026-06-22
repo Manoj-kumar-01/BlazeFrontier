@@ -9,15 +9,12 @@ const client = new Client({
 let isBotReady = false;
 
 if (process.env.DISCORD_BOT_TOKEN) {
-    client.login(process.env.DISCORD_BOT_TOKEN)
-        .then(() => {
-            console.log('Discord Bot logged in successfully.');
-            console.log('Bot is currently in these servers (Guild IDs):', client.guilds.cache.map(g => g.id));
-            isBotReady = true;
-        })
-        .catch(err => {
-            console.error('Discord Bot login failed:', err);
-        });
+    client.login(process.env.DISCORD_BOT_TOKEN);
+    client.once('clientReady', () => {
+        // console.log('Discord Bot logged in successfully.');
+        // console.log('Bot is currently in these servers (Guild IDs):', client.guilds.cache.map(g => g.id));
+        isBotReady = true;
+    });
 } else {
     console.warn('DISCORD_BOT_TOKEN is missing. Discord verification will fail.');
 }

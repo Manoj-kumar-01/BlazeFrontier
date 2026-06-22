@@ -5,52 +5,62 @@ let currentMatchId = null;
 let mmTimerInterval = null;
 let mmBlockInterval = null;
 
+let socket = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('blaze_token');
     if (!token) return;
 
-    // Establish SSE connection
-    mmEventSource = new EventSource(`/api/matchmaking/stream?token=${token}`);
+    let myUserId = null;
+    try {
+        myUserId = JSON.parse(atob(token.split('.')[1])).id;
+    } catch(e) {}
 
-    mmEventSource.onmessage = (e) => {
-        const payload = JSON.parse(e.data);
+    // Establish Socket.IO connection
+    socket = io();
+    socket.emit('authenticate', token);
+
+    socket.on('incoming_request', (payload) => {
+        // DO NOT show popup if I am the sender
+        if (payload.requesterId === myUserId) return;
         
-        if (e.type === 'incoming_request') {
-            showMmPopup(payload.requestId, payload.requesterBlz);
-        } else if (e.type === 'request_cleared') {
-            if (currentRequestId === payload.requestId) {
-                hideMmPopup();
-            }
-        } else if (e.type === 'request_expired') {
-            const overlay = document.getElementById('ff-mm-overlay');
-            const isBlocked = overlay && overlay.style.display === 'flex';
-            
-            if (!isBlocked) {
-                alert(payload.msg);
-                const findBtn = document.getElementById('find-squad-btn');
-                if (findBtn) {
-                    findBtn.innerText = 'FIND A SQUAD';
-                    findBtn.disabled = false;
-                    findBtn.style.opacity = '1';
-                }
-            }
-        } else if (e.type === 'match_formed') {
-            currentMatchId = payload.matchId;
-            hideMmPopup();
-            openChatModal(payload.opponent);
-        } else if (e.type === 'chat_message') {
-            appendChatMessage(payload.sender, payload.type, payload.message);
-        } else if (e.type === 'chat_ended') {
-            alert(payload.msg);
-            closeChatModal();
-        }
-    };
+        showMmPopup(payload.requestId, payload.requesterBlz);
+    });
 
-    const eventTypes = ['incoming_request', 'request_cleared', 'request_expired', 'match_formed', 'chat_message', 'chat_ended'];
-    eventTypes.forEach(type => {
-        mmEventSource.addEventListener(type, (e) => {
-            mmEventSource.onmessage({ type: e.type, data: e.data });
-        });
+    socket.on('request_cleared', (payload) => {
+        if (currentRequestId === payload.requestId) {
+            hideMmPopup();
+        }
+    });
+
+    socket.on('request_expired', (payload) => {
+        const overlay = document.getElementById('ff-mm-overlay');
+        const isBlocked = overlay && overlay.style.display === 'flex';
+        
+        if (!isBlocked) {
+            alert(payload.msg);
+            const findBtn = document.getElementById('find-squad-btn');
+            if (findBtn) {
+                findBtn.innerText = 'FIND A SQUAD';
+                findBtn.disabled = false;
+                findBtn.style.opacity = '1';
+            }
+        }
+    });
+
+    socket.on('match_formed', (payload) => {
+        currentMatchId = payload.matchId;
+        hideMmPopup();
+        openChatModal(payload.opponent);
+    });
+
+    socket.on('chat_message', (payload) => {
+        appendChatMessage(payload.sender, payload.type, payload.message);
+    });
+
+    socket.on('chat_ended', (payload) => {
+        alert(payload.msg);
+        closeChatModal();
     });
 
     // Accept Match Button
@@ -107,13 +117,6 @@ function showMmPopup(reqId, blz) {
     
     popup.style.display = 'block';
     setTimeout(() => popup.style.bottom = '20px', 10);
-    
-    const findBtn = document.getElementById('find-squad-btn');
-    if (findBtn) {
-        findBtn.disabled = true;
-        findBtn.style.opacity = '0.5';
-        findBtn.innerText = 'SEARCHING...';
-    }
     
     let timeLeft = 30;
     document.getElementById('mm-timer').innerText = timeLeft + 's';

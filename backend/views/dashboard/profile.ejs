@@ -734,7 +734,7 @@
                         
                         if (claimData.claimed) {
                             document.getElementById('st-bp').textContent = claimData.totalBonus;
-                            const freshRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                            const freshRes = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                             if (freshRes.ok) {
                                 const freshU = await freshRes.json();
                                 localStorage.setItem('blaze_profile_cache', JSON.stringify(freshU));
@@ -764,7 +764,7 @@
 
                 // 2. Fetch fresh data in the background
                 try {
-                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                     if (res.status === 401 || res.status === 404) {
                         localStorage.removeItem('blaze_token');
                         localStorage.removeItem('blaze_profile_cache');

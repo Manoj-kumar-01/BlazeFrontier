@@ -282,7 +282,7 @@
                         }
                     }
 
-                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                     const data = await res.json();
                     currentUserPlayerId = data.playerId;
                     
@@ -425,13 +425,18 @@
 
             // Date logic setup
             const setupDateLimits = () => {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+                const today = new Date();
                 
-                const nextWeek = new Date();
-                nextWeek.setDate(tomorrow.getDate() + 7);
-                const nextWeekStr = nextWeek.toISOString().split('T')[0];
+                const tomorrow = new Date(today);
+                tomorrow.setDate(today.getDate() + 1);
+                const tomorrowLocal = new Date(tomorrow.getTime() - tzOffset);
+                const tomorrowStr = tomorrowLocal.toISOString().split('T')[0];
+                
+                const nextWeek = new Date(today);
+                nextWeek.setDate(today.getDate() + 7);
+                const nextWeekLocal = new Date(nextWeek.getTime() - tzOffset);
+                const nextWeekStr = nextWeekLocal.toISOString().split('T')[0];
                 
                 const el = document.getElementById('selected-date');
                 if(el) {

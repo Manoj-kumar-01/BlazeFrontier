@@ -14,7 +14,7 @@ let statsCache = {
     data: null,
     lastFetched: 0
 };
-const CACHE_DURATION_MS = 60000; // 1 minute cache
+const CACHE_DURATION_MS = 10000; // 10 seconds cache
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -709,7 +709,7 @@ router.get('/poster/:id', async (req, res) => {
 
 // @route   GET /api/tournaments
 // @desc    Get dynamic tournaments, matches, and registrations separated into Live and Upcoming
-router.get('/tournaments', authMiddleware, cacheMiddleware(60), async (req, res) => {
+router.get('/tournaments', authMiddleware, async (req, res) => {
     try {
         const Match = require('../models/Match');
         const Registration = require('../models/Registration');

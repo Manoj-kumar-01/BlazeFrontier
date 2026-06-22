@@ -203,7 +203,7 @@
 
                 let userRegion = null;
                 try {
-                    const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token } });
+                    const profRes = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                     if (profRes.ok) {
                         const prof = await profRes.json();
                         

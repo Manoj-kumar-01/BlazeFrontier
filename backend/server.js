@@ -190,21 +190,41 @@ async function startBackend() {
     }));
 
     // Connect to MongoDB
+    mongoose.set('strictQuery', false);
     mongoose.connect(process.env.MONGO_URI)
     .then(async () => {
-        console.log('MongoDB Connected to Blaze Frontier Cluster');
+        // console.log('MongoDB Connected to Blaze Frontier Cluster');
         // Start Agenda Queue
         const agenda = require('./utils/queue');
         await agenda.start();
-        console.log('Agenda Job Queue Started successfully.');
+        // console.log('Agenda Job Queue Started successfully.');
     })
     .catch(err => console.log('MongoDB Connection Error:', err));
 
     if (process.env.NODE_ENV !== 'test') {
         const PORT = process.env.PORT || 5000;
-        app.listen(PORT, () => {
+        const http = require('http');
+        const server = http.createServer(app);
+        
+        // Setup Socket.IO
+        const { Server } = require('socket.io');
+        const io = new Server(server, { cors: { origin: '*' } });
+        app.set('io', io);
+        
+        io.on('connection', (socket) => {
+            socket.on('authenticate', (token) => {
+                try {
+                    const jwt = require('jsonwebtoken');
+                    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                    socket.join(decoded.id);
+                } catch (e) {}
+            });
+            socket.on('disconnect', () => {});
+        });
+
+        server.listen(PORT, '0.0.0.0', () => {
             console.log(`Blaze Frontier Backend running on port ${PORT}`);
-            console.log(`GraphQL endpoint available at http://localhost:${PORT}/graphql`);
+            // console.log(`GraphQL endpoint available at http://localhost:${PORT}/graphql`);
         });
     }
 }
