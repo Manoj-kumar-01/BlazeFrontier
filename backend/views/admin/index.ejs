@@ -978,7 +978,7 @@
         async function loadUsers() {
             const list = document.getElementById('user-list');
             try {
-                const res = await fetch('<%= adminPrefix %>/api/users', { cache: 'no-store' });
+                const res = await fetch(`<%= adminPrefix %>/api/users?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">Access Denied.</td></tr>';
                 const users = await res.json();
                 if (users.length === 0) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">No users found.</td></tr>';
@@ -1017,7 +1017,7 @@
                 }
 
                 // Also load verified matches
-                const regRes = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
+                const regRes = await fetch(`<%= adminPrefix %>/api/registrations?t=${Date.now()}`, { cache: 'no-store' });
                 if (regRes.ok) {
                     const regs = await regRes.json();
                     const verifiedRegs = regs.filter(r => r.status === 'Verified' || r.status === 'Completed').sort((a, b) => (a.matchId || 0) - (b.matchId || 0));
@@ -1056,7 +1056,7 @@
         async function loadBannedUsers() {
             const list = document.getElementById('banned-list');
             try {
-                const res = await fetch('<%= adminPrefix %>/api/banned-users', { cache: 'no-store' });
+                const res = await fetch(`<%= adminPrefix %>/api/banned-users?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">Failed to load.</td></tr>';
                 const banned = await res.json();
                 if (banned.length === 0) return list.innerHTML = '<tr><td colspan="4" style="text-align:center;">No banned users. Good job!</td></tr>';
@@ -1111,7 +1111,7 @@
         async function loadRegistrations() {
             const list = document.getElementById('reg-list');
             try {
-                const res = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
+                const res = await fetch(`<%= adminPrefix %>/api/registrations?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) return;
                 const regs = await res.json();
 
@@ -1217,7 +1217,7 @@
         async function loadQualificationMatches() {
             const list = document.getElementById('qual-list');
             try {
-                const res = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
+                const res = await fetch(`<%= adminPrefix %>/api/registrations?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) return;
                 const regs = await res.json();
 
@@ -1276,7 +1276,7 @@
         async function loadSeasonRegistrations() {
             const list = document.getElementById('season-reg-list');
             try {
-                const res = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
+                const res = await fetch(`<%= adminPrefix %>/api/registrations?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) return;
                 const regs = await res.json();
 
@@ -1321,7 +1321,7 @@
             const list = document.getElementById('approved-creds-list');
             const select = document.getElementById('cred-match-id');
             try {
-                const res = await fetch('<%= adminPrefix %>/api/registrations', { cache: 'no-store' });
+                const res = await fetch(`<%= adminPrefix %>/api/registrations?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) return;
                 const regs = await res.json();
 
@@ -1751,7 +1751,7 @@
         async function loadClips() {
             const list = document.getElementById('clip-list');
             try {
-                const res = await fetch('<%= adminPrefix %>/api/clip-submissions', { cache: 'no-store' });
+                const res = await fetch(`<%= adminPrefix %>/api/clip-submissions?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) return list.innerHTML = '<div style="color:#ef4444;">Failed to load clips.</div>';
                 const clips = await res.json();
                 if (clips.length === 0) return list.innerHTML = '<div style="color:var(--text-muted);">No pending clip submissions.</div>';

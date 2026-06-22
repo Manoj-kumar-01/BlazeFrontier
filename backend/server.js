@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1); // Fix for proxy IPs, sessions, rate limits
 
 const helmet = require('helmet');
 const compression = require('compression');
@@ -78,6 +79,16 @@ const adminLoginLimiter = rateLimit({
 });
 const speakeasy = require('speakeasy');
 
+// Global No-Cache for APIs and dynamic content (Fix BFCache and caching bugs)
+app.use((req, res, next) => {
+    if (!req.path.startsWith('/public')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
+    next();
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/matchmaking', matchmakingRoutes);
@@ -127,13 +138,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: '1d' }));
 app.use('/public', express.static(path.join(__dirname, '../public'), { maxAge: '1d' }));
 
-// Middleware to prevent caching for authenticated views
-app.use('/dashboard', (req, res, next) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    next();
-});
+// Cache control handled globally above
 
 // Frontend View Routes
 app.get('/auth', (req, res) => res.render('auth/auth', { clientId: process.env.GOOGLE_CLIENT_ID }));

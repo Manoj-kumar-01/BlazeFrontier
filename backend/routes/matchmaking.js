@@ -9,6 +9,18 @@ let clients = [];
 let activeRequests = new Map(); // requestId => { requesterId, requesterBlz, timer }
 let activeMatches = new Map();  // matchId => { player1Id, player2Id }
 
+// Heartbeat every 20 seconds to keep SSE connections alive and prevent proxy timeouts (Fixes infinite reconnects)
+setInterval(() => {
+    clients.forEach((client, index) => {
+        try {
+            client.res.write(': heartbeat\n\n');
+            if (typeof client.res.flush === 'function') client.res.flush();
+        } catch (e) {
+            clients.splice(index, 1);
+        }
+    });
+}, 20000);
+
 // Helper to broadcast to all connected clients or a specific client
 function broadcast(event, data, targetUserId = null) {
     const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
@@ -26,8 +38,9 @@ function broadcast(event, data, targetUserId = null) {
 // @desc    Connect to SSE stream for real-time matchmaking events
 router.get('/stream', authMiddleware, (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Prevent NGINX/Proxy buffering to fix delayed/missing events
     res.flushHeaders();
 
     const userId = req.user.id;
