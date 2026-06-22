@@ -274,18 +274,8 @@
             </div>
         </div>
 
-        <!-- Featured Promo -->
-        <div class="c-featured" id="ff-promo-banner" style="display: flex;">
-            <div class="cf-bg">🔥</div>
-            <div class="cf-info">
-                <div class="cf-title">DOMINATE <span>THE ARENA</span></div>
-                <div class="cf-sub">Join our official community, become part of the elite Guild, and unlock exclusive gaming perks!<br><br><span style="color:var(--blaze-orange);font-weight:600;">Note: To lead the leaderboards and be eligible for major tournaments, you must first verify your Discord and become a Trusted Player.</span></div>
-            </div>
-            <a href="/dashboard/tournaments/register" class="cf-action">START REGISTRATION</a>
-        </div>
-
         <!-- Find A Squad Matchmaking -->
-        <div class="c-featured" id="ff-matchmaking-banner" style="display: none; background: linear-gradient(135deg, rgba(20,20,30,0.9), rgba(10,10,15,0.95)); border-color: rgba(0, 188, 212, 0.4);">
+        <div class="c-featured" id="ff-matchmaking-banner" style="display: flex; background: linear-gradient(135deg, rgba(20,20,30,0.9), rgba(10,10,15,0.95)); border-color: rgba(0, 188, 212, 0.4);">
             <div class="cf-bg" style="color: rgba(0, 188, 212, 0.1);">⚔️</div>
             <div class="cf-info">
                 <div class="cf-title" style="color: #00bcd4;">FIND A <span>SQUAD</span> <span id="mm-daily-limit" style="font-size:0.8rem; color:var(--text-muted); margin-left:8px; vertical-align:middle;">(3/3 left)</span></div>
@@ -306,11 +296,6 @@
                     if (cached) {
                         const u = JSON.parse(cached);
                         if (u.isGenuine) {
-                            const promo = document.getElementById('ff-promo-banner');
-                            if (promo) promo.style.display = 'none';
-                            const mm = document.getElementById('ff-matchmaking-banner');
-                            if (mm) mm.style.display = 'flex';
-                            
                             // The elements below might not be parsed yet, wait for DOM
                             document.addEventListener('DOMContentLoaded', () => {
                                 const qs = document.getElementById('ff-qs-section');
@@ -502,18 +487,6 @@
                     let html = '';
                     
                     const activeReq = tData.requests && tData.requests.find(r => r.status === 'Approved' || r.status === 'Pending' || r.status === 'Awaiting Verification');
-                    
-                    const promoBanner = document.getElementById('ff-promo-banner');
-                    const matchBanner = document.getElementById('ff-matchmaking-banner');
-                    if (promoBanner) {
-                        if (activeReq || isGenuine) {
-                            promoBanner.style.display = 'none';
-                            if (matchBanner) matchBanner.style.display = 'flex';
-                        } else {
-                            promoBanner.style.display = 'flex';
-                            if (matchBanner) matchBanner.style.display = 'none';
-                        }
-                    }
 
                     if (activeReq) {
                         const formatStr = activeReq.format ? activeReq.format.toUpperCase() : 'UNKNOWN';
