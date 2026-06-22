@@ -555,3 +555,96 @@
     }
 
 })();
+
+
+/* ============================================================
+   GLOBAL CUSTOM PROMPTS (TOASTS & MODALS)
+   ============================================================ */
+(function() {
+    // Inject Toast Container
+    let toastContainer = document.getElementById("blaze-toast-container");
+    if (!toastContainer) {
+        toastContainer = document.createElement("div");
+        toastContainer.id = "blaze-toast-container";
+        toastContainer.className = "blaze-toast-container";
+        document.body.appendChild(toastContainer);
+    }
+
+    // Override native alert globally
+    window.alert = function(msg) {
+        const toast = document.createElement("div");
+        toast.className = "blaze-toast";
+        toast.innerHTML = msg;
+        
+        // Error styling if it contains "error" or "failed"
+        if (msg && (msg.toLowerCase().includes("error") || msg.toLowerCase().includes("fail") || msg.toLowerCase().includes("denied"))) {
+            toast.style.borderColor = "rgba(239, 68, 68, 0.4)";
+            toast.style.borderLeftColor = "#ef4444";
+            toast.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(239, 68, 68, 0.15)";
+        } else if (msg && (msg.toLowerCase().includes("success") || msg.toLowerCase().includes("verified") || msg.toLowerCase().includes("approved"))) {
+            toast.style.borderColor = "rgba(34, 197, 94, 0.4)";
+            toast.style.borderLeftColor = "#22c55e";
+            toast.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(34, 197, 94, 0.15)";
+        }
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add("closing");
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    };
+
+    // Custom Confirm Modal (Async)
+    window.customConfirm = function(msg) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement("div");
+            overlay.className = "blaze-modal-overlay";
+
+            const box = document.createElement("div");
+            box.className = "blaze-modal-box";
+            
+            const title = document.createElement("div");
+            title.className = "bm-title";
+            title.innerText = "CONFIRMATION REQUIRED";
+
+            const message = document.createElement("div");
+            message.className = "bm-msg";
+            message.innerText = msg;
+
+            const actions = document.createElement("div");
+            actions.className = "bm-actions";
+
+            const btnCancel = document.createElement("button");
+            btnCancel.className = "bm-btn bm-btn-cancel";
+            btnCancel.innerText = "CANCEL";
+            
+            const btnConfirm = document.createElement("button");
+            btnConfirm.className = "bm-btn bm-btn-confirm";
+            btnConfirm.innerText = "PROCEED";
+
+            btnCancel.onclick = () => {
+                overlay.style.opacity = "0";
+                setTimeout(() => overlay.remove(), 200);
+                resolve(false);
+            };
+
+            btnConfirm.onclick = () => {
+                overlay.style.opacity = "0";
+                setTimeout(() => overlay.remove(), 200);
+                resolve(true);
+            };
+
+            actions.appendChild(btnCancel);
+            actions.appendChild(btnConfirm);
+            
+            box.appendChild(title);
+            box.appendChild(message);
+            box.appendChild(actions);
+            overlay.appendChild(box);
+            
+            document.body.appendChild(overlay);
+        });
+    };
+})();
+

@@ -971,7 +971,7 @@
 
             // Find a Squad Button
             document.getElementById('find-squad-btn').addEventListener('click', async () => {
-                if (!confirm('This will broadcast your request to all online players. 20 BlazeCoins will be deducted if someone accepts. Proceed?')) return;
+                if (!(await customConfirm('This will broadcast your request to all online players. 20 BlazeCoins will be deducted if someone accepts. Proceed?'))) return;
 
                 const btn = document.getElementById('find-squad-btn');
                 btn.disabled = true;

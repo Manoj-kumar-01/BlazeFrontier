@@ -1619,7 +1619,7 @@
         }
 
         async function banUser(userId) {
-            if (!confirm('CONFIRM BAN: This will permanently delete the user and migrate them to the Banned Database. Proceed?')) return;
+            if (!(await customConfirm('CONFIRM BAN: This will permanently delete the user and migrate them to the Banned Database. Proceed?'))) return;
             const res = await fetch(`<%= adminPrefix %>/api/ban/${userId}`, { method: 'POST' });
             if (res.ok) {
                 alert('Operator Terminated.');
@@ -1646,7 +1646,7 @@
         }
 
         async function verifyPlayer(id) {
-            if (!confirm('Are you sure you want to verify this player? They will receive the Golden Badge and 100 BlazeCoins!')) return;
+            if (!(await customConfirm('Are you sure you want to verify this player? They will receive the Golden Badge and 100 BlazeCoins!'))) return;
             const res = await fetch(`<%= adminPrefix %>/api/verify-player/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' }
@@ -1757,7 +1757,7 @@
         }
 
         async function approveClip(id) {
-            if (!confirm('Approve this clip? This will publish it to the dashboard and instantly award 50 BlazeCoins.')) return;
+            if (!(await customConfirm('Approve this clip? This will publish it to the dashboard and instantly award 50 BlazeCoins.'))) return;
             const res = await fetch(`<%= adminPrefix %>/api/clip-submissions/${id}/approve`, { method: 'POST' });
             if (res.ok) {
                 alert('Clip Approved & Rewarded!');
@@ -1768,7 +1768,7 @@
         }
 
         async function rejectClip(id) {
-            if (!confirm('Reject this clip?')) return;
+            if (!(await customConfirm('Reject this clip?'))) return;
             const res = await fetch(`<%= adminPrefix %>/api/clip-submissions/${id}/reject`, { method: 'POST' });
             if (res.ok) {
                 loadClips();
