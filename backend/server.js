@@ -38,10 +38,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Express Session for Admin Panel
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+        collectionName: 'adminSessions'
+    }),
     cookie: { 
         secure: process.env.NODE_ENV === 'production', 
         httpOnly: true, 

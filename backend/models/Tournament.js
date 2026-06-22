@@ -31,4 +31,7 @@ const TournamentSchema = new mongoose.Schema({
     }
 });
 
+TournamentSchema.index({ status: 1 });
+TournamentSchema.index({ game: 1 });
+
 module.exports = mongoose.model('Tournament', TournamentSchema);

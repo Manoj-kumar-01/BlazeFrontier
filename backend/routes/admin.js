@@ -817,7 +817,7 @@ router.post('/clip-submissions/:id/approve', adminMiddleware, async (req, res) =
             user.blazeCoins = (user.blazeCoins || 0) + 50;
             await user.save();
 
-            // Notify user
+            // Notify user via in-app
             const agenda = require('../utils/queue');
             agenda.now('send-inapp-notification', {
                 userId: user._id,
@@ -825,6 +825,23 @@ router.post('/clip-submissions/:id/approve', adminMiddleware, async (req, res) =
                 message: `Your clip "${submission.title}" was selected as a Top Clip! You have been awarded 50 BlazeCoins.`,
                 type: 'success'
             });
+
+            // Notify user via email
+            if (user.email) {
+                agenda.now('send-email', {
+                    email: user.email,
+                    subject: 'Your Clip was Approved! - Blaze Frontier',
+                    html: `
+                        <div style="font-family: sans-serif; color: #111; padding: 20px;">
+                            <h2 style="color: #ff4e00;">Congratulations!</h2>
+                            <p>Your clip "<strong>${submission.title}</strong>" has been approved by Command and is now featured as a Top Clip!</p>
+                            <p>You have been awarded <strong>50 BlazeCoins</strong>.</p>
+                            <br/>
+                            <p>- The Blaze Frontier Team</p>
+                        </div>
+                    `
+                });
+            }
         }
 
         res.json({ msg: 'Clip approved and user rewarded' });
@@ -845,7 +862,40 @@ router.post('/clip-submissions/:id/reject', adminMiddleware, async (req, res) =>
         submission.status = 'Rejected';
         await submission.save();
 
-        res.json({ msg: 'Clip rejected' });
+        const User = require('../models/User');
+        const user = await User.findById(submission.userId);
+        
+        if (user) {
+            const agenda = require('../utils/queue');
+            
+            // Notify user via in-app
+            agenda.now('send-inapp-notification', {
+                userId: user._id,
+                title: 'Clip Submission Declined',
+                message: `Your clip "${submission.title}" was not selected at this time. Keep trying!`,
+                type: 'error'
+            });
+
+            // Notify user via email
+            if (user.email) {
+                agenda.now('send-email', {
+                    email: user.email,
+                    subject: 'Clip Submission Update - Blaze Frontier',
+                    html: `
+                        <div style="font-family: sans-serif; color: #111; padding: 20px;">
+                            <h2 style="color: #ef4444;">Clip Submission Update</h2>
+                            <p>Thank you for submitting your clip "<strong>${submission.title}</strong>".</p>
+                            <p>Unfortunately, Command has reviewed it and it was not selected to be featured at this time.</p>
+                            <p>Keep grinding and submit your best plays again soon!</p>
+                            <br/>
+                            <p>- The Blaze Frontier Team</p>
+                        </div>
+                    `
+                });
+            }
+        }
+
+        res.json({ msg: 'Clip rejected and user notified' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

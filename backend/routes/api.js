@@ -7,6 +7,7 @@ const Clip = require('../models/Clip');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { cacheMiddleware } = require('../middleware/cache');
 
 // Simple in-memory cache for stats to reduce DB load
 let statsCache = {
@@ -88,10 +89,10 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
 
 // @route   GET /api/game/:gameId/clips
 // @desc    Get top clips for a specific game
-router.get('/game/:gameId/clips', async (req, res) => {
+router.get('/game/:gameId/clips', cacheMiddleware(300), async (req, res) => {
     try {
         const Clip = require('../models/Clip');
-        const clips = await Clip.find({ game: req.params.gameId }).sort({ createdAt: -1 }).limit(3);
+        const clips = await Clip.find({ game: req.params.gameId }).sort({ createdAt: -1 }).limit(3).lean();
         res.json(clips);
     } catch (err) {
         console.error(err.message);
@@ -453,7 +454,7 @@ router.delete('/user/notifications/clear', authMiddleware, async (req, res) => {
 
 // @route   GET /api/leaderboard
 // @desc    Get top players across all games based on Blaze Points, optional region filtering
-router.get('/leaderboard', async (req, res) => {
+router.get('/leaderboard', cacheMiddleware(300), async (req, res) => {
     try {
         const Match = require('../models/Match');
         const User = require('../models/User');
@@ -483,7 +484,7 @@ router.get('/leaderboard', async (req, res) => {
 
         // Populate user details
         const populatedLeaderboard = await Promise.all(leaderboard.map(async (entry, index) => {
-            const user = await User.findById(entry._id).select('username inGameName location');
+            const user = await User.findById(entry._id).select('username inGameName location').lean();
             return {
                 rank: index + 1,
                 id: entry._id,
@@ -502,7 +503,7 @@ router.get('/leaderboard', async (req, res) => {
 
 // @route   GET /api/leaderboard/showcases
 // @desc    Get top 3 podium and unique showcase categories
-router.get('/leaderboard/showcases', async (req, res) => {
+router.get('/leaderboard/showcases', cacheMiddleware(300), async (req, res) => {
     try {
         const Match = require('../models/Match');
         const User = require('../models/User');
@@ -517,7 +518,7 @@ router.get('/leaderboard/showcases', async (req, res) => {
         ]);
 
         const podium = await Promise.all(top3Aggr.map(async (entry, idx) => {
-            const user = await User.findById(entry._id).select('username inGameName');
+            const user = await User.findById(entry._id).select('username inGameName').lean();
             return {
                 rank: idx + 1,
                 id: entry._id,
@@ -527,7 +528,7 @@ router.get('/leaderboard/showcases', async (req, res) => {
         }));
 
         // MVP (Most BP in a single match)
-        const mvpMatch = await Match.findOne({ status: 'COMPLETED' }).sort({ blazePoints: -1 }).populate('playerId', 'username inGameName');
+        const mvpMatch = await Match.findOne({ status: 'COMPLETED' }).sort({ blazePoints: -1 }).populate('playerId', 'username inGameName').lean();
         if (mvpMatch && mvpMatch.playerId) {
             showcasesObj.mvp = {
                 title: "Most Valuable Player",
@@ -544,7 +545,7 @@ router.get('/leaderboard/showcases', async (req, res) => {
             { $limit: 1 }
         ]);
         if (lethalAggr.length > 0) {
-            const lethalUser = await User.findById(lethalAggr[0]._id).select('username inGameName');
+            const lethalUser = await User.findById(lethalAggr[0]._id).select('username inGameName').lean();
             showcasesObj.lethal = {
                 title: "Lethal Operator",
                 name: lethalUser ? (lethalUser.inGameName || lethalUser.username) : 'Unknown',
@@ -560,7 +561,7 @@ router.get('/leaderboard/showcases', async (req, res) => {
             { $limit: 1 }
         ]);
         if (survivalAggr.length > 0) {
-            const survivalUser = await User.findById(survivalAggr[0]._id).select('username inGameName');
+            const survivalUser = await User.findById(survivalAggr[0]._id).select('username inGameName').lean();
             showcasesObj.survival = {
                 title: "Survival Specialist",
                 name: survivalUser ? (survivalUser.inGameName || survivalUser.username) : 'Unknown',
@@ -580,13 +581,14 @@ router.get('/leaderboard/showcases', async (req, res) => {
 
 // @route   GET /api/champion
 // @desc    Get the reigning Champion across all Matches based on Blaze Points
-router.get('/champion', async (req, res) => {
+router.get('/champion', cacheMiddleware(300), async (req, res) => {
     try {
         const Match = require('../models/Match');
         // Find the match with highest BP
         const topMatch = await Match.findOne({ status: 'COMPLETED' })
             .sort({ blazePoints: -1 })
-            .populate('playerId', 'username inGameName');
+            .populate('playerId', 'username inGameName')
+            .lean();
             
         if (!topMatch) {
             return res.json({ name: 'NO CHAMPION YET', bp: 0 });
@@ -707,7 +709,7 @@ router.get('/poster/:id', async (req, res) => {
 
 // @route   GET /api/tournaments
 // @desc    Get dynamic tournaments, matches, and registrations separated into Live and Upcoming
-router.get('/tournaments', authMiddleware, async (req, res) => {
+router.get('/tournaments', authMiddleware, cacheMiddleware(60), async (req, res) => {
     try {
         const Match = require('../models/Match');
         const Registration = require('../models/Registration');
@@ -1100,6 +1102,24 @@ router.post('/tournaments/register', authMiddleware, async (req, res) => {
             message: `Your registration for the ${format.toUpperCase()} ${mode.toUpperCase()} series on ${startDate} has been successfully submitted and is pending review.`,
             type: 'success'
         });
+
+        // Also send email
+        const user = await User.findById(req.user.id);
+        if (user && user.email) {
+            agenda.now('send-email', {
+                email: user.email,
+                subject: 'Registration Submitted - Blaze Frontier',
+                html: `
+                    <div style="font-family: sans-serif; color: #111; padding: 20px;">
+                        <h2 style="color: #ff4e00;">Registration Received!</h2>
+                        <p>Your registration for the <strong>${format.toUpperCase()} ${mode.toUpperCase()}</strong> series on <strong>${startDate}</strong> has been successfully submitted!</p>
+                        <p>Our Admin team will review your eligibility. You will receive another email once verified.</p>
+                        <br/>
+                        <p>- The Blaze Frontier Team</p>
+                    </div>
+                `
+            });
+        }
 
         res.json(newReg);
     } catch (err) {
