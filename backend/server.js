@@ -38,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Express Session for Admin Panel
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo').default || require('connect-mongo');
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
