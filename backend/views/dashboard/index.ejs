@@ -237,8 +237,8 @@
                 <div class="cw-title">FRONTIER HUB</div>
                 <div class="cw-sub">Platform updates, daily content, and cross-arena events.</div>
             </div>
-            <button class="cw-btn" id="enter-arena-btn" style="background: linear-gradient(135deg, #ff3c1e 0%, #d82b12 100%); border: 2px solid #ff7a63; box-shadow: 0 0 20px rgba(255, 60, 30, 0.6), inset 0 2px 0 rgba(255,255,255,0.3); padding: 16px 36px; font-size: 1.4rem; border-radius: 12px; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 12px; animation: pulseBtn 2s infinite alternate; transition: all 0.2s;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <button class="cw-btn" id="enter-arena-btn" style="background: linear-gradient(135deg, #ff3c1e 0%, #d82b12 100%); border: 2px solid #ff7a63; box-shadow: 0 0 20px rgba(255, 60, 30, 0.6), inset 0 2px 0 rgba(255,255,255,0.3); padding: 12px 28px; font-size: 1.15rem; border-radius: 10px; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; animation: pulseBtn 2s infinite alternate; transition: all 0.2s;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 ENTER ARENA
             </button>
             <style>
@@ -485,7 +485,12 @@
                         const activeNews = stats.news.filter(n => !dismissedNews.includes(String(n.timestamp)));
 
                         if (activeNews.length === 0) {
-                            newsCont.innerHTML = '<div style="height: 100%; min-height: 250px; background: url(\'/public/platform_updates_empty.png\') center/cover no-repeat; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 40px; text-align: center; box-shadow: inset 0 -60px 80px -20px rgba(8,8,14,0.9);"><div style="font-size: 1.5rem; font-family: var(--font-display); color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); margin-bottom: 10px; font-weight: 600;">You\\'re all caught up!</div><div style="font-size: 0.9rem; color: #a1a1b5;">Check back later for new updates and announcements.</div></div>';
+                            newsCont.innerHTML = `
+                                <div style="height: 100%; min-height: 250px; background: url('/public/platform_updates_empty.png') center/cover no-repeat; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 40px; text-align: center; box-shadow: inset 0 -60px 80px -20px rgba(8,8,14,0.9);">
+                                    <div style="font-size: 1.5rem; font-family: var(--font-display); color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.8); margin-bottom: 10px; font-weight: 600;">You're all caught up!</div>
+                                    <div style="font-size: 0.9rem; color: #a1a1b5;">Check back later for new updates and announcements.</div>
+                                </div>
+                            `;
                         } else {
                             newsCont.innerHTML = activeNews.map(n => `
                                 <div class="n-item" id="news-${n.timestamp}" style="position: relative; padding-right: 40px; transition: all 0.3s var(--ease);">
