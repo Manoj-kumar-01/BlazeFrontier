@@ -10,7 +10,7 @@
         .dash {
             display: grid; grid-template-columns: 1fr 1fr 1fr 340px;
             grid-template-rows: auto auto 1fr;
-            gap: 14px; padding: 88px 20px 20px; min-height: 100vh;
+            gap: 14px; padding: 88px 20px 20px;
             max-width: 1500px; margin: 0 auto;
         }
 
@@ -52,8 +52,8 @@
         .cs-val { font-family: var(--font-display); font-size: 2.4rem; color: #fff; line-height: 1; }
         .cs-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-family: var(--font-mono); }
 
-        /* News — spans 2 cols, fixed height to prevent expanding down */
-        .c-news { grid-column: 1 / 3; grid-row: 3; height: 360px; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+        /* News — spans 2 cols, fills remaining grid space */
+        .c-news { grid-column: 1 / 3; grid-row: 3; display: flex; flex-direction: column; padding: 0; min-height: 0; overflow: hidden; }
         .cn-title {
             font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px;
             margin: 0; padding: 20px 24px 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -79,7 +79,7 @@
         .n-date { color: var(--text-muted); font-size: 0.7rem; font-family: var(--font-mono); }
 
         /* Sidebar — right column, spans rows 2+3 */
-        .c-sidebar { grid-column: 4; grid-row: 2 / 4; display: flex; flex-direction: column; gap: 14px; }
+        .c-sidebar { grid-column: 4; grid-row: 2 / 4; display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow: hidden; }
 
         .side-panel {
             background: rgba(12, 12, 18, 0.6); 
@@ -137,6 +137,12 @@
             margin: 0;
             position: relative;
             overflow-x: hidden;
+        }
+        
+        /* Lock page scrolling on desktop */
+        @media (min-width: 1101px) {
+            body { overflow: hidden; }
+            .dash { height: 100vh; box-sizing: border-box; }
         }
 
         /* Floating gradient blobs */
@@ -262,13 +268,13 @@
 
         <!-- Sidebar -->
         <div class="c-sidebar">
-            <div style="margin-bottom: 14px;">
-                <div class="sp-title" style="margin-bottom: 10px; border-bottom: none; font-size: 0.85rem; color: var(--text-muted); padding-left: 4px;">DAILY HIGHLIGHTS</div>
-                <div id="live-matches-container" style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="margin-bottom: 0;">
+                <div class="sp-title" style="margin-bottom: 8px; border-bottom: none; font-size: 1.15rem; font-family: var(--font-display); letter-spacing: 1px; color: #fff; padding-left: 4px;">DAILY HIGHLIGHTS</div>
+                <div id="live-matches-container" style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 300px; padding-right: 4px;">
                     <div class="live-item"><div class="li-name" style="color:var(--text-muted)">Loading...</div></div>
                 </div>
             </div>
-            <div class="side-panel potd-panel" id="potd-container" style="padding: 0; overflow: hidden; position: relative; min-height: 200px; display: flex; align-items: flex-end; justify-content: flex-start; border: 1px solid rgba(255,215,0,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s;">
+            <div class="side-panel potd-panel" id="potd-container" style="padding: 0; overflow: hidden; position: relative; flex: 1; min-height: 180px; display: flex; align-items: flex-end; justify-content: flex-start; border: 1px solid rgba(255,215,0,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s; margin-top: auto;">
                 <video id="potd-video" autoplay loop muted playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; filter: brightness(0.5); transition: filter 0.3s;"></video>
                 <div style="position: relative; z-index: 2; padding: 20px; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);">
                     <div style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #FFD700; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">★ PLAYER OF THE DAY ★</div>
