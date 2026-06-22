@@ -237,23 +237,44 @@
                 <div class="cw-title">FRONTIER HUB</div>
                 <div class="cw-sub">Platform updates, daily content, and cross-arena events.</div>
             </div>
-            <button class="cw-btn" id="enter-arena-btn">ENTER ARENA →</button>
+            <button class="cw-btn" id="enter-arena-btn" style="background: linear-gradient(135deg, #ff3c1e 0%, #d82b12 100%); border: 2px solid #ff7a63; box-shadow: 0 0 20px rgba(255, 60, 30, 0.6), inset 0 2px 0 rgba(255,255,255,0.3); padding: 16px 36px; font-size: 1.4rem; border-radius: 12px; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 12px; animation: pulseBtn 2s infinite alternate; transition: all 0.2s;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                ENTER ARENA
+            </button>
+            <style>
+                @keyframes pulseBtn {
+                    0% { box-shadow: 0 0 10px rgba(255, 60, 30, 0.2); transform: scale(1); }
+                    100% { box-shadow: 0 0 30px rgba(255, 60, 30, 0.6); transform: scale(1.03); }
+                }
+                #enter-arena-btn:hover { background: #ff3c1e; color: #fff; border-color: #ff3c1e; cursor: pointer; }
+            </style>
         </div>
 
         <!-- Stats row -->
-        <div class="card c-stat" style="background: linear-gradient(135deg, rgba(255,87,34,0.15) 0%, rgba(15,15,20,0.95) 100%); border: 1px solid rgba(255,87,34,0.4); border-left: 4px solid var(--blaze-orange); position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(255,87,34,0.15);">
-            <div style="position: absolute; top: -10px; right: -15px; font-size: 6rem; opacity: 0.04; transform: rotate(15deg);">🔥</div>
-            <div class="cs-label" style="color: var(--blaze-orange); font-weight: 800; letter-spacing: 1.5px; display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(255,87,34,0.3);">
-                <span style="font-size: 1.2rem;">🔥</span> THE BLAZE ICON
+        <div class="card c-stat" style="padding: 0; background: linear-gradient(180deg, #2b2c36 0%, #1a1a20 100%); border: 2px solid #424651; border-radius: 12px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,87,34,0.1);">
+            <!-- Slanted Top Tab -->
+            <div style="position: absolute; top: 0; left: 0; padding: 10px 25px 10px 15px; z-index: 2; display: flex; align-items: center; gap: 8px;">
+                <div style="position: absolute; top: -10px; left: -10px; right: 0; bottom: 0; background: linear-gradient(180deg, #3f2820, #241916); transform: skewX(-25deg); transform-origin: top left; border-right: 2px solid #754025; border-bottom: 2px solid #754025; border-bottom-right-radius: 8px; z-index: -1;"></div>
+                <span style="font-size: 1.2rem; filter: drop-shadow(0 0 8px #ff5722);">🔥</span>
+                <span style="color: #d1bba8; font-weight: 800; letter-spacing: 1.5px; font-size: 0.75rem;">THE BLAZE ICON</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                <div class="cs-val" id="stat-top-commander" style="font-size: 1.7rem; color: #fff; font-family: var(--font-display); letter-spacing: 1px;">Loading...</div>
-                <div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,87,34,0.3);">
-                    <span id="stat-tc-coins" style="color: #fbbf24; font-size: 1.1rem; font-family: var(--font-display); font-weight: bold;">...</span> 
-                    <img src="/public/blaze_coin.jpg" style="height: 18px; width: 18px; border-radius: 50%; box-shadow: 0 0 5px rgba(255,193,7,0.5);" alt="BlazeCoins">
+
+            <!-- Main Content -->
+            <div style="padding: 55px 20px 20px 20px; position: relative; z-index: 1;">
+                <div class="cs-val" id="stat-top-commander" style="font-size: 2.2rem; color: #ffe8a1; font-family: var(--font-display); letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Loading...</div>
+                <div style="font-size: 0.85rem; color: #6dbdbd; margin-top: 4px; font-weight: 700; letter-spacing: 0.5px;">ID: <span id="stat-tc-id">...</span></div>
+            </div>
+
+            <!-- Right Side: Flame & Coins -->
+            <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-20%); display: flex; flex-direction: column; align-items: center; z-index: 2;">
+                <!-- Glowing background flame -->
+                <div style="position: absolute; top: -55px; right: 0px; font-size: 5rem; opacity: 0.9; filter: drop-shadow(0 0 15px #ff5722) drop-shadow(0 0 30px #ff2200); z-index: -1;">🔥</div>
+                <!-- Coin Pill -->
+                <div style="background: linear-gradient(180deg, #443729, #2b2319); border: 2px solid #726251; border-radius: 30px; padding: 4px 12px; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.9), inset 0 2px 4px rgba(255,255,255,0.1);">
+                    <span id="stat-tc-coins" style="color: #f7d58b; font-size: 1.1rem; font-family: var(--font-display); font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">...</span>
+                    <img src="/public/blaze_coin.jpg" style="height: 20px; width: 20px; border-radius: 50%; box-shadow: 0 0 8px rgba(255,193,7,0.8); border: 1px solid #ffd700;" alt="BlazeCoins">
                 </div>
             </div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">ID: <span id="stat-tc-id" style="color: var(--cyan); font-family: var(--font-mono);">...</span></div>
         </div>
         <div class="card c-stat">
             <div class="cs-label">Active</div>
