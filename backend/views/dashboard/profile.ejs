@@ -400,8 +400,8 @@
                         <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🔍</div>
                         <div class="stat-label" style="color: #7dd3fc; position: relative; z-index: 1;">Player Search</div>
                         <div style="display: flex; gap: 8px; position: relative; z-index: 1; margin-top: 8px;">
-                            <input type="text" id="search-blaze-id" placeholder="Blaze ID" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 191, 255, 0.3); color: #fff; border-radius: 6px; padding: 6px 10px; width: 100%; outline: none; font-family: var(--font-mono); font-size: 0.9rem;">
-                            <button onclick="searchUserProfile()" style="background: #0ea5e9; border: none; border-radius: 6px; padding: 6px 12px; color: white; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0284c7'" onmouseout="this.style.background='#0ea5e9'">🔍</button>
+                            <input type="text" id="search-blaze-id" placeholder="Blaze ID" onkeypress="if(event.key === 'Enter'){ event.preventDefault(); searchUserProfile(); }" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 191, 255, 0.3); color: #fff; border-radius: 6px; padding: 6px 10px; width: 100%; outline: none; font-family: var(--font-mono); font-size: 0.9rem;">
+                            <button type="button" onclick="searchUserProfile()" style="background: #0ea5e9; border: none; border-radius: 6px; padding: 6px 12px; color: white; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0284c7'" onmouseout="this.style.background='#0ea5e9'">🔍</button>
                         </div>
                     </div>
                 </div>
