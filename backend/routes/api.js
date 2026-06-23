@@ -280,6 +280,37 @@ router.get('/profile', authMiddleware, async (req, res) => {
     }
 });
 
+// @route   GET /api/player/:playerId
+// @desc    Get public profile data of any user by their Blaze ID (playerId)
+router.get('/player/:playerId', authMiddleware, async (req, res) => {
+    try {
+        const targetUser = await User.findOne({ playerId: req.params.playerId }).select('-password -email -phoneNumber');
+        if (!targetUser) {
+            return res.status(404).json({ msg: 'Player not found with this Blaze ID' });
+        }
+
+        const Match = require('../models/Match');
+        const userMatches = await Match.find({ playerId: targetUser._id, status: 'COMPLETED' });
+        
+        res.json({
+            username: targetUser.username,
+            inGameName: targetUser.inGameName,
+            gameUid: targetUser.gameUid,
+            location: targetUser.location,
+            profilePic: targetUser.profilePic,
+            playerId: targetUser.playerId,
+            isGenuine: targetUser.isGenuine,
+            isSetupComplete: targetUser.isSetupComplete,
+            blazeCoins: targetUser.blazeCoins || 0,
+            totalMatches: userMatches.length,
+            tournamentsWon: userMatches.filter(m => m.placement === 1).length
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // Configure multer for profile picture uploads
 const profileStorage = multer.diskStorage({
     destination: function (req, file, cb) {

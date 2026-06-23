@@ -396,10 +396,13 @@
                         <div class="stat-label" style="color: #86efac; position: relative; z-index: 1;">Matches</div>
                         <div class="stat-val" id="st-matches" style="color: #fff; position: relative; z-index: 1;">—</div>
                     </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 87, 34, 0.2); position: relative; overflow: hidden;">
-                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🏆</div>
-                        <div class="stat-label" style="color: #fdba74; position: relative; z-index: 1;">Championships</div>
-                        <div class="stat-val" id="st-wins" style="color: #fff; position: relative; z-index: 1;">—</div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(0, 191, 255, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(0, 191, 255, 0.2); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🔍</div>
+                        <div class="stat-label" style="color: #7dd3fc; position: relative; z-index: 1;">Player Search</div>
+                        <div style="display: flex; gap: 8px; position: relative; z-index: 1; margin-top: 8px;">
+                            <input type="text" id="search-blaze-id" placeholder="Blaze ID" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 191, 255, 0.3); color: #fff; border-radius: 6px; padding: 6px 10px; width: 100%; outline: none; font-family: var(--font-mono); font-size: 0.9rem;">
+                            <button onclick="searchUserProfile()" style="background: #0ea5e9; border: none; border-radius: 6px; padding: 6px 12px; color: white; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#0284c7'" onmouseout="this.style.background='#0ea5e9'">🔍</button>
+                        </div>
                     </div>
                 </div>
 
@@ -492,7 +495,57 @@
 
         </div>
 
-        <!-- Edit Profile Modal -->
+    <!-- View Profile Modal -->
+    <div class="modal-overlay" id="viewProfileModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 class="modal-title" style="margin: 0; font-size: 1.5rem;">Player Profile</h2>
+                <button onclick="closeViewProfileModal()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem;">&times;</button>
+            </div>
+            
+            <div id="search-loading" style="display: none; text-align: center; padding: 20px; color: var(--text-muted);">
+                Searching database...
+            </div>
+            
+            <div id="search-result" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <img id="sp-avatar" src="/public/blaze_avatar.png" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);">
+                    <div>
+                        <div id="sp-name" style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1;">—</div>
+                        <div id="sp-badge" style="font-size: 0.75rem; font-family: var(--font-mono); margin-top: 6px; padding: 2px 6px; border-radius: 4px; display: inline-block;"></div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Matches</div>
+                        <div id="sp-matches" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Wins</div>
+                        <div id="sp-wins" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                        <span style="color: var(--text-muted);">Blaze ID</span>
+                        <span id="sp-pid" style="color: #fff; font-family: var(--font-mono);">—</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                        <span style="color: var(--text-muted);">Game UID</span>
+                        <span id="sp-uid" style="color: #fff; font-family: var(--font-mono);">—</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                        <span style="color: var(--text-muted);">Region</span>
+                        <span id="sp-region" style="color: #fff; font-family: var(--font-mono);">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
     <div class="modal-overlay" id="editProfileModal">
         <div class="modal-content">
             <h2 class="modal-title">Edit Profile</h2>
@@ -522,6 +575,70 @@
 
     <script src="/script.js?v=1.2"></script>
     <script>
+        async function searchUserProfile() {
+            const pid = document.getElementById('search-blaze-id').value.trim();
+            if (!pid) return showToast('Please enter a Blaze ID', 'error');
+            
+            const modal = document.getElementById('viewProfileModal');
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+            
+            document.getElementById('search-loading').style.display = 'block';
+            document.getElementById('search-result').style.display = 'none';
+            
+            try {
+                const token = localStorage.getItem('blaze_token');
+                const res = await fetch(`/api/player/${pid}`, {
+                    headers: { 'x-auth-token': token }
+                });
+                
+                if (!res.ok) {
+                    closeViewProfileModal();
+                    return showToast('Player not found', 'error');
+                }
+                
+                const data = await res.json();
+                document.getElementById('sp-name').textContent = data.inGameName || data.username;
+                document.getElementById('sp-avatar').src = data.profilePic || '/public/blaze_avatar.png';
+                document.getElementById('sp-matches').textContent = data.totalMatches;
+                document.getElementById('sp-wins').textContent = data.tournamentsWon;
+                document.getElementById('sp-pid').textContent = data.playerId;
+                document.getElementById('sp-uid').textContent = data.gameUid || '—';
+                document.getElementById('sp-region').textContent = data.location || '—';
+                
+                const badge = document.getElementById('sp-badge');
+                if (data.isGenuine) {
+                    badge.textContent = 'TRUSTED';
+                    badge.style.background = 'rgba(255, 215, 0, 0.2)';
+                    badge.style.color = '#ffd700';
+                    badge.style.border = '1px solid rgba(255, 215, 0, 0.4)';
+                    document.getElementById('sp-avatar').style.borderColor = '#ffd700';
+                } else {
+                    badge.textContent = 'UNVERIFIED';
+                    badge.style.background = 'rgba(255, 255, 255, 0.05)';
+                    badge.style.color = 'var(--text-muted)';
+                    badge.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                    document.getElementById('sp-avatar').style.borderColor = 'rgba(255,255,255,0.1)';
+                }
+                
+                document.getElementById('search-loading').style.display = 'none';
+                document.getElementById('search-result').style.display = 'block';
+                
+            } catch (err) {
+                console.error(err);
+                closeViewProfileModal();
+                showToast('Error fetching profile', 'error');
+            }
+        }
+        
+        function closeViewProfileModal() {
+            const modal = document.getElementById('viewProfileModal');
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+        }
+
         function openEditProfileModal() {
             const modal = document.getElementById('editProfileModal');
             modal.style.display = 'flex';
