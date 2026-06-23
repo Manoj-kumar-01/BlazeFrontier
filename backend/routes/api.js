@@ -1141,14 +1141,20 @@ router.post('/tournaments/register', authMiddleware, async (req, res) => {
                 email: user.email,
                 subject: 'Registration Submitted - Blaze Frontier',
                 html: `
-                    <div style="font-family: sans-serif; color: #111; padding: 20px;">
-                        <h2 style="color: #ff4e00;">Registration Received!</h2>
-                        <p>Your registration for the <strong>${format.toUpperCase()} ${mode.toUpperCase()}</strong> series on <strong>${startDate}</strong> has been successfully submitted!</p>
-                        <p>Our Admin team will review your eligibility. You will receive another email once verified.</p>
-                        <br/>
-                        <p>- The Blaze Frontier Team</p>
-                    </div>
-                `
+                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                            <div style="padding: 30px; text-align: left;">
+                                <h2 style="color: #ff4e00; margin-top: 0;">Registration Received!</h2>
+                                <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">Your registration for the <strong>${format.toUpperCase()} ${mode.toUpperCase()}</strong> series on <strong>${startDate}</strong> has been successfully submitted!</p>
+                                <div style="background-color: #fff3e0; padding: 15px; border-left: 4px solid #ff4e00; margin: 20px 0;">
+                                    <p style="margin: 0; color: #cc3e00;">Our Admin team is currently reviewing your eligibility. You will receive another email with further instructions once you are verified and approved.</p>
+                                </div>
+                            </div>
+                            <div style="background-color: #111; padding: 15px; text-align: center;">
+                                <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- The Blaze Frontier Team</p>
+                            </div>
+                        </div>
+                    `
             });
         }
 

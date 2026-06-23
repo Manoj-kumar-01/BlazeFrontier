@@ -124,21 +124,27 @@ router.put('/registrations/:id', adminMiddleware, async (req, res) => {
                     email: user.email,
                     subject: 'Tournament Registration Approved! - Blaze Frontier',
                     html: `
-                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px;">
-                            <div style="margin-bottom: 30px;">
-                                <img src="cid:tournamentposter" alt="Tournament Poster" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                            <div style="text-align: center; background-color: #111; padding: 20px;">
+                                <img src="cid:tournament_poster.png" alt="Tournament Poster" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
                             </div>
-                            <p style="font-size: 1.1rem; line-height: 1.6; color: #333; margin-bottom: 25px;">
-                                Your registration for the <strong>${formatMode}</strong> tournament on <strong>${reg.startDate}</strong> at <strong>${reg.timeSlot}</strong> has been officially confirmed.
-                            </p>
-                            <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px;">- THE BLAZE FRONTIER COMMAND -</p>
+                            <div style="padding: 30px; text-align: left;">
+                                <h2 style="color: #ff4e00; margin-top: 0;">Tournament Registration Approved!</h2>
+                                <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6; color: #333; margin-bottom: 25px;">
+                                    Your registration for the <strong>${formatMode}</strong> tournament on <strong>${reg.startDate}</strong> at <strong>${reg.timeSlot}</strong> has been officially confirmed by our administration team!
+                                </p>
+                                <p style="font-size: 1.1rem; color: #333;">Please ensure you and your team are ready at the designated time. Good luck on the battlefield!</p>
+                            </div>
+                            <div style="background-color: #111; padding: 15px; text-align: center;">
+                                <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- THE BLAZE FRONTIER COMMAND -</p>
+                            </div>
                         </div>
                     `,
                     attachments: [
                         {
                             filename: 'tournament_poster.png',
-                            path: require('path').join(__dirname, '../../public/tournament_poster.png'),
-                            cid: 'tournamentposter'
+                            path: require('path').join(__dirname, '../../public/tournament_poster.png')
                         }
                     ]
                 });
@@ -195,22 +201,32 @@ router.put('/verify-player/:id', adminMiddleware, async (req, res) => {
                 email: user.email,
                 subject: 'You are now a Trusted Player! - Blaze Frontier',
                 html: `
-                    <div style="font-family: sans-serif; color: #111;">
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <img src="cid:trusted_member_banner" alt="Trusted Member Verified" style="max-width: 100%; border-radius: 12px; display: block; margin: 0 auto;">
+                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                        <div style="text-align: center; background-color: #111; padding: 20px;">
+                            <img src="cid:trusted_member.jpg" alt="Trusted Member Verified" style="max-width: 100%; border-radius: 12px; display: block; margin: 0 auto;">
                         </div>
-                        <p>Congratulations <strong>${user.inGameName || user.username}</strong>!</p>
-                        <p>Your recent matches were verified by the admin team. You are now officially a <strong>Trusted Player</strong> in Blaze Frontier.</p>
-                        <p><strong>Rewards Unlocked:</strong><br/>- Golden Trusted Player Banner<br/>- 100 BlazeCoins<br/>- Access to Elite Tournaments</p>
-                        <br/>
-                        <p style="color: #ff4e00;">- The Blaze Frontier Team</p>
+                        <div style="padding: 30px; text-align: left;">
+                            <h2 style="color: #ff4e00; margin-top: 0;">Account Upgraded</h2>
+                            <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
+                            <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">Your recent matches were verified by the admin team. You are now officially a <strong>Trusted Player</strong> in Blaze Frontier.</p>
+                            <div style="background-color: #f1f1f1; padding: 15px; border-left: 4px solid #ff4e00; margin: 20px 0;">
+                                <p style="margin: 0 0 10px 0;"><strong>Rewards Unlocked:</strong></p>
+                                <ul style="margin: 0; padding-left: 20px;">
+                                    <li>Golden Trusted Player Banner</li>
+                                    <li>100 BlazeCoins</li>
+                                    <li>Access to Elite Tournaments</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div style="background-color: #111; padding: 15px; text-align: center;">
+                            <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- The Blaze Frontier Team</p>
+                        </div>
                     </div>
                 `,
                 attachments: [
                     {
                         filename: 'trusted_member.jpg',
-                        path: require('path').join(__dirname, '../../public/trusted_member.jpg'),
-                        cid: 'trusted_member_banner'
+                        path: require('path').join(__dirname, '../../public/trusted_member.jpg')
                     }
                 ]
             });
@@ -287,22 +303,32 @@ router.put('/verify-squad/:id', adminMiddleware, async (req, res) => {
                     email: user.email,
                     subject: 'You are now a Trusted Player! - Blaze Frontier',
                     html: `
-                        <div style="font-family: sans-serif; color: #111;">
-                            <div style="text-align: center; margin-bottom: 20px;">
-                                <img src="cid:trusted_member_banner" alt="Trusted Member Verified" style="max-width: 100%; border-radius: 12px; display: block; margin: 0 auto;">
+                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                            <div style="text-align: center; background-color: #111; padding: 20px;">
+                                <img src="cid:trusted_member.jpg" alt="Trusted Member Verified" style="max-width: 100%; border-radius: 12px; display: block; margin: 0 auto;">
                             </div>
-                            <p>Congratulations <strong>${user.inGameName || user.username}</strong>!</p>
-                            <p>Your recent matches were verified by the admin team. You are now officially a <strong>Trusted Player</strong> in Blaze Frontier.</p>
-                            <p><strong>Rewards Unlocked:</strong><br/>- Golden Trusted Player Banner<br/>- 100 BlazeCoins<br/>- Access to Elite Tournaments</p>
-                            <br/>
-                            <p style="color: #ff4e00;">- The Blaze Frontier Team</p>
+                            <div style="padding: 30px; text-align: left;">
+                                <h2 style="color: #ff4e00; margin-top: 0;">Account Upgraded</h2>
+                                <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">Your squad's recent matches were verified by the admin team. You are now officially a <strong>Trusted Player</strong> in Blaze Frontier.</p>
+                                <div style="background-color: #f1f1f1; padding: 15px; border-left: 4px solid #ff4e00; margin: 20px 0;">
+                                    <p style="margin: 0 0 10px 0;"><strong>Rewards Unlocked:</strong></p>
+                                    <ul style="margin: 0; padding-left: 20px;">
+                                        <li>Golden Trusted Player Banner</li>
+                                        <li>100 BlazeCoins</li>
+                                        <li>Access to Elite Tournaments</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div style="background-color: #111; padding: 15px; text-align: center;">
+                                <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- The Blaze Frontier Team</p>
+                            </div>
                         </div>
                     `,
                     attachments: [
                         {
                             filename: 'trusted_member.jpg',
-                            path: require('path').join(__dirname, '../../public/trusted_member.jpg'),
-                            cid: 'trusted_member_banner'
+                            path: require('path').join(__dirname, '../../public/trusted_member.jpg')
                         }
                     ]
                 });
@@ -373,15 +399,19 @@ router.delete('/registrations/:id', adminMiddleware, async (req, res) => {
                 email: user.email,
                 subject: 'Registration Declined - Blaze Frontier',
                 html: `
-                    <div style="background: linear-gradient(145deg, #2a0f0f, #4b1b1b); color: #fff; padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border-radius: 12px; border: 1px solid rgba(222, 74, 74, 0.2); text-align: center;">
-                        <h1 style="color: #ef4444; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">Registration Declined</h1>
-                        <p style="font-size: 1.1rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 25px;">Your registration for the <strong style="color: #fff;">${formatMode}</strong> tournament on <strong style="color: #fff;">${reg.startDate}</strong> has been declined and removed.</p>
-                        <div style="margin: 25px 0; padding: 15px; background: rgba(0, 0, 0, 0.4); border-radius: 8px; border-left: 4px solid #ef4444;">
-                            <p style="margin: 0; color: #fff; font-weight: bold;">Reason: ${reason}</p>
+                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                        <div style="padding: 30px; text-align: left;">
+                            <h2 style="color: #ef4444; margin-top: 0;">Registration Declined</h2>
+                            <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
+                            <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">Your registration for the <strong>${formatMode}</strong> tournament on <strong>${reg.startDate}</strong> has been declined.</p>
+                            <div style="background-color: #ffe5e5; padding: 15px; border-left: 4px solid #ef4444; margin: 20px 0;">
+                                <p style="margin: 0; color: #cc0000;"><strong>Reason:</strong> ${reason}</p>
+                            </div>
+                            <p style="font-size: 1.1rem; color: #333;">You may submit a new registration after fixing the issue.</p>
                         </div>
-                        <p style="color: #cbd5e1;">You may submit a new registration after fixing the issue.</p>
-                        <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.1); margin: 30px 0;">
-                        <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px;">- THE BLAZE FRONTIER COMMAND -</p>
+                        <div style="background-color: #111; padding: 15px; text-align: center;">
+                            <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- THE BLAZE FRONTIER COMMAND -</p>
+                        </div>
                     </div>
                 `
             });
@@ -708,22 +738,25 @@ router.put('/users/:userId/verify', adminMiddleware, async (req, res) => {
                     email: user.email,
                     subject: 'Welcome to the Trusted Players Club! - Blaze Frontier',
                     html: `
-                        <div style="font-family: sans-serif; color: #111;">
-                            <div style="text-align: center; margin-bottom: 20px;">
-                                <img src="cid:trusted_member_banner" alt="Trusted Member Verified" style="max-width: 100%; border-radius: 12px; display: block; margin: 0 auto;">
+                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                            <div style="text-align: center; background-color: #111; padding: 20px;">
+                                <img src="cid:trusted_member.jpg" alt="Trusted Member Verified" style="max-width: 100%; border-radius: 12px; display: block; margin: 0 auto;">
                             </div>
-                            <p>Congratulations <strong>${user.username}</strong>!</p>
-                            <p>You have been verified as a Trusted Member of Blaze Frontier. We've added a special Golden Banner to your profile and awarded you 100 BlazeCoins!</p>
-                            <p>You now have full access to our Elite Tournaments tab.</p>
-                            <br/>
-                            <p style="color: #ff4e00;">- The Blaze Frontier Team</p>
+                            <div style="padding: 30px; text-align: left;">
+                                <h2 style="color: #ff4e00; margin-top: 0;">Account Upgraded</h2>
+                                <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">You have been manually verified as a Trusted Member of Blaze Frontier. We've added a special Golden Banner to your profile and awarded you 100 BlazeCoins!</p>
+                                <p style="font-size: 1.1rem; color: #333;">You now have full access to our Elite Tournaments tab.</p>
+                            </div>
+                            <div style="background-color: #111; padding: 15px; text-align: center;">
+                                <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- The Blaze Frontier Team</p>
+                            </div>
                         </div>
                     `,
                     attachments: [
                         {
                             filename: 'trusted_member.jpg',
-                            path: require('path').join(__dirname, '../../public/trusted_member.jpg'),
-                            cid: 'trusted_member_banner'
+                            path: require('path').join(__dirname, '../../public/trusted_member.jpg')
                         }
                     ]
                 });
