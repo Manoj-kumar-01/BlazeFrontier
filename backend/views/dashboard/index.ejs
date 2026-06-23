@@ -756,19 +756,18 @@
                     </style>
                 </div>
                 <div class="side-panel potd-panel" id="potd-container"
-                    style="padding: 0; overflow: hidden; position: relative; height: 160px; min-height: 160px; display: flex; align-items: flex-end; justify-content: flex-start; border: 1px solid rgba(255,87,34,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s; margin-top: auto;">
+                    style="z-index: 10; padding: 0; overflow: hidden; position: relative; height: 160px; min-height: 160px; display: flex; align-items: flex-end; justify-content: flex-start; border: 1px solid rgba(255,87,34,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s; margin-top: auto;">
                     <video id="potd-video" autoplay loop muted playsinline preload="auto" disablePictureInPicture
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; filter: brightness(0.9); transition: filter 0.3s;"></video>
                     <div
                         style="position: relative; z-index: 2; padding: 20px; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);">
                         <div
-                            style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #ff5722; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+                            style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #ffd700; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
                             ★ PLAYER OF THE DAY ★</div>
                         <div id="potd-player"
-                            style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1.1; margin-bottom: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
+                            style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1.1; margin-bottom: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.9); transition: color 0.3s;">
                             Loading...</div>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="color: var(--text-muted); font-size: 0.8rem;">Blaze ID:</span>
                             <div id="potd-title"
                                 style="color: var(--cyan); font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600;">
                                 Please wait</div>
@@ -918,6 +917,7 @@
                             document.getElementById('potd-video').style.display = 'block';
                             document.getElementById('potd-video').src = stats.potd.videoUrl;
                             document.getElementById('potd-player').innerText = stats.potd.playerName;
+                            document.getElementById('potd-player').style.color = stats.potd.isGenuine ? '#ffd700' : '#fff';
                             document.getElementById('potd-title').innerText = stats.potd.playerId;
                             document.getElementById('potd-container').style.background = 'none';
                             document.getElementById('potd-container').onmouseover = function () {

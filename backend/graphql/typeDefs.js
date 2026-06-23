@@ -77,6 +77,7 @@ const typeDefs = `#graphql
     playerName: String
     playerId: String
     title: String
+    isGenuine: Boolean
   }
 
   type DashboardStats {

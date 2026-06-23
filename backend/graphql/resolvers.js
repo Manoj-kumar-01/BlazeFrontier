@@ -162,7 +162,8 @@ const resolvers = {
                     videoUrl: potdRecord.videoUrl,
                     playerName: potdRecord.userId.inGameName || potdRecord.userId.username,
                     playerId: potdRecord.userId.playerId || 'N/A',
-                    title: potdRecord.title
+                    title: potdRecord.title,
+                    isGenuine: potdRecord.userId.isGenuine || false
                 };
             }
             
