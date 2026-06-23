@@ -52,11 +52,10 @@ async function verifyUserInServer(discordName) {
         
         if (members.size > 0) {
             const cleanTarget = discordName.toLowerCase().trim();
-            // Match against any name they might appear as in the server
+            // Strictly match against unique username or numeric ID only
             const match = members.find(m => 
-                m.user.username.toLowerCase() === cleanTarget || 
-                (m.nickname && m.nickname.toLowerCase() === cleanTarget) ||
-                m.user.globalName?.toLowerCase() === cleanTarget
+                m.user.username.toLowerCase() === cleanTarget ||
+                m.user.id === cleanTarget
             );
 
             if (match) {
