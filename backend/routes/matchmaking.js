@@ -3,13 +3,23 @@ const router = express.Router();
 const authMiddleware = require('../middleware/auth');
 const User = require('../models/User');
 
-// Global In-Memory State for Matchmaking
-// Note: In a true multi-server production environment, Redis pub/sub would be used here.
-let activeRequests = new Map(); // requestId => { requesterId, requesterBlz, timer }
-let activeMatches = new Map();  // matchId => { player1Id, player2Id }
+// ═══════════════════════════════════════════════════════════════════
+//  MATCHMAKING ENGINE — Single-server in-memory state
+//  Production note: For multi-server, replace with Redis pub/sub.
+// ═══════════════════════════════════════════════════════════════════
 
-// Helper to broadcast using Socket.IO
-function broadcast(req, event, data, targetUserId = null) {
+// Only ONE active search allowed globally at a time.
+// { requesterId, requesterBlz, expiresAt, timer }
+let activeSearch = null;
+
+// Active match rooms. matchId => { player1Id, player2Id, msgCount }
+const activeMatches = new Map();
+
+/**
+ * Emit a Socket.IO event. If targetUserId is provided, emit only to that user's room.
+ * Otherwise broadcast to all connected clients.
+ */
+function emit(req, event, data, targetUserId = null) {
     const io = req.app.get('io');
     if (!io) return;
     if (targetUserId) {
@@ -19,88 +29,154 @@ function broadcast(req, event, data, targetUserId = null) {
     }
 }
 
-// @route   POST /api/matchmaking/request
-// @desc    Broadcast a squad match request to all users
+/**
+ * Check if today is a new day compared to the user's last reset.
+ * If so, reset their daily matchmaking count.
+ */
+function resetDailyIfNeeded(user) {
+    const today = new Date().toDateString();
+    const lastReset = user.matchmakingLastReset ? new Date(user.matchmakingLastReset).toDateString() : null;
+    if (lastReset !== today) {
+        user.matchmakingDailyCount = 0;
+        user.matchmakingLastReset = new Date();
+    }
+}
+
+/**
+ * Clean up any active search: clear the timer, broadcast clear, reset state.
+ */
+function clearActiveSearch(req) {
+    if (!activeSearch) return;
+    clearTimeout(activeSearch.timer);
+    emit(req, 'mm:search_cleared', {});
+    activeSearch = null;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  GET /api/matchmaking/status
+//  Returns the current global matchmaking state so newly loaded
+//  pages can sync instantly (no stale UI).
+// ─────────────────────────────────────────────────────────────
+router.get('/status', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId).select('matchmakingBlockedUntil matchmakingDailyCount matchmakingLastReset blazeCoins');
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        resetDailyIfNeeded(user);
+        await user.save();
+
+        // Build response
+        const status = {
+            // User's own state
+            blockedUntil: user.matchmakingBlockedUntil || null,
+            dailyCount: user.matchmakingDailyCount || 0,
+            blazeCoins: user.blazeCoins || 0,
+
+            // Global search state
+            isSearchActive: !!activeSearch,
+            search: activeSearch ? {
+                requesterId: activeSearch.requesterId,
+                requesterBlz: activeSearch.requesterBlz,
+                expiresAt: activeSearch.expiresAt,
+                isMySearch: activeSearch.requesterId === userId
+            } : null
+        };
+
+        res.json(status);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// ─────────────────────────────────────────────────────────────
+//  POST /api/matchmaking/request
+//  Start a new squad search. Only one search at a time globally.
+// ─────────────────────────────────────────────────────────────
 router.post('/request', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // 1. Check if user is blocked
+        // 1. Only one global search at a time
+        if (activeSearch) {
+            return res.status(409).json({ msg: 'Another player is currently searching. Please wait.' });
+        }
+
+        // 2. Load and validate user
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ msg: 'User not found' });
-        
-        // Check if user is blocked (from a recent match)
-        if (user.matchmakingBlockedUntil && new Date() < user.matchmakingBlockedUntil) {
-            const remainingMins = Math.ceil((new Date(user.matchmakingBlockedUntil) - new Date()) / 60000);
-            return res.status(403).json({ msg: `You recently played a match. You can play again in ${remainingMins} minutes.` });
-        }
-        
-        // Check Daily Limit (Reset logic is handled primarily in /profile, but we ensure limit here)
-        // If they bypass frontend
-        if ((user.matchmakingDailyCount || 0) >= 3) {
-            // Check if it's a new day to reset locally just in case
-            if (!user.matchmakingLastReset || new Date(user.matchmakingLastReset).toDateString() !== new Date().toDateString()) {
-                user.matchmakingDailyCount = 0;
-                user.matchmakingLastReset = new Date();
-            } else {
-                return res.status(403).json({ msg: `Daily Limit Reached. You have used your 3 requests for today. Come back tomorrow!` });
-            }
-        }
-        
 
-        // 2. Check if user has enough BlazeCoins
+        // 3. Check cooldown block
+        if (user.matchmakingBlockedUntil && new Date() < user.matchmakingBlockedUntil) {
+            const remainingMs = new Date(user.matchmakingBlockedUntil) - new Date();
+            const remainingMins = Math.ceil(remainingMs / 60000);
+            return res.status(403).json({
+                msg: `Cooldown active. You can search again in ${remainingMins} minute(s).`,
+                blockedUntil: user.matchmakingBlockedUntil
+            });
+        }
+
+        // 4. Check daily limit (auto-reset if new day)
+        resetDailyIfNeeded(user);
+        if (user.matchmakingDailyCount >= 3) {
+            return res.status(403).json({ msg: 'Daily limit reached. You have used all 3 searches for today.' });
+        }
+
+        // 5. Check BlazeCoins
         if (user.blazeCoins < 20) {
             return res.status(400).json({ msg: 'You need at least 20 BlazeCoins to search for a squad.' });
         }
 
-        // 3. Check if a request is already active
-        if (activeRequests.has(userId)) {
-            return res.status(400).json({ msg: 'You already have an active request.' });
-        }
+        // 6. All checks passed — create the search
+        const expiresAt = new Date(Date.now() + 30 * 1000).toISOString(); // 30 seconds
 
-        // 3. Prevent multiple global requests
-        if (activeRequests.size > 0) {
-            return res.status(400).json({ msg: 'Another player is currently searching for a squad. Please wait.' });
-        }
-
-        const requesterBlz = user.playerId; // e.g. Blz-12345
-        const requestId = userId; // Use userId as the requestId for simplicity
-
-        // 4. Create the request and the 30-second timer
         const timer = setTimeout(async () => {
-            // If the timer expires, the request was not accepted.
-            if (activeRequests.has(requestId)) {
-                activeRequests.delete(requestId);
-                
-                // Block the user for 10 minutes since no one accepted
+            // Search expired — nobody accepted
+            if (activeSearch && activeSearch.requesterId === userId) {
+                activeSearch = null;
+
+                // Apply 10-minute cooldown
                 try {
-                    const requesterUser = await User.findById(userId);
-                    if (requesterUser) {
-                        requesterUser.matchmakingBlockedUntil = new Date(Date.now() + 10 * 60 * 1000);
-                        await requesterUser.save();
+                    const u = await User.findById(userId);
+                    if (u) {
+                        u.matchmakingBlockedUntil = new Date(Date.now() + 10 * 60 * 1000);
+                        await u.save();
                     }
                 } catch (e) {
-                    console.error("Error blocking user on timeout", e);
+                    console.error('Error setting cooldown on timeout:', e);
                 }
 
-                // Notify the requester that it expired
-                broadcast(req, 'request_expired', { msg: 'No one accepted. You must wait 10 minutes before requesting again.' }, userId);
-                
-                // Tell everyone else the request is gone
-                broadcast(req, 'request_cleared', { requestId });
+                // Notify requester
+                emit(req, 'mm:search_expired', {
+                    msg: 'No one accepted your request. 10-minute cooldown applied.',
+                    blockedUntil: new Date(Date.now() + 10 * 60 * 1000).toISOString()
+                }, userId);
+
+                // Notify everyone else
+                emit(req, 'mm:search_cleared', {});
             }
-        }, 30000); // 30 seconds
+        }, 30000);
 
-        activeRequests.set(requestId, { requesterId: userId, requesterBlz, timer });
+        activeSearch = {
+            requesterId: userId,
+            requesterBlz: user.playerId,
+            expiresAt,
+            timer
+        };
 
-        // Increment daily count for the requester
+        // Increment daily count
         user.matchmakingDailyCount = (user.matchmakingDailyCount || 0) + 1;
         await user.save();
 
-        // 5. Broadcast to ALL connected clients (frontend filters its own)
-        broadcast(req, 'incoming_request', { requestId, requesterBlz, requesterId: userId });
+        // Broadcast to ALL connected clients
+        emit(req, 'mm:search_started', {
+            requesterId: userId,
+            requesterBlz: user.playerId,
+            expiresAt
+        });
 
-        res.json({ msg: 'Request sent. Waiting for 30 seconds...' });
+        res.json({ msg: 'Search started.', expiresAt });
 
     } catch (err) {
         console.error(err);
@@ -108,79 +184,85 @@ router.post('/request', authMiddleware, async (req, res) => {
     }
 });
 
-// @route   POST /api/matchmaking/accept/:requestId
-// @desc    Accept a squad match request
-router.post('/accept/:requestId', authMiddleware, async (req, res) => {
+// ─────────────────────────────────────────────────────────────
+//  POST /api/matchmaking/accept
+//  Accept the current active search.
+// ─────────────────────────────────────────────────────────────
+router.post('/accept', authMiddleware, async (req, res) => {
     try {
         const acceptorId = req.user.id;
-        const requestId = req.params.requestId;
 
-        // Cannot accept own request
-        if (acceptorId === requestId) {
+        // 1. Is there an active search?
+        if (!activeSearch) {
+            return res.status(400).json({ msg: 'No active search to accept.' });
+        }
+
+        // 2. Can't accept own search
+        if (activeSearch.requesterId === acceptorId) {
             return res.status(400).json({ msg: 'You cannot accept your own request.' });
         }
 
-        const request = activeRequests.get(requestId);
-        if (!request) {
-            return res.status(400).json({ msg: 'This request has expired or already been accepted.' });
-        }
+        const requesterId = activeSearch.requesterId;
 
-        // 1. Clear the timer!
-        clearTimeout(request.timer);
-        activeRequests.delete(requestId);
-
-        // 2. Deduct 20 Blaze Coins from the requester
-        const requester = await User.findById(request.requesterId);
-        if (requester.blazeCoins < 20) {
-            // Technically, we should check this BEFORE they request, but we enforce it here
-            broadcast(req, 'request_expired', { msg: 'Match failed. You do not have enough BlazeCoins.' }, request.requesterId);
-            broadcast(req, 'request_cleared', { requestId });
-            return res.status(400).json({ msg: 'The requester does not have enough BlazeCoins.' });
-        }
-        
+        // 3. Validate acceptor
         const acceptor = await User.findById(acceptorId);
+        if (!acceptor) return res.status(404).json({ msg: 'User not found.' });
+
         if (acceptor.matchmakingBlockedUntil && new Date() < acceptor.matchmakingBlockedUntil) {
             const remainingMins = Math.ceil((new Date(acceptor.matchmakingBlockedUntil) - new Date()) / 60000);
-            return res.status(403).json({ msg: `You recently played a match. You can play again in ${remainingMins} minutes.` });
+            return res.status(403).json({ msg: `You have a cooldown active. Wait ${remainingMins} minute(s).` });
         }
 
-        if ((acceptor.matchmakingDailyCount || 0) >= 3) {
-            if (!acceptor.matchmakingLastReset || new Date(acceptor.matchmakingLastReset).toDateString() !== new Date().toDateString()) {
-                acceptor.matchmakingDailyCount = 0;
-                acceptor.matchmakingLastReset = new Date();
-            } else {
-                return res.status(403).json({ msg: `Daily Limit Reached. You have used your 3 requests for today.` });
-            }
+        resetDailyIfNeeded(acceptor);
+        if (acceptor.matchmakingDailyCount >= 3) {
+            return res.status(403).json({ msg: 'Daily limit reached. You have used all 3 searches for today.' });
         }
 
-        // Apply 30-minute block to both players
-        const blockTime = new Date(Date.now() + 30 * 60 * 1000); // +30 mins
-        
+        // 4. Validate requester
+        const requester = await User.findById(requesterId);
+        if (!requester || requester.blazeCoins < 20) {
+            clearActiveSearch(req);
+            return res.status(400).json({ msg: 'Match failed — requester does not have enough BlazeCoins.' });
+        }
+
+        // 5. All checks passed — clear the search, form the match
+        clearTimeout(activeSearch.timer);
+        activeSearch = null;
+
+        // Deduct coins + apply 30-minute cooldown to both
+        const cooldownUntil = new Date(Date.now() + 30 * 60 * 1000);
+
         requester.blazeCoins -= 20;
-        requester.matchmakingBlockedUntil = blockTime;
+        requester.matchmakingBlockedUntil = cooldownUntil;
         await requester.save();
 
-        acceptor.matchmakingBlockedUntil = blockTime;
+        acceptor.matchmakingBlockedUntil = cooldownUntil;
         acceptor.matchmakingDailyCount = (acceptor.matchmakingDailyCount || 0) + 1;
         await acceptor.save();
 
-        // 3. Create the match room (msgCount tracks predefined messages per player, max 3)
+        // Create match room
         const matchId = 'room_' + Date.now();
         activeMatches.set(matchId, {
-            player1Id: request.requesterId,
+            player1Id: requesterId,
             player2Id: acceptorId,
-            msgCount: { [request.requesterId]: 0, [acceptorId]: 0 }
+            msgCount: { [requesterId]: 0, [acceptorId]: 0 }
         });
 
-        // 4. Notify everyone else to clear the popup
-        broadcast(req, 'request_cleared', { requestId });
+        // Notify everyone the search is over
+        emit(req, 'mm:search_cleared', {});
 
-        // 5. Notify the two players that the match is formed
-        const matchData1 = { matchId, opponent: acceptor.playerId, role: 'requester' };
-        const matchData2 = { matchId, opponent: requester.playerId, role: 'acceptor' };
-        
-        broadcast(req, 'match_formed', matchData1, request.requesterId);
-        broadcast(req, 'match_formed', matchData2, acceptorId);
+        // Notify both players — match formed
+        emit(req, 'mm:match_formed', {
+            matchId,
+            opponent: acceptor.playerId,
+            cooldownUntil: cooldownUntil.toISOString()
+        }, requesterId);
+
+        emit(req, 'mm:match_formed', {
+            matchId,
+            opponent: requester.playerId,
+            cooldownUntil: cooldownUntil.toISOString()
+        }, acceptorId);
 
         res.json({ msg: 'Match accepted!' });
 
@@ -190,8 +272,11 @@ router.post('/accept/:requestId', authMiddleware, async (req, res) => {
     }
 });
 
-// @route   POST /api/matchmaking/chat/:matchId
-// @desc    Send a predefined message or credentials
+// ─────────────────────────────────────────────────────────────
+//  POST /api/matchmaking/chat/:matchId
+//  Send a predefined message or room credentials.
+//  Predefined messages are limited to 3 per player per match.
+// ─────────────────────────────────────────────────────────────
 router.post('/chat/:matchId', authMiddleware, (req, res) => {
     try {
         const userId = req.user.id;
@@ -208,35 +293,29 @@ router.post('/chat/:matchId', authMiddleware, (req, res) => {
         const targetId = match.player1Id === userId ? match.player2Id : match.player1Id;
 
         if (type === 'predefined') {
-            // Ensure message is one of the allowed predefined ones
             const allowed = ['Who will create the room?', 'I will create the room', 'You create the room', 'Credentials Sent', 'Joined!'];
             if (!allowed.includes(message)) return res.status(400).json({ msg: 'Invalid message.' });
 
-            // Enforce 3-message limit per player per match
-            const playerMsgCount = (match.msgCount && match.msgCount[userId]) || 0;
-            if (playerMsgCount >= 3) {
-                return res.status(429).json({ msg: 'Message limit reached. You can only send 3 quick messages per match.' });
+            // Enforce 3-message limit
+            const count = (match.msgCount[userId]) || 0;
+            if (count >= 3) {
+                return res.status(429).json({ msg: 'Message limit reached. Max 3 quick messages per match.' });
             }
-            // Increment count
-            if (!match.msgCount) match.msgCount = {};
-            match.msgCount[userId] = playerMsgCount + 1;
-
-            // Notify sender of remaining count so frontend can update
+            match.msgCount[userId] = count + 1;
             const remaining = 3 - match.msgCount[userId];
-            
-            broadcast(req, 'chat_message', { sender: userId, type: 'text', message }, targetId);
-            broadcast(req, 'chat_message', { sender: userId, type: 'text', message, remaining }, userId); // echo back to sender with remaining count
+
+            emit(req, 'mm:chat_message', { sender: userId, type: 'text', message }, targetId);
+            emit(req, 'mm:chat_message', { sender: userId, type: 'text', message, remaining }, userId);
 
         } else if (type === 'credentials') {
-            // Validate 10-digit numbers for ID and Pass
             const numRegex = /^\d{1,10}$/;
             if (!numRegex.test(roomId) || !numRegex.test(password)) {
-                return res.status(400).json({ msg: 'Room ID and Password must be numbers up to 10 digits only.' });
+                return res.status(400).json({ msg: 'Room ID and Password must be numbers (max 10 digits).' });
             }
 
             const credMsg = `Room ID: ${roomId} | Pass: ${password}`;
-            broadcast(req, 'chat_message', { sender: userId, type: 'credentials', message: credMsg }, targetId);
-            broadcast(req, 'chat_message', { sender: userId, type: 'credentials', message: credMsg }, userId);
+            emit(req, 'mm:chat_message', { sender: userId, type: 'credentials', message: credMsg }, targetId);
+            emit(req, 'mm:chat_message', { sender: userId, type: 'credentials', message: credMsg }, userId);
         }
 
         res.json({ msg: 'Message sent' });
@@ -246,14 +325,16 @@ router.post('/chat/:matchId', authMiddleware, (req, res) => {
     }
 });
 
-// @route   POST /api/matchmaking/leave/:matchId
-// @desc    Leave/Close the room
+// ─────────────────────────────────────────────────────────────
+//  POST /api/matchmaking/leave/:matchId
+//  Leave/close the match room.
+// ─────────────────────────────────────────────────────────────
 router.post('/leave/:matchId', authMiddleware, (req, res) => {
     const matchId = req.params.matchId;
     if (activeMatches.has(matchId)) {
         const match = activeMatches.get(matchId);
         const targetId = match.player1Id === req.user.id ? match.player2Id : match.player1Id;
-        broadcast(req, 'chat_ended', { msg: 'Opponent has left the room.' }, targetId);
+        emit(req, 'mm:chat_ended', { msg: 'Opponent has left the room.' }, targetId);
         activeMatches.delete(matchId);
     }
     res.json({ msg: 'Left room' });

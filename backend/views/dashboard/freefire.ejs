@@ -613,40 +613,8 @@
             const limitSpan = document.getElementById('mm-daily-limit');
             if (limitSpan) limitSpan.innerText = `(${reqsLeft}/3 Left)`;
 
-            if (dailyCount >= 3) {
-                const overlay = document.getElementById('ff-mm-overlay');
-                if (overlay) {
-                    overlay.style.display = 'flex';
-                    document.getElementById('ff-mm-overlay-text').innerText = 'LIMIT REACHED';
-                    
-                    // Add an extra lock icon overlay class to completely hide the red
-                    const banner = document.getElementById('ff-matchmaking-banner');
-                    if(banner) {
-                        banner.style.background = 'rgba(15, 10, 12, 0.4)';
-                        banner.style.borderColor = 'rgba(255,255,255,0.1)';
-                    }
-
-                    const midnight = new Date();
-                    midnight.setHours(24, 0, 0, 0); // Next midnight
-                    const sub = document.getElementById('ff-mm-overlay-sub');
-
-                    const updateMidnightTimer = () => {
-                        const diff = midnight - new Date();
-                        if (diff <= 0) {
-                            window.location.reload();
-                        } else {
-                            const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
-                            const m = Math.floor((diff % (1000 * 60 * 60)) / 60000).toString().padStart(2, '0');
-                            const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-                            sub.innerHTML = `<span style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; letter-spacing: 2px;">0/3 LEFT</span><br><span style="color:var(--blaze-orange); font-size:0.9rem; font-weight:bold; letter-spacing:1px;">RESETS IN ${h}:${m}:${s}</span>`;
-                        }
-                    };
-                    updateMidnightTimer();
-                    setInterval(updateMidnightTimer, 1000);
-                }
-            } else if (blockedUntil && new Date() < new Date(blockedUntil)) {
-                startCooldownTimer(new Date(blockedUntil));
-            }
+            // Matchmaking state (limits and cooldowns) is now fully handled 
+            // by global-matchmaking.js on load via /api/matchmaking/status
 
             // Fetch dynamic HUB stats
             try {
@@ -1251,76 +1219,22 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('blaze_token');
-            if (!token) return;
-
-            // Find a Squad Button
+            // Find a Squad Button — delegates to global-matchmaking.js
             document.getElementById('find-squad-btn').addEventListener('click', async () => {
-                if (!(await customConfirm('This will broadcast your request to all online players. 20 BlazeCoins will be deducted if someone accepts. Proceed?'))) return;
+                const proceed = await customConfirm('This will broadcast your request to all online players. 20 BlazeCoins will be deducted if someone accepts. Proceed?');
+                if (!proceed) return;
 
                 const btn = document.getElementById('find-squad-btn');
                 btn.disabled = true;
 
-                try {
-                    const res = await fetch('/api/matchmaking/request', {
-                        method: 'POST',
-                        headers: { 'x-auth-token': token }
-                    });
-                    const data = await res.json();
-                    if (!res.ok) {
-                        if (res.status === 403 && data.msg.includes('recently played')) {
-                            alert(data.msg);
-                            btn.disabled = false;
-                        } else if (res.status === 403 && data.msg.includes('Limit Reached')) {
-                            const overlay = document.getElementById('ff-mm-overlay');
-                            if (overlay) {
-                                overlay.style.display = 'flex';
-                                document.getElementById('ff-mm-overlay-text').innerText = 'DAILY LIMIT REACHED';
-                                document.getElementById('ff-mm-overlay-sub').innerText = '0/3 left. Come back tomorrow!';
-                            }
-                        } else {
-                            alert(data.msg);
-                            btn.disabled = false;
-                        }
-                    } else {
-                        // Success — start local 30s countdown on the button
-                        // Store interval in window._mmSearchInterval so global-matchmaking.js
-                        // can clear it when server fires request_expired / match_formed / request_cleared
-                        let timeLeft = 30;
-                        btn.innerText = `SEARCHING (${timeLeft}s)`;
-                        btn.style.opacity = '0.7';
-
-                        // Clear any previous search timer
-                        if (window._mmSearchInterval) clearInterval(window._mmSearchInterval);
-
-                        window._mmSearchInterval = setInterval(() => {
-                            timeLeft--;
-                            if (timeLeft <= 0) {
-                                clearInterval(window._mmSearchInterval);
-                                window._mmSearchInterval = null;
-                                // The server's request_expired event will handle the final reset.
-                                // Set a fallback text so the user sees progress.
-                                btn.innerText = 'SEARCHING...';
-                            } else {
-                                btn.innerText = `SEARCHING (${timeLeft}s)`;
-                            }
-                        }, 1000);
-
-                        // Decrement visual daily limit count
-                        const limitSpan = document.getElementById('mm-daily-limit');
-                        if (limitSpan) {
-                            const match = limitSpan.innerText.match(/\d+/);
-                            if (match) {
-                                const currentLeft = parseInt(match[0]);
-                                if (currentLeft > 0) {
-                                    limitSpan.innerText = `(${currentLeft - 1}/3 Left)`;
-                                }
-                            }
-                        }
+                if (window.BlazeMatchmaking && window.BlazeMatchmaking.startSearch) {
+                    const success = await window.BlazeMatchmaking.startSearch();
+                    if (!success) {
+                        btn.disabled = false;
                     }
-                } catch(e) {
-                    console.error(e);
-                    window.resetFindButton();
+                } else {
+                    console.error('Matchmaking module not loaded.');
+                    btn.disabled = false;
                 }
             });
         });
