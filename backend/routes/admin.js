@@ -858,6 +858,10 @@ router.post('/clip-submissions/:id/approve', adminMiddleware, async (req, res) =
         });
         await newClip.save();
 
+        // Invalidate the clips cache so the new clip shows up immediately
+        const { cache } = require('../middleware/cache');
+        cache.del(`/api/game/${submission.game}/clips`);
+
         // Award 50 BlazeCoins
         const user = await User.findById(submission.userId);
         if (user) {
