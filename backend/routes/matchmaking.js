@@ -80,7 +80,8 @@ router.get('/status', authMiddleware, async (req, res) => {
                 requesterBlz: activeSearch.requesterBlz,
                 expiresAt: activeSearch.expiresAt,
                 isMySearch: activeSearch.requesterId === userId
-            } : null
+            } : null,
+            serverTime: new Date()
         };
 
         res.json(status);
@@ -176,7 +177,7 @@ router.post('/request', authMiddleware, async (req, res) => {
             expiresAt
         });
 
-        res.json({ msg: 'Search started.', expiresAt });
+        res.json({ msg: 'Search started.', expiresAt, serverTime: new Date() });
 
     } catch (err) {
         console.error(err);

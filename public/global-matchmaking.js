@@ -53,11 +53,11 @@ window.BlazeMatchmaking = {
             
             clearInterval(blockTimerInterval);
             const updateTimer = () => {
-                const diff = targetDate - new Date();
+                const trueNow = window._getServerTime ? window._getServerTime() : new Date();
+                const diff = targetDate - trueNow;
                 if (diff <= 0) {
                     clearInterval(blockTimerInterval);
                     overlay.style.display = 'none';
-                    // Refresh status when cooldown ends
                     syncMatchmakingState();
                 } else {
                     const m = Math.floor(diff / 60000).toString().padStart(2, '0');
@@ -76,9 +76,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!token) return;
 
     let myUserId = null;
+    let serverTimeOffset = 0; // Fixes client-server clock desync
+
+    function parseJwt(token) {
+        try {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch(e) { return null; }
+    }
+
     try {
-        myUserId = JSON.parse(atob(token.split('.')[1])).id;
+        const payload = parseJwt(token);
+        if (payload) myUserId = payload.id;
     } catch(e) {}
+
+    // Expose offset to helpers
+    window._getServerTime = () => new Date(Date.now() + serverTimeOffset);
 
     // 1. Sync state instantly on load
     await syncMatchmakingState();
@@ -211,8 +228,15 @@ async function syncMatchmakingState() {
         if (res.ok) {
             const state = await res.json();
             
+            // Sync clock with server
+            if (state.serverTime) {
+                serverTimeOffset = new Date(state.serverTime).getTime() - Date.now();
+            }
+
+            const trueNow = window._getServerTime ? window._getServerTime() : new Date();
+
             // 1. Cooldowns
-            if (state.blockedUntil && new Date(state.blockedUntil) > new Date()) {
+            if (state.blockedUntil && new Date(state.blockedUntil) > trueNow) {
                 window.BlazeMatchmaking.startCooldown(new Date(state.blockedUntil));
             }
             // 2. Limits
@@ -224,7 +248,7 @@ async function syncMatchmakingState() {
             // 3. Active Search
             if (state.isSearchActive && state.search) {
                 const expires = new Date(state.search.expiresAt);
-                if (expires > new Date()) {
+                if (expires > trueNow) {
                     if (state.search.isMySearch) {
                         startSearchTimerUI(expires);
                     } else {
@@ -257,7 +281,8 @@ function showMmPopup(blz, expiresAt) {
     
     clearInterval(popupTimerInterval);
     const updateTimer = () => {
-        const diff = Math.ceil((expiresAt - new Date()) / 1000);
+        const trueNow = window._getServerTime ? window._getServerTime() : new Date();
+        const diff = Math.ceil((expiresAt - trueNow) / 1000);
         if (diff <= 0) {
             clearInterval(popupTimerInterval);
             hideMmPopup();
@@ -285,7 +310,8 @@ function startSearchTimerUI(expiresAt) {
 
     clearInterval(searchTimerInterval);
     const updateTimer = () => {
-        const diff = Math.ceil((expiresAt - new Date()) / 1000);
+        const trueNow = window._getServerTime ? window._getServerTime() : new Date();
+        const diff = Math.ceil((expiresAt - trueNow) / 1000);
         if (diff <= 0) {
             clearInterval(searchTimerInterval);
             btn.innerText = 'SEARCHING...';
