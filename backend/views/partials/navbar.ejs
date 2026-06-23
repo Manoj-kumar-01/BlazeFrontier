@@ -318,17 +318,17 @@
 
 <!-- Matchmaking Chat Modal (Global) -->
 <div id="mm-chat-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:99999; justify-content:center; align-items:center;">
-    <div style="background:#111116; border:1px solid #00bcd4; border-radius:12px; width: 90%; max-width:500px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
-        <div style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; background:rgba(0,188,212,0.1);">
+    <div style="background:#111116; border:1px solid #00bcd4; border-radius:12px; width: 90%; max-width:500px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+        <div style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; background:rgba(0,188,212,0.1); flex-shrink:0;">
             <div style="font-family:var(--font-display); color:#fff; font-size:1.3rem; letter-spacing:1px;">MATCH ROOM <span id="mm-chat-opponent" style="color:#00bcd4; font-size:0.9rem; margin-left:10px;">Opponent</span></div>
             <button id="mm-leave-room-btn" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.8rem;">LEAVE</button>
         </div>
         
-        <div id="mm-chat-box" style="flex:1; height:300px; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:10px; background:rgba(0,0,0,0.3);">
+        <div id="mm-chat-box" style="min-height:200px; max-height:40vh; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:10px; background:rgba(0,0,0,0.3);">
             <div style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Match confirmed! You may now share credentials. Chat is restricted to pre-defined phrases.</div>
         </div>
 
-        <div style="padding:20px; background:rgba(255,255,255,0.02); border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="padding:20px; background:rgba(255,255,255,0.02); border-top:1px solid rgba(255,255,255,0.06); flex-shrink:0;">
             <div style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap;">
                 <button class="mm-quick-msg" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; flex:1;">Who will create the room?</button>
                 <button class="mm-quick-msg" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; flex:1;">I will create the room</button>
@@ -351,5 +351,5 @@
     </div>
 </div>
 
-<script src="/public/global-matchmaking.js?v=3"></script>
+<script src="/public/global-matchmaking.js?v=4"></script>
 <script src="/public/custom-confirm.js"></script>

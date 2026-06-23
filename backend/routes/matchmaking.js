@@ -164,9 +164,13 @@ router.post('/accept/:requestId', authMiddleware, async (req, res) => {
         acceptor.matchmakingDailyCount = (acceptor.matchmakingDailyCount || 0) + 1;
         await acceptor.save();
 
-        // 3. Create the match room
+        // 3. Create the match room (msgCount tracks predefined messages per player, max 3)
         const matchId = 'room_' + Date.now();
-        activeMatches.set(matchId, { player1Id: request.requesterId, player2Id: acceptorId });
+        activeMatches.set(matchId, {
+            player1Id: request.requesterId,
+            player2Id: acceptorId,
+            msgCount: { [request.requesterId]: 0, [acceptorId]: 0 }
+        });
 
         // 4. Notify everyone else to clear the popup
         broadcast(req, 'request_cleared', { requestId });
@@ -207,9 +211,21 @@ router.post('/chat/:matchId', authMiddleware, (req, res) => {
             // Ensure message is one of the allowed predefined ones
             const allowed = ['Who will create the room?', 'I will create the room', 'You create the room', 'Credentials Sent', 'Joined!'];
             if (!allowed.includes(message)) return res.status(400).json({ msg: 'Invalid message.' });
+
+            // Enforce 3-message limit per player per match
+            const playerMsgCount = (match.msgCount && match.msgCount[userId]) || 0;
+            if (playerMsgCount >= 3) {
+                return res.status(429).json({ msg: 'Message limit reached. You can only send 3 quick messages per match.' });
+            }
+            // Increment count
+            if (!match.msgCount) match.msgCount = {};
+            match.msgCount[userId] = playerMsgCount + 1;
+
+            // Notify sender of remaining count so frontend can update
+            const remaining = 3 - match.msgCount[userId];
             
             broadcast(req, 'chat_message', { sender: userId, type: 'text', message }, targetId);
-            broadcast(req, 'chat_message', { sender: userId, type: 'text', message }, userId); // echo back to sender
+            broadcast(req, 'chat_message', { sender: userId, type: 'text', message, remaining }, userId); // echo back to sender with remaining count
 
         } else if (type === 'credentials') {
             // Validate 10-digit numbers for ID and Pass

@@ -1283,21 +1283,30 @@
                             btn.disabled = false;
                         }
                     } else {
-                        // Success! Global matchmaking JS handles the popup timer
-                        // Start Local 30s timer for sender!
+                        // Success — start local 30s countdown on the button
+                        // Store interval in window._mmSearchInterval so global-matchmaking.js
+                        // can clear it when server fires request_expired / match_formed / request_cleared
                         let timeLeft = 30;
                         btn.innerText = `SEARCHING (${timeLeft}s)`;
-                        const timerInterval = setInterval(() => {
+                        btn.style.opacity = '0.7';
+
+                        // Clear any previous search timer
+                        if (window._mmSearchInterval) clearInterval(window._mmSearchInterval);
+
+                        window._mmSearchInterval = setInterval(() => {
                             timeLeft--;
                             if (timeLeft <= 0) {
-                                clearInterval(timerInterval);
+                                clearInterval(window._mmSearchInterval);
+                                window._mmSearchInterval = null;
+                                // The server's request_expired event will handle the final reset.
+                                // Set a fallback text so the user sees progress.
                                 btn.innerText = 'SEARCHING...';
                             } else {
                                 btn.innerText = `SEARCHING (${timeLeft}s)`;
                             }
                         }, 1000);
 
-                        // Decrement visually
+                        // Decrement visual daily limit count
                         const limitSpan = document.getElementById('mm-daily-limit');
                         if (limitSpan) {
                             const match = limitSpan.innerText.match(/\d+/);
@@ -1311,8 +1320,7 @@
                     }
                 } catch(e) {
                     console.error(e);
-                    btn.disabled = false;
-                    btn.innerText = 'FIND A SQUAD';
+                    window.resetFindButton();
                 }
             });
         });
