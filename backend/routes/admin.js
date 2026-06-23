@@ -64,6 +64,13 @@ router.post('/potd', upload.single('video'), async (req, res) => {
         });
 
         await newPotd.save();
+        
+        // Invalidate Hub caches so POTD updates immediately
+        global.graphqlStatsCache = null;
+        if (global.clearApiStatsCache) {
+            global.clearApiStatsCache();
+        }
+
         res.json({ msg: 'Player of the Day updated successfully!', potd: newPotd });
     } catch (err) {
         console.error(err.message);
@@ -800,6 +807,13 @@ router.post('/player-of-the-day', adminMiddleware, upload.single('clip'), async 
         });
 
         await newPOTD.save();
+        
+        // Invalidate Hub caches so POTD updates immediately
+        global.graphqlStatsCache = null;
+        if (global.clearApiStatsCache) {
+            global.clearApiStatsCache();
+        }
+
         res.json(newPOTD);
     } catch (err) {
         console.error(err.message);

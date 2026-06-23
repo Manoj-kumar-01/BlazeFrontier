@@ -14,6 +14,10 @@ let statsCache = {
     data: null,
     lastFetched: 0
 };
+global.clearApiStatsCache = () => {
+    statsCache.data = null;
+    statsCache.lastFetched = 0;
+};
 const CACHE_DURATION_MS = 10000; // 10 seconds cache
 
 const storage = multer.diskStorage({

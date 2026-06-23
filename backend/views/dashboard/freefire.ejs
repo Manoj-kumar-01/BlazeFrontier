@@ -1009,6 +1009,43 @@
             <form id="clip-submit-form">
                 <div style="margin-bottom: 15px;">
                     <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Highlight Title</label>
+                    <input type="text" id="cs-title" placeholder="e.g. Crazy 1v4 Clutch" required style="width:100%; padding:10px 15px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; font-family:var(--font-sans);">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Upload Video (Max 10s)</label>
+                    <input type="file" id="cs-file" accept="video/mp4,video/webm" required style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px dashed rgba(255,255,255,0.2); border-radius:6px; color:var(--text-muted); cursor:pointer;">
+                    <div id="cs-duration-error" style="color:#ef4444; font-size:0.75rem; margin-top:5px; display:none;">Video exceeds 10 seconds. Please trim and try again.</div>
+                </div>
+                <button type="submit" id="cs-submit-btn" style="width:100%; background:linear-gradient(45deg, #ff5722, #ff9800); border:none; border-radius:6px; color:#fff; font-family:var(--font-display); font-size:1rem; padding:12px; cursor:pointer; letter-spacing:1px; transition:opacity 0.2s;">SUBMIT HIGHLIGHT</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('blaze_token');
+            const viewQsBtn = document.getElementById('view-qs-btn');
+            if (viewQsBtn) {
+                viewQsBtn.addEventListener('click', async () => {
+                    document.getElementById('qs-side-panel').style.right = '0';
+                    try {
+                        const tRes = await fetch('/api/tournaments?game=freefire', { headers: { 'x-auth-token': token }});
+                        if (tRes.ok) {
+                            const data = await tRes.json();
+                            let html = '';
+                            if (data.upcoming && data.upcoming.length > 0) {
+                                html = data.upcoming.filter(m => m.status === 'APPROVED' || m.status === 'OPEN').map(m => `
+                                    <div style="background: rgba(255,255,255,0.02); border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                            <span style="color:#fff; font-family:var(--font-display); font-size:1.1rem;">\${m.name}</span>
+                                            <span style="color:var(--blaze-orange); font-size:0.8rem; border:1px solid var(--blaze-orange); padding:2px 6px; border-radius:4px;">\${m.status}</span>
+                                        </div>
+                                        <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:4px;">Format: \${m.team}</div>
+                                        <div style="color:var(--text-muted); font-size:0.85rem;">Date: \${m.date} \${m.slot ? '• ' + m.slot : ''}</div>
+                                    </div>
+                                `).join('');
+                            }
+                            if (!html) html = '<div style="color:var(--text-muted); text-align:center; padding:20px;">No upcoming series found.</div>';
                             document.getElementById('qs-panel-content').innerHTML = html;
                         } else {
                             document.getElementById('qs-panel-content').innerHTML = `<div style="color: #ef4444; padding: 20px; text-align: center;">Server Error: ${tRes.status}</div>`;
