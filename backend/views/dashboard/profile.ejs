@@ -507,6 +507,11 @@
                 Searching database...
             </div>
             
+            <div id="search-error" style="display: none; text-align: center; padding: 40px 20px; color: #ef4444; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">🚫</div>
+                NO PROFILE EXISTS
+            </div>
+
             <div id="search-result" style="display: none;">
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06);">
                     <img id="sp-avatar" src="/public/blaze_avatar.png" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);">
@@ -516,21 +521,29 @@
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,215,0,0.2);">
+                        <div style="font-size: 0.65rem; color: #fcd34d; text-transform: uppercase; font-weight: bold;">Blaze Coins</div>
+                        <div id="sp-bc" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
+                    </div>
                     <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
-                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Matches</div>
+                        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Matches</div>
                         <div id="sp-matches" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
                     </div>
                     <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
-                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Wins</div>
+                        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Wins</div>
                         <div id="sp-wins" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
                     </div>
                 </div>
                 
-                <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                        <span style="color: var(--text-muted);">Username</span>
+                        <span id="sp-user" style="color: #fff; font-family: var(--font-mono);">—</span>
+                    </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
                         <span style="color: var(--text-muted);">Blaze ID</span>
-                        <span id="sp-pid" style="color: #fff; font-family: var(--font-mono);">—</span>
+                        <span id="sp-pid" style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
                         <span style="color: var(--text-muted);">Game UID</span>
@@ -539,6 +552,10 @@
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
                         <span style="color: var(--text-muted);">Region</span>
                         <span id="sp-region" style="color: #fff; font-family: var(--font-mono);">—</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                        <span style="color: var(--text-muted);">Setup Complete</span>
+                        <span id="sp-setup" style="color: #22c55e; font-family: var(--font-mono); font-weight: bold;">—</span>
                     </div>
                 </div>
             </div>
@@ -586,6 +603,7 @@
             
             document.getElementById('search-loading').style.display = 'block';
             document.getElementById('search-result').style.display = 'none';
+            document.getElementById('search-error').style.display = 'none';
             
             try {
                 const token = localStorage.getItem('blaze_token');
@@ -594,18 +612,30 @@
                 });
                 
                 if (!res.ok) {
-                    closeViewProfileModal();
-                    return showToast('Player not found', 'error');
+                    document.getElementById('search-loading').style.display = 'none';
+                    document.getElementById('search-error').style.display = 'block';
+                    return;
                 }
                 
                 const data = await res.json();
                 document.getElementById('sp-name').textContent = data.inGameName || data.username;
                 document.getElementById('sp-avatar').src = data.profilePic || '/public/blaze_avatar.png';
-                document.getElementById('sp-matches').textContent = data.totalMatches;
-                document.getElementById('sp-wins').textContent = data.tournamentsWon;
+                document.getElementById('sp-bc').textContent = data.blazeCoins || 0;
+                document.getElementById('sp-matches').textContent = data.totalMatches || 0;
+                document.getElementById('sp-wins').textContent = data.tournamentsWon || 0;
+                document.getElementById('sp-user').textContent = data.username || '—';
                 document.getElementById('sp-pid').textContent = data.playerId;
                 document.getElementById('sp-uid').textContent = data.gameUid || '—';
                 document.getElementById('sp-region').textContent = data.location || '—';
+                
+                const setupEl = document.getElementById('sp-setup');
+                if (data.isSetupComplete) {
+                    setupEl.textContent = 'COMPLETE';
+                    setupEl.style.color = '#22c55e';
+                } else {
+                    setupEl.textContent = 'PENDING';
+                    setupEl.style.color = '#ef4444';
+                }
                 
                 const badge = document.getElementById('sp-badge');
                 if (data.isGenuine) {
