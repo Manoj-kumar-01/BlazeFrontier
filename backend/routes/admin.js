@@ -104,8 +104,8 @@ router.put('/registrations/:id', adminMiddleware, async (req, res) => {
 
         if (req.body.status === 'Approved') {
             const count = await Registration.countDocuments({ startDate: reg.startDate, status: 'Approved' });
-            if (count >= 4 && reg.status !== 'Approved') {
-                return res.status(400).json({ msg: 'Cannot approve. The maximum 4 slots are already filled for this date.' });
+            if (count >= 5 && reg.status !== 'Approved') {
+                return res.status(400).json({ msg: 'Cannot approve. The maximum 5 slots are already filled for this date.' });
             }
         }
 
