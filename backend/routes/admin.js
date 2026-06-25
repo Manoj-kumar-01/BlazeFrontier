@@ -993,4 +993,34 @@ router.post('/daily-content', adminMiddleware, async (req, res) => {
     }
 });
 
+// @route   GET /api/admin/slot-report
+// @desc    Get slots booked per day for the next 7 days
+router.get('/slot-report', adminMiddleware, async (req, res) => {
+    try {
+        const Registration = require('../models/Registration');
+        const dates = [];
+        const result = [];
+        
+        // Generate next 7 days in YYYY-MM-DD
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() + i);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            dates.push(`${yyyy}-${mm}-${dd}`);
+        }
+
+        for (const dateStr of dates) {
+            const count = await Registration.countDocuments({ startDate: dateStr, status: 'Approved' });
+            result.push({ date: dateStr, count: count });
+        }
+
+        res.json(result);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

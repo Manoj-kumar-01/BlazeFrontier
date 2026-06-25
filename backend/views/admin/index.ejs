@@ -607,6 +607,15 @@
                 <h1 class="page-title">Queue Requests</h1>
                 <div class="page-desc">Approve or reject pending tournament entries.</div>
             </div>
+
+            <div class="glass-card" style="margin-bottom: 30px;">
+                <div class="card-title">7-DAY SLOT REPORT</div>
+                <div style="color:var(--text-400); font-size:0.85rem; margin-bottom:20px;">Overview of booked slots (Approved) for the next 7 days.</div>
+                <div id="slot-report-container" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="color:var(--text-muted); font-size:0.9rem;">Loading report...</div>
+                </div>
+            </div>
+
             <div class="table-container">
                 <table class="data-table">
                     <thead>
@@ -1095,6 +1104,23 @@
 
         async function loadRegistrations() {
             const list = document.getElementById('reg-list');
+            const reportContainer = document.getElementById('slot-report-container');
+            
+            if (reportContainer) {
+                try {
+                    const rRes = await fetch(`<%= adminPrefix %>/api/slot-report?t=${Date.now()}`, { cache: 'no-store' });
+                    if (rRes.ok) {
+                        const report = await rRes.json();
+                        reportContainer.innerHTML = report.map(r => `
+                            <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:15px; min-width: 120px; text-align: center; flex: 1;">
+                                <div style="color:var(--text-400); font-size:0.85rem; margin-bottom: 8px; font-weight:600;">${r.date}</div>
+                                <div style="color:var(--cyan); font-size:1.8rem; font-family:var(--font-display);">${r.count} <span style="font-size:0.9rem; color:var(--text-muted);">/ 4</span></div>
+                            </div>
+                        `).join('');
+                    }
+                } catch(e) { console.error('Error loading slot report', e); }
+            }
+
             try {
                 const res = await fetch(`<%= adminPrefix %>/api/registrations?t=${Date.now()}`, { cache: 'no-store' });
                 if (!res.ok) return;
