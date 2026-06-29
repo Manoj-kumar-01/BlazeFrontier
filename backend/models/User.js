@@ -49,6 +49,12 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    // Role
+    role: {
+        type: String,
+        enum: ['player', 'organizer'],
+        default: 'player'
+    },
     // Admin Fields
     isAdmin: {
         type: Boolean,

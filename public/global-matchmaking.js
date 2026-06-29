@@ -1,4 +1,4 @@
-// Global Matchmaking Logic — Clean State Architecture
+
 let socket = null;
 let currentMatchId = null;
 let popupTimerInterval = null;

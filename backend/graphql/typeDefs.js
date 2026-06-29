@@ -12,6 +12,7 @@ const typeDefs = `#graphql
     isSetupComplete: Boolean
     isAdmin: Boolean
     isBanned: Boolean
+    role: String
     blazeCoins: Int
     firstLoginClaimed: Boolean
     lastLoginClaimDate: String

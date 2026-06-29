@@ -7,11 +7,11 @@ const TournamentSchema = new mongoose.Schema({
     },
     game: {
         type: String,
-        required: true
+        default: 'Free Fire'
     },
     prize: {
         type: String,
-        required: true
+        default: 'Player of the Day & Get Noticed'
     },
     status: {
         type: String,

@@ -72,6 +72,7 @@ const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
 const adminApiRoutes = require('./routes/admin');
 const matchmakingRoutes = require('./routes/matchmaking');
+const organizerRoutes = require('./routes/organizer');
 
 const adminAuth = require('./middleware/adminAuth');
 const adminPrefix = process.env.ADMIN_ROUTE_PREFIX || '/hidden-admin';
@@ -97,6 +98,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/matchmaking', matchmakingRoutes);
+app.use('/api/organizer', organizerRoutes);
 app.use(`${adminPrefix}/api`, adminAuth, adminApiRoutes);
 
 // --- Admin Login Routes ---
@@ -153,13 +155,14 @@ app.get('/dashboard/seasons', (req, res) => res.render('dashboard/seasons', { ac
 app.get('/dashboard/seasons/hub', (req, res) => res.render('dashboard/season_hub', { activePage: '/dashboard/seasons' }));
 app.get('/dashboard/profile', (req, res) => res.render('dashboard/profile', { activePage: '/dashboard/profile' }));
 app.get('/dashboard/tournaments', (req, res) => res.render('dashboard/tournaments', { activePage: '/dashboard/tournaments' }));
-app.get('/dashboard/tournaments/register', (req, res) => res.render('dashboard/tourney_register', { activePage: '/dashboard/tournaments' }));
+app.get('/dashboard/tournaments/:id/register', (req, res) => res.render('dashboard/tourney_register', { activePage: '/dashboard/tournaments', tournamentId: req.params.id }));
 app.get('/dashboard/leaderboards', (req, res) => res.render('dashboard/leaderboards', { activePage: '/dashboard/leaderboards' }));
 app.get('/dashboard/freefire', (req, res) => res.render('dashboard/freefire', { activePage: '/dashboard/freefire' }));
 app.get('/dashboard/content', (req, res) => res.render('dashboard/content', { activePage: '/dashboard/content' }));
 app.get(adminPrefix, adminAuth, (req, res) => res.render('admin/index', { adminPrefix, activePage: 'admin' }));
 app.get(`${adminPrefix}/player/:playerId`, adminAuth, (req, res) => res.render('admin/profile', { adminPrefix, activePage: 'admin', playerId: req.params.playerId }));
 app.get('/banned', (req, res) => res.render('onboarding/banned'));
+app.get('/organizer', (req, res) => res.render('organizer/index', { activePage: '/organizer' }));
 
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
@@ -176,15 +179,37 @@ async function startBackend() {
 
     // Mount GraphQL endpoint with Context
     const jwt = require('jsonwebtoken');
+    const User = require('./models/User');
+    const fs = require('fs');
+    const path = require('path');
+    
     app.use('/graphql', expressMiddleware(server, {
         context: async ({ req }) => {
             const token = req.header('x-auth-token');
             if (!token) return { user: null };
             try {
                 const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                return { user: decoded };
+                
+                const user = await User.findById(decoded.id || decoded.user?.id);
+                if (!user) return { user: null };
+
+                // Enforce Organizer Blocking
+                let envEmails = process.env.ORGANIZER_EMAILS || '';
+                try {
+                    const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+                    const match = envContent.match(/^ORGANIZER_EMAILS=(.*)$/m);
+                    if (match && match[1]) envEmails = match[1];
+                } catch(e) {}
+                const allowedEmails = envEmails.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+                const email = user.email ? user.email.toLowerCase() : '';
+
+                if (user.role === 'organizer' || allowedEmails.includes(email)) {
+                    throw new Error('Access Denied: Organizers cannot access Player endpoints.');
+                }
+
+                return { user: decoded.user || decoded };
             } catch (err) {
-                return { user: null };
+                return { user: null, error: err.message };
             }
         }
     }));

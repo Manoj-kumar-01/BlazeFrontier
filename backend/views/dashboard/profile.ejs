@@ -638,7 +638,13 @@
                 }
                 
                 const badge = document.getElementById('sp-badge');
-                if (data.isGenuine) {
+                if (data.role === 'organizer') {
+                    badge.textContent = 'ORGANIZER';
+                    badge.style.background = 'rgba(139, 92, 246, 0.2)';
+                    badge.style.color = '#a78bfa';
+                    badge.style.border = '1px solid rgba(139, 92, 246, 0.4)';
+                    document.getElementById('sp-avatar').style.borderColor = '#a78bfa';
+                } else if (data.isGenuine) {
                     badge.textContent = 'TRUSTED';
                     badge.style.background = 'rgba(255, 215, 0, 0.2)';
                     badge.style.color = '#ffd700';
@@ -773,12 +779,25 @@
                     document.getElementById('dp-uid').textContent = u.gameUid || '—';
                     document.getElementById('dp-pid').textContent = u.playerId || '—';
 
-                    // Avatar and badge styling based on genuine status
-                    if (u.isGenuine) {
+                    // Avatar and badge styling based on role and genuine status
+                    if (u.role === 'organizer') {
+                        // Organizer: Purple theme
+                        document.getElementById('ph-avatar').style.borderColor = '#a78bfa';
+                        document.getElementById('ph-avatar').style.boxShadow = '0 0 20px rgba(139, 92, 246, 0.4)';
+                        document.getElementById('ph-badge').style.display = 'none';
+                        document.getElementById('ph-watermark').style.display = 'block';
+                        document.getElementById('ph-watermark').querySelector('div').textContent = 'ORGANIZER';
+                        document.getElementById('ph-watermark').querySelector('div').style.color = 'rgba(139, 92, 246, 0.06)';
+                        document.getElementById('dp-pid').style.color = '#a78bfa';
+                        document.getElementById('dp-pid').style.textShadow = '0 0 8px rgba(139,92,246,0.3)';
+                        document.getElementById('profile-header').style.background = 'linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, #111116 100%)';
+                    } else if (u.isGenuine) {
                         document.getElementById('ph-avatar').style.borderColor = '#ffd700';
                         document.getElementById('ph-avatar').style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.4)';
                         document.getElementById('ph-badge').style.display = 'none'; // Hide the badge
                         document.getElementById('ph-watermark').style.display = 'block'; // Show watermark
+                        document.getElementById('ph-watermark').querySelector('div').textContent = 'TRUSTED';
+                        document.getElementById('ph-watermark').querySelector('div').style.color = 'rgba(255, 215, 0, 0.04)';
                         document.getElementById('dp-pid').style.color = '#ffd700'; // Make Blaze ID golden
                         document.getElementById('dp-pid').style.textShadow = '0 0 8px rgba(255,215,0,0.3)';
                         document.getElementById('profile-header').style.background = 'linear-gradient(180deg, rgba(255, 215, 0, 0.15) 0%, #111116 100%)';

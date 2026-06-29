@@ -376,18 +376,17 @@ router.put('/registrations/:id/completion', adminMiddleware, async (req, res) =>
 router.delete('/registrations/:id', adminMiddleware, async (req, res) => {
     try {
         const Registration = require('../models/Registration');
-        const Notification = require('../models/Notification');
-        const User = require('../models/User');
-        const sendEmail = require('../utils/sendEmail');
-
-        const reg = await Registration.findById(req.params.id);
+        const reg = await Registration.findById(req.params.id).populate('userId', 'username inGameName email');
         if (!reg) return res.status(404).json({ msg: 'Registration not found' });
 
-        const userId = reg.userId;
+        const userId = reg.userId._id;
         const formatMode = `${reg.format.toUpperCase()} ${reg.mode.toUpperCase()}`;
-        const reason = req.body.reason || 'No reason provided by administration.';
+        const reason = req.body.reason || 'No reason provided.';
 
-        await Registration.findByIdAndDelete(req.params.id);
+        // Soft Delete
+        reg.status = 'Rejected';
+        reg.resolutionCause = reason;
+        await reg.save();
 
         const agenda = require('../utils/queue');
 

@@ -1,0 +1,106 @@
+<nav class="nav scrolled" id="nav">
+    <div class="nav-container">
+        <a href="/organizer" class="logo" id="logo">
+            <img src="/public/NEWLOGO.webp" alt="Blaze Frontier Logo" class="logo-img">
+            <span class="logo-name">BLAZE<span class="logo-highlight">FRONTIER</span></span>
+        </a>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="nav-menu" id="nav-menu">
+                <a href="/organizer" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/organizer' ? 'active' : '' %>">Dashboard</a>
+                <a href="#" class="nav-item" id="org-logout-btn" style="color: var(--text-muted);" onclick="event.preventDefault(); localStorage.removeItem('blaze_token'); localStorage.removeItem('blaze_role'); localStorage.removeItem('blaze_profile_cache'); window.location.href='/auth';">Logout</a>
+            </div>
+
+            <div class="mobile-toggle" id="mobile-toggle" style="cursor: pointer;">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    @media (max-width: 900px) {
+        .mobile-toggle {
+            display: flex !important;
+            z-index: 1001;
+        }
+        .mobile-toggle.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        .nav-menu {
+            position: fixed;
+            top: 72px;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(16px);
+            flex-direction: column;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+            transition: clip-path 0.4s ease;
+            display: flex !important;
+            z-index: 999;
+        }
+        .nav-menu.active {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+        .nav-item {
+            width: 100%;
+            padding: 16px;
+            border-radius: 0;
+        }
+        .nav-item::after { display: none; }
+    }
+</style>
+
+<script>
+    // Session / Idle Tracking (30 mins inactivity = signout)
+    (function() {
+        const token = localStorage.getItem('blaze_token');
+        if (!token) return;
+
+        const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+        const checkIdle = () => {
+            const lastActive = localStorage.getItem('blaze_last_active');
+            if (lastActive && (Date.now() - parseInt(lastActive) > IDLE_TIMEOUT_MS)) {
+                localStorage.removeItem('blaze_token');
+                localStorage.removeItem('blaze_last_active');
+                localStorage.removeItem('blaze_role');
+                window.location.href = '/auth';
+            }
+        };
+
+        const updateActivity = () => {
+            localStorage.setItem('blaze_last_active', Date.now().toString());
+        };
+
+        checkIdle();
+        updateActivity();
+
+        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
+            document.addEventListener(evt, () => {
+                const now = Date.now();
+                const last = parseInt(localStorage.getItem('blaze_last_active') || '0');
+                if (now - last > 5000) {
+                    updateActivity();
+                }
+            }, { passive: true });
+        });
+
+        setInterval(checkIdle, 60000);
+    })();
+
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (mobileToggle && navMenu) {
+        mobileToggle.addEventListener('click', (e) => {
+            e.stopImmediatePropagation();
+            mobileToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
+</script>

@@ -4,17 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const authMiddleware = (req, res, next) => {
-    const token = req.header('x-auth-token');
-    if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
-    }
-};
+const authMiddleware = require('../middleware/auth');
 
 // Helper to generate unique Player ID
 const generatePlayerId = () => {
@@ -32,12 +22,22 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy_client_id
 // @route   POST /api/auth/google
 // @desc    Authenticate with Google Identity Services
 router.post('/google', async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    const logFile = path.join(__dirname, '../auth-debug.log');
+    const log = (msg) => {
+        try { fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`); } catch(e){}
+    };
+    log('--- New Google Auth Request ---');
+
     try {
-        const { credential } = req.body;
+        const { credential, loginType } = req.body;
+        log(`loginType: ${loginType}, credential provided: ${!!credential}`);
         if (!credential) {
             return res.status(400).json({ msg: 'No credential provided' });
         }
 
+        log(`Verifying ID token...`);
         const ticket = await client.verifyIdToken({
             idToken: credential,
             audience: process.env.GOOGLE_CLIENT_ID || 'dummy_client_id_for_startup',
@@ -45,53 +45,99 @@ router.post('/google', async (req, res) => {
         const payload = ticket.getPayload();
         
         const { email, name, sub: googleId } = payload;
+        log(`Payload verified. email: ${email}, name: ${name}`);
 
-        // Check if user is banned (optional: based on email or googleId, but previously we only checked username)
+        // Parse Organizer Emails
+        let envEmails = process.env.ORGANIZER_EMAILS || '';
+        try {
+            const envPath = path.join(__dirname, '../.env');
+            const envContent = fs.readFileSync(envPath, 'utf8');
+            const match = envContent.match(/^ORGANIZER_EMAILS=(.*)$/m);
+            if (match && match[1]) {
+                envEmails = match[1];
+            }
+        } catch (e) {
+            log(`Error reading .env: ${e.message}`);
+        }
+
+        const allowedEmails = envEmails
+            .split(',')
+            .map(e => e.trim().toLowerCase())
+            .filter(Boolean);
+
+        // --- Role Enforcement ---
+        if (loginType === 'organizer') {
+            log(`Allowed organizer emails: ${allowedEmails.join(', ')}`);
+            if (!allowedEmails.includes(email.toLowerCase())) {
+                log(`Auth Rejected: ${email} not in whitelist`);
+                return res.status(403).json({ msg: `Access denied. Email '${email}' is not in the organizer whitelist: [${allowedEmails.join(', ')}].` });
+            }
+            log(`Email ${email} authorized as organizer.`);
+        } else if (loginType === 'player') {
+            if (allowedEmails.includes(email.toLowerCase())) {
+                log(`Auth Rejected: ${email} is an Organizer trying to login as Player`);
+                return res.status(403).json({ msg: `Access denied. Organizers are restricted from logging in as Users. Please use the Organizer portal.` });
+            }
+        }
+
+        log(`Checking BannedUser...`);
         const BannedUser = require('../models/BannedUser');
-        // If we want to check ban by email/googleId, we would need to update BannedUser model.
-        // For now we will just check if we have a ban on their generated username/email.
         const isBanned = await BannedUser.findOne({ $or: [{ username: name }, { username: email }] });
         if (isBanned) {
             return res.status(403).json({ msg: 'Account creation denied. This account has been banned.' });
         }
 
         // Find or create user
-        let user = await User.findOne({ $or: [{ email }, { googleId }] });
-        
-        if (!user) {
-            // Check if there is an old user with the same username (name) who didn't use google auth
-            let existingUsername = await User.findOne({ username: name });
-            let finalUsername = name;
+        let user;
+        try {
+            user = await User.findOne({ $or: [{ email }, { googleId }] });
             
-            // If the exact Google name is already taken by a non-Google account, append a random string
-            if (existingUsername && !existingUsername.googleId) {
-                finalUsername = `${name}_${Math.floor(Math.random() * 10000)}`;
-            } else if (existingUsername && existingUsername.googleId) {
-                // Should be caught by the $or check above unless email/googleId changed, but just in case
-                user = existingUsername;
-            }
-
             if (!user) {
-                user = new User({
-                    playerId: generatePlayerId(),
-                    username: finalUsername,
-                    email,
-                    googleId
-                });
+                let existingUsername = await User.findOne({ username: name });
+                let finalUsername = name;
+                
+                if (existingUsername && !existingUsername.googleId) {
+                    finalUsername = `${name}_${Math.floor(Math.random() * 10000)}`;
+                } else if (existingUsername && existingUsername.googleId) {
+                    user = existingUsername;
+                }
+
+                if (!user) {
+                    const isOrganizer = loginType === 'organizer';
+                    user = new User({
+                        playerId: generatePlayerId(),
+                        username: finalUsername,
+                        email,
+                        googleId,
+                        role: isOrganizer ? 'organizer' : 'player',
+                        isSetupComplete: isOrganizer ? true : false
+                    });
+                    await user.save();
+                }
+            } else {
+                if (!user.googleId) {
+                    user.googleId = googleId;
+                    await user.save();
+                }
+                if (loginType === 'player' && user.role === 'organizer') {
+                    return res.status(403).json({ msg: 'Access Denied: Organizers are restricted from logging in as Users.' });
+                }
+
+                if (loginType === 'organizer') {
+                    user.role = 'organizer';
+                    user.isSetupComplete = true;
+                }
                 await user.save();
             }
-        } else {
-            // Update googleId if they matched by email but didn't have googleId yet
-            if (!user.googleId) {
-                user.googleId = googleId;
-                await user.save();
-            }
+        } catch (dbErr) {
+            console.error('DB Error during user find/save:', dbErr);
+            return res.status(500).json({ msg: `Database error while saving user: ${dbErr.message}` });
         }
 
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' } // Token expires in 7 days, session managed by frontend activity tracker
+            { expiresIn: '7d' }
         );
 
         res.json({
@@ -100,13 +146,14 @@ router.post('/google', async (req, res) => {
                 id: user._id,
                 username: user.username,
                 playerId: user.playerId,
-                isSetupComplete: user.isSetupComplete
+                isSetupComplete: user.isSetupComplete,
+                role: user.role || 'player'
             }
         });
 
     } catch (err) {
         console.error('Google Auth Error:', err);
-        res.status(500).json({ msg: 'Authentication failed' });
+        res.status(500).json({ msg: `Authentication failed: ${err.message}` });
     }
 });
 

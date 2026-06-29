@@ -38,18 +38,7 @@ const upload = multer({
 });
 
 // Middleware to verify JWT token
-const authMiddleware = (req, res, next) => {
-    const token = req.header('x-auth-token');
-    if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded.user || decoded;
-        next();
-    } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
-    }
-};
+const authMiddleware = require('../middleware/auth');
 
 // @route   POST /api/clips/submit
 // @desc    Submit a Top Clip (max 10s via frontend validation)
@@ -113,6 +102,7 @@ router.post('/tournaments/confirm-play', authMiddleware, async (req, res) => {
 
         const Registration = require('../models/Registration');
         const User = require('../models/User');
+        const agenda = require('../utils/queue');
 
         const reg = await Registration.findOne({ _id: regId, userId: req.user.id });
         if (!reg) return res.status(404).json({ msg: 'Registration not found' });
@@ -122,11 +112,103 @@ router.post('/tournaments/confirm-play', authMiddleware, async (req, res) => {
             await reg.save();
             res.json({ msg: 'Status updated to Awaiting Verification' });
         } else {
-            // User clicked NO
-            await User.findByIdAndUpdate(req.user.id, { isGenuine: false });
-            await Registration.findByIdAndDelete(regId);
-            res.json({ msg: 'Registration deleted. You may re-register.' });
+            // User clicked NO (match didn't happen)
+            const user = await User.findById(req.user.id);
+            const formatMode = `${reg.format.toUpperCase()} ${reg.mode.toUpperCase()}`;
+            
+            reg.status = 'Missed';
+            await reg.save();
+            
+            // Queue Notification
+            agenda.now('send-inapp-notification', {
+                userId: req.user.id,
+                title: 'Match Slot Concluded',
+                message: `We're deeply sorry, but our organizers were unavailable during your ${formatMode} time slot. Your registration has been erased, giving you a fresh start to register again.`,
+                type: 'info'
+            });
+
+            // Queue Email
+            if (user && user.email) {
+                agenda.now('send-email', {
+                    email: user.email,
+                    subject: 'We Apologize - Organizer Unavailable - Blaze Frontier',
+                    html: `
+                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                            <div style="padding: 30px; text-align: left;">
+                                <h2 style="color: #ff4e00; margin-top: 0;">We're Sorry.</h2>
+                                <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">
+                                    It appears our organizers were unfortunately unavailable during your scheduled <strong>${formatMode}</strong> match time.
+                                </p>
+                                <div style="background-color: #e5f0ff; padding: 15px; border-left: 4px solid #0056b3; margin: 20px 0;">
+                                    <p style="margin: 0; color: #004085;"><strong>Fresh Start:</strong> Your previous registration has been completely erased from the system without any penalties. You are free to register for a new tournament slot immediately.</p>
+                                </div>
+                                <p style="font-size: 1.1rem; color: #333;">We sincerely apologize for the inconvenience and hope to see you on the battlefield soon.</p>
+                            </div>
+                            <div style="background-color: #111; padding: 15px; text-align: center;">
+                                <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- THE BLAZE FRONTIER COMMAND -</p>
+                            </div>
+                        </div>
+                    `
+                });
+            }
+
+            res.json({ msg: 'Registration erased successfully. You may register again.' });
         }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/tournaments/:id/register
+// @desc    Register a player for a specific tournament
+router.post('/tournaments/:id/register', authMiddleware, async (req, res) => {
+    try {
+        const { discord, timeSlot } = req.body;
+        if (!discord || !timeSlot) return res.status(400).json({ msg: 'Discord ID and Time Slot are required' });
+
+        const User = require('../models/User');
+        const Registration = require('../models/Registration');
+        const Tournament = require('../models/Tournament');
+
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        const tournament = await Tournament.findById(req.params.id);
+        if (!tournament) return res.status(404).json({ msg: 'Tournament not found' });
+
+        if (tournament.status !== 'UPCOMING' && tournament.status !== 'ACTIVE') {
+            return res.status(400).json({ msg: 'Registration is closed for this tournament.' });
+        }
+
+        const existing = await Registration.findOne({ 
+            userId: user._id, 
+            tournamentId: tournament._id,
+            status: { $nin: ['Missed', 'Rejected'] }
+        });
+        
+        if (existing) {
+            return res.status(400).json({ msg: 'You have already registered for this tournament.' });
+        }
+
+        const maxReg = await Registration.findOne().sort({ matchId: -1 });
+        const nextMatchId = maxReg && maxReg.matchId ? maxReg.matchId + 1 : 1;
+
+        const newReg = new Registration({
+            userId: user._id,
+            tournamentId: tournament._id,
+            format: 'Tournament',
+            mode: tournament.name,
+            discord: discord,
+            startDate: new Date().toLocaleDateString(),
+            timeSlot: timeSlot,
+            matchId: nextMatchId,
+            status: 'Pending'
+        });
+
+        await newReg.save();
+        res.json({ msg: `Successfully registered for ${tournament.name}` });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -305,6 +387,7 @@ router.get('/player/:playerId', authMiddleware, async (req, res) => {
             playerId: targetUser.playerId,
             isGenuine: targetUser.isGenuine,
             isSetupComplete: targetUser.isSetupComplete,
+            role: targetUser.role || 'player',
             blazeCoins: targetUser.blazeCoins || 0,
             totalMatches: userMatches.length,
             tournamentsWon: userMatches.filter(m => m.placement === 1).length
@@ -794,7 +877,7 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         const regs = await Registration.find({ userId: req.user.id }).sort({ createdAt: -1 }).lean();
         const requests = regs.map(r => {
             let isTimeCompleted = false;
-            if (r.startDate && r.timeSlot) {
+            if (r.startDate && r.timeSlot && r.status !== 'Rejected') {
                 const dateObj = new Date(r.startDate);
                 const today = new Date();
                 
@@ -834,7 +917,8 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
                 timeSlot: r.timeSlot || 'TBA',
                 roomId: r.roomId,
                 roomPassword: r.roomPassword,
-                isTimeCompleted
+                isTimeCompleted,
+                resolutionCause: r.resolutionCause
             };
         });
         

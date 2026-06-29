@@ -215,6 +215,69 @@
             fill: #22c55e;
         }
 
+        /* Minimalist Segmented Role Toggle */
+        .role-toggle {
+            display: flex;
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 24px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .role-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            height: calc(100% - 8px);
+            width: calc(50% - 4px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .role-tab {
+            flex: 1;
+            padding: 10px 0;
+            text-align: center;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .role-tab:hover {
+            color: #fff;
+        }
+
+        .role-tab.active {
+            color: #fff;
+        }
+
+        /* Specialized styling when active based on role */
+        .role-toggle.is-player .role-slider {
+            transform: translateX(0);
+            background: linear-gradient(180deg, rgba(255, 87, 34, 0.15) 0%, rgba(255, 87, 34, 0.05) 100%);
+            border-color: rgba(255, 87, 34, 0.4);
+        }
+        
+        .role-toggle.is-organizer .role-slider {
+            transform: translateX(100%);
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
         .mobile-logo {
             display: none;
             width: 120px;
@@ -249,7 +312,18 @@
             <div class="auth-header">
                 <img src="/public/NEWLOGO.webp" alt="Blaze Frontier" class="mobile-logo">
                 <h2 class="auth-title">AUTHENTICATION</h2>
-                <p class="auth-subtitle">Verify your identity to access the portal.</p>
+                <p class="auth-subtitle" id="auth-subtitle">Verify your identity to access the portal.</p>
+            </div>
+
+            <!-- Role Toggle -->
+            <div class="role-toggle is-player" id="role-toggle-container">
+                <div class="role-slider"></div>
+                <div class="role-tab active" id="tab-player" onclick="selectRole('player')">
+                    Player
+                </div>
+                <div class="role-tab" id="tab-organizer" onclick="selectRole('organizer')">
+                    Organizer
+                </div>
             </div>
             
             <div id="error-msg"></div>
@@ -275,10 +349,34 @@
     <script>
         // Check if already logged in
         if (localStorage.getItem('blaze_token')) {
-            window.location.href = '/dashboard';
+            const cachedRole = localStorage.getItem('blaze_role');
+            window.location.href = cachedRole === 'organizer' ? '/organizer' : '/dashboard';
         }
 
         const GOOGLE_CLIENT_ID = '<%= clientId %>';
+        let selectedRole = 'player';
+
+        function selectRole(role) {
+            selectedRole = role;
+            const container = document.getElementById('role-toggle-container');
+            const playerTab = document.getElementById('tab-player');
+            const organizerTab = document.getElementById('tab-organizer');
+            const subtitle = document.getElementById('auth-subtitle');
+            const errorMsg = document.getElementById('error-msg');
+            errorMsg.style.display = 'none';
+
+            if (role === 'player') {
+                container.className = 'role-toggle is-player';
+                playerTab.classList.add('active');
+                organizerTab.classList.remove('active');
+                subtitle.textContent = 'Verify your identity to access the portal.';
+            } else {
+                container.className = 'role-toggle is-organizer';
+                organizerTab.classList.add('active');
+                playerTab.classList.remove('active');
+                subtitle.textContent = 'Authorized organizers only. Sign in with your whitelisted email.';
+            }
+        }
 
         function initGoogleSignIn() {
             const retryDiv = document.getElementById('auth-retry');
@@ -341,11 +439,11 @@
             errorMsg.style.display = 'none';
 
             try {
-                // Send the credential to our backend
+                // Send the credential to our backend with login type
                 const res = await fetch('/api/auth/google', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ credential: response.credential })
+                    body: JSON.stringify({ credential: response.credential, loginType: selectedRole })
                 });
 
                 const data = await res.json();
@@ -354,9 +452,13 @@
                     errorMsg.innerText = data.msg || 'Authentication failed. Please try again.';
                     errorMsg.style.display = 'block';
                 } else {
-                    // Success! Save token and redirect
+                    // Success! Save token and role, then redirect
                     localStorage.setItem('blaze_token', data.token);
-                    if (!data.user.isSetupComplete) {
+                    localStorage.setItem('blaze_role', data.user.role || 'player');
+
+                    if (data.user.role === 'organizer') {
+                        window.location.href = '/organizer';
+                    } else if (!data.user.isSetupComplete) {
                         window.location.href = '/onboarding';
                     } else {
                         window.location.href = '/dashboard';

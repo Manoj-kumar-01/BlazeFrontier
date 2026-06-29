@@ -746,7 +746,40 @@
                         `;
                     }
                     
-                    document.getElementById('ff-tourneys-container').innerHTML = html;
+                    // Render Match History (Rejected & Missed)
+                    const historyReqs = tData.requests ? tData.requests.filter(r => r.status === 'Rejected' || r.status === 'Missed') : [];
+                    let historyHtml = '';
+                    if (historyReqs.length > 0) {
+                        historyHtml += `
+                        <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+                            <h3 style="color: rgba(255,255,255,0.6); font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px; margin-bottom: 16px;">MATCH HISTORY</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                        `;
+                        historyReqs.forEach(r => {
+                            const isRejected = r.status === 'Rejected';
+                            const badgeColor = isRejected ? '#ef4444' : '#f97316';
+                            historyHtml += `
+                                <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 16px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <div style="font-weight: 600; color: #fff;">${r.format ? r.format.toUpperCase() : 'UNKNOWN'} ${r.mode ? r.mode.toUpperCase() : 'UNKNOWN'}</div>
+                                        <div style="background: ${isRejected ? 'rgba(239,68,68,0.1)' : 'rgba(249,115,22,0.1)'}; color: ${badgeColor}; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px;">
+                                            ${r.status.toUpperCase()}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-400); margin-bottom: 12px;">
+                                        <div>Date: <span style="color: #fff;">${r.date || 'TBA'}</span></div>
+                                        <div>Time: <span style="color: #fff;">${r.timeSlot || 'TBA'}</span></div>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.03); border-left: 3px solid ${badgeColor}; padding: 10px; border-radius: 0 4px 4px 0; font-size: 0.85rem;">
+                                        <strong style="color: ${badgeColor};">Cause:</strong> <span style="color: rgba(255,255,255,0.8);">${r.resolutionCause || 'No specific reason provided.'}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        historyHtml += `</div></div>`;
+                    }
+                    
+                    document.getElementById('ff-tourneys-container').innerHTML = html + historyHtml;
                 } else {
                     document.getElementById('ff-tourneys-container').innerHTML = `<div style="text-align:center; padding: 20px; color: #ef4444; font-size: 0.9rem;">Server Error: ${tRes.status}</div>`;
                 }

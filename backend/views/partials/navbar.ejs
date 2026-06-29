@@ -11,7 +11,7 @@
                 <a href="/dashboard/leaderboards" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/dashboard/leaderboards' ? 'active' : '' %>">Leaderboards</a>
                 <a href="/dashboard/seasons" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/dashboard/seasons' ? 'active' : '' %>" style="color: #38bdf8; text-shadow: 0 0 8px rgba(56,189,248,0.4);"><span style="margin-right:4px;">⚔️</span> Seasons</a>
                 <a href="/dashboard/profile" class="nav-item nav-primary <%= typeof activePage !== 'undefined' && activePage === '/dashboard/profile' ? 'active' : '' %>">Profile</a>
-                <a href="#" class="nav-item" id="logout-btn" style="color: var(--text-muted);" onclick="event.preventDefault(); localStorage.removeItem('blaze_token'); window.location.href='/auth';">Logout</a>
+                <a href="#" class="nav-item" id="logout-btn" style="color: var(--text-muted);" onclick="event.preventDefault(); localStorage.removeItem('blaze_token'); localStorage.removeItem('blaze_role'); localStorage.removeItem('blaze_profile_cache'); window.location.href='/auth';">Logout</a>
             </div>
 
             <!-- Notifications -->
@@ -43,7 +43,7 @@
             const cached = localStorage.getItem('blaze_profile_cache');
             if (cached) {
                 const u = JSON.parse(cached);
-                if (u.isGenuine) {
+                if (u.isGenuine || u.role === 'organizer') {
                     const tTab = document.getElementById('nav-tournaments-tab');
                     if (tTab) {
                         tTab.style.filter = 'none';
@@ -208,7 +208,7 @@
                     query: `
                         query {
                             getGlobalNavData {
-                                user { isGenuine hasCompletedTwoSeries }
+                                user { isGenuine hasCompletedTwoSeries role }
                                 tournaments { id game format mode status date }
                                 notifications { id title message type isRead createdAt }
                             }
@@ -237,7 +237,7 @@
                     window.dispatchEvent(new Event('globalUserDataReady'));
 
                     // Process Profile
-                    if (navData.user && navData.user.isGenuine) {
+                    if (navData.user && (navData.user.isGenuine || navData.user.role === 'organizer')) {
                         const tTab = document.getElementById('nav-tournaments-tab');
                         if (tTab) {
                             tTab.style.filter = 'none';
