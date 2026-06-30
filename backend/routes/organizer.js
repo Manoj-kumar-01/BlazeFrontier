@@ -13,9 +13,13 @@ router.use(organizerAuth);
 router.get('/me', async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            console.log(`[organizer/me] User not found after middleware for id: ${req.user.id}`);
+            return res.status(404).send('User not found');
+        }
         res.json(user);
     } catch (err) {
-        console.error(err.message);
+        console.error(`[organizer/me] Error: ${err.message}`);
         res.status(500).send('Server Error');
     }
 });
