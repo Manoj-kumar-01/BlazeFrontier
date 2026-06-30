@@ -159,6 +159,7 @@ app.get('/dashboard/tournaments/:id/register', (req, res) => res.render('dashboa
 app.get('/dashboard/leaderboards', (req, res) => res.render('dashboard/leaderboards', { activePage: '/dashboard/leaderboards' }));
 app.get('/dashboard/freefire', (req, res) => res.render('dashboard/freefire', { activePage: '/dashboard/freefire' }));
 app.get('/dashboard/content', (req, res) => res.render('dashboard/content', { activePage: '/dashboard/content' }));
+app.get('/dashboard/vote', (req, res) => res.render('dashboard/vote', { activePage: '/dashboard/vote' }));
 app.get(adminPrefix, adminAuth, (req, res) => res.render('admin/index', { adminPrefix, activePage: 'admin' }));
 app.get(`${adminPrefix}/player/:playerId`, adminAuth, (req, res) => res.render('admin/profile', { adminPrefix, activePage: 'admin', playerId: req.params.playerId }));
 app.get('/banned', (req, res) => res.render('onboarding/banned'));
@@ -222,6 +223,7 @@ async function startBackend() {
         // Start Agenda Queue
         const agenda = require('./utils/queue');
         await agenda.start();
+        await agenda.every('0 0 * * 0', 'resolve-weekly-voting');
         // console.log('Agenda Job Queue Started successfully.');
     })
     .catch(err => console.log('MongoDB Connection Error:', err));

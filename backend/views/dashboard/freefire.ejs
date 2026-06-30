@@ -524,50 +524,107 @@
                     </div>
                 </div>
 
-                <div style="text-align: center; margin-bottom: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">
-                    <div style="color: rgba(255,255,255,0.7); font-size: 0.8rem; line-height: 1.4;">
-                        Submit your best FF moments & become the <span style="color: var(--blaze-orange); font-weight: bold;">1st person</span> to showcase to the world & earn BlazeCoins!
+                <div id="submit-ui-container">
+                    <div style="text-align: center; margin-bottom: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.8rem; line-height: 1.4;" id="submit-clip-text">
+                            Submit your best FF moments & become the <span style="color: var(--blaze-orange); font-weight: bold;">1st person</span> to showcase to the world & earn BlazeCoins!
+                        </div>
                     </div>
+
+                    <a href="#" id="submit-clip-btn" onclick="event.preventDefault(); document.getElementById('clip-submit-modal').style.display='flex';">
+                        <span>SUBMIT YOUR CLIP</span>
+                    </a>
                 </div>
 
-                <a href="#" id="submit-clip-btn" onclick="event.preventDefault(); document.getElementById('clip-submit-modal').style.display='flex';">
-                    <span>SUBMIT YOUR CLIP</span>
-                </a>
+                <!-- Vote Button (Shown on weekends) -->
+                <div id="voting-prompt-container" style="display: none; margin-top: 15px; text-align: center; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                    <a href="/dashboard/vote" style="display: inline-block; background: linear-gradient(135deg, #e11d48, #f59e0b); color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; text-decoration: none; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4); text-transform: uppercase; letter-spacing: 1px; width: 100%; box-sizing: border-box; transition: filter 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">
+                        VOTE FOR BEST CLIP
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const container = document.getElementById('dynamic-clips-container');
-            if (!container) return;
+            // Check for user weekly submission status and active event
             try {
-                const res = await fetch('/api/game/Free Fire/clips');
-                if (res.ok) {
-                    const clips = await res.json();
-                    if (clips && clips.length > 0) {
-                        container.innerHTML = '';
-                        clips.forEach(clip => {
-                            container.innerHTML += `
-                                <div class="clip-item" style="display: flex; gap: 12px; align-items: center; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,87,34,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'" onclick="window.open('${clip.url}', '_blank')">
-                                    <div style="width: 40px; height: 40px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,87,34,0.3); flex-shrink: 0;">
-                                        <img src="${clip.thumbnail || '/public/clip-thumb.jpg'}" style="width: 100%; height: 100%; object-fit: cover;">
-                                    </div>
-                                    <div style="flex: 1; min-width: 0;">
-                                        <div style="color: #fff; font-size: 0.85rem; font-family: var(--font-display); letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;">${clip.title}</div>
-                                        <div style="color: rgba(255,255,255,0.5); font-size: 0.7rem;">By <span style="color: var(--blaze-orange);">${clip.author}</span> • ${clip.views} views</div>
-                                    </div>
-                                    <div style="color: rgba(255,255,255,0.3); font-size: 1.2rem;">▶</div>
-                                </div>
-                            `;
-                        });
+                const token = localStorage.getItem('blaze_token');
+                
+                // 1. Check if user already submitted this week
+                if(token) {
+                    const statusRes = await fetch('/api/clip-submissions/me/this-week', {
+                        headers: { 'x-auth-token': token }
+                    });
+                    if (statusRes.ok) {
+                        const { hasSubmitted } = await statusRes.json();
+                        if (hasSubmitted) {
+                            const btn = document.getElementById('submit-clip-btn');
+                            btn.innerHTML = '<span>SUBMITTED FOR THIS WEEK</span>';
+                            btn.style.background = 'rgba(255,255,255,0.1)';
+                            btn.style.color = 'rgba(255,255,255,0.5)';
+                            btn.style.boxShadow = 'none';
+                            btn.style.pointerEvents = 'none';
+                            btn.removeAttribute('onclick');
+                            
+                            document.getElementById('submit-clip-text').innerHTML = 'You have already submitted a clip this week. Voting begins on Saturday!';
+                        }
+                    }
+                }
+
+                // 2. Fetch Latest Voting Event Clips & Check if Voting is Active
+                const voteRes = await fetch('/api/voting-event/active');
+                if (voteRes.ok) {
+                    const event = await voteRes.json();
+                    if (event) {
+                        // Show Clips and Vote Button ONLY if Active and has clips
+                        if (event.isActive && event.game === 'Free Fire' && event.clips && event.clips.length > 0) {
+                            const container = document.getElementById('dynamic-clips-container');
+                            if (container) {
+                                container.innerHTML = '';
+                                event.clips.forEach(clip => {
+                                    container.innerHTML += `
+                                        <div class="clip-item" style="display: flex; gap: 12px; align-items: center; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,87,34,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'" onclick="window.open('${clip.videoUrl}', '_blank')">
+                                            <div style="width: 50px; height: 35px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,87,34,0.3); flex-shrink: 0; background: #000;">
+                                                <video src="${clip.videoUrl}" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                                            </div>
+                                            <div style="flex: 1; min-width: 0;">
+                                                <div style="color: #fff; font-size: 0.8rem; font-family: var(--font-display); letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${clip.title}</div>
+                                                <div style="color: rgba(255,255,255,0.5); font-size: 0.7rem;">Player ID: ${clip.playerId || clip.userId}</div>
+                                            </div>
+                                            <div style="color: rgba(255,255,255,0.3); font-size: 1.2rem;">▶</div>
+                                        </div>
+                                    `;
+                                });
+                            }
+
+                            document.getElementById('submit-ui-container').style.display = 'none';
+                            document.getElementById('voting-prompt-container').style.display = 'block';
+                        } else {
+                            const container = document.getElementById('dynamic-clips-container');
+                            if (container) {
+                                container.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: auto;">Voting clips will be revealed here on Saturday!</div>';
+                            }
+                        }
                     } else {
-                        container.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: auto;">No clips found. Be the first!</div>';
+                        const container = document.getElementById('dynamic-clips-container');
+                        if (container) {
+                            container.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: auto;">Voting clips will be revealed here on Saturday!</div>';
+                        }
+                    }
+                } else {
+                    const container = document.getElementById('dynamic-clips-container');
+                    if (container) {
+                        container.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: auto;">Voting clips will be revealed here on Saturday!</div>';
                     }
                 }
             } catch(e) {
-                console.error(e);
-                container.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: auto;">Error loading clips</div>';
+                console.error("Error checking voting event", e);
+                const container = document.getElementById('dynamic-clips-container');
+                if (container) {
+                    container.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: auto;">Voting clips will be revealed here on Saturday!</div>';
+                }
             }
         });
     </script>
@@ -947,9 +1004,15 @@
                             body: formData
                         });
                         if (res.ok) {
-                            alert('Your clip has been submitted for review! Check back later to see if you made the Top Clips.');
                             document.getElementById('clip-submit-modal').style.display = 'none';
                             e.target.reset();
+                            // Update UI instantly to show submitted status
+                            submitBtn.innerHTML = '<span>SUBMITTED FOR THIS WEEK</span>';
+                            submitBtn.style.background = 'rgba(255,255,255,0.05)';
+                            submitBtn.style.color = 'rgba(255,255,255,0.5)';
+                            submitBtn.style.border = '1px solid rgba(255,255,255,0.1)';
+                            submitBtn.style.pointerEvents = 'none';
+                            document.getElementById('submit-clip-text').innerHTML = 'You have already submitted a clip this week. Voting begins on Saturday!';
                         } else {
                             const data = await res.json();
                             alert('Upload failed: ' + (data.msg || 'Unknown error'));
@@ -1128,73 +1191,7 @@
                 }
             } catch(e) {}
 
-            if (fileInput) {
-                fileInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    
-                    const video = document.createElement('video');
-                    video.preload = 'metadata';
-                    video.onloadedmetadata = function() {
-                        window.URL.revokeObjectURL(video.src);
-                        if (video.duration > 11) { // 10s + 1s margin
-                            durationError.style.display = 'block';
-                            submitBtn.disabled = true;
-                            submitBtn.style.opacity = '0.5';
-                            isDurationValid = false;
-                        } else {
-                            durationError.style.display = 'none';
-                            submitBtn.disabled = false;
-                            submitBtn.style.opacity = '1';
-                            isDurationValid = true;
-                        }
-                    }
-                    video.src = URL.createObjectURL(file);
-                });
-            }
 
-            const clipSubmitForm = document.getElementById('clip-submit-form');
-            if (clipSubmitForm) {
-                clipSubmitForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    if (!isDurationValid) return;
-
-                    const title = document.getElementById('cs-title').value;
-                    const file = document.getElementById('cs-file').files[0];
-
-                    const formData = new FormData();
-                    formData.append('title', title);
-                    formData.append('clip', file);
-                    formData.append('game', 'freefire');
-                    formData.append('playerId', playerBlazeId);
-
-                    const originalText = submitBtn.innerText;
-                    submitBtn.innerText = 'UPLOADING...';
-                    submitBtn.disabled = true;
-
-                    try {
-                        const res = await fetch('/api/clips/submit', {
-                            method: 'POST',
-                            headers: { 'x-auth-token': token },
-                            body: formData
-                        });
-                        if (res.ok) {
-                            alert('Your clip has been submitted for review! Check back later to see if you made the Top Clips.');
-                            document.getElementById('clip-submit-modal').style.display = 'none';
-                            e.target.reset();
-                        } else {
-                            const data = await res.json();
-                            alert('Upload failed: ' + (data.msg || 'Unknown error'));
-                        }
-                    } catch (err) {
-                        alert('An error occurred during upload.');
-                    } finally {
-                        submitBtn.innerText = originalText;
-                        submitBtn.disabled = false;
-                    }
-                });
-            }
-        });
 
         // Global confirmPlay function
         window.confirmPlay = async function(regId, played) {
@@ -1307,6 +1304,60 @@
                     btn.disabled = false;
                 }
             });
+
+            // Clip Submission Form Handler
+            const clipForm = document.getElementById('clip-submit-form');
+            if (clipForm) {
+                clipForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const title = document.getElementById('cs-title').value;
+                    const fileInput = document.getElementById('cs-file');
+                    const file = fileInput.files[0];
+                    const submitBtn = document.getElementById('cs-submit-btn');
+
+                    if (!file) return;
+
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'UPLOADING...';
+
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('game', 'Free Fire');
+                    formData.append('video', file);
+
+                    try {
+                        const token = localStorage.getItem('blaze_token');
+                        const res = await fetch('/api/clip-submissions', {
+                            method: 'POST',
+                            headers: {
+                                'x-auth-token': token
+                            },
+                            body: formData
+                        });
+
+                        const data = await res.json();
+                        if (res.ok) {
+                            document.getElementById('clip-submit-modal').style.display = 'none';
+                            clipForm.reset();
+                            
+                            // Hide the submit UI so they can't submit again
+                            const submitContainer = document.getElementById('submit-ui-container');
+                            if (submitContainer) {
+                                submitContainer.innerHTML = '<div style="background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: 12px; padding: 25px; text-align: center; margin-top: 20px;"><div style="color: #4ade80; font-size: 2rem; margin-bottom: 10px;">✅</div><h3 style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin: 0 0 5px 0;">CLIP SUBMITTED!</h3><p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin: 0;">Your highlight is now under review. Check back on Saturday!</p></div>';
+                            }
+                        } else {
+                            alert(data.msg || 'Upload failed.');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Error uploading clip.');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'SUBMIT CLIP FOR REVIEW';
+                    }
+                });
+            }
         });
     </script>
 </body>

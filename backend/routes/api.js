@@ -51,16 +51,20 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
 
         const ClipSubmission = require('../models/ClipSubmission');
         
-        // Limit to 1 submission per day
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
+        // Limit to 1 submission per week
+        const now = new Date();
+        const currentDay = now.getDay();
+        const diffToMonday = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1); 
+        const startOfWeek = new Date(now.setDate(diffToMonday));
+        startOfWeek.setHours(0, 0, 0, 0);
+
         const existingSubmission = await ClipSubmission.findOne({
             userId: req.user.id,
-            createdAt: { $gte: startOfDay }
+            createdAt: { $gte: startOfWeek }
         });
 
         if (existingSubmission) {
-            return res.status(400).json({ msg: 'You have already submitted a clip today. Please wait until tomorrow!' });
+            return res.status(400).json({ msg: 'You have already submitted a clip this week. Voting starts on Saturday!' });
         }
         
         const newSubmission = new ClipSubmission({
@@ -73,7 +77,39 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
         });
 
         await newSubmission.save();
+
+        const agenda = require('../utils/queue');
+        agenda.now('send-inapp-notification', {
+            userId: req.user.id,
+            title: 'Clip Submitted!',
+            message: `Your clip "${title}" has been successfully submitted for review. Check back on Saturday to see if you made the Top 3!`,
+            type: 'success'
+        });
+
         res.json({ msg: 'Clip submitted successfully! Under review.' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/clip-submissions/me/this-week
+// @desc    Check if current user has submitted a clip this week
+router.get('/clip-submissions/me/this-week', authMiddleware, async (req, res) => {
+    try {
+        const ClipSubmission = require('../models/ClipSubmission');
+        const now = new Date();
+        const currentDay = now.getDay();
+        const diffToMonday = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+        const startOfWeek = new Date(now.setDate(diffToMonday));
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const existingSubmission = await ClipSubmission.findOne({
+            userId: req.user.id,
+            createdAt: { $gte: startOfWeek }
+        });
+
+        res.json({ hasSubmitted: !!existingSubmission });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -1520,6 +1556,101 @@ router.get('/live-streams', async (req, res) => {
         const LiveStream = require('../models/LiveStream');
         const liveStreams = await LiveStream.find().sort({ status: -1, createdAt: -1 }); // LIVE first, then ENDED
         res.json(liveStreams);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+// --- Voting System Routes ---
+
+// @route   GET /api/voting-event/active
+// @desc    Get the active voting event
+router.get('/voting-event/active', async (req, res) => {
+    try {
+        const VotingEvent = require('../models/VotingEvent');
+        require('../models/ClipSubmission'); // Ensure it's registered for populate
+        const event = await VotingEvent.findOne()
+            .sort({ _id: -1 })
+            .populate({
+                path: 'clips',
+                select: 'title videoUrl game playerId userId author' // author might not be in ClipSubmission, let's just select what's there
+            })
+            .lean();
+        
+        if (!event) return res.status(404).json({ msg: 'No active voting event' });
+        
+        // Strictly enforce real-time logic: Voting ONLY on Saturday (Day 6)
+        if (new Date().getDay() !== 6) {
+            event.isActive = false;
+        }
+
+        res.json(event);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/voting-event/:eventId/vote
+// @desc    Cast a vote and leave a comment
+router.post('/voting-event/:eventId/vote', authMiddleware, async (req, res) => {
+    try {
+        const Vote = require('../models/Vote');
+        const { clipId, comment } = req.body;
+        
+        const VotingEvent = require('../models/VotingEvent');
+        
+        const event = await VotingEvent.findById(req.params.eventId);
+        if (!event) return res.status(404).json({ msg: 'Event not found' });
+        if (!event.isActive) return res.status(400).json({ msg: 'Voting has ended for this event!' });
+
+        const existingVote = await Vote.findOne({ eventId: req.params.eventId, userId: req.user.id });
+        if (existingVote) {
+            return res.status(400).json({ msg: 'You have already voted in this event' });
+        }
+
+        const newVote = new Vote({
+            eventId: req.params.eventId,
+            userId: req.user.id,
+            clipId: clipId,
+            comment: comment || ''
+        });
+
+        await newVote.save();
+        res.json({ msg: 'Vote cast successfully' });
+    } catch (err) {
+        console.error(err.message);
+        if (err.code === 11000) {
+            return res.status(400).json({ msg: 'You have already voted in this event' });
+        }
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/voting-event/:eventId/results
+// @desc    Get voting results and comments
+router.get('/voting-event/:eventId/results', async (req, res) => {
+    try {
+        const Vote = require('../models/Vote');
+        const mongoose = require('mongoose');
+        const eventObjectId = new mongoose.Types.ObjectId(req.params.eventId);
+        
+        const results = await Vote.aggregate([
+            { $match: { eventId: eventObjectId } },
+            { $group: { _id: "$clipId", count: { $sum: 1 } } },
+            { $sort: { count: -1 } }
+        ]);
+
+        const comments = await Vote.find({ 
+            eventId: req.params.eventId, 
+            comment: { $ne: '' } 
+        })
+        .populate('userId', 'username inGameName profilePicture')
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .lean();
+
+        res.json({ rankings: results, comments });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

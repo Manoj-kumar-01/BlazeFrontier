@@ -433,6 +433,7 @@
             font-size: 0.9rem;
             font-family: var(--font-body);
             outline: none;
+            color-scheme: dark;
             transition: border-color 0.2s;
         }
 
@@ -598,9 +599,41 @@
             </div>
         </div>
 
-        <!-- Tournaments Panel -->
+        <!-- Global Tab Navigation -->
+        <div class="org-global-tabs" style="display: flex; gap: 15px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+            <div class="org-g-tab active" onclick="switchGlobalTab('tournaments', this)">TOURNAMENTS</div>
+            <div class="org-g-tab" onclick="switchGlobalTab('registrations', this)">REGISTRATIONS</div>
+            <div class="org-g-tab" onclick="switchGlobalTab('clips', this)">CLIP SUBMISSIONS</div>
+            <div class="org-g-tab" onclick="switchGlobalTab('daily', this)">DAILY HIGHLIGHTS</div>
+        </div>
+
+        <style>
+            .org-g-tab {
+                padding: 10px 20px;
+                color: var(--text-muted);
+                font-family: var(--font-display);
+                font-size: 1.2rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border-radius: 8px;
+            }
+            .org-g-tab:hover {
+                background: rgba(255,255,255,0.05);
+                color: #fff;
+            }
+            .org-g-tab.active {
+                background: rgba(255, 87, 34, 0.15);
+                color: var(--orange);
+            }
+            .org-panel-section { display: none; }
+            .org-panel-section.active { display: block; animation: fadeIn 0.4s ease; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        </style>
+
         <div class="org-panels">
-            <div class="org-panel">
+            <!-- Tournaments Panel -->
+            <div class="org-panel-section active" id="sec-tournaments">
+                <div class="org-panel">
                 <div class="org-panel-header">
                     <div class="org-panel-title">TOURNAMENTS</div>
                     <button class="org-btn org-btn-primary" onclick="openCreateModal()">+ CREATE</button>
@@ -624,9 +657,11 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- Registrations Panel -->
-            <div class="org-panel">
+            <div class="org-panel-section" id="sec-registrations">
+                <div class="org-panel">
                 <div class="org-panel-header">
                     <div class="org-panel-title">REGISTRATIONS</div>
                     <div class="org-tabs">
@@ -659,7 +694,76 @@
                         </table>
                     </div>
                 </div>
+                </div>
             </div>
+
+            <!-- Clip Submissions Panel -->
+            <div class="org-panel-section" id="sec-clips">
+                <div class="org-panel">
+                <div class="org-panel-header">
+                    <div class="org-panel-title">CLIP SUBMISSIONS (WEEKLY REVIEW)</div>
+                    <button class="org-btn org-btn-primary" onclick="startWeeklyVoting()">SAVE TOP 3 CLIPS FOR THIS WEEK</button>
+                </div>
+                <div class="org-panel-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
+                            <strong>Total Received This Week:</strong> <span id="clip-total-count" style="color: #fff;">0</span>
+                        </div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
+                            <strong>Selected for Voting:</strong> <span id="clip-selected-count" style="color: var(--blaze-orange); font-weight: bold; font-size: 1.1rem;">0 / 3</span>
+                        </div>
+                    </div>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 15px;">
+                        Review user clips submitted this week. Select exactly 3 clips to save them. The voting event will automatically begin on Saturday with these clips!
+                    </div>
+                    <div class="org-table-wrap" style="height: 400px; overflow-y: auto; position: relative;">
+                        <table class="org-table" id="clips-table">
+                            <thead style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px); z-index: 10;">
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Title</th>
+                                    <th>Player / Game</th>
+                                    <th>Video Link</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clips-body">
+                                <tr><td colspan="6"><div class="org-empty"><div class="empty-icon">📹</div><p>Loading clips...</p></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Daily Highlights Panel -->
+            <div class="org-panel-section" id="sec-daily">
+                <div class="org-panel">
+                    <div class="org-panel-header">
+                        <div class="org-panel-title">UPDATE DAILY HIGHLIGHTS</div>
+                    </div>
+                    <div class="org-panel-body">
+                        <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 25px;">
+                            These links will automatically embed content in the player Hubs. Make sure you use the embed URL format.
+                        </div>
+                        <form id="daily-content-form" onsubmit="submitDailyContent(event)" style="max-width: 600px;">
+                            <div style="margin-bottom: 15px;">
+                                <label style="display:block; color:var(--text-300); font-size:0.85rem; font-weight:600; margin-bottom:8px;">YouTube Embed Link</label>
+                                <input type="text" id="dc-yt" class="org-input" style="width: 100%;" placeholder="e.g. https://www.youtube.com/embed/XXXXXX" required>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display:block; color:var(--text-300); font-size:0.85rem; font-weight:600; margin-bottom:8px;">Facebook Embed Link</label>
+                                <input type="text" id="dc-fb" class="org-input" style="width: 100%;" placeholder="e.g. https://www.facebook.com/plugins/video.php?href=..." required>
+                            </div>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button type="submit" class="org-btn org-btn-primary" style="width: 250px;">SAVE DAILY CONTENT</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -674,20 +778,12 @@
                 <input type="text" class="org-input" id="t-name" placeholder="e.g. Blaze Championship S1">
             </div>
             <div class="org-input-group">
-                <label>Date</label>
-                <input type="text" class="org-input" id="t-date" placeholder="e.g. 2026-07-15">
+                <label>Tournament Date & Time</label>
+                <input type="datetime-local" class="org-input" id="t-date">
             </div>
             <div class="org-input-group">
                 <label>Max Participants</label>
                 <input type="text" class="org-input" id="t-participants" placeholder="e.g. 48">
-            </div>
-            <div class="org-input-group">
-                <label>Status</label>
-                <select class="org-select" id="t-status">
-                    <option value="UPCOMING">Upcoming</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="ENDED">Ended</option>
-                </select>
             </div>
             <div class="org-modal-actions">
                 <button class="org-btn org-btn-ghost" onclick="closeCreateModal()">CANCEL</button>
@@ -960,8 +1056,6 @@
             document.getElementById('t-name').value = '';
             document.getElementById('t-date').value = '';
             document.getElementById('t-participants').value = '';
-            document.getElementById('t-status').value = 'UPCOMING';
-            document.getElementById('t-status').value = 'UPCOMING';
             document.getElementById('tournamentModal').classList.add('active');
         }
 
@@ -972,7 +1066,6 @@
             document.getElementById('t-name').value = name;
             document.getElementById('t-date').value = date;
             document.getElementById('t-participants').value = participants;
-            document.getElementById('t-status').value = status;
             document.getElementById('tournamentModal').classList.add('active');
         }
 
@@ -985,8 +1078,7 @@
             const body = {
                 name: document.getElementById('t-name').value,
                 date: document.getElementById('t-date').value,
-                participants: document.getElementById('t-participants').value,
-                status: document.getElementById('t-status').value
+                participants: document.getElementById('t-participants').value
             };
 
             if (!body.name || !body.date || !body.participants) {
@@ -1177,6 +1269,143 @@
             }
         }
 
+        // --- Clip Review Logic ---
+        let selectedClips = new Set();
+
+        function toggleClipSelection(btn, id) {
+            if (selectedClips.has(id)) {
+                selectedClips.delete(id);
+                btn.classList.remove('org-btn-primary');
+                btn.classList.add('btn-outline');
+                btn.textContent = 'SELECT';
+            } else {
+                if (selectedClips.size >= 3) {
+                    showToast('You can only select exactly 3 clips!', 'error');
+                    return;
+                }
+                selectedClips.add(id);
+                btn.classList.remove('btn-outline');
+                btn.classList.add('org-btn-primary');
+                btn.textContent = 'SELECTED ✅';
+            }
+            document.getElementById('clip-selected-count').textContent = `${selectedClips.size} / 3`;
+        }
+
+        async function loadClips() {
+            try {
+                const res = await fetch('/api/organizer/clip-submissions', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!res.ok) return;
+                const clips = await res.json();
+                
+                document.getElementById('clip-total-count').textContent = clips.length;
+                selectedClips.clear();
+                document.getElementById('clip-selected-count').textContent = '0 / 3';
+
+                const tbody = document.getElementById('clips-body');
+                if (clips.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="org-empty"><div class="empty-icon">📹</div><p>No clips submitted this week.</p></div></td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = clips.map(c => {
+                    const dateStr = new Date(c.createdAt).toLocaleDateString();
+                    return `
+                        <tr>
+                            <td style="text-align:center; width: 120px;">
+                                <button class="org-btn btn-outline clip-select-btn" style="width: 105px; padding: 6px 0; font-size: 0.75rem; text-align: center; justify-content: center;" onclick="toggleClipSelection(this, '${c._id}')">SELECT</button>
+                            </td>
+                            <td><strong>${c.title}</strong></td>
+                            <td>${c.playerId} <br><span style="font-size:0.75rem; color: var(--text-muted);">${c.game}</span></td>
+                            <td><a href="${c.videoUrl}" target="_blank" style="color: var(--blaze-orange); text-decoration: underline;">Watch Video</a></td>
+                            <td><span class="org-badge org-badge-upcoming">${c.status.toUpperCase()}</span></td>
+                            <td>${dateStr}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function startWeeklyVoting() {
+            if (selectedClips.size !== 3) {
+                alert('Please select EXACTLY 3 clips to feature for this week.');
+                return;
+            }
+            
+            const clipIds = Array.from(selectedClips);
+            
+            if (!confirm('Are you sure you want to save these 3 clips? They will automatically be revealed for voting on Saturday.')) return;
+            
+            try {
+                const res = await fetch('/api/organizer/voting-event/create', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token 
+                    },
+                    body: JSON.stringify({
+                        title: 'Top 3 Clips of the Week',
+                        game: 'Free Fire',
+                        clipIds: clipIds
+                    })
+                });
+                
+                if (res.ok) {
+                    showToast('Top 3 Clips Saved Successfully!', 'success');
+                    loadClips(); // Refresh the table
+                } else {
+                    const data = await res.json();
+                    showToast(data.msg || 'Failed to create voting event', 'error');
+                }
+            } catch(e) {
+                showToast('Server error', 'error');
+            }
+        }
+        function switchGlobalTab(tabId, el) {
+            document.querySelectorAll('.org-g-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            document.querySelectorAll('.org-panel-section').forEach(p => p.classList.remove('active'));
+            document.getElementById(`sec-${tabId}`).classList.add('active');
+        }
+
+        // --- Daily Content Logic ---
+        async function loadDailyContent() {
+            try {
+                const res = await fetch('/api/organizer/daily-content', { headers: { 'x-auth-token': token } });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.youtubeLink) document.getElementById('dc-yt').value = data.youtubeLink;
+                    if (data.facebookLink) document.getElementById('dc-fb').value = data.facebookLink;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function submitDailyContent(e) {
+            e.preventDefault();
+            const youtubeLink = document.getElementById('dc-yt').value;
+            const facebookLink = document.getElementById('dc-fb').value;
+
+            try {
+                const res = await fetch('/api/organizer/daily-content', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify({ youtubeLink, facebookLink, title: "Today's Highlights" })
+                });
+                
+                if (res.ok) {
+                    showToast('Daily Highlights updated successfully!', 'success');
+                } else {
+                    showToast('Failed to update daily highlights.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Server error.', 'error');
+            }
+        }
         function showToast(msg, type) {
             const toast = document.getElementById('org-toast');
             toast.textContent = msg;
@@ -1193,6 +1422,8 @@
         loadStats();
         loadTournaments();
         loadRegistrations();
+        loadClips();
+        loadDailyContent();
     </script>
 </body>
 </html>

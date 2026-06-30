@@ -833,125 +833,6 @@ router.get('/clip-submissions', adminMiddleware, async (req, res) => {
     }
 });
 
-// @route   POST /api/admin/clip-submissions/:id/approve
-// @desc    Approve a clip, make it public, and award 50 BlazeCoins
-router.post('/clip-submissions/:id/approve', adminMiddleware, async (req, res) => {
-    try {
-        const ClipSubmission = require('../models/ClipSubmission');
-        const Clip = require('../models/Clip');
-
-        const submission = await ClipSubmission.findById(req.params.id);
-        if (!submission) return res.status(404).json({ msg: 'Submission not found' });
-
-        submission.status = 'Approved';
-        await submission.save();
-
-        // Add to public clips
-        const newClip = new Clip({
-            title: submission.title,
-            author: submission.playerId,
-            game: submission.game,
-            views: '0',
-            thumbnail: '/public/clip-thumb.jpg', // Placeholder
-            url: submission.videoUrl
-        });
-        await newClip.save();
-
-        // Invalidate the clips cache so the new clip shows up immediately
-        const { cache } = require('../middleware/cache');
-        cache.del(`/api/game/${submission.game}/clips`);
-
-        // Award 50 BlazeCoins
-        const user = await User.findById(submission.userId);
-        if (user) {
-            user.blazeCoins = (user.blazeCoins || 0) + 50;
-            await user.save();
-
-            // Notify user via in-app
-            const agenda = require('../utils/queue');
-            agenda.now('send-inapp-notification', {
-                userId: user._id,
-                title: 'Top Clip Approved!',
-                message: `Your clip "${submission.title}" was selected as a Top Clip! You have been awarded 50 BlazeCoins.`,
-                type: 'success'
-            });
-
-            // Notify user via email
-            if (user.email) {
-                agenda.now('send-email', {
-                    email: user.email,
-                    subject: 'Your Clip was Approved! - Blaze Frontier',
-                    html: `
-                        <div style="font-family: sans-serif; color: #111; padding: 20px;">
-                            <h2 style="color: #ff4e00;">Congratulations!</h2>
-                            <p>Your clip "<strong>${submission.title}</strong>" has been approved by Command and is now featured as a Top Clip!</p>
-                            <p>You have been awarded <strong>50 BlazeCoins</strong>.</p>
-                            <br/>
-                            <p>- The Blaze Frontier Team</p>
-                        </div>
-                    `
-                });
-            }
-        }
-
-        res.json({ msg: 'Clip approved and user rewarded' });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
-// @route   POST /api/admin/clip-submissions/:id/reject
-// @desc    Reject a clip
-router.post('/clip-submissions/:id/reject', adminMiddleware, async (req, res) => {
-    try {
-        const ClipSubmission = require('../models/ClipSubmission');
-        const submission = await ClipSubmission.findById(req.params.id);
-        if (!submission) return res.status(404).json({ msg: 'Submission not found' });
-
-        submission.status = 'Rejected';
-        await submission.save();
-
-        const User = require('../models/User');
-        const user = await User.findById(submission.userId);
-        
-        if (user) {
-            const agenda = require('../utils/queue');
-            
-            // Notify user via in-app
-            agenda.now('send-inapp-notification', {
-                userId: user._id,
-                title: 'Clip Submission Declined',
-                message: `Your clip "${submission.title}" was not selected at this time. Keep trying!`,
-                type: 'error'
-            });
-
-            // Notify user via email
-            if (user.email) {
-                agenda.now('send-email', {
-                    email: user.email,
-                    subject: 'Clip Submission Update - Blaze Frontier',
-                    html: `
-                        <div style="font-family: sans-serif; color: #111; padding: 20px;">
-                            <h2 style="color: #ef4444;">Clip Submission Update</h2>
-                            <p>Thank you for submitting your clip "<strong>${submission.title}</strong>".</p>
-                            <p>Unfortunately, Command has reviewed it and it was not selected to be featured at this time.</p>
-                            <p>Keep grinding and submit your best plays again soon!</p>
-                            <br/>
-                            <p>- The Blaze Frontier Team</p>
-                        </div>
-                    `
-                });
-            }
-        }
-
-        res.json({ msg: 'Clip rejected and user notified' });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
 // @route   GET /api/admin/daily-content
 // @desc    Get current daily content
 router.get('/daily-content', adminMiddleware, async (req, res) => {
@@ -1016,6 +897,63 @@ router.get('/slot-report', adminMiddleware, async (req, res) => {
         }
 
         res.json(result);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/admin/voting-event/:eventId/resolve
+// @desc    End voting event and distribute rewards
+router.post('/voting-event/:eventId/resolve', adminMiddleware, async (req, res) => {
+    try {
+        const VotingEvent = require('../models/VotingEvent');
+        const Vote = require('../models/Vote');
+        const mongoose = require('mongoose');
+
+        const event = await VotingEvent.findById(req.params.eventId).populate('clips');
+        if (!event) return res.status(404).json({ msg: 'Event not found' });
+        if (!event.isActive) return res.status(400).json({ msg: 'Event is already resolved' });
+
+        // Calculate votes
+        const results = await Vote.aggregate([
+            { $match: { eventId: new mongoose.Types.ObjectId(req.params.eventId) } },
+            { $group: { _id: "$clipId", count: { $sum: 1 } } },
+            { $sort: { count: -1 } }
+        ]);
+
+        const rewards = [50, 25, 10];
+        const agenda = require('../utils/queue');
+        
+        // Loop through results and award users
+        for (let i = 0; i < Math.min(results.length, rewards.length); i++) {
+            const clipResult = results[i];
+            const clip = event.clips.find(c => c._id.toString() === clipResult._id.toString());
+            
+            if (clip && clip.userId) {
+                const rewardAmount = rewards[i];
+                const user = await User.findById(clip.userId);
+                
+                if (user) {
+                    user.blazeCoins = (user.blazeCoins || 0) + rewardAmount;
+                    await user.save();
+
+                    const place = i === 0 ? '1st' : i === 1 ? '2nd' : '3rd';
+                    
+                    agenda.now('send-inapp-notification', {
+                        userId: user._id,
+                        title: `Voting Event Winner: ${place} Place!`,
+                        message: `Your clip "${clip.title}" won ${place} place! You have been awarded ${rewardAmount} BlazeCoins.`,
+                        type: 'success'
+                    });
+                }
+            }
+        }
+
+        event.isActive = false;
+        await event.save();
+
+        res.json({ msg: 'Event resolved and rewards distributed successfully' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

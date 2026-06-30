@@ -137,8 +137,10 @@
             gap: 0;
             flex: 1;
             overflow-y: auto;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         .news-grid::-webkit-scrollbar {
@@ -368,8 +370,6 @@
                 padding: 88px 10px 10px;
                 width: 100%;
                 box-sizing: border-box;
-                display: flex;
-                flex-direction: column;
             }
 
             .c-welcome,
@@ -381,33 +381,11 @@
             }
 
             .c-welcome {
-                order: 1;
                 flex-direction: column;
                 text-align: center;
             }
 
-            .c-news {
-                order: 2;
-            }
-
-            .c-stat:not(.c-stat-active):not(.c-stat-matches) {
-                order: 3; /* The Blaze Icon / Top Commander */
-            }
-
-            .c-stat-active {
-                order: 4;
-            }
-
-            .c-stat-matches {
-                order: 5;
-            }
-
-            .c-showcase {
-                order: 6;
-            }
-
             .c-sidebar {
-                order: 7;
                 flex-direction: column;
             }
 
@@ -832,14 +810,17 @@
             <!-- Showcase: Weekly Scrims -->
             <div class="card c-showcase"
                 style="padding: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; transition: transform 0.2s; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); cursor: not-allowed;">
-                
+
                 <!-- Lock Overlay -->
-                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
+                <div
+                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;">
                     <div style="font-size: 5rem; opacity: 0.15; filter: grayscale(100%);">🔒</div>
                 </div>
 
                 <!-- Background Image (Balanced) -->
-                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('/public/scrims_balanced.png') center/cover; filter: brightness(0.7) grayscale(40%); transition: all 0.4s ease; z-index: 0;"></div>
+                <div
+                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('/public/scrims_balanced.png') center/cover; filter: brightness(0.7) grayscale(40%); transition: all 0.4s ease; z-index: 0;">
+                </div>
 
                 <!-- Inner Glass Panel -->
                 <div
@@ -859,13 +840,16 @@
                         </div>
                     </div>
 
-                    <div style="font-size: 0.85rem; color: rgba(209,209,224,0.5); margin-bottom: 20px; line-height: 1.5;">Currently locked by Command. Stay tuned for upcoming operations.</div>
+                    <div
+                        style="font-size: 0.85rem; color: rgba(209,209,224,0.5); margin-bottom: 20px; line-height: 1.5;">
+                        Currently locked by Command. Stay tuned for upcoming operations.</div>
 
                     <button disabled
                         style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); font-weight: bold; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1.5px; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: not-allowed;">
                         COMING SOON <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         </svg>
                     </button>
                 </div>
@@ -882,7 +866,7 @@
                     for (let i = 0; i < maxRetries; i++) {
                         try {
                             const res = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
-                            
+
                             if (res.ok) {
                                 const user = await res.json();
                                 document.getElementById('enter-arena-btn').addEventListener('click', () => {
@@ -890,14 +874,14 @@
                                 });
                                 break; // Success, exit loop
                             }
-                            
+
                             if (i === maxRetries - 1 && (res.status === 401 || res.status === 404)) {
                                 localStorage.removeItem('blaze_token');
                                 window.location.href = '/auth';
                                 return;
                             }
                             await new Promise(r => setTimeout(r, 800)); // wait before retry
-                        } catch(e) {
+                        } catch (e) {
                             if (i === maxRetries - 1) {
                                 window.location.href = '/auth';
                                 return;
@@ -967,7 +951,7 @@
                             if (playPromise !== undefined) {
                                 playPromise.catch(e => console.log('POTD Autoplay blocked:', e));
                             }
-                            
+
                             document.getElementById('potd-player').innerText = stats.potd.playerName;
                             document.getElementById('potd-player').style.color = stats.potd.isGenuine ? '#ffd700' : '#fff';
                             document.getElementById('potd-title').innerText = stats.potd.playerId;

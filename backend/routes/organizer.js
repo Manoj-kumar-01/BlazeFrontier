@@ -8,6 +8,81 @@ const User = require('../models/User');
 // All routes require organizer auth
 router.use(organizerAuth);
 
+function computeStatus(dateString) {
+    const tDate = new Date(dateString);
+    if (isNaN(tDate.getTime())) return 'UPCOMING';
+    const now = Date.now();
+    const startTime = tDate.getTime();
+    const endTime = startTime + 60 * 60 * 1000; // 1 hour duration
+
+    if (now < startTime) return 'UPCOMING';
+    if (now >= startTime && now <= endTime) return 'ACTIVE';
+    return 'ENDED';
+}
+
+// --- Organizer Clip Review Routes ---
+
+// @route   GET /api/organizer/clip-submissions
+// @desc    Get pending clip submissions for the current week
+router.get('/clip-submissions', async (req, res) => {
+    try {
+        const ClipSubmission = require('../models/ClipSubmission');
+        const now = new Date();
+        const currentDay = now.getDay();
+        const diffToMonday = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+        const startOfWeek = new Date(now.setDate(diffToMonday));
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const clips = await ClipSubmission.find({
+            createdAt: { $gte: startOfWeek },
+            status: 'Pending' // Match the exact case saved in api.js
+        }).sort({ createdAt: -1 });
+
+        res.json(clips);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/organizer/voting-event/create
+// @desc    Create a new weekly voting event with 3 selected clips
+router.post('/voting-event/create', async (req, res) => {
+    try {
+        const VotingEvent = require('../models/VotingEvent');
+        const ClipSubmission = require('../models/ClipSubmission');
+        const { title, game, clipIds } = req.body;
+
+        if (!title || !game || !clipIds || clipIds.length !== 3) {
+            return res.status(400).json({ msg: 'Please provide title, game, and exactly 3 clip IDs.' });
+        }
+
+        // Deactivate all current active events
+        await VotingEvent.updateMany({ isActive: true }, { isActive: false });
+
+        const newEvent = new VotingEvent({
+            title,
+            game,
+            isActive: true, // Will still be constrained by day-of-week in GET /api/voting-event/active
+            clips: clipIds
+        });
+
+        await newEvent.save();
+
+        // Update clip statuses to 'approved' or 'featured'
+        await ClipSubmission.updateMany(
+            { _id: { $in: clipIds } },
+            { $set: { status: 'approved' } }
+        );
+
+        res.json({ msg: 'Voting event created successfully', event: newEvent });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+
 // @route   GET /api/organizer/me
 // @desc    Get current organizer profile
 router.get('/me', async (req, res) => {
@@ -28,6 +103,18 @@ router.get('/me', async (req, res) => {
 // @desc    Get organizer dashboard stats
 router.get('/stats', async (req, res) => {
     try {
+        // Perform a quick lazy evaluation of all tournaments to keep stats accurate
+        const allTourneys = await Tournament.find();
+        let changed = false;
+        for (let t of allTourneys) {
+            const correctStatus = computeStatus(t.date);
+            if (t.status !== correctStatus) {
+                t.status = correctStatus;
+                await t.save();
+                changed = true;
+            }
+        }
+
         const totalTournaments = await Tournament.countDocuments();
         const activeTournaments = await Tournament.countDocuments({ status: 'ACTIVE' });
         const completedTournaments = await Tournament.countDocuments({ status: 'ENDED' });
@@ -55,7 +142,17 @@ router.get('/stats', async (req, res) => {
 // @desc    List all tournaments
 router.get('/tournaments', async (req, res) => {
     try {
-        const tournaments = await Tournament.find().sort({ createdAt: -1 });
+        let tournaments = await Tournament.find().sort({ createdAt: -1 });
+        
+        // Lazy evaluation: Update statuses dynamically based on current time
+        for (let t of tournaments) {
+            const correctStatus = computeStatus(t.date);
+            if (t.status !== correctStatus) {
+                t.status = correctStatus;
+                await t.save();
+            }
+        }
+        
         res.json(tournaments);
     } catch (err) {
         console.error(err.message);
@@ -67,15 +164,17 @@ router.get('/tournaments', async (req, res) => {
 // @desc    Create a new tournament
 router.post('/tournaments', async (req, res) => {
     try {
-        const { name, status, date, participants } = req.body;
+        const { name, date, participants } = req.body;
 
-        if (!name || !status || !date || !participants) {
+        if (!name || !date || !participants) {
             return res.status(400).json({ msg: 'All required fields must be provided' });
         }
 
+        const computedStatus = computeStatus(date);
+
         const tournament = new Tournament({
             name,
-            status,
+            status: computedStatus,
             date,
             participants
         });
@@ -92,12 +191,15 @@ router.post('/tournaments', async (req, res) => {
 // @desc    Update a tournament
 router.put('/tournaments/:id', async (req, res) => {
     try {
-        const { name, status, date, participants } = req.body;
+        const { name, date, participants } = req.body;
         const updateFields = {};
         if (name) updateFields.name = name;
-        if (status) updateFields.status = status;
-        if (date) updateFields.date = date;
         if (participants) updateFields.participants = participants;
+        
+        if (date) {
+            updateFields.date = date;
+            updateFields.status = computeStatus(date);
+        }
 
         const tournament = await Tournament.findByIdAndUpdate(
             req.params.id,
@@ -435,6 +537,46 @@ router.put('/registrations/:id/credentials', async (req, res) => {
         }
 
         res.json({ msg: 'Credentials dispatched successfully', reg });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/organizer/daily-content
+// @desc    Get current daily content
+router.get('/daily-content', async (req, res) => {
+    try {
+        const DailyContent = require('../models/DailyContent');
+        let content = await DailyContent.findOne();
+        if (!content) {
+            content = await DailyContent.create({});
+        }
+        res.json(content);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/organizer/daily-content
+// @desc    Update daily content links
+router.post('/daily-content', async (req, res) => {
+    try {
+        const { youtubeLink, facebookLink, title } = req.body;
+        const DailyContent = require('../models/DailyContent');
+        let content = await DailyContent.findOne();
+
+        if (content) {
+            content.youtubeLink = youtubeLink || content.youtubeLink;
+            content.facebookLink = facebookLink || content.facebookLink;
+            content.title = title || content.title;
+            content.updatedAt = Date.now();
+            await content.save();
+        } else {
+            content = await DailyContent.create({ youtubeLink, facebookLink, title });
+        }
+        res.json({ msg: 'Daily Content updated successfully', content });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
