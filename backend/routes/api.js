@@ -1099,41 +1099,6 @@ router.get('/tournaments/slots', authMiddleware, async (req, res) => {
     }
 });
 
-// @route   POST /api/tournaments/confirm-play
-// @desc    User confirms if they played the match after slot time is complete
-router.post('/tournaments/confirm-play', authMiddleware, async (req, res) => {
-    try {
-        const { regId, played } = req.body;
-        if (!regId) return res.status(400).json({ msg: 'Registration ID required' });
-
-        const Registration = require('../models/Registration');
-        const User = require('../models/User');
-
-        const reg = await Registration.findOne({ _id: regId, userId: req.user.id });
-        if (!reg) return res.status(404).json({ msg: 'Registration not found' });
-
-        const user = await User.findById(req.user.id);
-
-        if (played === 'yes') {
-            reg.status = 'Awaiting Verification';
-            await reg.save();
-            res.json({ msg: 'Status updated to Awaiting Verification', status: reg.status });
-        } else if (played === 'no') {
-            if (user) {
-                user.isGenuine = false; // Revoke genuine if they had it
-                await user.save();
-            }
-            // Delete registration so they can re-register
-            await Registration.findByIdAndDelete(regId);
-            res.json({ msg: 'Registration removed. You may re-register.', status: 'Deleted' });
-        } else {
-            res.status(400).json({ msg: 'Invalid option' });
-        }
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
 
 // @route   POST /api/tournaments/verify-team
 // @desc    Verify if team members exist and are not already registered
@@ -1211,7 +1176,7 @@ router.post('/tournaments/register', authMiddleware, async (req, res) => {
         // Check if user already has an active registration (Redundant if team is provided, but good for Solo)
         const activeUserReg = await Registration.findOne({
             userId: req.user.id,
-            status: { $in: ['Pending', 'Approved'] }
+            status: { $in: ['Pending', 'Approved', 'Awaiting Verification'] }
         });
         
         if(activeUserReg) {
@@ -1295,40 +1260,6 @@ router.post('/tournaments/register', authMiddleware, async (req, res) => {
     }
 });
 
-// @route   POST /api/tournaments/confirm-play
-// @desc    Submit user feedback on match completion
-router.post('/tournaments/confirm-play', authMiddleware, async (req, res) => {
-    try {
-        const { regId, played } = req.body;
-        const feedbackMap = { 'yes': 'Completed', 'no': 'Not Completed' };
-        const feedback = feedbackMap[played];
-        
-        if (!feedback) {
-            return res.status(400).json({ msg: 'Invalid feedback.' });
-        }
-
-        const Registration = require('../models/Registration');
-        const reg = await Registration.findById(regId);
-        
-        if (!reg) return res.status(404).json({ msg: 'Registration not found' });
-        
-        if (reg.userId.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'Unauthorized' });
-        }
-
-        if (reg.playerFeedback !== 'Pending') {
-            return res.status(400).json({ msg: 'Feedback already submitted.' });
-        }
-
-        reg.playerFeedback = feedback;
-        await reg.save();
-
-        res.json({ msg: 'Feedback submitted successfully.', reg });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
 
 // @route   GET /api/game/:gameId/overview
 // @desc    Get dynamic game overview stats
