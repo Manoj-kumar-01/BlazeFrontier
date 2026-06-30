@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authenticate | Blaze Frontier</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+
     <style>
         :root {
             --blaze-orange: #ff5722;
@@ -479,10 +480,14 @@
             }
         }
 
-        // Wait for Google script to load then initialize
+        // Since the script is loaded synchronously in the head, google is guaranteed to be available
         window.addEventListener('load', () => {
-            // Small delay to ensure google.accounts is ready
-            setTimeout(initGoogleSignIn, 500);
+            if (typeof google !== 'undefined' && google.accounts) {
+                initGoogleSignIn();
+            } else {
+                console.error('Google Identity Services failed to load');
+                document.getElementById('auth-retry').style.display = 'block';
+            }
         });
 
         async function handleCredentialResponse(response) {
