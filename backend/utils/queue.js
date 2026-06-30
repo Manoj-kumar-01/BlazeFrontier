@@ -94,4 +94,35 @@ agenda.define('resolve-weekly-voting', async (job) => {
     }
 });
 
+// Define Job: Clean Up Weekly Clips (Deletes from DB and filesystem)
+agenda.define('cleanup-weekly-clips', async (job) => {
+    try {
+        const ClipSubmission = require('../models/ClipSubmission');
+        const fs = require('fs');
+        const path = require('path');
+
+        const clips = await ClipSubmission.find({});
+        let deletedFiles = 0;
+
+        for (const clip of clips) {
+            if (clip.videoUrl) {
+                // videoUrl is in format "/public/uploads/user_clips/filename.mp4"
+                const filename = clip.videoUrl.split('/').pop();
+                const filepath = path.join(__dirname, '../../public/uploads/user_clips', filename);
+                
+                if (fs.existsSync(filepath)) {
+                    fs.unlinkSync(filepath);
+                    deletedFiles++;
+                }
+            }
+        }
+
+        const deleteResult = await ClipSubmission.deleteMany({});
+        console.log(`[Queue] Weekly Cleanup Complete: Deleted ${deleteResult.deletedCount} clip records and ${deletedFiles} video files from server.`);
+    } catch (err) {
+        console.error(`[Queue Error] Failed to cleanup weekly clips: ${err.message}`);
+        throw err;
+    }
+});
+
 module.exports = agenda;
