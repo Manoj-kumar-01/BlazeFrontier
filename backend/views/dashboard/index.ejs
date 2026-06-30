@@ -889,7 +889,7 @@
                                 network { activeTournaments totalBCAwarded region latency }
                                 liveMatches { id game name status isLive color streamUrl youtubeLink facebookLink }
                                 news { tag tagClass title date timestamp }
-                                potd { videoUrl playerName playerId title }
+                                potd { videoUrl playerName playerId title isGenuine }
                             }
                         }
                     `
@@ -929,8 +929,15 @@
 
                         // Player of the Day
                         if (stats.potd) {
-                            document.getElementById('potd-video').style.display = 'block';
-                            document.getElementById('potd-video').src = stats.potd.videoUrl;
+                            const potdVid = document.getElementById('potd-video');
+                            potdVid.style.display = 'block';
+                            potdVid.src = stats.potd.videoUrl;
+                            potdVid.load();
+                            const playPromise = potdVid.play();
+                            if (playPromise !== undefined) {
+                                playPromise.catch(e => console.log('POTD Autoplay blocked:', e));
+                            }
+                            
                             document.getElementById('potd-player').innerText = stats.potd.playerName;
                             document.getElementById('potd-player').style.color = stats.potd.isGenuine ? '#ffd700' : '#fff';
                             document.getElementById('potd-title').innerText = stats.potd.playerId;
