@@ -757,26 +757,39 @@
 
         let allRegistrations = [];
 
-        // Verify organizer role
+        // Verify organizer role with retry for eventual consistency
         (async () => {
-            try {
-                const res = await fetch('/api/organizer/me', {
-                    headers: { 'x-auth-token': token }
-                });
-                if (!res.ok) {
-                    localStorage.removeItem('blaze_token');
-                    localStorage.removeItem('blaze_role');
-                    window.location.href = '/auth';
-                    return;
+            const maxRetries = 3;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const res = await fetch('/api/organizer/me', {
+                        headers: { 'x-auth-token': token }
+                    });
+                    
+                    if (res.ok) {
+                        const user = await res.json();
+                        if (user.role !== 'organizer') {
+                            window.location.href = '/dashboard';
+                            return;
+                        }
+                        document.getElementById('org-username').textContent = user.username || user.email || 'Organizer';
+                        return; // Success, exit loop
+                    }
+                    
+                    // If not ok, wait and retry unless it's the last attempt
+                    if (i === maxRetries - 1) {
+                        localStorage.removeItem('blaze_token');
+                        localStorage.removeItem('blaze_role');
+                        window.location.href = '/auth';
+                        return;
+                    }
+                    await new Promise(r => setTimeout(r, 800)); // 800ms delay before retry
+                } catch(e) {
+                    if (i === maxRetries - 1) {
+                        window.location.href = '/auth';
+                    }
+                    await new Promise(r => setTimeout(r, 800));
                 }
-                const user = await res.json();
-                if (user.role !== 'organizer') {
-                    window.location.href = '/dashboard';
-                    return;
-                }
-                document.getElementById('org-username').textContent = user.username || user.email || 'Organizer';
-            } catch(e) {
-                window.location.href = '/auth';
             }
         })();
 

@@ -29,3 +29,22 @@
 [2026-06-30T03:19:07.983Z] Verifying ID token...
 [2026-06-30T03:19:07.984Z] Payload verified. email: manojpatnala01@gmail.com, name: Manoj kumar
 [2026-06-30T03:19:07.985Z] Auth Rejected: manojpatnala01@gmail.com is an Organizer trying to login as Player
+[2026-06-30T03:34:38.787Z] --- New Google Auth Request ---
+[2026-06-30T03:34:38.788Z] loginType: player, credential provided: true
+[2026-06-30T03:34:38.788Z] Verifying ID token...
+[2026-06-30T03:34:39.116Z] Payload verified. email: manojpatnala01@gmail.com, name: Manoj kumar
+[2026-06-30T03:34:39.118Z] Auth Rejected: manojpatnala01@gmail.com is an Organizer trying to login as Player
+[2026-06-30T04:41:20.434Z] --- New Google Auth Request ---
+[2026-06-30T04:41:20.437Z] loginType: organizer, credential provided: true
+[2026-06-30T04:41:20.438Z] Verifying ID token...
+[2026-06-30T04:41:20.690Z] Payload verified. email: manojpatnala01@gmail.com, name: Manoj kumar
+[2026-06-30T04:41:20.690Z] Allowed organizer emails: manojpatnala01@gmail.com
+[2026-06-30T04:41:20.690Z] Email manojpatnala01@gmail.com authorized as organizer.
+[2026-06-30T04:41:20.691Z] Checking BannedUser...
+[2026-06-30T04:41:36.638Z] --- New Google Auth Request ---
+[2026-06-30T04:41:36.638Z] loginType: organizer, credential provided: true
+[2026-06-30T04:41:36.639Z] Verifying ID token...
+[2026-06-30T04:41:36.641Z] Payload verified. email: manojpatnala01@gmail.com, name: Manoj kumar
+[2026-06-30T04:41:36.641Z] Allowed organizer emails: manojpatnala01@gmail.com
+[2026-06-30T04:41:36.642Z] Email manojpatnala01@gmail.com authorized as organizer.
+[2026-06-30T04:41:36.643Z] Checking BannedUser...

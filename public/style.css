@@ -1627,9 +1627,7 @@ img {
     }
 
     .mobile-toggle {
-        height: 72px;
-        justify-content: center;
-        display: flex;
+        display: none !important;
     }
 
     .logo-name {
@@ -1643,43 +1641,33 @@ img {
     }
 
     .nav-menu {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        background: transparent;
-        padding: 20px 0 10px;
-        order: 3;
-    }
-
-    .nav-menu.active {
-        display: flex;
-    }
-
-    .nav-menu.active+.nav-right {
-        display: flex;
-        flex-direction: column;
+        display: none !important;
     }
 
     .nav-right {
-        display: none;
-        width: 100%;
+        display: flex !important;
+        flex-direction: row;
+        width: auto;
         background: transparent;
-        padding: 0 0 20px;
-        order: 4;
+        padding: 0;
+        order: unset;
+        height: 72px;
+        align-items: center;
     }
 
-    .nav-right.active {
-        display: flex;
+    #btn-sign-in {
+        display: none;
+    }
+
+    #btn-get-started {
+        padding: 6px 14px;
+        font-size: 0.7rem;
     }
 
     .nav {
         background: rgba(10, 10, 12, 0.98);
         backdrop-filter: blur(10px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .mobile-toggle {
-        display: flex;
     }
 
     .hero {

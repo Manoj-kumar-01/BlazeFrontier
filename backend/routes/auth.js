@@ -49,16 +49,6 @@ router.post('/google', async (req, res) => {
 
         // Parse Organizer Emails
         let envEmails = process.env.ORGANIZER_EMAILS || '';
-        try {
-            const envPath = path.join(__dirname, '../.env');
-            const envContent = fs.readFileSync(envPath, 'utf8');
-            const match = envContent.match(/^ORGANIZER_EMAILS=(.*)$/m);
-            if (match && match[1]) {
-                envEmails = match[1];
-            }
-        } catch (e) {
-            log(`Error reading .env: ${e.message}`);
-        }
 
         const allowedEmails = envEmails
             .split(',')

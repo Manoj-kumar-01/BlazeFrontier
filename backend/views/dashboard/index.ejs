@@ -848,17 +848,32 @@
                 const token = localStorage.getItem('blaze_token');
                 if (!token) { window.location.href = '/auth'; return; }
                 try {
-                    const res = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
-                    if (res.status === 401 || res.status === 404) {
-                        localStorage.removeItem('blaze_token');
-                        window.location.href = '/auth';
-                        return;
-                    }
-                    if (res.ok) {
-                        const user = await res.json();
-                        document.getElementById('enter-arena-btn').addEventListener('click', () => {
-                            window.location.href = '/dashboard/freefire';
-                        });
+                    const maxRetries = 3;
+                    for (let i = 0; i < maxRetries; i++) {
+                        try {
+                            const res = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
+                            
+                            if (res.ok) {
+                                const user = await res.json();
+                                document.getElementById('enter-arena-btn').addEventListener('click', () => {
+                                    window.location.href = '/dashboard/freefire';
+                                });
+                                break; // Success, exit loop
+                            }
+                            
+                            if (i === maxRetries - 1 && (res.status === 401 || res.status === 404)) {
+                                localStorage.removeItem('blaze_token');
+                                window.location.href = '/auth';
+                                return;
+                            }
+                            await new Promise(r => setTimeout(r, 800)); // wait before retry
+                        } catch(e) {
+                            if (i === maxRetries - 1) {
+                                window.location.href = '/auth';
+                                return;
+                            }
+                            await new Promise(r => setTimeout(r, 800));
+                        }
                     }
 
                     // Fetch dynamic stats (GraphQL vs REST Performance Comparison)
