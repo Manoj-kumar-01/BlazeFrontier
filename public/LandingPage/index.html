@@ -74,7 +74,7 @@
             </div>
             <div class="nav-right">
                 <a href="/auth" class="nav-btn nav-btn-ghost" id="btn-sign-in">Sign In</a>
-                <a href="/auth" class="nav-btn nav-btn-fill" id="btn-get-started">Get Started</a>
+                <a href="#" class="nav-btn nav-btn-fill" id="btn-get-started" onclick="return checkGetStarted(event)">Get Started</a>
             </div>
             <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
                 <span></span><span></span>
@@ -615,6 +615,19 @@
                 }
             }
         });
+
+        function checkGetStarted(e) {
+            // Target unlock date: July 1, 2026, 21:35:00 GMT+0530 (1 day from now)
+            const unlockDate = new Date('2026-07-01T21:35:00+05:30');
+            if (new Date() < unlockDate) {
+                e.preventDefault();
+                alert('Registration is temporarily paused and will open in 24 hours!');
+                return false;
+            } else {
+                window.location.href = '/auth';
+                return false;
+            }
+        }
     </script>
 </body>
 
