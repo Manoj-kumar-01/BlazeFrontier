@@ -19,10 +19,12 @@ const authMiddleware = async (req, res, next) => {
         let envEmails = process.env.ORGANIZER_EMAILS || '';
         try {
             const envPath = path.join(__dirname, '../.env');
-            const envContent = fs.readFileSync(envPath, 'utf8');
-            const match = envContent.match(/^ORGANIZER_EMAILS=(.*)$/m);
-            if (match && match[1]) {
-                envEmails = match[1];
+            if (fs.existsSync(envPath)) {
+                const envContent = fs.readFileSync(envPath, 'utf8');
+                const match = envContent.match(/^ORGANIZER_EMAILS=(.*)$/m);
+                if (match && match[1]) {
+                    envEmails = match[1];
+                }
             }
         } catch (e) {
             console.error('Error reading .env in auth middleware:', e.message);
