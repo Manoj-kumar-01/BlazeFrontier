@@ -876,16 +876,22 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         let upcoming = [];
         
         // 1. Generic Open Tournaments
-        const tournaments = await Tournament.find({ ...filter, status: 'Open' }).lean();
-        tournaments.forEach(t => upcoming.push({
-            type: 'tournament',
-            game: t.game.toUpperCase(),
-            name: t.name,
-            status: 'OPEN',
-            participants: t.participants,
-            date: t.date,
-            canRegister: true
-        }));
+        const tournaments = await Tournament.find({ ...filter, status: { $in: ['UPCOMING', 'ACTIVE'] } }).lean();
+        tournaments.forEach(t => {
+            const tObj = {
+                type: 'tournament',
+                game: t.game.toUpperCase(),
+                name: t.name,
+                status: t.status,
+                participants: t.participants,
+                date: t.date,
+                _id: t._id,
+                prize: t.prize,
+                canRegister: t.status === 'UPCOMING'
+            };
+            if (t.status === 'ACTIVE') live.push(tObj);
+            else upcoming.push(tObj);
+        });
         
         // 2. Global Approved Custom Series (Upcoming Matches for everyone)
         const regFilter = { status: 'Approved' };
@@ -1002,7 +1008,7 @@ router.get('/hub/:game/stats', async (req, res) => {
         
         const activeOperators = await User.countDocuments({});
         const liveMatches = await Series.countDocuments({ game: gameRegex, status: 'ONGOING' });
-        const activeTournaments = await Tournament.countDocuments({ game: gameRegex, status: 'Open' });
+        const activeTournaments = await Tournament.countDocuments({ game: gameRegex, status: { $in: ['ACTIVE', 'UPCOMING'] } });
         
         res.json({
             activeOperators,
@@ -1333,7 +1339,7 @@ router.get('/game/:gameId/overview', async (req, res) => {
         
         const activeCommanders = await User.countDocuments();
         const liveMatches = await Series.countDocuments({ game: gameRegex, status: 'ONGOING' });
-        const activeTournaments = await Tournament.countDocuments({ game: gameRegex, status: 'Open' });
+        const activeTournaments = await Tournament.countDocuments({ game: gameRegex, status: { $in: ['ACTIVE', 'UPCOMING'] } });
 
         res.json({
             activeCommanders: activeCommanders.toLocaleString(),
