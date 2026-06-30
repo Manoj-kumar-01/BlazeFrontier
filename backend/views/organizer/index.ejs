@@ -723,7 +723,7 @@
                                     <th>Select</th>
                                     <th>Title</th>
                                     <th>Player / Game</th>
-                                    <th>Video Link</th>
+                                    <th>Video</th>
                                     <th>Status</th>
                                     <th>Date</th>
                                 </tr>
@@ -1074,6 +1074,10 @@
         }
 
         async function submitTournament() {
+            const btn = document.getElementById('modal-submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'SAVING...';
+
             const id = document.getElementById('edit-tournament-id').value;
             const body = {
                 name: document.getElementById('t-name').value,
@@ -1083,6 +1087,8 @@
 
             if (!body.name || !body.date || !body.participants) {
                 showToast('All fields are required', 'error');
+                btn.disabled = false;
+                btn.textContent = id ? 'SAVE' : 'CREATE';
                 return;
             }
 
@@ -1099,6 +1105,8 @@
                 if (!res.ok) {
                     const err = await res.json();
                     showToast(err.msg || 'Failed', 'error');
+                    btn.disabled = false;
+                    btn.textContent = id ? 'SAVE' : 'CREATE';
                     return;
                 }
 
@@ -1108,6 +1116,9 @@
                 loadStats();
             } catch (e) {
                 showToast('Network error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = id ? 'SAVE' : 'CREATE';
             }
         }
 
@@ -1318,7 +1329,7 @@
                             </td>
                             <td><strong>${c.title}</strong></td>
                             <td>${c.playerId} <br><span style="font-size:0.75rem; color: var(--text-muted);">${c.game}</span></td>
-                            <td><a href="${c.videoUrl}" target="_blank" style="color: var(--blaze-orange); text-decoration: underline;">Watch Video</a></td>
+                            <td><video src="${c.videoUrl}" controls width="180" style="border-radius:6px; background:#000; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></video></td>
                             <td><span class="org-badge org-badge-upcoming">${c.status.toUpperCase()}</span></td>
                             <td>${dateStr}</td>
                         </tr>

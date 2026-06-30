@@ -60,7 +60,7 @@ router.post('/google', async (req, res) => {
             log(`Allowed organizer emails: ${allowedEmails.join(', ')}`);
             if (!allowedEmails.includes(email.toLowerCase())) {
                 log(`Auth Rejected: ${email} not in whitelist`);
-                return res.status(403).json({ msg: `Access denied. Email '${email}' is not in the organizer whitelist: [${allowedEmails.join(', ')}].` });
+                return res.status(403).json({ msg: 'Access denied. You are not an authorized organizer.' });
             }
             log(`Email ${email} authorized as organizer.`);
         } else if (loginType === 'player') {
