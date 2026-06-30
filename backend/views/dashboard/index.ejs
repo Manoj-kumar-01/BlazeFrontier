@@ -368,6 +368,8 @@
                 padding: 88px 10px 10px;
                 width: 100%;
                 box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
             }
 
             .c-welcome,
@@ -379,11 +381,33 @@
             }
 
             .c-welcome {
+                order: 1;
                 flex-direction: column;
                 text-align: center;
             }
 
+            .c-news {
+                order: 2;
+            }
+
+            .c-stat:not(.c-stat-active):not(.c-stat-matches) {
+                order: 3; /* The Blaze Icon / Top Commander */
+            }
+
+            .c-stat-active {
+                order: 4;
+            }
+
+            .c-stat-matches {
+                order: 5;
+            }
+
+            .c-showcase {
+                order: 6;
+            }
+
             .c-sidebar {
+                order: 7;
                 flex-direction: column;
             }
 
