@@ -1324,11 +1324,12 @@
                     const formData = new FormData();
                     formData.append('title', title);
                     formData.append('game', 'Free Fire');
-                    formData.append('video', file);
+                    formData.append('clip', file); // Backend expects 'clip' not 'video'
+                    formData.append('playerId', typeof playerBlazeId !== 'undefined' ? playerBlazeId : 'Unknown'); // Backend expects playerId
 
                     try {
                         const token = localStorage.getItem('blaze_token');
-                        const res = await fetch('/api/clip-submissions', {
+                        const res = await fetch('/api/clips/submit', { // Correct route
                             method: 'POST',
                             headers: {
                                 'x-auth-token': token

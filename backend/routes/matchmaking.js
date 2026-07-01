@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/auth');
 const User = require('../models/User');
+const authMiddleware = require('../middleware/auth');
+const { v4: uuidv4 } = require('uuid');
+const webpush = require('web-push');
+const PushSubscription = require('../models/PushSubscription');
 
 // ═══════════════════════════════════════════════════════════════════
 //  MATCHMAKING ENGINE v2.1 — Race-condition hardened queue system
@@ -304,6 +307,24 @@ router.post('/request', authMiddleware, async (req, res) => {
 
         // Broadcast updated queue to everyone
         broadcastQueueUpdate(req);
+
+        // Send Web Push Notification to all subscribed users (except the requester)
+        try {
+            const subscriptions = await PushSubscription.find({ userId: { $ne: userId } });
+            const payload = JSON.stringify({
+                title: 'New Squad Request!',
+                body: `${user.inGameName || user.username} is looking for a squad in Free Fire. Click to join!`
+            });
+            subscriptions.forEach(sub => {
+                webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).catch(err => {
+                    if (err.statusCode === 404 || err.statusCode === 410) {
+                        PushSubscription.deleteOne({ endpoint: sub.endpoint }).exec();
+                    }
+                });
+            });
+        } catch (pushErr) {
+            console.error('Push broadcast error:', pushErr);
+        }
 
         res.json({ msg: 'Search started.', requestId, expiresAt, serverTime: new Date() });
 

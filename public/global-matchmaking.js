@@ -187,6 +187,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 1. Sync state instantly on load
     await syncMatchmakingState();
+    
+    // 2. Initialize Web Push Notifications
+    initWebPush();
 
     // 2. Periodic re-sync every 10 seconds (catches drift, stale state)
     clearInterval(syncInterval);
@@ -818,3 +821,42 @@ function escapeHtml(str) {
 window.hideMmPopup = function() {
     hideQueuePanel();
 };
+
+// Web Push Registration
+async function initWebPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    try {
+        const swReg = await navigator.serviceWorker.register('/sw.js');
+        let sub = await swReg.pushManager.getSubscription();
+        if (!sub) {
+            const token = localStorage.getItem('blaze_token');
+            if (!token) return;
+            const keyRes = await fetch('/api/push/public-key');
+            const keyData = await keyRes.json();
+            const vapidPublicKey = keyData.publicKey;
+            const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+            sub = await swReg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: convertedVapidKey
+            });
+            await fetch('/api/push/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                body: JSON.stringify(sub)
+            });
+        }
+    } catch (e) {
+        console.error('Web Push Init Error:', e);
+    }
+}
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
