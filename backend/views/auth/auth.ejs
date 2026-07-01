@@ -446,9 +446,9 @@
                     callback: handleCredentialResponse,
                     ux_mode: 'popup',
                     context: 'signin',
-                    auto_select: false,
+                    auto_select: true,
                     itp_support: true,
-                    use_fedcm_for_prompt: false
+                    use_fedcm_for_prompt: true
                 });
 
                 let containerPadding = window.innerWidth <= 900 ? 50 : 80;
@@ -466,6 +466,9 @@
                         width: btnWidth
                     }
                 );
+
+                // Display the One Tap prompt
+                google.accounts.id.prompt();
 
                 // Check if button rendered after a delay
                 setTimeout(() => {
