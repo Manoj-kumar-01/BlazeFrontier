@@ -828,9 +828,11 @@ async function initWebPush() {
     try {
         const swReg = await navigator.serviceWorker.register('/sw.js');
         let sub = await swReg.pushManager.getSubscription();
+        
+        const token = localStorage.getItem('blaze_token');
+        if (!token) return;
+
         if (!sub) {
-            const token = localStorage.getItem('blaze_token');
-            if (!token) return;
             const keyRes = await fetch('/api/push/public-key');
             const keyData = await keyRes.json();
             const vapidPublicKey = keyData.publicKey;
@@ -839,6 +841,10 @@ async function initWebPush() {
                 userVisibleOnly: true,
                 applicationServerKey: convertedVapidKey
             });
+        }
+
+        // Always send to backend to ensure DB has it and user ID is updated
+        if (sub) {
             await fetch('/api/push/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
