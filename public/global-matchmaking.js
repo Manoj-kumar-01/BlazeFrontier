@@ -1,14 +1,39 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ *  BLAZE MATCHMAKING v2 — Queue-based pooling system
+ *  Production-grade, Rapido-style request management
+ *  - Queue pool: multiple pending requests visible
+ *  - Session-scoped: events targeted to specific users
+ *  - BroadcastChannel: multi-tab sync for same account
+ *  - Mobile-first: compact, responsive UI
+ * ═══════════════════════════════════════════════════════════════════
+ */
 
 let socket = null;
 let currentMatchId = null;
-let popupTimerInterval = null;
-let searchTimerInterval = null;
-let blockTimerInterval = null;
-
 let mmQuickMsgCount = 0;
 const MM_QUICK_MSG_LIMIT = 3;
 
-// We export these functions so specific pages (like freefire.ejs) can call them
+// Queue state
+let pendingQueue = [];      // Array of request objects from server
+let myActiveRequest = null;  // My own request (if any) { id, expiresAt }
+let myUserId = null;
+let serverTimeOffset = 0;
+let blockTimerInterval = null;
+let mySearchTimerInterval = null;
+let acceptInFlight = false;  // Global client-side accept lock
+let syncInterval = null;     // Periodic re-sync interval
+
+// BroadcastChannel for multi-tab sync (same account)
+let mmChannel = null;
+try {
+    mmChannel = new BroadcastChannel('blaze_matchmaking');
+} catch(e) {
+    // BroadcastChannel not supported — degrade gracefully
+}
+
+// ─── PUBLIC API ──────────────────────────────────────────────────
+
 window.BlazeMatchmaking = {
     startSearch: async function() {
         const token = localStorage.getItem('blaze_token');
@@ -24,16 +49,74 @@ window.BlazeMatchmaking = {
                 } else if (res.status === 403 && data.msg.toLowerCase().includes('limit')) {
                     showLimitOverlay();
                 } else {
-                    alert(data.msg);
+                    showMmToast(data.msg, 'error');
                 }
                 return false;
             }
-            // Search started successfully. Local UI will be updated by the mm:search_started socket event.
+            // Success — server will emit mm:my_request_created + mm:queue_updated
             return true;
         } catch (e) {
             console.error('Matchmaking request failed:', e);
-            alert('An error occurred. Please try again.');
+            showMmToast('An error occurred. Please try again.', 'error');
             return false;
+        }
+    },
+
+    cancelSearch: async function() {
+        const token = localStorage.getItem('blaze_token');
+        try {
+            const res = await fetch('/api/matchmaking/cancel', {
+                method: 'POST',
+                headers: { 'x-auth-token': token }
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                showMmToast(data.msg, 'error');
+            }
+            // Server will emit mm:my_request_cancelled + mm:queue_updated
+        } catch(e) {
+            console.error('Cancel failed:', e);
+        }
+    },
+
+    acceptRequest: async function(requestId) {
+        // Global client-side lock: only one accept at a time
+        if (acceptInFlight) {
+            showMmToast('Already processing an accept. Please wait.', 'warning');
+            return false;
+        }
+        // Can't accept while already in a match
+        if (currentMatchId) {
+            showMmToast('You are already in a match.', 'warning');
+            return false;
+        }
+        acceptInFlight = true;
+        const token = localStorage.getItem('blaze_token');
+        try {
+            const res = await fetch(`/api/matchmaking/accept/${requestId}`, {
+                method: 'POST',
+                headers: { 'x-auth-token': token }
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                showMmToast(data.msg, 'error');
+                // If the request is gone (400/409), remove it from local queue and re-sync
+                if (res.status === 400 || res.status === 409) {
+                    pendingQueue = pendingQueue.filter(r => r.id !== requestId);
+                    renderQueuePanel();
+                    updateQueueCount();
+                    // Full re-sync to get latest state
+                    syncMatchmakingState();
+                }
+                return false;
+            }
+            return true;
+        } catch(e) {
+            console.error('Accept failed:', e);
+            showMmToast('Network error. Try again.', 'error');
+            return false;
+        } finally {
+            acceptInFlight = false;
         }
     },
 
@@ -53,7 +136,7 @@ window.BlazeMatchmaking = {
             
             clearInterval(blockTimerInterval);
             const updateTimer = () => {
-                const trueNow = window._getServerTime ? window._getServerTime() : new Date();
+                const trueNow = getServerTime();
                 const diff = targetDate - trueNow;
                 if (diff <= 0) {
                     clearInterval(blockTimerInterval);
@@ -71,77 +154,108 @@ window.BlazeMatchmaking = {
     }
 };
 
+// ─── SERVER TIME ─────────────────────────────────────────────────
+
+function getServerTime() {
+    return new Date(Date.now() + serverTimeOffset);
+}
+window._getServerTime = getServerTime;
+
+// ─── JWT PARSE ───────────────────────────────────────────────────
+
+function parseJwt(token) {
+    try {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch(e) { return null; }
+}
+
+// ─── INIT ────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('blaze_token');
     if (!token) return;
-
-    let myUserId = null;
-    let serverTimeOffset = 0; // Fixes client-server clock desync
-
-    function parseJwt(token) {
-        try {
-            var base64Url = token.split('.')[1];
-            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        } catch(e) { return null; }
-    }
 
     try {
         const payload = parseJwt(token);
         if (payload) myUserId = payload.id;
     } catch(e) {}
 
-    // Expose offset to helpers
-    window._getServerTime = () => new Date(Date.now() + serverTimeOffset);
-
     // 1. Sync state instantly on load
     await syncMatchmakingState();
 
-    // 2. Establish Socket.IO
+    // 2. Periodic re-sync every 10 seconds (catches drift, stale state)
+    clearInterval(syncInterval);
+    syncInterval = setInterval(() => syncMatchmakingState(), 10000);
+
+    // 3. Establish Socket.IO
     socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 10 });
     socket.emit('authenticate', token);
-    socket.on('reconnect', () => socket.emit('authenticate', token));
+    socket.on('reconnect', () => {
+        socket.emit('authenticate', token);
+        syncMatchmakingState(); // Re-sync on reconnect
+    });
 
-    // ─── SOCKET EVENTS ──────────────────────────────────────────────────
+    // ─── SOCKET EVENTS ──────────────────────────────────────────
 
-    socket.on('mm:search_started', (payload) => {
-        // If I am the searcher, update my button
-        if (payload.requesterId === myUserId) {
-            startSearchTimerUI(new Date(payload.expiresAt));
-        } else {
-            // Show popup to everyone else
-            showMmPopup(payload.requesterBlz, new Date(payload.expiresAt));
+    // Queue updated — full queue sync from server
+    socket.on('mm:queue_updated', (payload) => {
+        if (payload.serverTime) {
+            serverTimeOffset = new Date(payload.serverTime).getTime() - Date.now();
         }
+        pendingQueue = (payload.queue || []).filter(r => r.requesterId !== myUserId);
+        renderQueuePanel();
+        updateQueueCount();
+        broadcastToOtherTabs('queue_updated', { queue: pendingQueue });
     });
 
-    socket.on('mm:search_cleared', () => {
-        hideMmPopup();
-        resetSearchButtonUI();
+    // My request was created
+    socket.on('mm:my_request_created', (payload) => {
+        myActiveRequest = {
+            id: payload.requestId,
+            expiresAt: payload.expiresAt
+        };
+        startMySearchUI(new Date(payload.expiresAt));
+        broadcastToOtherTabs('my_request_created', myActiveRequest);
     });
 
+    // My request was cancelled
+    socket.on('mm:my_request_cancelled', (payload) => {
+        myActiveRequest = null;
+        resetFindSquadBtn();
+        broadcastToOtherTabs('my_request_cancelled', {});
+    });
+
+    // My request expired
     socket.on('mm:search_expired', (payload) => {
-        hideMmPopup();
-        resetSearchButtonUI();
+        myActiveRequest = null;
+        resetFindSquadBtn();
         if (payload.blockedUntil) {
             window.BlazeMatchmaking.startCooldown(new Date(payload.blockedUntil));
         }
-        if (payload.msg) alert(payload.msg);
+        showMmToast(payload.msg || 'No one accepted. Cooldown applied.', 'warning');
+        broadcastToOtherTabs('search_expired', { blockedUntil: payload.blockedUntil });
     });
 
+    // Match formed — I got matched!
     socket.on('mm:match_formed', (payload) => {
         currentMatchId = payload.matchId;
-        hideMmPopup();
-        resetSearchButtonUI();
-        openChatModal(payload.opponent);
+        myActiveRequest = null;
+        resetFindSquadBtn();
+        hideQueuePanel();
+        openChatModal(payload.opponent, payload.opponentName);
         if (payload.cooldownUntil) {
             window.BlazeMatchmaking.startCooldown(new Date(payload.cooldownUntil));
         }
-        updateDailyLimitUI(); // Refresh visual count
+        updateDailyLimitUI();
+        broadcastToOtherTabs('match_formed', { cooldownUntil: payload.cooldownUntil });
     });
 
+    // Chat messages
     socket.on('mm:chat_message', (payload) => {
         appendChatMessage(payload.sender, payload.type, payload.message, myUserId);
         if (payload.sender === myUserId && typeof payload.remaining === 'number') {
@@ -149,41 +263,53 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Chat ended
     socket.on('mm:chat_ended', (payload) => {
-        alert(payload.msg);
+        showMmToast(payload.msg, 'info');
         closeChatModal();
     });
 
-    // ─── UI LISTENERS ──────────────────────────────────────────────────
+    // ─── BROADCAST CHANNEL (multi-tab sync) ─────────────────────
 
-    const acceptBtn = document.getElementById('mm-accept-btn');
-    if (acceptBtn) {
-        let accepting = false;
-        acceptBtn.addEventListener('click', async () => {
-            if (accepting) return;
-            accepting = true;
-            acceptBtn.disabled = true;
-            acceptBtn.innerText = 'ACCEPTING...';
-            try {
-                const res = await fetch('/api/matchmaking/accept', {
-                    method: 'POST',
-                    headers: { 'x-auth-token': token }
-                });
-                const data = await res.json();
-                if (!res.ok) {
-                    alert(data.msg);
-                    acceptBtn.innerText = 'ACCEPT';
-                    acceptBtn.disabled = false;
-                }
-            } catch(e) {
-                console.error(e);
-                acceptBtn.innerText = 'ACCEPT';
-                acceptBtn.disabled = false;
+    if (mmChannel) {
+        mmChannel.onmessage = (event) => {
+            const { type, data } = event.data;
+            switch(type) {
+                case 'queue_updated':
+                    pendingQueue = data.queue || [];
+                    renderQueuePanel();
+                    updateQueueCount();
+                    break;
+                case 'my_request_created':
+                    myActiveRequest = data;
+                    startMySearchUI(new Date(data.expiresAt));
+                    break;
+                case 'my_request_cancelled':
+                    myActiveRequest = null;
+                    resetFindSquadBtn();
+                    break;
+                case 'search_expired':
+                    myActiveRequest = null;
+                    resetFindSquadBtn();
+                    if (data.blockedUntil) {
+                        window.BlazeMatchmaking.startCooldown(new Date(data.blockedUntil));
+                    }
+                    break;
+                case 'match_formed':
+                    myActiveRequest = null;
+                    resetFindSquadBtn();
+                    hideQueuePanel();
+                    if (data.cooldownUntil) {
+                        window.BlazeMatchmaking.startCooldown(new Date(data.cooldownUntil));
+                    }
+                    break;
             }
-            accepting = false;
-        });
+        };
     }
 
+    // ─── UI LISTENERS ───────────────────────────────────────────
+
+    // Leave room
     const leaveRoomBtn = document.getElementById('mm-leave-room-btn');
     if (leaveRoomBtn) {
         leaveRoomBtn.addEventListener('click', async () => {
@@ -194,10 +320,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Quick messages
     document.querySelectorAll('.mm-quick-msg').forEach(btn => {
         btn.addEventListener('click', async () => {
             if (mmQuickMsgCount >= MM_QUICK_MSG_LIMIT) return;
-            const success = await sendChat('predefined', btn.innerText);
+            const success = await sendChat('predefined', btn.dataset.msg || btn.innerText);
             if (success) {
                 mmQuickMsgCount++;
                 if (mmQuickMsgCount >= MM_QUICK_MSG_LIMIT) disableQuickMsgButtons();
@@ -205,20 +332,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
+    // Send credentials
     const sendCredsBtn = document.getElementById('mm-send-creds-btn');
     if (sendCredsBtn) {
         sendCredsBtn.addEventListener('click', () => {
             const roomId = document.getElementById('mm-room-id').value;
             const pass = document.getElementById('mm-room-pass').value;
-            if (!roomId || !pass) return alert('Enter both ID and Password');
+            if (!roomId || !pass) return showMmToast('Enter both Room ID and Password', 'error');
             sendChat('credentials', null, roomId, pass);
             document.getElementById('mm-room-id').value = '';
             document.getElementById('mm-room-pass').value = '';
         });
     }
+
+    // Queue panel toggle
+    const queueToggle = document.getElementById('mm-queue-toggle');
+    if (queueToggle) {
+        queueToggle.addEventListener('click', () => {
+            const panel = document.getElementById('mm-queue-panel');
+            if (panel) {
+                const isVisible = panel.classList.contains('mm-panel-visible');
+                if (isVisible) {
+                    hideQueuePanel();
+                } else {
+                    showQueuePanel();
+                }
+            }
+        });
+    }
 });
 
-// ─── HELPER FUNCTIONS ────────────────────────────────────────────────
+// ─── STATE SYNC ──────────────────────────────────────────────────
 
 async function syncMatchmakingState() {
     const token = localStorage.getItem('blaze_token');
@@ -228,110 +372,261 @@ async function syncMatchmakingState() {
         if (res.ok) {
             const state = await res.json();
             
-            // Sync clock with server
+            // Sync clock
             if (state.serverTime) {
                 serverTimeOffset = new Date(state.serverTime).getTime() - Date.now();
             }
 
-            const trueNow = window._getServerTime ? window._getServerTime() : new Date();
+            const trueNow = getServerTime();
 
             // 1. Cooldowns
             if (state.blockedUntil && new Date(state.blockedUntil) > trueNow) {
                 window.BlazeMatchmaking.startCooldown(new Date(state.blockedUntil));
             }
-            // 2. Limits
+            // 2. Daily limits
             if (state.dailyCount >= 3) {
                 showLimitOverlay();
             }
             updateDailyLimitUIText(3 - state.dailyCount);
 
-            // 3. Active Search
-            if (state.isSearchActive && state.search) {
-                const expires = new Date(state.search.expiresAt);
+            // 3. My active request
+            if (state.myRequest) {
+                const expires = new Date(state.myRequest.expiresAt);
                 if (expires > trueNow) {
-                    if (state.search.isMySearch) {
-                        startSearchTimerUI(expires);
-                    } else {
-                        showMmPopup(state.search.requesterBlz, expires);
-                    }
+                    myActiveRequest = state.myRequest;
+                    startMySearchUI(expires);
+                } else {
+                    myActiveRequest = null;
+                    resetFindSquadBtn();
                 }
             } else {
-                hideMmPopup();
-                resetSearchButtonUI();
+                myActiveRequest = null;
+                resetFindSquadBtn();
             }
+
+            // 4. Queue (filter out own requests)
+            pendingQueue = (state.queue || []).filter(r => r.requesterId !== myUserId);
+            renderQueuePanel();
+            updateQueueCount();
         }
     } catch(e) {
         console.error('Failed to sync matchmaking state', e);
     }
 }
 
-function showMmPopup(blz, expiresAt) {
-    document.getElementById('mm-requester').innerText = blz;
-    const popup = document.getElementById('mm-request-popup');
-    if (!popup) return;
-    
-    const acceptBtn = document.getElementById('mm-accept-btn');
-    if (acceptBtn) {
-        acceptBtn.innerText = 'ACCEPT';
-        acceptBtn.disabled = false;
+// ─── QUEUE PANEL RENDERING ───────────────────────────────────────
+
+function renderQueuePanel() {
+    const list = document.getElementById('mm-queue-list');
+    if (!list) return;
+
+    if (pendingQueue.length === 0) {
+        list.innerHTML = `
+            <div class="mm-queue-empty">
+                <div class="mm-queue-empty-icon">🔍</div>
+                <div class="mm-queue-empty-text">No pending requests</div>
+                <div class="mm-queue-empty-sub">Squad requests will appear here</div>
+            </div>`;
+        return;
     }
-    
-    popup.style.display = 'block';
-    setTimeout(() => popup.style.bottom = '20px', 10);
-    
-    clearInterval(popupTimerInterval);
-    const updateTimer = () => {
-        const trueNow = window._getServerTime ? window._getServerTime() : new Date();
-        const diff = Math.ceil((expiresAt - trueNow) / 1000);
-        if (diff <= 0) {
-            clearInterval(popupTimerInterval);
-            hideMmPopup();
-        } else {
-            document.getElementById('mm-timer').innerText = diff + 's';
+
+    let html = '';
+    for (const req of pendingQueue) {
+        const expiresAt = new Date(req.expiresAt);
+        const trueNow = getServerTime();
+        const remaining = Math.max(0, Math.ceil((expiresAt - trueNow) / 1000));
+        
+        if (remaining <= 0) continue; // Skip expired
+
+        const progress = Math.min(100, (remaining / 30) * 100);
+        const displayName = req.requesterName || req.requesterBlz;
+
+        html += `
+            <div class="mm-request-card" data-request-id="${req.id}" data-expires="${req.expiresAt}">
+                <div class="mm-rc-header">
+                    <div class="mm-rc-avatar">⚔️</div>
+                    <div class="mm-rc-info">
+                        <div class="mm-rc-name">${escapeHtml(displayName)}</div>
+                        <div class="mm-rc-blz">${escapeHtml(req.requesterBlz)}</div>
+                    </div>
+                    <div class="mm-rc-timer-ring">
+                        <svg viewBox="0 0 36 36" class="mm-timer-svg">
+                            <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+                            <circle cx="18" cy="18" r="16" fill="none" stroke="#00bcd4" stroke-width="2"
+                                stroke-dasharray="${progress} 100"
+                                stroke-linecap="round" class="mm-timer-progress" />
+                        </svg>
+                        <span class="mm-rc-countdown">${remaining}s</span>
+                    </div>
+                </div>
+                <button class="mm-rc-accept-btn" onclick="handleAcceptRequest('${req.id}', this)">
+                    <span>ACCEPT</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </button>
+            </div>`;
+    }
+
+    list.innerHTML = html || `
+        <div class="mm-queue-empty">
+            <div class="mm-queue-empty-icon">🔍</div>
+            <div class="mm-queue-empty-text">No pending requests</div>
+            <div class="mm-queue-empty-sub">Squad requests will appear here</div>
+        </div>`;
+
+    // Start countdown timers for each card
+    startCardTimers();
+}
+
+let cardTimerInterval = null;
+
+function startCardTimers() {
+    clearInterval(cardTimerInterval);
+    cardTimerInterval = setInterval(() => {
+        const cards = document.querySelectorAll('.mm-request-card');
+        let hasActive = false;
+        cards.forEach(card => {
+            const expiresAt = new Date(card.dataset.expires);
+            const trueNow = getServerTime();
+            const remaining = Math.max(0, Math.ceil((expiresAt - trueNow) / 1000));
+            const progress = Math.min(100, (remaining / 30) * 100);
+
+            const countdown = card.querySelector('.mm-rc-countdown');
+            const progressCircle = card.querySelector('.mm-timer-progress');
+
+            if (remaining <= 0) {
+                card.classList.add('mm-card-expired');
+                setTimeout(() => card.remove(), 400);
+            } else {
+                hasActive = true;
+                if (countdown) countdown.textContent = remaining + 's';
+                if (progressCircle) progressCircle.setAttribute('stroke-dasharray', `${progress} 100`);
+            }
+        });
+
+        if (!hasActive) {
+            clearInterval(cardTimerInterval);
+            // Check if list is now empty
+            const list = document.getElementById('mm-queue-list');
+            if (list && list.querySelectorAll('.mm-request-card:not(.mm-card-expired)').length === 0) {
+                renderQueuePanel();
+            }
+            updateQueueCount();
         }
-    };
-    updateTimer();
-    popupTimerInterval = setInterval(updateTimer, 1000);
+    }, 1000);
 }
 
-window.hideMmPopup = function() {
-    clearInterval(popupTimerInterval);
-    const popup = document.getElementById('mm-request-popup');
-    if (!popup) return;
-    popup.style.bottom = '-200px';
-    setTimeout(() => { popup.style.display = 'none'; }, 400);
+// ─── ACCEPT HANDLER ──────────────────────────────────────────────
+
+window.handleAcceptRequest = async function(requestId, btn) {
+    if (btn.disabled || acceptInFlight) return;
+    btn.disabled = true;
+    btn.innerHTML = '<span>ACCEPTING...</span>';
+    btn.classList.add('mm-btn-loading');
+
+    // Optimistic UI: immediately dim the card to signal it's being processed
+    const card = btn.closest('.mm-request-card');
+    if (card) card.style.opacity = '0.5';
+
+    // Disable ALL other accept buttons to prevent multi-accept
+    const allBtns = document.querySelectorAll('.mm-rc-accept-btn');
+    allBtns.forEach(b => { b.disabled = true; });
+    
+    const success = await window.BlazeMatchmaking.acceptRequest(requestId);
+    if (!success) {
+        // Re-enable all buttons except the ones for expired/removed cards
+        allBtns.forEach(b => {
+            const parentCard = b.closest('.mm-request-card');
+            if (parentCard && !parentCard.classList.contains('mm-card-expired')) {
+                b.disabled = false;
+            }
+        });
+        btn.innerHTML = '<span>ACCEPT</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+        btn.classList.remove('mm-btn-loading');
+        if (card) card.style.opacity = '1';
+    }
+};
+
+// ─── QUEUE PANEL VISIBILITY ──────────────────────────────────────
+
+function showQueuePanel() {
+    const panel = document.getElementById('mm-queue-panel');
+    if (panel) {
+        panel.classList.add('mm-panel-visible');
+    }
 }
 
-function startSearchTimerUI(expiresAt) {
+function hideQueuePanel() {
+    const panel = document.getElementById('mm-queue-panel');
+    if (panel) {
+        panel.classList.remove('mm-panel-visible');
+    }
+}
+
+// ─── QUEUE COUNT BADGE ───────────────────────────────────────────
+
+function updateQueueCount() {
+    const badge = document.getElementById('mm-queue-badge');
+    const countEl = document.getElementById('mm-queue-count-text');
+    const activeCount = pendingQueue.filter(r => {
+        const exp = new Date(r.expiresAt);
+        return exp > getServerTime();
+    }).length;
+
+    if (badge) {
+        if (activeCount > 0) {
+            badge.textContent = activeCount;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    if (countEl) {
+        countEl.textContent = activeCount > 0 ? `${activeCount} request${activeCount > 1 ? 's' : ''} pending` : 'No pending requests';
+    }
+
+    // Also update the freefire banner queue indicator
+    const bannerQueue = document.getElementById('mm-banner-queue-count');
+    if (bannerQueue) {
+        bannerQueue.textContent = activeCount > 0 ? `${activeCount} request${activeCount > 1 ? 's' : ''} in queue` : '';
+        bannerQueue.style.display = activeCount > 0 ? 'inline' : 'none';
+    }
+}
+
+// ─── FIND SQUAD BUTTON STATE ─────────────────────────────────────
+
+function startMySearchUI(expiresAt) {
     const btn = document.getElementById('find-squad-btn');
     if (!btn) return;
     btn.disabled = true;
-    btn.style.opacity = '0.7';
-
-    clearInterval(searchTimerInterval);
+    btn.classList.add('mm-searching');
+    
+    clearInterval(mySearchTimerInterval);
     const updateTimer = () => {
-        const trueNow = window._getServerTime ? window._getServerTime() : new Date();
+        const trueNow = getServerTime();
         const diff = Math.ceil((expiresAt - trueNow) / 1000);
         if (diff <= 0) {
-            clearInterval(searchTimerInterval);
-            btn.innerText = 'SEARCHING...';
+            clearInterval(mySearchTimerInterval);
+            btn.innerHTML = 'SEARCHING...';
         } else {
-            btn.innerText = `SEARCHING (${diff}s)`;
+            btn.innerHTML = `<span class="mm-pulse-dot"></span> SEARCHING (${diff}s)`;
         }
     };
     updateTimer();
-    searchTimerInterval = setInterval(updateTimer, 1000);
+    mySearchTimerInterval = setInterval(updateTimer, 1000);
 }
 
-function resetSearchButtonUI() {
-    clearInterval(searchTimerInterval);
+function resetFindSquadBtn() {
+    clearInterval(mySearchTimerInterval);
     const btn = document.getElementById('find-squad-btn');
     if (btn) {
-        btn.innerText = 'FIND A SQUAD';
+        btn.innerHTML = 'FIND A SQUAD';
         btn.disabled = false;
-        btn.style.opacity = '1';
+        btn.classList.remove('mm-searching');
     }
 }
+
+// ─── LIMIT OVERLAY ───────────────────────────────────────────────
 
 function showLimitOverlay() {
     const overlay = document.getElementById('ff-mm-overlay');
@@ -347,7 +642,7 @@ function showLimitOverlay() {
         const midnight = new Date();
         midnight.setHours(24, 0, 0, 0);
         const sub = document.getElementById('ff-mm-overlay-sub');
-        clearInterval(blockTimerInterval); // Reuse block timer
+        clearInterval(blockTimerInterval);
         
         const updateMidnightTimer = () => {
             const diff = midnight - new Date();
@@ -380,11 +675,23 @@ function updateDailyLimitUI() {
     }
 }
 
-function openChatModal(opponent) {
-    document.getElementById('mm-chat-opponent').innerText = `vs ${opponent}`;
+// ─── CHAT MODAL ──────────────────────────────────────────────────
+
+function openChatModal(opponent, opponentName) {
+    const nameEl = document.getElementById('mm-chat-opponent');
+    if (nameEl) nameEl.innerText = `vs ${opponentName || opponent}`;
+    
+    const idEl = document.getElementById('mm-chat-opponent-id');
+    if (idEl) idEl.innerText = opponent;
+
     const box = document.getElementById('mm-chat-box');
-    box.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Match confirmed! You may now share credentials. Chat is restricted to pre-defined phrases.</div>';
-    document.getElementById('mm-chat-modal').style.display = 'flex';
+    box.innerHTML = '<div class="mm-chat-system-msg">Match confirmed! Share room credentials below. Chat is restricted to pre-defined phrases.</div>';
+    
+    const modal = document.getElementById('mm-chat-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        requestAnimationFrame(() => modal.classList.add('mm-chat-visible'));
+    }
     
     mmQuickMsgCount = 0;
     enableQuickMsgButtons();
@@ -393,14 +700,16 @@ function openChatModal(opponent) {
 function closeChatModal() {
     currentMatchId = null;
     const modal = document.getElementById('mm-chat-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.classList.remove('mm-chat-visible');
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
 }
 
 function disableQuickMsgButtons() {
     document.querySelectorAll('.mm-quick-msg').forEach(btn => {
         btn.disabled = true;
-        btn.style.opacity = '0.3';
-        btn.style.cursor = 'not-allowed';
+        btn.classList.add('mm-msg-disabled');
         btn.title = 'Message limit reached (3/3 used)';
     });
 }
@@ -408,8 +717,7 @@ function disableQuickMsgButtons() {
 function enableQuickMsgButtons() {
     document.querySelectorAll('.mm-quick-msg').forEach(btn => {
         btn.disabled = false;
-        btn.style.opacity = '1';
-        btn.style.cursor = 'pointer';
+        btn.classList.remove('mm-msg-disabled');
         btn.title = '';
     });
 }
@@ -426,7 +734,7 @@ async function sendChat(type, message = null, roomId = null, password = null) {
         if (!res.ok) {
             const data = await res.json();
             if (res.status === 429) disableQuickMsgButtons();
-            alert(data.msg);
+            showMmToast(data.msg, 'error');
             return false;
         }
         return true;
@@ -441,14 +749,72 @@ function appendChatMessage(senderId, type, message, myUserId) {
     if (!box) return;
     
     const isMe = senderId === myUserId;
-    const align = isMe ? 'flex-end' : 'flex-start';
-    const bg = isMe ? 'rgba(0,188,212,0.2)' : 'rgba(255,255,255,0.05)';
-    const color = isMe ? '#00bcd4' : '#fff';
-    const border = isMe ? '1px solid rgba(0,188,212,0.4)' : '1px solid rgba(255,255,255,0.1)';
-
     const msgDiv = document.createElement('div');
-    msgDiv.style.cssText = `display:flex; flex-direction:column; align-items:${align}; margin-bottom:8px;`;
-    msgDiv.innerHTML = `<div style="background:${bg}; color:${color}; border:${border}; padding:10px 14px; border-radius:12px; font-size:0.85rem; max-width:80%; word-break:break-word;">${message}</div>`;
+    msgDiv.className = `mm-chat-bubble ${isMe ? 'mm-chat-mine' : 'mm-chat-theirs'}`;
+
+    if (type === 'credentials') {
+        msgDiv.classList.add('mm-chat-creds');
+        msgDiv.innerHTML = `<div class="mm-cred-label">🔑 ROOM CREDENTIALS</div><div class="mm-cred-value">${escapeHtml(message)}</div>`;
+    } else {
+        msgDiv.innerHTML = `<span>${escapeHtml(message)}</span>`;
+    }
+
     box.appendChild(msgDiv);
     box.scrollTop = box.scrollHeight;
 }
+
+// ─── TOAST NOTIFICATIONS ────────────────────────────────────────
+
+function showMmToast(message, type = 'info') {
+    const container = document.getElementById('mm-toast-container') || createToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `mm-toast mm-toast-${type}`;
+    
+    const icons = { info: 'ℹ️', error: '❌', warning: '⚠️', success: '✅' };
+    toast.innerHTML = `
+        <span class="mm-toast-icon">${icons[type] || icons.info}</span>
+        <span class="mm-toast-msg">${escapeHtml(message)}</span>
+    `;
+    
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('mm-toast-visible'));
+    
+    setTimeout(() => {
+        toast.classList.remove('mm-toast-visible');
+        toast.classList.add('mm-toast-exit');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
+function createToastContainer() {
+    const c = document.createElement('div');
+    c.id = 'mm-toast-container';
+    c.className = 'mm-toast-container';
+    document.body.appendChild(c);
+    return c;
+}
+
+// ─── BROADCAST CHANNEL HELPERS ───────────────────────────────────
+
+function broadcastToOtherTabs(type, data) {
+    if (mmChannel) {
+        try {
+            mmChannel.postMessage({ type, data });
+        } catch(e) {}
+    }
+}
+
+// ─── UTILITIES ───────────────────────────────────────────────────
+
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// Legacy compatibility — keep hideMmPopup on window for any remaining references
+window.hideMmPopup = function() {
+    hideQueuePanel();
+};
