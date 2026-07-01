@@ -319,6 +319,8 @@ router.post('/request', authMiddleware, async (req, res) => {
                 webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).catch(err => {
                     if (err.statusCode === 404 || err.statusCode === 410) {
                         PushSubscription.deleteOne({ endpoint: sub.endpoint }).exec();
+                    } else {
+                        console.error('[WebPush Error] Failed to send to endpoint:', sub.endpoint, err);
                     }
                 });
             });
