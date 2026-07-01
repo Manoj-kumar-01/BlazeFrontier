@@ -886,9 +886,21 @@ function showCustomPushPrompt() {
         document.body.removeChild(overlay);
     };
 
-    document.getElementById('push-btn-allow').onclick = () => {
+    document.getElementById('push-btn-allow').onclick = async () => {
         document.body.removeChild(overlay);
-        initWebPush();
+        try {
+            const perm = await Notification.requestPermission();
+            if (perm === 'granted') {
+                initWebPush();
+            }
+        } catch (e) {
+            // Safari older versions callback style
+            Notification.requestPermission(function (perm) {
+                if (perm === 'granted') {
+                    initWebPush();
+                }
+            });
+        }
     };
 }
 
