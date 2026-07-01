@@ -188,8 +188,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Sync state instantly on load
     await syncMatchmakingState();
     
-    // 2. Initialize Web Push Notifications
-    initWebPush();
+    // 2. Check and Initialize Web Push Notifications (with explicit user prompt if needed)
+    checkAndInitWebPush();
 
     // 2. Periodic re-sync every 10 seconds (catches drift, stale state)
     clearInterval(syncInterval);
@@ -822,7 +822,52 @@ window.hideMmPopup = function() {
     hideQueuePanel();
 };
 
-// Web Push Registration
+// Web Push Registration & Prompt
+async function checkAndInitWebPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return;
+    
+    if (Notification.permission === 'granted') {
+        // Already granted, silently initialize and sync
+        initWebPush();
+    } else if (Notification.permission === 'default') {
+        // Hasn't asked yet. Check if we should prompt.
+        const dismissed = localStorage.getItem('push_prompt_dismissed');
+        // Prompt if not dismissed, or if it was dismissed over 24 hours ago
+        if (!dismissed || (Date.now() - parseInt(dismissed)) > 24 * 60 * 60 * 1000) {
+            // Delay slightly so the user sees the page first
+            setTimeout(() => {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'ENABLE NOTIFICATIONS',
+                        text: 'Get instantly notified on your phone when someone searches for a squad, even when the app is closed!',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'ALLOW',
+                        cancelButtonText: 'LATER',
+                        background: '#120a0f',
+                        color: '#fff',
+                        confirmButtonColor: '#ff5722',
+                        cancelButtonColor: '#333',
+                        customClass: {
+                            popup: 'swal-push-popup'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            initWebPush();
+                        } else {
+                            localStorage.setItem('push_prompt_dismissed', Date.now());
+                        }
+                    });
+                } else {
+                    // Fallback
+                    initWebPush();
+                }
+            }, 1500);
+        }
+    }
+}
+
+// Actual Web Push Subscription logic
 async function initWebPush() {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
     try {
