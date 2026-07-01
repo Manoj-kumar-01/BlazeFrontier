@@ -312,8 +312,8 @@ router.post('/request', authMiddleware, async (req, res) => {
         try {
             const subscriptions = await PushSubscription.find({ userId: { $ne: userId } });
             const payload = JSON.stringify({
-                title: 'New Squad Request!',
-                body: `${user.inGameName || user.username} is looking for a squad in Free Fire. Click to join!`
+                title: 'BlazeFrontier',
+                body: `You have been invited for a Squad Match by ${user.inGameName || user.username}!`
             });
             subscriptions.forEach(sub => {
                 webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).catch(err => {
