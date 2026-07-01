@@ -310,14 +310,20 @@ router.post('/request', authMiddleware, async (req, res) => {
 
         // Send Web Push Notification to all subscribed users (except the requester)
         try {
+            console.log(`[Push Debug] Finding subscriptions EXCEPT for userId: ${userId}`);
             const subscriptions = await PushSubscription.find({ userId: { $ne: userId } });
+            console.log(`[Push Debug] Found ${subscriptions.length} subscriptions to send to.`);
             const payload = JSON.stringify({
                 title: 'BlazeFrontier',
                 body: `You have been invited for a Squad Match by ${user.inGameName || user.username}!`
             });
             subscriptions.forEach(sub => {
-                webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).catch(err => {
+                console.log(`[Push Debug] Sending to endpoint: ${sub.endpoint.substring(0, 30)}...`);
+                webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).then(result => {
+                    console.log(`[Push Debug] Success! Status: ${result.statusCode}`);
+                }).catch(err => {
                     if (err.statusCode === 404 || err.statusCode === 410) {
+                        console.log(`[Push Debug] Endpoint expired, deleting: ${sub.endpoint.substring(0, 30)}...`);
                         PushSubscription.deleteOne({ endpoint: sub.endpoint }).exec();
                     } else {
                         console.error('[WebPush Error] Failed to send to endpoint:', sub.endpoint, err);
