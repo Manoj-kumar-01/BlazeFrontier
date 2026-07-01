@@ -125,4 +125,84 @@ agenda.define('cleanup-weekly-clips', async (job) => {
     }
 });
 
+// Define Job: Notify Organizers 30 mins before slot
+agenda.define('check-upcoming-slots', async (job) => {
+    try {
+        const Registration = require('../models/Registration');
+        const User = require('../models/User');
+        const Notification = require('../models/Notification');
+        const PushSubscription = require('../models/PushSubscription');
+        const webpush = require('web-push');
+
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+
+        const upcomingRegs = await Registration.find({
+            status: 'Approved',
+            organizerNotified: false,
+            startDate: todayStr
+        });
+
+        if (upcomingRegs.length === 0) return;
+
+        let notifyOrganizers = false;
+
+        for (const reg of upcomingRegs) {
+            if (!reg.timeSlot) continue;
+            // e.g. "9:00 AM - 10:00 AM" -> "9:00 AM"
+            const match = reg.timeSlot.match(/^(\d+):(\d+)\s*(AM|PM)/i);
+            if (match) {
+                let hour = parseInt(match[1]);
+                const minute = parseInt(match[2]);
+                const ampm = match[3].toUpperCase();
+                if (ampm === 'PM' && hour < 12) hour += 12;
+                if (ampm === 'AM' && hour === 12) hour = 0;
+
+                const slotTime = new Date();
+                slotTime.setHours(hour, minute, 0, 0);
+
+                const diffMs = slotTime - new Date();
+                const diffMins = diffMs / 60000;
+
+                // If the slot starts in 30 mins or less (but not in the past)
+                if (diffMins > 0 && diffMins <= 30) {
+                    notifyOrganizers = true;
+                    reg.organizerNotified = true;
+                    await reg.save();
+                }
+            }
+        }
+
+        if (notifyOrganizers) {
+            const organizers = await User.find({ role: 'organizer' });
+            for (const org of organizers) {
+                await Notification.create({
+                    userId: org._id,
+                    title: 'Upcoming Slot Alert',
+                    message: 'A booked slot starts in 30 minutes! Please prepare to send credentials.',
+                    type: 'warning'
+                });
+
+                const subscriptions = await PushSubscription.find({ userId: org._id });
+                const payload = JSON.stringify({
+                    title: 'Upcoming Slot Alert',
+                    body: 'A booked slot starts in 30 minutes! Please prepare to send credentials.'
+                });
+                subscriptions.forEach(sub => {
+                    webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).catch(err => {
+                        if (err.statusCode === 404 || err.statusCode === 410) {
+                            PushSubscription.deleteOne({ endpoint: sub.endpoint }).exec();
+                        }
+                    });
+                });
+            }
+        }
+    } catch (err) {
+        console.error(`[Queue Error] Failed to check upcoming slots: ${err.message}`);
+    }
+});
+
 module.exports = agenda;

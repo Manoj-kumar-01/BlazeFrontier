@@ -17,6 +17,7 @@ const RegistrationSchema = new mongoose.Schema({
     playerFeedback: { type: String, enum: ['Pending', 'Completed', 'Not Completed'], default: 'Pending' },
     isCompleted: { type: Boolean, default: false },
     resolutionCause: { type: String, default: null },
+    organizerNotified: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
 
