@@ -836,35 +836,60 @@ async function checkAndInitWebPush() {
         if (!dismissed || (Date.now() - parseInt(dismissed)) > 24 * 60 * 60 * 1000) {
             // Delay slightly so the user sees the page first
             setTimeout(() => {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'ENABLE NOTIFICATIONS',
-                        text: 'Get instantly notified on your phone when someone searches for a squad, even when the app is closed!',
-                        icon: 'info',
-                        showCancelButton: true,
-                        confirmButtonText: 'ALLOW',
-                        cancelButtonText: 'LATER',
-                        background: '#120a0f',
-                        color: '#fff',
-                        confirmButtonColor: '#ff5722',
-                        cancelButtonColor: '#333',
-                        customClass: {
-                            popup: 'swal-push-popup'
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            initWebPush();
-                        } else {
-                            localStorage.setItem('push_prompt_dismissed', Date.now());
-                        }
-                    });
-                } else {
-                    // Fallback
-                    initWebPush();
-                }
+                showCustomPushPrompt();
             }, 1500);
         }
     }
+}
+
+function showCustomPushPrompt() {
+    if (document.getElementById('custom-push-overlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'custom-push-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(0,0,0,0.85)';
+    overlay.style.zIndex = '999999';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.backdropFilter = 'blur(10px)';
+
+    const box = document.createElement('div');
+    box.style.backgroundColor = '#120a0f';
+    box.style.border = '1px solid rgba(255,87,34,0.4)';
+    box.style.borderRadius = '12px';
+    box.style.padding = '24px';
+    box.style.maxWidth = '320px';
+    box.style.textAlign = 'center';
+    box.style.boxShadow = '0 10px 40px rgba(255,87,34,0.2)';
+    box.style.fontFamily = "'Inter', sans-serif";
+    
+    box.innerHTML = `
+        <div style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #ff5722; letter-spacing: 2px; margin-bottom: 12px; line-height: 1;">ENABLE NOTIFICATIONS</div>
+        <div style="color: #ccc; font-size: 0.95rem; margin-bottom: 24px; line-height: 1.5;">Get instantly notified on your phone when someone searches for a squad, even when the app is closed!</div>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button id="push-btn-later" style="background: transparent; border: 1px solid #555; color: #ccc; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; flex: 1; font-family: 'Inter', sans-serif; transition: all 0.2s;">LATER</button>
+            <button id="push-btn-allow" style="background: #ff5722; border: none; color: #fff; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; flex: 1; box-shadow: 0 4px 15px rgba(255,87,34,0.4); font-family: 'Inter', sans-serif; transition: all 0.2s;">ALLOW</button>
+        </div>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    document.getElementById('push-btn-later').onclick = () => {
+        localStorage.setItem('push_prompt_dismissed', Date.now());
+        document.body.removeChild(overlay);
+    };
+
+    document.getElementById('push-btn-allow').onclick = () => {
+        document.body.removeChild(overlay);
+        initWebPush();
+    };
 }
 
 // Actual Web Push Subscription logic
