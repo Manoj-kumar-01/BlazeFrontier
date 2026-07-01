@@ -98,13 +98,14 @@
             margin-bottom: 0;
             padding: 24px;
             border-radius: 12px;
-            background: rgba(15, 10, 12, 0.55);
+            background: linear-gradient(135deg, rgba(10,5,8,0.92) 0%, rgba(10,5,8,0.75) 50%, rgba(10,5,8,0.6) 100%), url('/public/FreeFireBck.jpg') center/cover no-repeat;
             backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             position: relative;
             height: 100%; display: flex; flex-direction: column;
+            overflow: hidden;
         }
         .qs-header-container {
             display: grid;
@@ -367,7 +368,8 @@
 
     <div class="dash">
         <!-- Welcome -->
-        <div class="card c-welcome">
+        <div class="card c-welcome" style="background: url('/public/FreeFireBck.jpg') center/cover no-repeat;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(10,5,8,0.85) 0%, rgba(10,5,8,0.6) 50%, rgba(10,5,8,0.3) 100%); z-index: 0;"></div>
             <div>
                 <div class="cw-title">ARENA: <span>FREE FIRE</span></div>
                 <div class="cw-sub">Track elite survivors, dominate the ranked ladder, and prove your worth in the Free Fire battleground.</div>
