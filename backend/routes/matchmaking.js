@@ -169,6 +169,21 @@ router.get('/status', authMiddleware, async (req, res) => {
         // Validate my request is still alive
         const myRequestValid = myRequest && new Date(myRequest.expiresAt) > new Date();
 
+        // Check if user is in an active match
+        let activeMatch = null;
+        for (const [matchId, match] of activeMatches) {
+            if (match.player1Id === userId || match.player2Id === userId) {
+                const opponentId = match.player1Id === userId ? match.player2Id : match.player1Id;
+                const oppUser = await User.findById(opponentId);
+                activeMatch = {
+                    matchId: matchId,
+                    opponent: oppUser ? oppUser.playerId : 'Unknown',
+                    opponentName: oppUser ? (oppUser.inGameName || oppUser.username) : 'Unknown'
+                };
+                break;
+            }
+        }
+
         const status = {
             blockedUntil: user.matchmakingBlockedUntil || null,
             dailyCount: user.matchmakingDailyCount || 0,
@@ -178,6 +193,7 @@ router.get('/status', authMiddleware, async (req, res) => {
                 expiresAt: myRequest.expiresAt,
                 createdAt: myRequest.createdAt
             } : null,
+            activeMatch: activeMatch,
             queue: getQueueSnapshot(),
             serverTime: new Date()
         };

@@ -246,6 +246,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Match formed — I got matched!
     socket.on('mm:match_formed', (payload) => {
+        if (window.location.pathname !== '/dashboard/freefire') {
+            window.location.href = '/dashboard/freefire';
+            return;
+        }
         currentMatchId = payload.matchId;
         myActiveRequest = null;
         resetFindSquadBtn();
@@ -316,10 +320,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const leaveRoomBtn = document.getElementById('mm-leave-room-btn');
     if (leaveRoomBtn) {
         leaveRoomBtn.addEventListener('click', async () => {
-            if (currentMatchId) {
-                await fetch(`/api/matchmaking/leave/${currentMatchId}`, { method: 'POST', headers: { 'x-auth-token': token }});
+            if (await customConfirm('Are you sure you want to leave the chat? Your room will be closed.')) {
+                if (currentMatchId) {
+                    await fetch(`/api/matchmaking/leave/${currentMatchId}`, { method: 'POST', headers: { 'x-auth-token': token }});
+                }
+                closeChatModal();
             }
-            closeChatModal();
         });
     }
 
@@ -411,6 +417,16 @@ async function syncMatchmakingState() {
             pendingQueue = (state.queue || []).filter(r => r.requesterId !== myUserId);
             renderQueuePanel();
             updateQueueCount();
+
+            // 5. Active Match
+            if (state.activeMatch) {
+                if (window.location.pathname !== '/dashboard/freefire') {
+                    window.location.href = '/dashboard/freefire';
+                    return;
+                }
+                currentMatchId = state.activeMatch.matchId;
+                openChatModal(state.activeMatch.opponent, state.activeMatch.opponentName);
+            }
         }
     } catch(e) {
         console.error('Failed to sync matchmaking state', e);
