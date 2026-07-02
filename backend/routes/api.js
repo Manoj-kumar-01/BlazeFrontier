@@ -201,8 +201,8 @@ router.post('/tournaments/confirm-play', authMiddleware, async (req, res) => {
 // @desc    Register a player for a specific tournament
 router.post('/tournaments/:id/register', authMiddleware, async (req, res) => {
     try {
-        const { discord, timeSlot } = req.body;
-        if (!discord || !timeSlot) return res.status(400).json({ msg: 'Discord ID and Time Slot are required' });
+        const discord = req.body.discord || 'N/A';
+        const timeSlot = req.body.timeSlot || 'N/A';
 
         const User = require('../models/User');
         const Registration = require('../models/Registration');
@@ -245,6 +245,35 @@ router.post('/tournaments/:id/register', authMiddleware, async (req, res) => {
 
         await newReg.save();
         res.json({ msg: `Successfully registered for ${tournament.name}` });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/tournaments/:id/participants
+// @desc    Get the list of participants (Blaze IDs) for a published tournament
+router.get('/tournaments/:id/participants', authMiddleware, async (req, res) => {
+    try {
+        const Tournament = require('../models/Tournament');
+        const Registration = require('../models/Registration');
+
+        const tournament = await Tournament.findById(req.params.id);
+        if (!tournament) return res.status(404).json({ msg: 'Tournament not found' });
+
+        if (!tournament.isListPublished) {
+            return res.status(403).json({ msg: 'The participant list is not published yet.' });
+        }
+
+        const registrations = await Registration.find({ 
+            tournamentId: tournament._id, 
+            status: { $nin: ['Missed', 'Rejected'] }
+        }).populate('userId', 'username').lean();
+
+        // Only return Blaze IDs
+        const participants = registrations.map(reg => reg.userId ? reg.userId.username : 'Unknown');
+
+        res.json(participants);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

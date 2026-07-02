@@ -103,32 +103,23 @@
             <form id="reg-form">
                 <input type="hidden" id="tournamentId" value="<%= tournamentId %>">
                 <div class="form-body">
-                    
-                    <div class="discord-box">
-                        <div class="dc-info">
-                            <div class="dc-title">Discord Communication</div>
-                            <div class="dc-text">All tournament updates, brackets, and room credentials will be shared via our official Discord server. You must be in the server to participate.</div>
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <div style="background: rgba(255, 87, 34, 0.1); border-left: 4px solid var(--blaze-orange); padding: 16px; border-radius: 4px; margin-bottom: 20px;">
+                            <h3 style="color: var(--blaze-orange); margin-top: 0; margin-bottom: 8px; font-size: 1.1rem;">Verification Required</h3>
+                            <p style="color: #fff; margin-bottom: 12px; font-size: 0.95rem;">Please confirm your In-game Name and ID are correct:</p>
+                            <div style="display: flex; gap: 20px; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px;">
+                                <div>
+                                    <span style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">In-game Name</span>
+                                    <div style="color: #fff; font-weight: 600;" id="display-ign">Loading...</div>
+                                </div>
+                                <div>
+                                    <span style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">In-game ID (UID)</span>
+                                    <div style="color: #fff; font-weight: 600;" id="display-uid">Loading...</div>
+                                </div>
+                            </div>
+                            <p style="color: #ef4444; font-size: 0.85rem; margin: 0; font-weight: 600;">⚠️ If these details are incorrect, please update them in your profile BEFORE registering. Incorrect details will result in an immediate ban from the Room.</p>
                         </div>
-                        <a href="https://discord.com/channels/1513772783505506384/1513788275196690454" target="_blank" class="dc-btn">JOIN DISCORD</a>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Your Discord Username</label>
-                        <input type="text" id="discord" class="input-control" placeholder="e.g. Commander#1234 or your display name" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Preferred Time Slot</label>
-                        <select id="timeSlot" class="input-control" required>
-                            <option value="" disabled selected>Select a preferred slot...</option>
-                            <option value="Morning (10 AM - 1 PM)">Morning (10 AM - 1 PM)</option>
-                            <option value="Afternoon (2 PM - 5 PM)">Afternoon (2 PM - 5 PM)</option>
-                            <option value="Evening (6 PM - 9 PM)">Evening (6 PM - 9 PM)</option>
-                            <option value="Night (10 PM - 1 AM)">Night (10 PM - 1 AM)</option>
-                            <option value="Anytime">Anytime</option>
-                        </select>
-                    </div>
-
                 </div>
 
                 <div class="submit-wrapper">
@@ -171,6 +162,21 @@
             }
         }
         fetchTourneyDetails();
+        
+        const applyUserStatus = (prof) => {
+            if(prof) {
+                document.getElementById('display-ign').textContent = prof.inGameName || 'N/A';
+                document.getElementById('display-uid').textContent = prof.playerId || 'N/A';
+            }
+        };
+
+        if (window.globalUserData) {
+            applyUserStatus(window.globalUserData);
+        } else {
+            window.addEventListener('globalUserDataReady', () => {
+                if (window.globalUserData) applyUserStatus(window.globalUserData);
+            });
+        }
 
         document.getElementById('reg-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -178,22 +184,11 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'REGISTERING...';
 
-            const discord = document.getElementById('discord').value.trim();
-            const timeSlot = document.getElementById('timeSlot').value;
-
-            if (!discord || !timeSlot) {
-                formError.textContent = 'Please fill out all fields.';
-                formError.style.display = 'block';
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'SECURE MY SLOT';
-                return;
-            }
-
             try {
                 const res = await fetch(`/api/tournaments/${tid}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
-                    body: JSON.stringify({ discord, timeSlot })
+                    body: JSON.stringify({ discord: 'N/A', timeSlot: 'N/A' })
                 });
 
                 const data = await res.json();

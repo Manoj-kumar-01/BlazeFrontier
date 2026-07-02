@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 const MatchSchema = new mongoose.Schema({
     seriesId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Series',
-        required: true
+        ref: 'Series'
+    },
+    tournamentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tournament'
     },
     matchNumber: {
         type: Number,

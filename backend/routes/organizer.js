@@ -233,6 +233,92 @@ router.delete('/tournaments/:id', async (req, res) => {
     }
 });
 
+// @route   POST /api/organizer/tournaments/:id/award
+// @desc    Award Top 3 for a tournament and update Leaderboard
+router.post('/tournaments/:id/award', async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id);
+        if (!tournament) return res.status(404).json({ msg: 'Tournament not found' });
+        
+        if (tournament.status === 'ENDED') {
+            return res.status(400).json({ msg: 'Tournament is already ended and awarded' });
+        }
+
+        const { winner1, winner2, winner3 } = req.body;
+        if (!winner1 || !winner2 || !winner3) {
+            return res.status(400).json({ msg: 'Please provide all Top 3 winners' });
+        }
+
+        // Make sure all 3 winners are unique
+        if (new Set([winner1, winner2, winner3]).size !== 3) {
+            return res.status(400).json({ msg: 'Winners must be unique players' });
+        }
+
+        const User = require('../models/User');
+        const Match = require('../models/Match');
+
+        const awards = [
+            { userId: winner1, coins: 100, points: 100, rank: 1 },
+            { userId: winner2, coins: 50, points: 50, rank: 2 },
+            { userId: winner3, coins: 25, points: 25, rank: 3 }
+        ];
+
+        for (const award of awards) {
+            const user = await User.findById(award.userId);
+            if (user) {
+                user.blazeCoins = (user.blazeCoins || 0) + award.coins;
+                user.blazePoints = (user.blazePoints || 0) + award.points;
+                user.tourneysWon = (user.tourneysWon || 0) + (award.rank === 1 ? 1 : 0);
+                await user.save();
+
+                // Create a Match record to sync with the Leaderboard aggregation automatically
+                const newMatch = new Match({
+                    tournamentId: tournament._id,
+                    matchNumber: 1,
+                    playerId: user._id,
+                    team: 'Solo',
+                    slot: award.rank.toString(),
+                    format: 'Tournament',
+                    mode: tournament.name,
+                    kills: 0,
+                    survivalTimeMinutes: 0,
+                    placement: award.rank,
+                    blazePoints: award.points,
+                    isCompleted: true,
+                    status: 'COMPLETED',
+                    startTime: new Date()
+                });
+                await newMatch.save();
+            }
+        }
+
+        tournament.status = 'ENDED';
+        await tournament.save();
+
+        res.json({ msg: 'Winners awarded and tournament ended successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/organizer/tournaments/:id/publish-list
+// @desc    Publish the participant list for a tournament
+router.post('/tournaments/:id/publish-list', async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id);
+        if (!tournament) return res.status(404).json({ msg: 'Tournament not found' });
+
+        tournament.isListPublished = true;
+        await tournament.save();
+
+        res.json({ msg: 'Participant list published successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // @route   GET /api/organizer/registrations
 // @desc    List all registrations with optional status filter
 router.get('/registrations', async (req, res) => {

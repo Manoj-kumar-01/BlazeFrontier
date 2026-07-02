@@ -611,6 +611,7 @@
         <!-- Global Tab Navigation -->
         <div class="org-global-tabs" style="display: flex; gap: 15px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
             <div class="org-g-tab active" onclick="switchGlobalTab('tournaments', this)">TOURNAMENTS</div>
+            <div class="org-g-tab" onclick="switchGlobalTab('results', this)">RESULTS</div>
             <div class="org-g-tab" onclick="switchGlobalTab('registrations', this)">REGISTRATIONS</div>
             <div class="org-g-tab" onclick="switchGlobalTab('clips', this)">CLIP SUBMISSIONS</div>
             <div class="org-g-tab" onclick="switchGlobalTab('daily', this)">DAILY HIGHLIGHTS</div>
@@ -666,6 +667,32 @@
                     </div>
                 </div>
             </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="org-panel-section" id="sec-results">
+                <div class="org-panel">
+                    <div class="org-panel-header">
+                        <div class="org-panel-title">TOURNAMENT RESULTS</div>
+                    </div>
+                    <div class="org-panel-body">
+                        <div class="org-table-wrap">
+                            <table class="org-table" id="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-body">
+                                    <tr><td colspan="4"><div class="org-empty"><div class="empty-icon">🏆</div><p>Loading results...</p></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Registrations Panel -->
@@ -808,19 +835,55 @@
             <div class="org-table-wrap" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
                 <table class="org-table">
                     <thead>
-                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">Player</th>
+                        <tr>
+                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">In-Game Name</th>
+                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">In-Game ID (UID)</th>
                             <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">Blaze ID</th>
-                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">Discord</th>
-                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">Slot</th>
                         </tr>
                     </thead>
                     <tbody id="regs-modal-body">
-                        <tr><td colspan="4"><div class="org-empty"><div class="empty-icon">📋</div><p>Loading...</p></div></td></tr>
+                        <tr><td colspan="3"><div class="org-empty"><div class="empty-icon">📋</div><p>Loading...</p></div></td></tr>
                     </tbody>
                 </table>
             </div>
-            <div class="org-modal-actions" style="margin-top: 20px;">
-                <button class="org-btn org-btn-ghost" style="width: 100%; padding: 14px;" onclick="document.getElementById('regsModal').classList.remove('active')">CLOSE WINDOW</button>
+            <div class="org-modal-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+                <input type="hidden" id="regs-tournament-id">
+                <button class="org-btn org-btn-ghost" style="flex: 1; padding: 14px;" onclick="document.getElementById('regsModal').classList.remove('active')">CLOSE WINDOW</button>
+                <button class="org-btn org-btn-primary" style="flex: 1; padding: 14px; display: none;" id="btn-publish-list" onclick="publishList()">📢 PUBLISH LIST</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Award Winners Modal -->
+    <div class="org-modal-overlay" id="awardModal">
+        <div class="org-modal">
+            <h2 id="award-modal-title">AWARD TOURNAMENT WINNERS</h2>
+            <input type="hidden" id="award-tournament-id">
+            
+            <div id="award-modal-content">
+                <div class="org-input-group">
+                    <label>🥇 1st Place (100 Coins + 100 BP)</label>
+                    <select class="org-select" id="winner-1">
+                        <option value="">Loading users...</option>
+                    </select>
+                </div>
+                <div class="org-input-group">
+                    <label>🥈 2nd Place (50 Coins + 50 BP)</label>
+                    <select class="org-select" id="winner-2">
+                        <option value="">Loading users...</option>
+                    </select>
+                </div>
+                <div class="org-input-group">
+                    <label>🥉 3rd Place (25 Coins + 25 BP)</label>
+                    <select class="org-select" id="winner-3">
+                        <option value="">Loading users...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="org-modal-actions">
+                <button class="org-btn org-btn-ghost" onclick="closeAwardModal()">CANCEL</button>
+                <button class="org-btn org-btn-primary" id="award-submit-btn" onclick="submitAwards()">CONFIRM AWARDS</button>
             </div>
         </div>
     </div>
@@ -939,7 +1002,7 @@
                             <td>${t.participants}</td>
                             <td>
                                 <div style="display:flex; gap:6px;">
-                                    <button class="org-btn org-btn-sm org-btn-primary" onclick="viewRegistrations('${t._id}', '${t.name.replace(/'/g, "\\'")}')">👥 VIEW</button>
+                                    <button class="org-btn org-btn-sm org-btn-primary" onclick="viewRegistrations('${t._id}', '${t.name.replace(/'/g, "\\'")}', ${t.isListPublished})">👥 VIEW</button>
                                     <button class="org-btn org-btn-sm org-btn-ghost" onclick="openEditModal('${t._id}', '${t.name.replace(/'/g, "\\'")}', '${t.date}', '${t.participants}', '${t.status}')">✏️</button>
                                     <button class="org-btn org-btn-sm org-btn-danger" onclick="deleteTournament('${t._id}')">🗑️</button>
                                 </div>
@@ -947,8 +1010,118 @@
                         </tr>
                     `;
                 }).join('');
+                
+                // Also render results tab
+                renderResults(tournaments);
             } catch (e) { console.error(e); }
         }
+
+        function renderResults(tournaments) {
+            const tbody = document.getElementById('results-body');
+            const now = new Date();
+            
+            // Filter tournaments that have passed their start date and are not ENDED
+            const results = tournaments.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate < now && t.status !== 'ENDED';
+            });
+
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4"><div class="org-empty"><div class="empty-icon">🏆</div><p>No tournaments pending results.</p></div></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = results.map(t => {
+                return `
+                    <tr>
+                        <td style="font-weight:600; color:#fff;">${t.name}</td>
+                        <td><span class="status-badge status-active">AWAITING RESULTS</span></td>
+                        <td style="font-family:var(--font-mono); font-size:0.8rem;">${t.date}</td>
+                        <td>
+                            <button class="org-btn org-btn-sm org-btn-primary" onclick="openAwardModal('${t._id}', '${t.name.replace(/'/g, "\\'")}')">🏆 AWARD WINNERS</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function openAwardModal(tournamentId, tournamentName) {
+            document.getElementById('award-modal-title').textContent = 'AWARD: ' + tournamentName.toUpperCase();
+            document.getElementById('award-tournament-id').value = tournamentId;
+            document.getElementById('awardModal').classList.add('active');
+            
+            const selects = ['winner-1', 'winner-2', 'winner-3'].map(id => document.getElementById(id));
+            selects.forEach(s => s.innerHTML = '<option value="">Loading users...</option>');
+
+            try {
+                const res = await fetch(`/api/organizer/tournaments/${tournamentId}/registrations`, {
+                    headers: { 'x-auth-token': token }
+                });
+                if (res.ok) {
+                    const regs = await res.json();
+                    let options = '<option value="">Select a user...</option>';
+                    regs.forEach(r => {
+                        const u = r.userId;
+                        if (u) {
+                            options += `<option value="${u._id}">${u.inGameName || u.username} (${u.playerId})</option>`;
+                        }
+                    });
+                    selects.forEach(s => s.innerHTML = options);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function closeAwardModal() {
+            document.getElementById('awardModal').classList.remove('active');
+        }
+
+        async function submitAwards() {
+            const btn = document.getElementById('award-submit-btn');
+            const tournamentId = document.getElementById('award-tournament-id').value;
+            const winner1 = document.getElementById('winner-1').value;
+            const winner2 = document.getElementById('winner-2').value;
+            const winner3 = document.getElementById('winner-3').value;
+
+            if (!winner1 || !winner2 || !winner3) {
+                showToast('Please select all 3 winners.', 'error');
+                return;
+            }
+
+            if (new Set([winner1, winner2, winner3]).size !== 3) {
+                showToast('All 3 winners must be unique players.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'AWARDING...';
+
+            try {
+                const res = await fetch(`/api/organizer/tournaments/${tournamentId}/award`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify({ winner1, winner2, winner3 })
+                });
+
+                if (res.ok) {
+                    showToast('Awards successfully distributed!', 'success');
+                    closeAwardModal();
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/leaderboards';
+                    }, 1500);
+                } else {
+                    const err = await res.json();
+                    showToast(err.msg || 'Failed to award winners', 'error');
+                }
+            } catch (e) {
+                showToast('Network error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'CONFIRM AWARDS';
+            }
+        }
+
 
         // Load registrations
         async function loadRegistrations() {
@@ -1151,8 +1324,21 @@
             }
         }
 
-        async function viewRegistrations(id, name) {
+        async function viewRegistrations(id, name, isPublished) {
             document.getElementById('regs-modal-title').textContent = name.toUpperCase() + ' REGS';
+            document.getElementById('regs-tournament-id').value = id;
+            
+            const publishBtn = document.getElementById('btn-publish-list');
+            if (isPublished) {
+                publishBtn.style.display = 'block';
+                publishBtn.textContent = '✅ LIST PUBLISHED';
+                publishBtn.disabled = true;
+            } else {
+                publishBtn.style.display = 'block';
+                publishBtn.textContent = '📢 PUBLISH LIST';
+                publishBtn.disabled = false;
+            }
+
             const tbody = document.getElementById('regs-modal-body');
             tbody.innerHTML = '<tr><td colspan="3"><div class="org-empty"><div class="empty-icon">⏳</div><p>Loading...</p></div></td></tr>';
             document.getElementById('regsModal').classList.add('active');
@@ -1173,15 +1359,46 @@
                     const p = r.userId || {};
                     return `
                         <tr>
-                            <td style="font-weight:600; color:#fff;">${p.inGameName || p.username || '—'}</td>
+                            <td style="font-weight:600; color:#fff;">${p.inGameName || '—'}</td>
                             <td style="font-family:var(--font-mono); font-size:0.8rem;">${p.playerId || '—'}</td>
-                            <td style="color:#a78bfa;">${r.discord || '—'}</td>
-                            <td style="font-family:var(--font-mono); font-size:0.8rem; color:#ffb259;">${r.timeSlot || '—'}</td>
+                            <td style="color:#a78bfa;">${p.username || '—'}</td>
                         </tr>
                     `;
                 }).join('');
             } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="4"><div class="org-empty"><p style="color:red;">Error loading registrations</p></div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3"><div class="org-empty"><p style="color:red;">Error loading registrations</p></div></td></tr>';
+            }
+        }
+
+        async function publishList() {
+            const id = document.getElementById('regs-tournament-id').value;
+            if (!id) return;
+
+            if (!confirm('Are you sure you want to publish this participant list to all users? They will only see the Blaze IDs.')) return;
+
+            const btn = document.getElementById('btn-publish-list');
+            btn.disabled = true;
+            btn.textContent = 'PUBLISHING...';
+
+            try {
+                const res = await fetch(`/api/organizer/tournaments/${id}/publish-list`, {
+                    method: 'POST',
+                    headers: { 'x-auth-token': token }
+                });
+                
+                if (res.ok) {
+                    showToast('Participant list published successfully!', 'success');
+                    btn.textContent = '✅ LIST PUBLISHED';
+                    loadTournaments(); // refresh so the list is updated in table state
+                } else {
+                    showToast('Failed to publish list', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '📢 PUBLISH LIST';
+                }
+            } catch (e) {
+                showToast('Network error', 'error');
+                btn.disabled = false;
+                btn.textContent = '📢 PUBLISH LIST';
             }
         }
 

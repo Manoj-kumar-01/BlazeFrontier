@@ -69,6 +69,10 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    blazePoints: {
+        type: Number,
+        default: 0
+    },
     firstLoginClaimed: {
         type: Boolean,
         default: false
