@@ -52,15 +52,8 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
         const ClipSubmission = require('../models/ClipSubmission');
         
         // Limit to 1 submission per week
-        const now = new Date();
-        const currentDay = now.getDay();
-        const diffToMonday = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1); 
-        const startOfWeek = new Date(now.setDate(diffToMonday));
-        startOfWeek.setHours(0, 0, 0, 0);
-
         const existingSubmission = await ClipSubmission.findOne({
-            userId: req.user.id,
-            createdAt: { $gte: startOfWeek }
+            userId: req.user.id
         });
 
         if (existingSubmission) {
@@ -98,15 +91,8 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
 router.get('/clip-submissions/me/this-week', authMiddleware, async (req, res) => {
     try {
         const ClipSubmission = require('../models/ClipSubmission');
-        const now = new Date();
-        const currentDay = now.getDay();
-        const diffToMonday = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
-        const startOfWeek = new Date(now.setDate(diffToMonday));
-        startOfWeek.setHours(0, 0, 0, 0);
-
         const existingSubmission = await ClipSubmission.findOne({
-            userId: req.user.id,
-            createdAt: { $gte: startOfWeek }
+            userId: req.user.id
         });
 
         res.json({ hasSubmitted: !!existingSubmission });
@@ -898,15 +884,49 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         const Registration = require('../models/Registration');
         const Tournament = require('../models/Tournament');
         
+        function computeStatus(dateString) {
+            const tDate = new Date(dateString);
+            if (isNaN(tDate.getTime())) return 'UPCOMING';
+            const now = Date.now();
+            const startTime = tDate.getTime();
+            const endTime = startTime + 60 * 60 * 1000; // 1 hour duration
+            if (now < startTime) return 'UPCOMING';
+            if (now >= startTime && now <= endTime) return 'ACTIVE';
+            return 'ENDED';
+        }
+
         const filter = {};
         if (req.query.game) filter.game = new RegExp(req.query.game, 'i');
         
         let live = [];
         let upcoming = [];
         
+        const allRegs = await Registration.find({ userId: req.user.id }).sort({ createdAt: -1 }).lean();
+        const userTourneyRegs = new Set(allRegs.filter(r => r.format === 'Tournament' && r.status !== 'Missed' && r.status !== 'Rejected').map(r => r.tournamentId ? r.tournamentId.toString() : ''));
+
         // 1. Generic Open Tournaments
-        const tournaments = await Tournament.find({ ...filter, status: { $in: ['UPCOMING', 'ACTIVE'] } }).lean();
-        tournaments.forEach(t => {
+        const tournaments = await Tournament.find({ ...filter, status: { $ne: 'ENDED' } });
+        for (let t of tournaments) {
+            const correctStatus = computeStatus(t.date);
+            if (t.status !== correctStatus) {
+                t.status = correctStatus;
+                await t.save();
+            }
+            
+            if (t.status === 'ENDED') continue;
+
+            const isRegistered = userTourneyRegs.has(t._id.toString());
+            const now = Date.now();
+            const startTime = new Date(t.date).getTime();
+            
+            let showCredentials = false;
+            let credentials = null;
+            
+            if (isRegistered && !isNaN(startTime) && (now >= startTime - 20 * 60 * 1000) && t.roomId) {
+                showCredentials = true;
+                credentials = { roomId: t.roomId, roomPassword: t.roomPassword };
+            }
+
             const tObj = {
                 type: 'tournament',
                 game: t.game.toUpperCase(),
@@ -916,11 +936,14 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
                 date: t.date,
                 _id: t._id,
                 prize: t.prize,
-                canRegister: t.status === 'UPCOMING'
+                canRegister: t.status === 'UPCOMING' && !isRegistered,
+                isListPublished: t.isListPublished,
+                showCredentials: showCredentials,
+                credentials: credentials
             };
             if (t.status === 'ACTIVE') live.push(tObj);
-            else upcoming.push(tObj);
-        });
+            else if (t.status === 'UPCOMING') upcoming.push(tObj);
+        }
         
         // 2. Global Approved Custom Series (Upcoming Matches for everyone)
         const regFilter = { status: 'Approved' };
@@ -945,8 +968,7 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         });
 
         // 3. User's Personal Registration Requests (for notification dropdown)
-        const regs = await Registration.find({ userId: req.user.id }).sort({ createdAt: -1 }).lean();
-        const requests = regs.map(r => {
+        const requests = allRegs.map(r => {
             let isTimeCompleted = false;
             if (r.startDate && r.timeSlot && r.status !== 'Rejected') {
                 const dateObj = new Date(r.startDate);

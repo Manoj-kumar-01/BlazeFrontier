@@ -524,7 +524,65 @@
             }
 
             .org-modal {
-                padding: 24px;
+                padding: 16px;
+                max-width: 95%;
+            }
+
+            .org-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .org-stat-card {
+                padding: 12px 16px;
+            }
+
+            .org-stat-card .stat-icon {
+                font-size: 1.5rem;
+            }
+
+            .org-stat-label {
+                font-size: 0.7rem;
+            }
+
+            .org-stat-val {
+                font-size: 1.2rem;
+            }
+
+            #slot-report-container > div {
+                flex: 1 1 100%;
+                margin-bottom: 8px;
+            }
+
+            .org-btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 8px;
+                padding: 12px 16px;
+            }
+
+            .org-panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .org-panel-header .org-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            .org-table-wrap {
+                margin: 0 -15px;
+            }
+            
+            .org-table td, .org-table th {
+                padding: 10px;
+                font-size: 0.75rem;
+            }
+            
+            td .org-btn {
+                margin-bottom: 4px;
+                padding: 8px;
             }
         }
 
@@ -821,6 +879,14 @@
                 <label>Max Participants</label>
                 <input type="text" class="org-input" id="t-participants" placeholder="e.g. 48">
             </div>
+            <div class="org-input-group">
+                <label>Room ID (Optional)</label>
+                <input type="text" class="org-input" id="t-roomId" placeholder="Enter Room ID">
+            </div>
+            <div class="org-input-group">
+                <label>Room Password (Optional)</label>
+                <input type="text" class="org-input" id="t-roomPassword" placeholder="Enter Room Password">
+            </div>
             <div class="org-modal-actions">
                 <button class="org-btn org-btn-ghost" onclick="closeCreateModal()">CANCEL</button>
                 <button class="org-btn org-btn-primary" id="modal-submit-btn" onclick="submitTournament()">CREATE</button>
@@ -1003,7 +1069,7 @@
                             <td>
                                 <div style="display:flex; gap:6px;">
                                     <button class="org-btn org-btn-sm org-btn-primary" onclick="viewRegistrations('${t._id}', '${t.name.replace(/'/g, "\\'")}', ${t.isListPublished})">👥 VIEW</button>
-                                    <button class="org-btn org-btn-sm org-btn-ghost" onclick="openEditModal('${t._id}', '${t.name.replace(/'/g, "\\'")}', '${t.date}', '${t.participants}', '${t.status}')">✏️</button>
+                                    <button class="org-btn org-btn-sm org-btn-ghost" onclick="openEditModal('${t._id}', '${t.name.replace(/'/g, "\\'")}', '${t.date}', '${t.participants}', '${t.status}', '${t.roomId || ''}', '${t.roomPassword || ''}')">✏️</button>
                                     <button class="org-btn org-btn-sm org-btn-danger" onclick="deleteTournament('${t._id}')">🗑️</button>
                                 </div>
                             </td>
@@ -1238,16 +1304,20 @@
             document.getElementById('t-name').value = '';
             document.getElementById('t-date').value = '';
             document.getElementById('t-participants').value = '';
+            document.getElementById('t-roomId').value = '';
+            document.getElementById('t-roomPassword').value = '';
             document.getElementById('tournamentModal').classList.add('active');
         }
 
-        function openEditModal(id, name, date, participants, status) {
+        function openEditModal(id, name, date, participants, status, roomId = '', roomPassword = '') {
             document.getElementById('modal-title').textContent = 'EDIT TOURNAMENT';
             document.getElementById('modal-submit-btn').textContent = 'SAVE';
             document.getElementById('edit-tournament-id').value = id;
             document.getElementById('t-name').value = name;
             document.getElementById('t-date').value = date;
             document.getElementById('t-participants').value = participants;
+            document.getElementById('t-roomId').value = roomId;
+            document.getElementById('t-roomPassword').value = roomPassword;
             document.getElementById('tournamentModal').classList.add('active');
         }
 
@@ -1264,7 +1334,9 @@
             const body = {
                 name: document.getElementById('t-name').value,
                 date: document.getElementById('t-date').value,
-                participants: document.getElementById('t-participants').value
+                participants: document.getElementById('t-participants').value,
+                roomId: document.getElementById('t-roomId').value,
+                roomPassword: document.getElementById('t-roomPassword').value
             };
 
             if (!body.name || !body.date || !body.participants) {

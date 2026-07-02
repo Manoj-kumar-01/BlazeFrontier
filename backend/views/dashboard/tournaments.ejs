@@ -250,7 +250,7 @@
                                         <span style="font-size: 1.2rem;">🛡️</span>
                                         <div>
                                             <strong style="color: #00bcd4; display:block; margin-bottom:2px;">Match Credentials</strong>
-                                            Room ID & Password will be shared 10 mins prior.
+                                            Room ID & Password will be shared 20 mins prior.
                                         </div>
                                     </div>
                                 </div>
@@ -267,7 +267,19 @@
                                         <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Perk</div>
                                         <div style="color:#a78bfa; font-weight:600; font-size:0.9rem;">${t.prize || 'Player of the Day & Get Noticed'}</div>
                                     </div>
-                                    ${t.canRegister ? `<a href="/dashboard/tournaments/${t._id}/register" style="display:block; text-align:center; margin-top:20px; background:var(--blaze-orange); color:#fff; padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; text-decoration:none; transition:transform 0.2s;">REGISTER NOW</a>` : '<div style="display:block; text-align:center; margin-top:20px; background:rgba(255,255,255,0.05); color:var(--text-muted); padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; transition:transform 0.2s;">WAITING</div>'}
+                                    ${t.showCredentials ? `
+                                    <div style="margin-top:15px; padding:10px; border-radius:8px; background:rgba(0,188,212,0.1); border:1px solid rgba(0,188,212,0.3); text-align:center;">
+                                        <div style="font-size:0.75rem; color:#00bcd4; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; font-weight:bold;">MATCH CREDENTIALS</div>
+                                        <div style="color:#fff; font-weight:600; font-size:1rem; margin-bottom:4px;">ID: ${t.credentials.roomId}</div>
+                                        <div style="color:#fff; font-weight:600; font-size:1rem;">Pass: ${t.credentials.roomPassword}</div>
+                                    </div>
+                                    ` : (t.isRegistered ? `
+                                    <div style="margin-top:15px; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); text-align:center;">
+                                        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">MATCH CREDENTIALS</div>
+                                        <div style="color:#fff; font-size:0.85rem;">Room ID & Password will be shared here 20 mins prior.</div>
+                                    </div>
+                                    ` : '')}
+                                    ${t.canRegister ? `<a href="/dashboard/tournaments/${t._id}/register" style="display:block; text-align:center; margin-top:20px; background:var(--blaze-orange); color:#fff; padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; text-decoration:none; transition:transform 0.2s;">REGISTER NOW</a>` : (t.isRegistered ? '' : '<div style="display:block; text-align:center; margin-top:20px; background:rgba(255,255,255,0.05); color:var(--text-muted); padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; transition:transform 0.2s;">WAITING</div>')}
                                     ${t.isListPublished ? `<button onclick="viewParticipants('${t._id}', '${t.name.replace(/'/g, "\\'")}')" style="width:100%; display:block; text-align:center; margin-top:10px; background:transparent; border:1px solid var(--blaze-orange); color:var(--blaze-orange); padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; cursor:pointer; transition:background 0.2s;">VIEW PARTICIPANTS</button>` : ''}
                                 </div>
                             `}

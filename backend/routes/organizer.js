@@ -35,7 +35,7 @@ router.get('/clip-submissions', async (req, res) => {
 
         const clips = await ClipSubmission.find({
             createdAt: { $gte: startOfWeek },
-            status: 'Pending' // Match the exact case saved in api.js
+            status: 'Pending'
         }).sort({ createdAt: -1 });
 
         res.json(clips);
@@ -164,7 +164,7 @@ router.get('/tournaments', async (req, res) => {
 // @desc    Create a new tournament
 router.post('/tournaments', async (req, res) => {
     try {
-        const { name, date, participants } = req.body;
+        const { name, date, participants, roomId, roomPassword } = req.body;
 
         if (!name || !date || !participants) {
             return res.status(400).json({ msg: 'All required fields must be provided' });
@@ -176,7 +176,9 @@ router.post('/tournaments', async (req, res) => {
             name,
             status: computedStatus,
             date,
-            participants
+            participants,
+            roomId,
+            roomPassword
         });
 
         await tournament.save();
@@ -191,10 +193,12 @@ router.post('/tournaments', async (req, res) => {
 // @desc    Update a tournament
 router.put('/tournaments/:id', async (req, res) => {
     try {
-        const { name, date, participants } = req.body;
+        const { name, date, participants, roomId, roomPassword } = req.body;
         const updateFields = {};
         if (name) updateFields.name = name;
         if (participants) updateFields.participants = participants;
+        if (roomId !== undefined) updateFields.roomId = roomId;
+        if (roomPassword !== undefined) updateFields.roomPassword = roomPassword;
         
         if (date) {
             updateFields.date = date;
