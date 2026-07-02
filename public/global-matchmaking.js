@@ -457,7 +457,7 @@ function renderQueuePanel() {
         
         if (remaining <= 0) continue; // Skip expired
 
-        const progress = Math.min(100, (remaining / 30) * 100);
+        const progress = Math.min(100, (remaining / 60) * 100);
         const displayName = req.requesterName || req.requesterBlz;
 
         html += `
@@ -507,7 +507,7 @@ function startCardTimers() {
             const expiresAt = new Date(card.dataset.expires);
             const trueNow = getServerTime();
             const remaining = Math.max(0, Math.ceil((expiresAt - trueNow) / 1000));
-            const progress = Math.min(100, (remaining / 30) * 100);
+            const progress = Math.min(100, (remaining / 60) * 100);
 
             const countdown = card.querySelector('.mm-rc-countdown');
             const progressCircle = card.querySelector('.mm-timer-progress');

@@ -263,7 +263,7 @@ router.post('/request', authMiddleware, async (req, res) => {
 
         // 6. All checks passed — create the request entry
         const requestId = generateRequestId();
-        const expiresAt = new Date(Date.now() + 30 * 1000).toISOString();
+        const expiresAt = new Date(Date.now() + 60 * 1000).toISOString();
 
         const timer = setTimeout(async () => {
             // ── Timer-vs-accept guard ──
@@ -295,7 +295,7 @@ router.post('/request', authMiddleware, async (req, res) => {
 
             // Broadcast updated queue to everyone
             broadcastQueueUpdate(req);
-        }, 30000);
+        }, 60000);
 
         const entry = {
             id: requestId,
