@@ -832,12 +832,12 @@
                 <div class="input-group">
                     <label style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block;">Room
                         ID</label>
-                    <input type="text" id="modal-room-id" class="admin-input" placeholder="Room ID" required>
+                    <input type="text" id="modal-room-id" class="admin-input" placeholder="Room ID" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                 </div>
                 <div class="input-group">
                     <label
                         style="color:var(--text-300); font-size:0.85rem; margin-bottom:8px; display:block;">Password</label>
-                    <input type="text" id="modal-room-pass" class="admin-input" placeholder="Password" required>
+                    <input type="text" id="modal-room-pass" class="admin-input" placeholder="Password" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                 </div>
                 <button type="submit" class="btn-action" style="background: var(--cyan); width: 100%;">DISPATCH
                     NOW</button>

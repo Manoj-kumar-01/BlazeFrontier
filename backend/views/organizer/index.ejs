@@ -667,7 +667,7 @@
         </div>
 
         <!-- Global Tab Navigation -->
-        <div class="org-global-tabs" style="display: flex; gap: 15px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+        <div class="org-global-tabs" style="display: flex; gap: 15px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
             <div class="org-g-tab active" onclick="switchGlobalTab('tournaments', this)">TOURNAMENTS</div>
             <div class="org-g-tab" onclick="switchGlobalTab('results', this)">RESULTS</div>
             <div class="org-g-tab" onclick="switchGlobalTab('registrations', this)">REGISTRATIONS</div>
@@ -684,6 +684,7 @@
                 cursor: pointer;
                 transition: all 0.3s ease;
                 border-radius: 8px;
+                flex-shrink: 0;
             }
             .org-g-tab:hover {
                 background: rgba(255,255,255,0.05);
@@ -881,11 +882,11 @@
             </div>
             <div class="org-input-group">
                 <label>Room ID (Optional)</label>
-                <input type="text" class="org-input" id="t-roomId" placeholder="Enter Room ID">
+                <input type="text" class="org-input" id="t-roomId" placeholder="Enter Room ID" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="org-input-group">
                 <label>Room Password (Optional)</label>
-                <input type="text" class="org-input" id="t-roomPassword" placeholder="Enter Room Password">
+                <input type="text" class="org-input" id="t-roomPassword" placeholder="Enter Room Password" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="org-modal-actions">
                 <button class="org-btn org-btn-ghost" onclick="closeCreateModal()">CANCEL</button>
@@ -965,11 +966,11 @@
                 <input type="hidden" id="cred-reg-id">
                 <div class="org-form-group">
                     <label>Room ID</label>
-                    <input type="text" id="cred-room-id" class="org-input" required placeholder="e.g. 10459928">
+                    <input type="text" id="cred-room-id" class="org-input" required placeholder="e.g. 10459928" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 <div class="org-form-group">
                     <label>Room Password</label>
-                    <input type="text" id="cred-room-pass" class="org-input" required placeholder="e.g. blaze123">
+                    <input type="text" id="cred-room-pass" class="org-input" required placeholder="e.g. 123456" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 
                 <div class="org-modal-actions" style="margin-top: 24px;">
