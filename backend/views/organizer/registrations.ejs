@@ -682,59 +682,6 @@
         </style>
 
         <div class="org-panels">
-            <!-- Tournaments Panel -->
-            <div class="org-panel-section" id="sec-tournaments">
-                <div class="org-panel">
-                <div class="org-panel-header">
-                    <div class="org-panel-title">TOURNAMENTS</div>
-                    <button class="org-btn org-btn-primary" onclick="openCreateModal()">+ CREATE</button>
-                </div>
-                <div class="org-panel-body">
-                    <div class="org-table-wrap">
-                        <table class="org-table" id="tournaments-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Slots</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tournaments-body">
-                                <tr><td colspan="7"><div class="org-empty"><div class="empty-icon">🏆</div><p>Loading tournaments...</p></div></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            </div>
-
-            <!-- Results Panel -->
-            <div class="org-panel-section" id="sec-results">
-                <div class="org-panel">
-                    <div class="org-panel-header">
-                        <div class="org-panel-title">TOURNAMENT RESULTS</div>
-                    </div>
-                    <div class="org-panel-body">
-                        <div class="org-table-wrap">
-                            <table class="org-table" id="results-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="results-body">
-                                    <tr><td colspan="4"><div class="org-empty"><div class="empty-icon">🏆</div><p>Loading results...</p></div></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Registrations Panel -->
             <div class="org-panel-section" id="sec-registrations" style="display: block;" style="display: block;" style="display: block;">
@@ -774,72 +721,7 @@
                 </div>
             </div>
 
-            <!-- Clip Submissions Panel -->
-            <div class="org-panel-section" id="sec-clips">
-                <div class="org-panel">
-                <div class="org-panel-header">
-                    <div class="org-panel-title">CLIP SUBMISSIONS (WEEKLY REVIEW)</div>
-                    <button class="org-btn org-btn-primary" onclick="startWeeklyVoting()">SAVE TOP 3 CLIPS FOR THIS WEEK</button>
-                </div>
-                <div class="org-panel-body">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
-                            <strong>Total Received This Week:</strong> <span id="clip-total-count" style="color: #fff;">0</span>
-                        </div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
-                            <strong>Selected for Voting:</strong> <span id="clip-selected-count" style="color: var(--blaze-orange); font-weight: bold; font-size: 1.1rem;">0 / 3</span>
-                        </div>
-                    </div>
-                    <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 15px;">
-                        Review user clips submitted this week. Select exactly 3 clips to save them. The voting event will automatically begin on Saturday with these clips!
-                    </div>
-                    <div class="org-table-wrap" style="height: 400px; overflow-y: auto; position: relative;">
-                        <table class="org-table" id="clips-table">
-                            <thead style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px); z-index: 10;">
-                                <tr>
-                                    <th>Select</th>
-                                    <th>Title</th>
-                                    <th>Player / Game</th>
-                                    <th>Video</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="clips-body">
-                                <tr><td colspan="6"><div class="org-empty"><div class="empty-icon">📹</div><p>Loading clips...</p></div></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            </div>
-
-            <!-- Daily Highlights Panel -->
-            <div class="org-panel-section" id="sec-daily">
-                <div class="org-panel">
-                    <div class="org-panel-header">
-                        <div class="org-panel-title">UPDATE DAILY HIGHLIGHTS</div>
-                    </div>
-                    <div class="org-panel-body">
-                        <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 25px;">
-                            These links will automatically embed content in the player Hubs. Make sure you use the embed URL format.
-                        </div>
-                        <form id="daily-content-form" onsubmit="submitDailyContent(event)" style="max-width: 600px;">
-                            <div style="margin-bottom: 15px;">
-                                <label style="display:block; color:var(--text-300); font-size:0.85rem; font-weight:600; margin-bottom:8px;">YouTube Embed Link</label>
-                                <input type="text" id="dc-yt" class="org-input" style="width: 100%;" placeholder="e.g. https://www.youtube.com/embed/XXXXXX" required>
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <label style="display:block; color:var(--text-300); font-size:0.85rem; font-weight:600; margin-bottom:8px;">Facebook Embed Link</label>
-                                <input type="text" id="dc-fb" class="org-input" style="width: 100%;" placeholder="e.g. https://www.facebook.com/plugins/video.php?href=..." required>
-                            </div>
-                            <div style="display:flex; justify-content:flex-end;">
-                                <button type="submit" class="org-btn org-btn-primary" style="width: 250px;">SAVE DAILY CONTENT</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        </div>
 
         </div>
 
@@ -1762,10 +1644,7 @@
 
         // Init
         loadStats();
-        loadTournaments();
         loadRegistrations();
-        loadClips();
-        loadDailyContent();
         loadSlotReport();
     </script>
 </body>
