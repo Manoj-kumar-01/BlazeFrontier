@@ -341,18 +341,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Send credentials
-    const sendCredsBtn = document.getElementById('mm-send-creds-btn');
-    if (sendCredsBtn) {
-        sendCredsBtn.addEventListener('click', () => {
-            const roomId = document.getElementById('mm-room-id').value;
-            const pass = document.getElementById('mm-room-pass').value;
-            if (!roomId || !pass) return showMmToast('Enter both Room ID and Password', 'error');
-            sendChat('credentials', null, roomId, pass);
-            document.getElementById('mm-room-id').value = '';
-            document.getElementById('mm-room-pass').value = '';
-        });
-    }
 
     // Queue panel toggle
     const queueToggle = document.getElementById('mm-queue-toggle');
@@ -697,6 +685,9 @@ function updateDailyLimitUI() {
 // ─── CHAT MODAL ──────────────────────────────────────────────────
 
 function openChatModal(opponent, opponentName) {
+    const modal = document.getElementById('mm-chat-modal');
+    if (modal && modal.classList.contains('mm-chat-visible')) return;
+
     const nameEl = document.getElementById('mm-chat-opponent');
     if (nameEl) nameEl.innerText = `vs ${opponentName || opponent}`;
     
@@ -704,9 +695,8 @@ function openChatModal(opponent, opponentName) {
     if (idEl) idEl.innerText = opponent;
 
     const box = document.getElementById('mm-chat-box');
-    box.innerHTML = '<div class="mm-chat-system-msg">Match confirmed! Share room credentials below. Chat is restricted to pre-defined phrases.</div>';
+    box.innerHTML = '<div class="mm-chat-system-msg">Match confirmed! Chat is restricted to pre-defined phrases.</div>';
     
-    const modal = document.getElementById('mm-chat-modal');
     if (modal) {
         modal.style.display = 'flex';
         requestAnimationFrame(() => modal.classList.add('mm-chat-visible'));
@@ -771,12 +761,7 @@ function appendChatMessage(senderId, type, message, myUserId) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `mm-chat-bubble ${isMe ? 'mm-chat-mine' : 'mm-chat-theirs'}`;
 
-    if (type === 'credentials') {
-        msgDiv.classList.add('mm-chat-creds');
-        msgDiv.innerHTML = `<div class="mm-cred-label">🔑 ROOM CREDENTIALS</div><div class="mm-cred-value">${escapeHtml(message)}</div>`;
-    } else {
-        msgDiv.innerHTML = `<span>${escapeHtml(message)}</span>`;
-    }
+    msgDiv.innerHTML = `<span>${escapeHtml(message)}</span>`;
 
     box.appendChild(msgDiv);
     box.scrollTop = box.scrollHeight;
