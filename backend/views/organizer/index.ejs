@@ -628,41 +628,26 @@
         </div>
 
         <!-- Stats -->
-        <div class="org-stats">
-            <div class="org-stat-card">
-                <div class="stat-icon" style="color: #8b5cf6;">🏆</div>
-                <div class="org-stat-card-content">
-                    <div class="org-stat-label" style="color: #a78bfa;">Total Tournaments</div>
-                    <div class="org-stat-val" id="stat-total-t">—</div>
-                </div>
+        <div class="org-stats-compact" style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:24px; background:rgba(0,0,0,0.4); padding:16px 24px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Total Tournaments</div>
+                <div id="stat-total-t" style="font-size:1.5rem; font-family:var(--font-display); color:#fff;">—</div>
             </div>
-            <div class="org-stat-card">
-                <div class="stat-icon" style="color: #22c55e;">⚡</div>
-                <div class="org-stat-card-content">
-                    <div class="org-stat-label" style="color: #4ade80;">Active</div>
-                    <div class="org-stat-val" id="stat-active-t">—</div>
-                </div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Active</div>
+                <div id="stat-active-t" style="font-size:1.5rem; font-family:var(--font-display); color:#4ade80;">—</div>
             </div>
-            <div class="org-stat-card">
-                <div class="stat-icon" style="color: #64748b;">✅</div>
-                <div class="org-stat-card-content">
-                    <div class="org-stat-label" style="color: #94a3b8;">Completed</div>
-                    <div class="org-stat-val" id="stat-completed-t">—</div>
-                </div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Completed</div>
+                <div id="stat-completed-t" style="font-size:1.5rem; font-family:var(--font-display); color:#94a3b8;">—</div>
             </div>
-            <div class="org-stat-card">
-                <div class="stat-icon" style="color: #f59e0b;">📋</div>
-                <div class="org-stat-card-content">
-                    <div class="org-stat-label" style="color: #fbbf24;">Pending Regs</div>
-                    <div class="org-stat-val" id="stat-pending-r">—</div>
-                </div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Pending Regs</div>
+                <div id="stat-pending-r" style="font-size:1.5rem; font-family:var(--font-display); color:#fbbf24;">—</div>
             </div>
-            <div class="org-stat-card">
-                <div class="stat-icon" style="color: #60a5fa;">👥</div>
-                <div class="org-stat-card-content">
-                    <div class="org-stat-label" style="color: #93c5fd;">Total Players</div>
-                    <div class="org-stat-val" id="stat-players">—</div>
-                </div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Total Players</div>
+                <div id="stat-players" style="font-size:1.5rem; font-family:var(--font-display); color:#93c5fd;">—</div>
             </div>
         </div>
 
@@ -991,6 +976,7 @@
         }
 
         let allRegistrations = [];
+        let currentTabStatus = 'all';
 
         // Verify organizer role with retry for eventual consistency
         (async () => {
@@ -1199,8 +1185,10 @@
                 if (!res.ok) return;
                 const regs = await res.json();
                 
-                // All Registrations
-                allRegistrations = regs.filter(r => r.format !== 'Season Match');
+                // All Registrations (filter out incomplete)
+                allRegistrations = regs.filter(r => {
+                    return r.format !== 'Season Match' && r.userId && r.userId.inGameName && r.userId.playerId && r.userId.blazeId;
+                });
                 renderRegistrations(allRegistrations);
             } catch (e) { console.error(e); }
         }
@@ -1229,6 +1217,25 @@
             }
         }
 
+        function isWithin30MinsBeforeStart(dateStr, timeSlotStr) {
+            try {
+                if (!dateStr || !timeSlotStr) return false;
+                const match = timeSlotStr.match(/^(\d+):(\d+)\s*(AM|PM)/i);
+                if (!match) return false;
+                let hours = parseInt(match[1]);
+                let minutes = match[2];
+                let ampm = match[3].toUpperCase();
+                if (ampm === 'PM' && hours !== 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+                hours = hours.toString();
+                const startTime = new Date(`${dateStr}T${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`);
+                const now = new Date();
+                const diffMs = startTime - now;
+                const diffMins = diffMs / 60000;
+                return diffMins <= 30;
+            } catch (e) { return true; }
+        }
+
         function renderRegistrations(regs) {
             const tbody = document.getElementById('registrations-body');
 
@@ -1245,7 +1252,9 @@
                 
                 let actionsHtml = '';
                 
-                if ((isPending || isApproved) && isSlotCompleted(r.startDate, r.timeSlot)) {
+                if (currentTabStatus === 'all') {
+                    actionsHtml = '<span style="color:var(--text-muted); font-size:0.75rem;">Switch tab to act</span>';
+                } else if ((isPending || isApproved) && isSlotCompleted(r.startDate, r.timeSlot)) {
                     actionsHtml = `
                         <div style="display:flex; flex-direction:column; gap:6px;">
                             <button class="org-btn org-btn-sm org-btn-success" onclick="setCompletion('${r._id}', 'Completed')">MARK COMPLETED</button>
@@ -1260,11 +1269,15 @@
                         </div>
                     `;
                 } else if (isApproved) {
-                    actionsHtml = `
-                        <button class="org-btn org-btn-sm org-btn-primary" onclick="openCredentialsModal('${r._id}')" style="background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.4); color: #c4b5fd;">
-                            🔑 CREDENTIALS
-                        </button>
-                    `;
+                    if (isWithin30MinsBeforeStart(r.startDate, r.timeSlot)) {
+                        actionsHtml = `
+                            <button class="org-btn org-btn-sm org-btn-primary" onclick="openCredentialsModal('${r._id}')" style="background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.4); color: #c4b5fd;">
+                                🔑 CREDENTIALS
+                            </button>
+                        `;
+                    } else {
+                        actionsHtml = '<span style="color:var(--text-muted); font-size:0.75rem;">Available 30 mins prior</span>';
+                    }
                 } else if (statusClass === 'status-rejected' || r.status === 'Missed') {
                     actionsHtml = `<span style="color:var(--text-muted); font-size:0.75rem;">Reason: <span style="color:#ef4444;">${r.resolutionCause || 'No reason provided'}</span></span>`;
                 } else {
@@ -1287,6 +1300,7 @@
         }
 
         function filterRegs(status, el) {
+            currentTabStatus = status;
             document.querySelectorAll('.org-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
 
