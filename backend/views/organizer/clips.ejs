@@ -890,7 +890,6 @@
             </div>
             <div style="flex: 1; background: #000; border-radius: 12px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
                 <video id="clip-modal-video" controls playsinline preload="metadata" style="max-width: 100%; max-height: 70vh; width: 100%; border-radius: 12px;">
-                    <source id="clip-modal-source" src="" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
@@ -1741,8 +1740,7 @@
         function openClipModal(url, title) {
             document.getElementById('clip-modal-title').innerText = title;
             const video = document.getElementById('clip-modal-video');
-            const source = document.getElementById('clip-modal-source');
-            source.src = url;
+            video.src = url;
             video.load();
             document.getElementById('clipModal').classList.add('active');
             video.play().catch(function() {});
@@ -1751,7 +1749,6 @@
             const video = document.getElementById('clip-modal-video');
             video.pause();
             video.removeAttribute('src');
-            document.getElementById('clip-modal-source').src = '';
             video.load();
             document.getElementById('clipModal').classList.remove('active');
         }
