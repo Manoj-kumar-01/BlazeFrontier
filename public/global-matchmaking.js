@@ -12,7 +12,8 @@
 let socket = null;
 let currentMatchId = null;
 let mmQuickMsgCount = 0;
-const MM_QUICK_MSG_LIMIT = 3;
+const MM_QUICK_MSG_LIMIT = 8;
+const msgUsageCount = {}; // Track usage of individual messages
 
 // Queue state
 let pendingQueue = [];      // Array of request objects from server
@@ -320,7 +321,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const leaveRoomBtn = document.getElementById('mm-leave-room-btn');
     if (leaveRoomBtn) {
         leaveRoomBtn.addEventListener('click', async () => {
-            if (await customConfirm('Are you sure you want to leave the chat? Your room will be closed.')) {
+            if (await mmConfirm('Are you sure you want to leave the chat? Your room will be closed.')) {
                 if (currentMatchId) {
                     await fetch(`/api/matchmaking/leave/${currentMatchId}`, { method: 'POST', headers: { 'x-auth-token': token }});
                 }
@@ -333,13 +334,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelectorAll('.mm-quick-msg').forEach(btn => {
         btn.addEventListener('click', async () => {
             if (mmQuickMsgCount >= MM_QUICK_MSG_LIMIT) return;
-            const success = await sendChat('predefined', btn.dataset.msg || btn.innerText);
+            const msgText = btn.dataset.msg || btn.innerText;
+            
+            if (!msgUsageCount[msgText]) msgUsageCount[msgText] = 0;
+            if (msgUsageCount[msgText] >= 2) {
+                showMmToast('You can only send this specific message 2 times.', 'error');
+                return;
+            }
+
+            const success = await sendChat('predefined', msgText);
             if (success) {
+                msgUsageCount[msgText]++;
                 mmQuickMsgCount++;
+                if (msgUsageCount[msgText] >= 2) {
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                }
                 if (mmQuickMsgCount >= MM_QUICK_MSG_LIMIT) disableQuickMsgButtons();
             }
         });
     });
+
+    // Send credentials
+    const sendCredsBtn = document.getElementById('mm-send-creds-btn');
+    if (sendCredsBtn) {
+        sendCredsBtn.addEventListener('click', () => {
+            const roomIdElem = document.getElementById('mm-room-id');
+            const passElem = document.getElementById('mm-room-pass');
+            if (!roomIdElem || !passElem) return;
+            const roomId = roomIdElem.value;
+            const pass = passElem.value;
+            if (!roomId || !pass) return showMmToast('Enter both Room ID and Password', 'error');
+            sendChat('credentials', null, roomId, pass);
+            roomIdElem.value = '';
+            passElem.value = '';
+        });
+    }
 
 
     // Queue panel toggle

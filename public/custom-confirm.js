@@ -1,4 +1,4 @@
-window.customConfirm = function(message) {
+window.mmConfirm = function(message) {
     return new Promise((resolve) => {
         // Create modal container
         const modal = document.createElement('div');

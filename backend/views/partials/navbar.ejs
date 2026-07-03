@@ -368,6 +368,18 @@
                 <button class="mm-quick-msg mm-quick-msg-success" data-msg="Joined!">Joined! ✓</button>
             </div>
             
+            <!-- Credentials Input -->
+            <div class="mm-creds-row" style="display:flex; gap:10px; align-items:flex-end; margin-top: 15px;">
+                <div class="mm-cred-input-group" style="flex:1;">
+                    <label style="color:var(--text-300); font-size:0.75rem; margin-bottom:4px; display:block;">Room ID</label>
+                    <input type="text" id="mm-room-id" maxlength="10" pattern="\d*" inputmode="numeric" placeholder="Enter ID" style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff; font-family:var(--font-mono);">
+                </div>
+                <div class="mm-cred-input-group" style="flex:1;">
+                    <label style="color:var(--text-300); font-size:0.75rem; margin-bottom:4px; display:block;">Password</label>
+                    <input type="text" id="mm-room-pass" maxlength="10" pattern="\d*" inputmode="numeric" placeholder="Enter Pass" style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff; font-family:var(--font-mono);">
+                </div>
+                <button id="mm-send-creds-btn" style="background:var(--blaze-orange); color:#fff; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer;">SEND</button>
+            </div>
 
         </div>
     </div>
