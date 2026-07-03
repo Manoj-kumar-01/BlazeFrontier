@@ -85,19 +85,15 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #0f0a08;
-            background-image: 
-                /* Vertical Plank Gaps with Ember Glow */
-                repeating-linear-gradient(90deg, transparent, transparent 78px, rgba(255, 87, 34, 0.15) 79px, rgba(0, 0, 0, 0.9) 80px),
-                /* Horizontal Plank Staggering */
-                repeating-linear-gradient(0deg, transparent, transparent 118px, rgba(0, 0, 0, 0.5) 119px, rgba(0, 0, 0, 0.8) 120px),
-                /* Wood Grain Highlights */
-                repeating-linear-gradient(170deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.02) 1%, transparent 1%, transparent 3%),
-                /* Wood Grain Shadows */
-                repeating-linear-gradient(175deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 2%, transparent 2%, transparent 5%),
-                /* Top Ambient Lighting */
-                radial-gradient(circle at 50% 0%, rgba(255, 87, 34, 0.1) 0%, transparent 70%);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.95);
+            background: 
+                /* Subtle ambient top lighting using brand orange */
+                radial-gradient(ellipse at 50% -20%, rgba(255, 87, 34, 0.12) 0%, transparent 60%),
+                /* Deep dark obsidian base fade */
+                linear-gradient(180deg, #0a0a0c 0%, #050506 100%),
+                /* Faint premium dot texture */
+                radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 20px 20px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.5s ease;
