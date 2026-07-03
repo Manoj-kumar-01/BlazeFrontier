@@ -67,42 +67,7 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
         
         let finalVideoUrl = '/public/uploads/user_clips/' + req.file.filename;
 
-        if (startTime !== undefined && endTime !== undefined) {
-            const start = parseFloat(startTime);
-            const duration = parseFloat(endTime) - start;
-
-            if (duration > 0 && duration <= 10.5) {
-                const fs = require('fs');
-                const path = require('path');
-                const ffmpeg = require('fluent-ffmpeg');
-                const ffmpegStatic = require('ffmpeg-static');
-                ffmpeg.setFfmpegPath(ffmpegStatic);
-                
-                const originalPath = req.file.path;
-                const trimmedFilename = 'trimmed-' + req.file.filename;
-                const trimmedPath = path.join(path.dirname(originalPath), trimmedFilename);
-
-                try {
-                    await new Promise((resolve, reject) => {
-                        ffmpeg(originalPath)
-                            .setStartTime(start)
-                            .setDuration(duration)
-                            .output(trimmedPath)
-                            .on('end', () => resolve())
-                            .on('error', (err) => reject(err))
-                            .run();
-                    });
-
-                    // Delete original file
-                    try { fs.unlinkSync(originalPath); } catch (e) { console.error('Failed to delete original', e); }
-
-                    finalVideoUrl = '/public/uploads/user_clips/' + trimmedFilename;
-                } catch (trimErr) {
-                    console.error('Trimming error, using original file:', trimErr);
-                }
-            }
-        }
-
+        // 1. Save submission immediately using original video URL
         const newSubmission = new ClipSubmission({
             userId: req.user.id,
             playerId: playerId,
@@ -113,6 +78,48 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
         });
 
         await newSubmission.save();
+
+        // 2. Start async background processing if trimming is requested
+        if (startTime !== undefined && endTime !== undefined) {
+            const start = parseFloat(startTime);
+            const duration = parseFloat(endTime) - start;
+
+            if (duration > 0 && duration <= 10.5) {
+                // Run in background without awaiting
+                setImmediate(async () => {
+                    const fs = require('fs');
+                    const path = require('path');
+                    const ffmpeg = require('fluent-ffmpeg');
+                    const ffmpegStatic = require('ffmpeg-static');
+                    ffmpeg.setFfmpegPath(ffmpegStatic);
+                    
+                    const originalPath = req.file.path;
+                    const trimmedFilename = 'trimmed-' + req.file.filename;
+                    const trimmedPath = path.join(path.dirname(originalPath), trimmedFilename);
+
+                    try {
+                        await new Promise((resolve, reject) => {
+                            ffmpeg(originalPath)
+                                .setStartTime(start)
+                                .setDuration(duration)
+                                .output(trimmedPath)
+                                .on('end', () => resolve())
+                                .on('error', (err) => reject(err))
+                                .run();
+                        });
+
+                        // Delete original file safely
+                        try { fs.unlinkSync(originalPath); } catch (e) { console.error('Failed to delete original', e); }
+
+                        // Update DB with the new trimmed URL
+                        newSubmission.videoUrl = '/public/uploads/user_clips/' + trimmedFilename;
+                        await newSubmission.save();
+                    } catch (trimErr) {
+                        console.error('Background trimming error, keeping original file:', trimErr);
+                    }
+                });
+            }
+        }
 
         const agenda = require('../utils/queue');
         agenda.now('send-inapp-notification', {
