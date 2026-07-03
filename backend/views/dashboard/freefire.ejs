@@ -1005,54 +1005,6 @@
                     video.src = URL.createObjectURL(file);
                 });
             }
-
-            const clipSubmitForm = document.getElementById('clip-submit-form');
-            if (clipSubmitForm) {
-                clipSubmitForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    if (!isDurationValid) return;
-
-                    const title = document.getElementById('cs-title').value;
-                    const file = document.getElementById('cs-file').files[0];
-
-                    const formData = new FormData();
-                    formData.append('title', title);
-                    formData.append('clip', file);
-                    formData.append('game', 'freefire');
-                    formData.append('playerId', playerBlazeId);
-
-                    const originalText = submitBtn.innerText;
-                    submitBtn.innerText = 'UPLOADING...';
-                    submitBtn.disabled = true;
-
-                    try {
-                        const res = await fetch('/api/clips/submit', {
-                            method: 'POST',
-                            headers: { 'x-auth-token': token },
-                            body: formData
-                        });
-                        if (res.ok) {
-                            document.getElementById('clip-submit-modal').style.display = 'none';
-                            e.target.reset();
-                            // Update UI instantly to show submitted status
-                            submitBtn.innerHTML = '<span>SUBMITTED FOR THIS WEEK</span>';
-                            submitBtn.style.background = 'rgba(255,255,255,0.05)';
-                            submitBtn.style.color = 'rgba(255,255,255,0.5)';
-                            submitBtn.style.border = '1px solid rgba(255,255,255,0.1)';
-                            submitBtn.style.pointerEvents = 'none';
-                            document.getElementById('submit-clip-text').innerHTML = 'You have already submitted a clip this week. Voting begins on Saturday!';
-                        } else {
-                            const data = await res.json();
-                            alert('Upload failed: ' + (data.msg || 'Unknown error'));
-                        }
-                    } catch (err) {
-                        alert('An error occurred during upload.');
-                    } finally {
-                        submitBtn.innerText = originalText;
-                        submitBtn.disabled = false;
-                    }
-                });
-            }
         });
 
         // Global confirmPlay function

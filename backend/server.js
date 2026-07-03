@@ -167,7 +167,12 @@ app.get('/dashboard/vote', (req, res) => res.render('dashboard/vote', { activePa
 app.get(adminPrefix, adminAuth, (req, res) => res.render('admin/index', { adminPrefix, activePage: 'admin' }));
 app.get(`${adminPrefix}/player/:playerId`, adminAuth, (req, res) => res.render('admin/profile', { adminPrefix, activePage: 'admin', playerId: req.params.playerId }));
 app.get('/banned', (req, res) => res.render('onboarding/banned'));
-app.get('/organizer', (req, res) => res.render('organizer/index', { activePage: '/organizer' }));
+app.get('/organizer', (req, res) => res.render('organizer/dashboard', { activePage: '/organizer' }));
+app.get('/organizer/tournaments', (req, res) => res.render('organizer/tournaments', { activePage: '/organizer/tournaments' }));
+app.get('/organizer/results', (req, res) => res.render('organizer/results', { activePage: '/organizer/results' }));
+app.get('/organizer/registrations', (req, res) => res.render('organizer/registrations', { activePage: '/organizer/registrations' }));
+app.get('/organizer/clips', (req, res) => res.render('organizer/clips', { activePage: '/organizer/clips' }));
+app.get('/organizer/daily', (req, res) => res.render('organizer/daily', { activePage: '/organizer/daily' }));
 
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');

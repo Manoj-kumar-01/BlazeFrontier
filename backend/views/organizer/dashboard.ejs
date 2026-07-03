@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .org-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 24px 60px;
+        }
+
+        /* Header */
+        .org-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .org-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .org-header-left h1 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .org-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            letter-spacing: 1.5px;
+            background: rgba(255, 87, 34, 0.2);
+            color: var(--blaze-orange);
+            border: 1px solid rgba(255, 87, 34, 0.4);
+        }
+
+        .org-welcome {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .org-welcome span {
+            color: var(--blaze-orange);
+            font-weight: 600;
+        }
+
+        /* Stats Grid */
+        .org-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .org-stat-card {
+            position: relative;
+            background: url('/public/qs_match_bg.png') center/cover no-repeat;
+            border-radius: 16px;
+            overflow: hidden;
+            padding: 24px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .org-stat-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(12,12,18,0.95) 0%, rgba(12,12,18,0.7) 100%);
+            z-index: 1; pointer-events: none;
+        }
+
+        .org-stat-card::after {
+            content: '';
+            position: absolute; top: 0; right: -20px; width: 120px; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,60,30,0.15));
+            transform: skewX(-20deg) translateX(20px);
+            z-index: 1; pointer-events: none;
+            transition: all 0.4s ease;
+        }
+
+        .org-stat-card-content {
+            position: relative; z-index: 2;
+        }
+
+        .org-stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 60, 30, 0.4);
+            box-shadow: 0 12px 30px rgba(255, 60, 30, 0.2);
+        }
+
+        .org-stat-card:hover::after {
+            transform: skewX(-20deg) translateX(-10px);
+            background: linear-gradient(90deg, transparent, rgba(255,60,30,0.25));
+        }
+
+        .org-stat-card .stat-icon {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5rem;
+            opacity: 0.1;
+            z-index: 1;
+            transform: rotate(-15deg);
+            transition: all 0.4s ease;
+        }
+        
+        .org-stat-card:hover .stat-icon {
+            transform: rotate(0deg) scale(1.1);
+            opacity: 0.15;
+        }
+
+        .org-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .org-stat-val {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        /* Panels */
+        .org-panels {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .org-panel {
+            background: linear-gradient(145deg, rgba(20, 20, 24, 0.85) 0%, rgba(10, 10, 14, 0.95) 100%);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-top: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .org-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .org-panel-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .org-panel-body {
+            padding: 24px;
+        }
+
+        /* Buttons */
+        .org-btn {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .org-btn-primary {
+            background: var(--blaze-orange);
+            color: #fff;
+        }
+
+        .org-btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(255, 87, 34, 0.3);
+        }
+
+        .org-btn-sm {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+
+        .org-btn-success { background: rgba(34,197,94,0.2); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .org-btn-danger { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        .org-btn-success:hover { background: rgba(34,197,94,0.3); }
+        .org-btn-danger:hover { background: rgba(239,68,68,0.3); }
+
+        /* Table */
+        .org-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .org-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .org-table td {
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            vertical-align: middle;
+        }
+
+        .org-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .org-table .status-badge {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-family: var(--font-mono);
+        }
+
+        .status-active { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .status-upcoming { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .status-ended { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+        .status-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .status-approved { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .status-rejected { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+        /* Tab filters */
+        .org-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .org-tab {
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+        }
+        .org-tab:hover { background: rgba(255,255,255,0.06); color: #fff; }
+        .org-tab.active { background: rgba(255, 87, 34, 0.15); color: var(--blaze-orange); border-color: rgba(255, 87, 34, 0.4); }
+
+        /* Floating gradient blobs */
+        .bg-scene {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;
+            pointer-events: none; overflow: hidden;
+        }
+
+        .blob {
+            position: absolute; border-radius: 50%; filter: blur(80px); will-change: transform;
+        }
+
+        .blob-1 {
+            width: 500px; height: 500px; top: -10%; left: -5%;
+            background: radial-gradient(circle, rgba(255, 20, 0, 0.25) 0%, transparent 70%);
+            animation: driftBlob1 15s ease-in-out infinite alternate;
+        }
+
+        .blob-2 {
+            width: 400px; height: 400px; bottom: 10%; right: -5%;
+            background: radial-gradient(circle, rgba(255, 80, 0, 0.2) 0%, transparent 70%);
+            animation: driftBlob2 18s ease-in-out infinite alternate;
+        }
+
+        .blob-3 {
+            width: 350px; height: 350px; top: 40%; left: 30%;
+            background: radial-gradient(circle, rgba(200, 0, 0, 0.12) 0%, transparent 70%);
+            animation: driftBlob3 22s ease-in-out infinite alternate;
+        }
+
+        /* Diagonal neon stripes */
+        .stripe-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(255, 30, 0, 0.025) 60px, rgba(255, 30, 0, 0.025) 61px);
+        }
+
+        /* Scanline CRT effect */
+        .scanlines {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px);
+        }
+
+        /* Top neon glow bar */
+        .neon-bar-top {
+            position: fixed; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, #ff2200, #ff5500, #ff2200, transparent);
+            z-index: 1000; pointer-events: none;
+            box-shadow: 0 0 15px rgba(255, 34, 0, 0.6), 0 0 40px rgba(255, 34, 0, 0.3), 0 0 80px rgba(255, 34, 0, 0.15);
+        }
+
+        @keyframes driftBlob1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(80px, 60px) scale(1.15); } }
+        @keyframes driftBlob2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-60px, -80px) scale(1.2); } }
+        @keyframes driftBlob3 { 0% { transform: translate(0, 0) scale(0.9); } 100% { transform: translate(50px, -40px) scale(1.1); } }
+
+        /* Empty state */
+        .org-empty {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+        }
+
+        .org-empty .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .org-empty p {
+            font-size: 0.9rem;
+        }
+
+        /* Premium Modal */
+        .org-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .org-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .org-modal {
+            background: linear-gradient(160deg, rgba(22, 22, 26, 0.95) 0%, rgba(10, 10, 14, 0.98) 100%);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--blaze-orange);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 60px rgba(255, 87, 34, 0.15);
+            transform: scale(0.95) translateY(30px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .org-modal-overlay.active .org-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .org-modal h2 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .org-modal h2::before {
+            content: '⚡';
+            font-size: 1.5rem;
+        }
+
+        .org-input-group {
+            margin-bottom: 16px;
+        }
+
+        .org-input-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .org-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            outline: none;
+            color-scheme: dark;
+            transition: border-color 0.2s;
+        }
+
+        .org-input:focus {
+            border-color: var(--blaze-orange);
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
+        }
+
+        .org-select {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .org-select option {
+            background: #111116;
+            color: #fff;
+        }
+
+        .org-modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .org-modal-actions .org-btn {
+            flex: 1;
+        }
+
+        .org-btn-ghost {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .org-btn-ghost:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        /* Toast */
+        .org-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 99999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .org-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .org-toast.success { background: #22c55e; color: #fff; }
+        .org-toast.error { background: #ef4444; color: #fff; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+
+            .org-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .org-header-left h1 {
+                font-size: 1.8rem;
+            }
+
+            .org-modal {
+                padding: 16px;
+                max-width: 95%;
+            }
+
+            .org-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .org-stat-card {
+                padding: 12px 16px;
+            }
+
+            .org-stat-card .stat-icon {
+                font-size: 1.5rem;
+            }
+
+            .org-stat-label {
+                font-size: 0.7rem;
+            }
+
+            .org-stat-val {
+                font-size: 1.2rem;
+            }
+
+            #slot-report-container > div {
+                flex: 1 1 100%;
+                margin-bottom: 8px;
+            }
+
+            .org-btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 8px;
+                padding: 12px 16px;
+            }
+
+            .org-panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .org-panel-header .org-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            .org-table-wrap {
+                margin: 0 -15px;
+            }
+            
+            .org-table td, .org-table th {
+                padding: 10px;
+                font-size: 0.75rem;
+            }
+            
+            td .org-btn {
+                margin-bottom: 4px;
+                padding: 8px;
+            }
+        }
+
+        /* Scrollbar */
+        .org-table-wrap {
+            overflow-x: auto;
+        }
+        .org-table-wrap::-webkit-scrollbar { height: 4px; }
+        .org-table-wrap::-webkit-scrollbar-track { background: transparent; }
+        .org-table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    </style>
+</head>
+
+<body>
+    <div class="neon-bar-top"></div>
+    <div class="bg-scene">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <div class="stripe-overlay"></div>
+    <div class="scanlines"></div>
+
+    <%- include('navbar') %>
+
+    <div class="org-wrap">
+
+        <!-- Header -->
+        <div class="org-header">
+            <div class="org-header-left">
+                <h1>ORGANIZER HUB</h1>
+            </div>
+            <div class="org-welcome">Welcome, <span id="org-username">Organizer</span></div>
+        </div>
+
+        <!-- 7-DAY SLOT REPORT -->
+        <div style="margin-bottom: 32px; background: rgba(0,0,0,0.5); padding: 24px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+            <div style="font-family: var(--font-display); font-size: 1.5rem; color: #fff; letter-spacing: 1px; margin-bottom: 8px;">7-DAY SLOT REPORT</div>
+            <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Overview of booked slots (Approved) for the next 7 days.</div>
+            <div id="slot-report-container" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="color:var(--text-muted); font-size:0.9rem;">Loading report...</div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="org-stats-compact" style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:24px; background:rgba(0,0,0,0.4); padding:16px 24px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Total Tournaments</div>
+                <div id="stat-total-t" style="font-size:1.5rem; font-family:var(--font-display); color:#fff;">—</div>
+            </div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Active</div>
+                <div id="stat-active-t" style="font-size:1.5rem; font-family:var(--font-display); color:#4ade80;">—</div>
+            </div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Completed</div>
+                <div id="stat-completed-t" style="font-size:1.5rem; font-family:var(--font-display); color:#94a3b8;">—</div>
+            </div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Pending Regs</div>
+                <div id="stat-pending-r" style="font-size:1.5rem; font-family:var(--font-display); color:#fbbf24;">—</div>
+            </div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Total Players</div>
+                <div id="stat-players" style="font-size:1.5rem; font-family:var(--font-display); color:#93c5fd;">—</div>
+            </div>
+        </div>
+
+        <!-- Global Tab Navigation -->
+        <div class="org-global-tabs" style="display: flex; gap: 15px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+            <div class="org-g-tab active" onclick="switchGlobalTab('tournaments', this)">TOURNAMENTS</div>
+            <div class="org-g-tab" onclick="switchGlobalTab('results', this)">RESULTS</div>
+            <div class="org-g-tab" onclick="switchGlobalTab('registrations', this)">REGISTRATIONS</div>
+            <div class="org-g-tab" onclick="switchGlobalTab('clips', this)">CLIP SUBMISSIONS</div>
+            <div class="org-g-tab" onclick="switchGlobalTab('daily', this)">DAILY HIGHLIGHTS</div>
+        </div>
+
+        <style>
+            .org-g-tab {
+                padding: 10px 20px;
+                color: var(--text-muted);
+                font-family: var(--font-display);
+                font-size: 1.2rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border-radius: 8px;
+                flex-shrink: 0;
+            }
+            .org-g-tab:hover {
+                background: rgba(255,255,255,0.05);
+                color: #fff;
+            }
+            .org-g-tab.active {
+                background: rgba(255, 87, 34, 0.15);
+                color: var(--orange);
+            }
+            .org-panel-section { display: none; }
+            .org-panel-section.active { display: block; animation: fadeIn 0.4s ease; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        </style>
+
+        <div class="org-panels">
+            <!-- Tournaments Panel -->
+            <div class="org-panel-section active" id="sec-tournaments">
+                <div class="org-panel">
+                <div class="org-panel-header">
+                    <div class="org-panel-title">TOURNAMENTS</div>
+                    <button class="org-btn org-btn-primary" onclick="openCreateModal()">+ CREATE</button>
+                </div>
+                <div class="org-panel-body">
+                    <div class="org-table-wrap">
+                        <table class="org-table" id="tournaments-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Slots</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tournaments-body">
+                                <tr><td colspan="7"><div class="org-empty"><div class="empty-icon">🏆</div><p>Loading tournaments...</p></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="org-panel-section" id="sec-results">
+                <div class="org-panel">
+                    <div class="org-panel-header">
+                        <div class="org-panel-title">TOURNAMENT RESULTS</div>
+                    </div>
+                    <div class="org-panel-body">
+                        <div class="org-table-wrap">
+                            <table class="org-table" id="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-body">
+                                    <tr><td colspan="4"><div class="org-empty"><div class="empty-icon">🏆</div><p>Loading results...</p></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registrations Panel -->
+            <div class="org-panel-section" id="sec-registrations">
+                <div class="org-panel">
+                <div class="org-panel-header">
+                    <div class="org-panel-title">REGISTRATIONS</div>
+                    <div class="org-tabs">
+                        <div class="org-tab active" onclick="filterRegs('all', this)">All</div>
+                        <div class="org-tab" onclick="filterRegs('Pending', this)">Pending</div>
+                        <div class="org-tab" onclick="filterRegs('Approved', this)">Approved</div>
+                        <div class="org-tab" onclick="filterRegs('Completed', this)">Completed</div>
+                        <div class="org-tab" onclick="filterRegs('Missed', this)">Missed</div>
+                        <div class="org-tab" onclick="filterRegs('Rejected', this)">Rejected</div>
+                    </div>
+                </div>
+                <div class="org-panel-body">
+                    <div class="org-table-wrap" style="height: 400px; overflow-y: auto; position: relative;">
+                        <table class="org-table" id="registrations-table">
+                            <thead style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px); z-index: 10;">
+                                <tr>
+                                    <th>Match #</th>
+                                    <th>Player</th>
+                                    <th>Blaze ID</th>
+                                    <th>Slot</th>
+                                    <th>Format / Mode</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registrations-body">
+                                <tr><td colspan="7"><div class="org-empty"><div class="empty-icon">📋</div><p>Loading registrations...</p></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Clip Submissions Panel -->
+            <div class="org-panel-section" id="sec-clips">
+                <div class="org-panel">
+                <div class="org-panel-header">
+                    <div class="org-panel-title">CLIP SUBMISSIONS (WEEKLY REVIEW)</div>
+                    <button class="org-btn org-btn-primary" onclick="startWeeklyVoting()">SAVE TOP 3 CLIPS FOR THIS WEEK</button>
+                </div>
+                <div class="org-panel-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
+                            <strong>Total Received This Week:</strong> <span id="clip-total-count" style="color: #fff;">0</span>
+                        </div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
+                            <strong>Selected for Voting:</strong> <span id="clip-selected-count" style="color: var(--blaze-orange); font-weight: bold; font-size: 1.1rem;">0 / 3</span>
+                        </div>
+                    </div>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 15px;">
+                        Review user clips submitted this week. Select exactly 3 clips to save them. The voting event will automatically begin on Saturday with these clips!
+                    </div>
+                    <div class="org-table-wrap" style="height: 400px; overflow-y: auto; position: relative;">
+                        <table class="org-table" id="clips-table">
+                            <thead style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px); z-index: 10;">
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Title</th>
+                                    <th>Player / Game</th>
+                                    <th>Video</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clips-body">
+                                <tr><td colspan="6"><div class="org-empty"><div class="empty-icon">📹</div><p>Loading clips...</p></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Daily Highlights Panel -->
+            <div class="org-panel-section" id="sec-daily">
+                <div class="org-panel">
+                    <div class="org-panel-header">
+                        <div class="org-panel-title">UPDATE DAILY HIGHLIGHTS</div>
+                    </div>
+                    <div class="org-panel-body">
+                        <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 25px;">
+                            These links will automatically embed content in the player Hubs. Make sure you use the embed URL format.
+                        </div>
+                        <form id="daily-content-form" onsubmit="submitDailyContent(event)" style="max-width: 600px;">
+                            <div style="margin-bottom: 15px;">
+                                <label style="display:block; color:var(--text-300); font-size:0.85rem; font-weight:600; margin-bottom:8px;">YouTube Embed Link</label>
+                                <input type="text" id="dc-yt" class="org-input" style="width: 100%;" placeholder="e.g. https://www.youtube.com/embed/XXXXXX" required>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display:block; color:var(--text-300); font-size:0.85rem; font-weight:600; margin-bottom:8px;">Facebook Embed Link</label>
+                                <input type="text" id="dc-fb" class="org-input" style="width: 100%;" placeholder="e.g. https://www.facebook.com/plugins/video.php?href=..." required>
+                            </div>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button type="submit" class="org-btn org-btn-primary" style="width: 250px;">SAVE DAILY CONTENT</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Create/Edit Tournament Modal -->
+    <div class="org-modal-overlay" id="tournamentModal">
+        <div class="org-modal">
+            <h2 id="modal-title">CREATE TOURNAMENT</h2>
+            <input type="hidden" id="edit-tournament-id">
+            <div class="org-input-group">
+                <label>Tournament Name</label>
+                <input type="text" class="org-input" id="t-name" placeholder="e.g. Blaze Championship S1">
+            </div>
+            <div class="org-input-group">
+                <label>Tournament Date & Time</label>
+                <input type="datetime-local" class="org-input" id="t-date">
+            </div>
+            <div class="org-input-group">
+                <label>Max Participants</label>
+                <input type="text" class="org-input" id="t-participants" placeholder="e.g. 48">
+            </div>
+            <div class="org-input-group">
+                <label>Room ID (Optional)</label>
+                <input type="text" class="org-input" id="t-roomId" placeholder="Enter Room ID" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+            <div class="org-input-group">
+                <label>Room Password (Optional)</label>
+                <input type="text" class="org-input" id="t-roomPassword" placeholder="Enter Room Password" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+            <div class="org-modal-actions">
+                <button class="org-btn org-btn-ghost" onclick="closeCreateModal()">CANCEL</button>
+                <button class="org-btn org-btn-primary" id="modal-submit-btn" onclick="submitTournament()">CREATE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Registrations Modal -->
+    <div class="org-modal-overlay" id="regsModal">
+        <div class="org-modal" style="width: 90%; max-width: 1000px; height: 85vh; display: flex; flex-direction: column; padding: 24px;">
+            <h2 id="regs-modal-title" style="margin-bottom: 16px;">TOURNAMENT REGISTRATIONS</h2>
+            <div class="org-table-wrap" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <table class="org-table">
+                    <thead>
+                        <tr>
+                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">In-Game Name</th>
+                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">In-Game ID (UID)</th>
+                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">Blaze ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="regs-modal-body">
+                        <tr><td colspan="3"><div class="org-empty"><div class="empty-icon">📋</div><p>Loading...</p></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="org-modal-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+                <input type="hidden" id="regs-tournament-id">
+                <button class="org-btn org-btn-ghost" style="flex: 1; padding: 14px;" onclick="document.getElementById('regsModal').classList.remove('active')">CLOSE WINDOW</button>
+                <button class="org-btn org-btn-primary" style="flex: 1; padding: 14px; display: none;" id="btn-publish-list" onclick="publishList()">📢 PUBLISH LIST</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Award Winners Modal -->
+    <div class="org-modal-overlay" id="awardModal">
+        <div class="org-modal">
+            <h2 id="award-modal-title">AWARD TOURNAMENT WINNERS</h2>
+            <input type="hidden" id="award-tournament-id">
+            
+            <div id="award-modal-content">
+                <div class="org-input-group">
+                    <label>🥇 1st Place (100 Coins + 100 BP)</label>
+                    <select class="org-select" id="winner-1">
+                        <option value="">Loading users...</option>
+                    </select>
+                </div>
+                <div class="org-input-group">
+                    <label>🥈 2nd Place (50 Coins + 50 BP)</label>
+                    <select class="org-select" id="winner-2">
+                        <option value="">Loading users...</option>
+                    </select>
+                </div>
+                <div class="org-input-group">
+                    <label>🥉 3rd Place (25 Coins + 25 BP)</label>
+                    <select class="org-select" id="winner-3">
+                        <option value="">Loading users...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="org-modal-actions">
+                <button class="org-btn org-btn-ghost" onclick="closeAwardModal()">CANCEL</button>
+                <button class="org-btn org-btn-primary" id="award-submit-btn" onclick="submitAwards()">CONFIRM AWARDS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credentials Modal -->
+    <div class="org-modal-overlay" id="credsModal">
+        <div class="org-modal" style="max-width: 400px; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🔑</div>
+            <h2 style="margin-bottom: 8px;">DISPATCH CREDENTIALS</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">Send match room details directly to the approved player.</p>
+            
+            <form onsubmit="submitCredentials(event)">
+                <input type="hidden" id="cred-reg-id">
+                <div class="org-form-group">
+                    <label>Room ID</label>
+                    <input type="text" id="cred-room-id" class="org-input" required placeholder="e.g. 10459928" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                <div class="org-form-group">
+                    <label>Room Password</label>
+                    <input type="text" id="cred-room-pass" class="org-input" required placeholder="e.g. 123456" pattern="\d*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                
+                <div class="org-modal-actions" style="margin-top: 24px;">
+                    <button type="button" class="org-btn org-btn-ghost" onclick="document.getElementById('credsModal').classList.remove('active')">CANCEL</button>
+                    <button type="submit" class="org-btn org-btn-primary">SEND SECURELY</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="org-toast" id="org-toast"></div>
+
+    <script>
+        const token = localStorage.getItem('blaze_token');
+        if (!token) {
+            window.location.href = '/auth';
+        }
+
+        let allRegistrations = [];
+        let currentTabStatus = 'all';
+
+        // Verify organizer role with retry for eventual consistency
+        (async () => {
+            const maxRetries = 3;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const res = await fetch('/api/organizer/me', {
+                        headers: { 'x-auth-token': token }
+                    });
+                    
+                    if (res.ok) {
+                        const user = await res.json();
+                        if (user.role !== 'organizer') {
+                            window.location.href = '/dashboard';
+                            return;
+                        }
+                        document.getElementById('org-username').textContent = user.username || user.email || 'Organizer';
+                        return; // Success, exit loop
+                    }
+                    
+                    // If not ok, wait and retry unless it's the last attempt
+                    if (i === maxRetries - 1) {
+                        localStorage.removeItem('blaze_token');
+                        localStorage.removeItem('blaze_role');
+                        window.location.href = '/auth';
+                        return;
+                    }
+                    await new Promise(r => setTimeout(r, 800)); // 800ms delay before retry
+                } catch(e) {
+                    if (i === maxRetries - 1) {
+                        window.location.href = '/auth';
+                    }
+                    await new Promise(r => setTimeout(r, 800));
+                }
+            }
+        })();
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/organizer/stats', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!res.ok) return;
+                const stats = await res.json();
+                document.getElementById('stat-total-t').textContent = stats.totalTournaments || 0;
+                document.getElementById('stat-active-t').textContent = stats.activeTournaments || 0;
+                document.getElementById('stat-completed-t').textContent = stats.completedTournaments || 0;
+                document.getElementById('stat-pending-r').textContent = stats.pendingRegistrations || 0;
+                document.getElementById('stat-players').textContent = stats.totalPlayers || 0;
+            } catch (e) { console.error(e); }
+        }
+
+        // Load tournaments
+        async function loadTournaments() {
+            try {
+                const res = await fetch('/api/organizer/tournaments', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!res.ok) return;
+                const tournaments = await res.json();
+                const tbody = document.getElementById('tournaments-body');
+
+                if (tournaments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7"><div class="org-empty"><div class="empty-icon">🏆</div><p>No tournaments yet. Create one!</p></div></td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = tournaments.map(t => {
+                    const statusClass = t.status === 'ACTIVE' ? 'status-active' : (t.status === 'UPCOMING' ? 'status-upcoming' : 'status-ended');
+                    return `
+                        <tr>
+                            <td style="font-weight:600; color:#fff;">${t.name}</td>
+                            <td><span class="status-badge ${statusClass}">${t.status}</span></td>
+                            <td style="font-family:var(--font-mono); font-size:0.8rem;">${t.date}</td>
+                            <td>${t.participants}</td>
+                            <td>
+                                <div style="display:flex; gap:6px;">
+                                    <button class="org-btn org-btn-sm org-btn-primary" onclick="viewRegistrations('${t._id}', '${t.name.replace(/'/g, "\\'")}', ${t.isListPublished})">👥 VIEW</button>
+                                    <button class="org-btn org-btn-sm org-btn-ghost" onclick="openEditModal('${t._id}', '${t.name.replace(/'/g, "\\'")}', '${t.date}', '${t.participants}', '${t.status}', '${t.roomId || ''}', '${t.roomPassword || ''}')">✏️</button>
+                                    <button class="org-btn org-btn-sm org-btn-danger" onclick="deleteTournament('${t._id}')">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                // Also render results tab
+                renderResults(tournaments);
+            } catch (e) { console.error(e); }
+        }
+
+        function renderResults(tournaments) {
+            const tbody = document.getElementById('results-body');
+            const now = new Date();
+            
+            // Filter tournaments that have passed their start date and are not ENDED
+            const results = tournaments.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate < now && t.status !== 'ENDED';
+            });
+
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4"><div class="org-empty"><div class="empty-icon">🏆</div><p>No tournaments pending results.</p></div></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = results.map(t => {
+                return `
+                    <tr>
+                        <td style="font-weight:600; color:#fff;">${t.name}</td>
+                        <td><span class="status-badge status-active">AWAITING RESULTS</span></td>
+                        <td style="font-family:var(--font-mono); font-size:0.8rem;">${t.date}</td>
+                        <td>
+                            <button class="org-btn org-btn-sm org-btn-primary" onclick="openAwardModal('${t._id}', '${t.name.replace(/'/g, "\\'")}')">🏆 AWARD WINNERS</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function openAwardModal(tournamentId, tournamentName) {
+            document.getElementById('award-modal-title').textContent = 'AWARD: ' + tournamentName.toUpperCase();
+            document.getElementById('award-tournament-id').value = tournamentId;
+            document.getElementById('awardModal').classList.add('active');
+            
+            const selects = ['winner-1', 'winner-2', 'winner-3'].map(id => document.getElementById(id));
+            selects.forEach(s => s.innerHTML = '<option value="">Loading users...</option>');
+
+            try {
+                const res = await fetch(`/api/organizer/tournaments/${tournamentId}/registrations`, {
+                    headers: { 'x-auth-token': token }
+                });
+                if (res.ok) {
+                    const regs = await res.json();
+                    let options = '<option value="">Select a user...</option>';
+                    regs.forEach(r => {
+                        const u = r.userId;
+                        if (u) {
+                            options += `<option value="${u._id}">${u.inGameName || u.username} (${u.playerId})</option>`;
+                        }
+                    });
+                    selects.forEach(s => s.innerHTML = options);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function closeAwardModal() {
+            document.getElementById('awardModal').classList.remove('active');
+        }
+
+        async function submitAwards() {
+            const btn = document.getElementById('award-submit-btn');
+            const tournamentId = document.getElementById('award-tournament-id').value;
+            const winner1 = document.getElementById('winner-1').value;
+            const winner2 = document.getElementById('winner-2').value;
+            const winner3 = document.getElementById('winner-3').value;
+
+            if (!winner1 || !winner2 || !winner3) {
+                showToast('Please select all 3 winners.', 'error');
+                return;
+            }
+
+            if (new Set([winner1, winner2, winner3]).size !== 3) {
+                showToast('All 3 winners must be unique players.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'AWARDING...';
+
+            try {
+                const res = await fetch(`/api/organizer/tournaments/${tournamentId}/award`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify({ winner1, winner2, winner3 })
+                });
+
+                if (res.ok) {
+                    showToast('Awards successfully distributed!', 'success');
+                    closeAwardModal();
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/leaderboards';
+                    }, 1500);
+                } else {
+                    const err = await res.json();
+                    showToast(err.msg || 'Failed to award winners', 'error');
+                }
+            } catch (e) {
+                showToast('Network error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'CONFIRM AWARDS';
+            }
+        }
+
+
+        // Load registrations
+        async function loadRegistrations() {
+            try {
+                const res = await fetch('/api/organizer/registrations', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!res.ok) return;
+                const regs = await res.json();
+                
+                // All Registrations (filter out incomplete)
+                allRegistrations = regs.filter(r => {
+                    return r.format !== 'Season Match' && r.userId && r.userId.inGameName && r.userId.playerId && r.userId.blazeId;
+                });
+                renderRegistrations(allRegistrations);
+            } catch (e) { console.error(e); }
+        }
+
+        function isSlotCompleted(dateStr, timeSlotStr) {
+            try {
+                if (!dateStr || !timeSlotStr) return false;
+                
+                const match = timeSlotStr.match(/-\s*(\d+):(\d+)\s*(AM|PM)/i);
+                if (!match) return false;
+
+                let hours = parseInt(match[1]);
+                let minutes = match[2];
+                let ampm = match[3].toUpperCase();
+
+                if (ampm === 'PM' && hours !== 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+                hours = hours.toString();
+
+                const slotDate = new Date(`${dateStr}T${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`);
+                const now = new Date();
+                
+                return slotDate < now;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function isWithin30MinsBeforeStart(dateStr, timeSlotStr) {
+            try {
+                if (!dateStr || !timeSlotStr) return false;
+                const match = timeSlotStr.match(/^(\d+):(\d+)\s*(AM|PM)/i);
+                if (!match) return false;
+                let hours = parseInt(match[1]);
+                let minutes = match[2];
+                let ampm = match[3].toUpperCase();
+                if (ampm === 'PM' && hours !== 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+                hours = hours.toString();
+                const startTime = new Date(`${dateStr}T${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`);
+                const now = new Date();
+                const diffMs = startTime - now;
+                const diffMins = diffMs / 60000;
+                return diffMins <= 30;
+            } catch (e) { return true; }
+        }
+
+        function renderRegistrations(regs) {
+            const tbody = document.getElementById('registrations-body');
+
+            if (regs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7"><div class="org-empty"><div class="empty-icon">📋</div><p>No registrations found.</p></div></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = regs.map(r => {
+                const player = r.userId || {};
+                const statusClass = r.status === 'Approved' ? 'status-approved' : (r.status === 'Rejected' ? 'status-rejected' : 'status-pending');
+                const isPending = r.status === 'Pending';
+                const isApproved = r.status === 'Approved';
+                
+                let actionsHtml = '';
+                
+                if (currentTabStatus === 'all') {
+                    actionsHtml = '<span style="color:var(--text-muted); font-size:0.75rem;">Switch tab to act</span>';
+                } else if ((isPending || isApproved) && isSlotCompleted(r.startDate, r.timeSlot)) {
+                    actionsHtml = `
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <button class="org-btn org-btn-sm org-btn-success" onclick="setCompletion('${r._id}', 'Completed')">MARK COMPLETED</button>
+                            <button class="org-btn org-btn-sm org-btn-danger" onclick="setCompletion('${r._id}', 'Missed')">MARK MISSED</button>
+                        </div>
+                    `;
+                } else if (isPending) {
+                    actionsHtml = `
+                        <div style="display:flex; gap:6px;">
+                            <button class="org-btn org-btn-sm org-btn-success" onclick="approveReg('${r._id}')">✓</button>
+                            <button class="org-btn org-btn-sm org-btn-danger" onclick="rejectReg('${r._id}')">✗</button>
+                        </div>
+                    `;
+                } else if (isApproved) {
+                    if (isWithin30MinsBeforeStart(r.startDate, r.timeSlot)) {
+                        actionsHtml = `
+                            <button class="org-btn org-btn-sm org-btn-primary" onclick="openCredentialsModal('${r._id}')" style="background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.4); color: #c4b5fd;">
+                                🔑 CREDENTIALS
+                            </button>
+                        `;
+                    } else {
+                        actionsHtml = '<span style="color:var(--text-muted); font-size:0.75rem;">Available 30 mins prior</span>';
+                    }
+                } else if (statusClass === 'status-rejected' || r.status === 'Missed') {
+                    actionsHtml = `<span style="color:var(--text-muted); font-size:0.75rem;">Reason: <span style="color:#ef4444;">${r.resolutionCause || 'No reason provided'}</span></span>`;
+                } else {
+                    actionsHtml = '<span style="color:var(--text-muted); font-size:0.75rem;">—</span>';
+                }
+
+                return `
+                    <tr>
+                        <td style="font-family:var(--font-mono); color:var(--text-400);">#${r.matchId || 'TBA'}</td>
+                        <td style="font-weight:600; color:#fff;">${player.inGameName || player.username || '—'}</td>
+                        <td style="font-family:var(--font-mono); font-size:0.8rem;">${player.playerId || '—'}</td>
+                        <td style="color:#ffb259;">${r.timeSlot || '—'}</td>
+                        <td>${r.format || '—'} / ${r.mode || '—'}</td>
+                        <td><span class="status-badge ${statusClass}">${r.status}</span></td>
+                        <td style="font-family:var(--font-mono); font-size:0.8rem;">${r.startDate || new Date(r.createdAt).toLocaleDateString()}</td>
+                        <td>${actionsHtml}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterRegs(status, el) {
+            currentTabStatus = status;
+            document.querySelectorAll('.org-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            if (status === 'all') {
+                renderRegistrations(allRegistrations);
+            } else {
+                renderRegistrations(allRegistrations.filter(r => r.status === status));
+            }
+        }
+
+        // Create / Edit Modal
+        function openCreateModal() {
+            document.getElementById('modal-title').textContent = 'CREATE TOURNAMENT';
+            document.getElementById('modal-submit-btn').textContent = 'CREATE';
+            document.getElementById('edit-tournament-id').value = '';
+            document.getElementById('t-name').value = '';
+            document.getElementById('t-date').value = '';
+            document.getElementById('t-participants').value = '';
+            document.getElementById('t-roomId').value = '';
+            document.getElementById('t-roomPassword').value = '';
+            document.getElementById('tournamentModal').classList.add('active');
+        }
+
+        function openEditModal(id, name, date, participants, status, roomId = '', roomPassword = '') {
+            document.getElementById('modal-title').textContent = 'EDIT TOURNAMENT';
+            document.getElementById('modal-submit-btn').textContent = 'SAVE';
+            document.getElementById('edit-tournament-id').value = id;
+            document.getElementById('t-name').value = name;
+            document.getElementById('t-date').value = date;
+            document.getElementById('t-participants').value = participants;
+            document.getElementById('t-roomId').value = roomId;
+            document.getElementById('t-roomPassword').value = roomPassword;
+            document.getElementById('tournamentModal').classList.add('active');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('tournamentModal').classList.remove('active');
+        }
+
+        async function submitTournament() {
+            const btn = document.getElementById('modal-submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'SAVING...';
+
+            const id = document.getElementById('edit-tournament-id').value;
+            const body = {
+                name: document.getElementById('t-name').value,
+                date: document.getElementById('t-date').value,
+                participants: document.getElementById('t-participants').value,
+                roomId: document.getElementById('t-roomId').value,
+                roomPassword: document.getElementById('t-roomPassword').value
+            };
+
+            if (!body.name || !body.date || !body.participants) {
+                showToast('All fields are required', 'error');
+                btn.disabled = false;
+                btn.textContent = id ? 'SAVE' : 'CREATE';
+                return;
+            }
+
+            try {
+                const url = id ? `/api/organizer/tournaments/${id}` : '/api/organizer/tournaments';
+                const method = id ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify(body)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    showToast(err.msg || 'Failed', 'error');
+                    btn.disabled = false;
+                    btn.textContent = id ? 'SAVE' : 'CREATE';
+                    return;
+                }
+
+                showToast(id ? 'Tournament updated!' : 'Tournament created!', 'success');
+                closeCreateModal();
+                loadTournaments();
+                loadStats();
+            } catch (e) {
+                showToast('Network error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = id ? 'SAVE' : 'CREATE';
+            }
+        }
+
+        async function deleteTournament(id) {
+            if (!confirm('Delete this tournament?')) return;
+
+            try {
+                const res = await fetch(`/api/organizer/tournaments/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'x-auth-token': token }
+                });
+                if (res.ok) {
+                    showToast('Tournament deleted', 'success');
+                    loadTournaments();
+                    loadStats();
+                } else {
+                    showToast('Failed to delete', 'error');
+                }
+            } catch (e) {
+                showToast('Network error', 'error');
+            }
+        }
+
+        async function viewRegistrations(id, name, isPublished) {
+            document.getElementById('regs-modal-title').textContent = name.toUpperCase() + ' REGS';
+            document.getElementById('regs-tournament-id').value = id;
+            
+            const publishBtn = document.getElementById('btn-publish-list');
+            if (isPublished) {
+                publishBtn.style.display = 'block';
+                publishBtn.textContent = '✅ LIST PUBLISHED';
+                publishBtn.disabled = true;
+            } else {
+                publishBtn.style.display = 'block';
+                publishBtn.textContent = '📢 PUBLISH LIST';
+                publishBtn.disabled = false;
+            }
+
+            const tbody = document.getElementById('regs-modal-body');
+            tbody.innerHTML = '<tr><td colspan="3"><div class="org-empty"><div class="empty-icon">⏳</div><p>Loading...</p></div></td></tr>';
+            document.getElementById('regsModal').classList.add('active');
+
+            try {
+                const res = await fetch(`/api/organizer/tournaments/${id}/registrations`, {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!res.ok) throw new Error('Failed');
+                const regs = await res.json();
+                
+                if (regs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3"><div class="org-empty"><div class="empty-icon">📋</div><p>No players registered yet.</p></div></td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = regs.map(r => {
+                    const p = r.userId || {};
+                    return `
+                        <tr>
+                            <td style="font-weight:600; color:#fff;">${p.inGameName || '—'}</td>
+                            <td style="font-family:var(--font-mono); font-size:0.8rem;">${p.playerId || '—'}</td>
+                            <td style="color:#a78bfa;">${p.username || '—'}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="3"><div class="org-empty"><p style="color:red;">Error loading registrations</p></div></td></tr>';
+            }
+        }
+
+        async function publishList() {
+            const id = document.getElementById('regs-tournament-id').value;
+            if (!id) return;
+
+            if (!confirm('Are you sure you want to publish this participant list to all users? They will only see the Blaze IDs.')) return;
+
+            const btn = document.getElementById('btn-publish-list');
+            btn.disabled = true;
+            btn.textContent = 'PUBLISHING...';
+
+            try {
+                const res = await fetch(`/api/organizer/tournaments/${id}/publish-list`, {
+                    method: 'POST',
+                    headers: { 'x-auth-token': token }
+                });
+                
+                if (res.ok) {
+                    showToast('Participant list published successfully!', 'success');
+                    btn.textContent = '✅ LIST PUBLISHED';
+                    loadTournaments(); // refresh so the list is updated in table state
+                } else {
+                    showToast('Failed to publish list', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '📢 PUBLISH LIST';
+                }
+            } catch (e) {
+                showToast('Network error', 'error');
+                btn.disabled = false;
+                btn.textContent = '📢 PUBLISH LIST';
+            }
+        }
+
+        async function setCompletion(id, outcome) {
+            let reason = 'Organizer Unavailable';
+            if (outcome === 'Missed') {
+                reason = prompt(`Mark this match as ${outcome}?\n\nPlease enter the reason for the missed match (this will be emailed to the user):`, 'Organizer Unavailable');
+                if (reason === null) return;
+            } else {
+                if (!confirm(`Mark this match as ${outcome}?`)) return;
+            }
+
+            try {
+                const res = await fetch(`/api/organizer/registrations/${id}/completion`, {
+                    method: 'PUT',
+                    headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ outcome, reason })
+                });
+                if (res.ok) {
+                    showToast(`Match marked as ${outcome}!`, 'success');
+                    loadRegistrations();
+                    loadStats();
+                } else {
+                    showToast('Failed to update match', 'error');
+                }
+            } catch (e) {
+                showToast('Error updating match', 'error');
+            }
+        }
+
+        async function approveReg(id) {
+            if (!confirm('Approve this registration? An official confirmation email will be sent to the user.')) return;
+            try {
+                const res = await fetch(`/api/organizer/registrations/${id}/approve`, {
+                    method: 'PUT',
+                    headers: { 'x-auth-token': token }
+                });
+                if (res.ok) {
+                    showToast('Registration Approved & Email Sent!', 'success');
+                    loadRegistrations();
+                    loadStats();
+                } else {
+                    showToast('Failed to approve registration', 'error');
+                }
+            } catch (e) {
+                showToast('Error approving registration', 'error');
+            }
+        }
+
+        async function rejectReg(id) {
+            const reason = prompt('Are you sure you want to completely reject and delete this registration? \n\nPlease enter the reason for rejection (this will be emailed to the user):');
+            if (!reason) return; // cancelled or empty
+
+            try {
+                const res = await fetch(`/api/organizer/registrations/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason })
+                });
+                if (res.ok) {
+                    showToast('Registration Rejected, Deleted & Email Sent!', 'success');
+                    loadRegistrations();
+                    loadStats();
+                } else {
+                    showToast('Failed to reject registration', 'error');
+                }
+            } catch (e) {
+                showToast('Error rejecting registration', 'error');
+            }
+        }
+        
+        function openCredentialsModal(id) {
+            document.getElementById('cred-reg-id').value = id;
+            document.getElementById('cred-room-id').value = '';
+            document.getElementById('cred-room-pass').value = '';
+            document.getElementById('credsModal').classList.add('active');
+        }
+
+        async function submitCredentials(e) {
+            e.preventDefault();
+            const id = document.getElementById('cred-reg-id').value;
+            const roomId = document.getElementById('cred-room-id').value;
+            const roomPassword = document.getElementById('cred-room-pass').value;
+
+            try {
+                const res = await fetch(`/api/organizer/registrations/${id}/credentials`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ roomId, roomPassword })
+                });
+
+                if (res.ok) {
+                    document.getElementById('credsModal').classList.remove('active');
+                    showToast('Credentials dispatched securely to the user via Email!', 'success');
+                } else {
+                    const data = await res.json();
+                    showToast(data.msg || 'Failed to dispatch credentials', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error dispatching credentials', 'error');
+            }
+        }
+
+        // --- Clip Review Logic ---
+        let selectedClips = new Set();
+
+        function toggleClipSelection(btn, id) {
+            if (selectedClips.has(id)) {
+                selectedClips.delete(id);
+                btn.classList.remove('org-btn-primary');
+                btn.classList.add('btn-outline');
+                btn.textContent = 'SELECT';
+            } else {
+                if (selectedClips.size >= 3) {
+                    showToast('You can only select exactly 3 clips!', 'error');
+                    return;
+                }
+                selectedClips.add(id);
+                btn.classList.remove('btn-outline');
+                btn.classList.add('org-btn-primary');
+                btn.textContent = 'SELECTED ✅';
+            }
+            document.getElementById('clip-selected-count').textContent = `${selectedClips.size} / 3`;
+        }
+
+        async function loadClips() {
+            try {
+                const res = await fetch('/api/organizer/clip-submissions', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!res.ok) return;
+                const clips = await res.json();
+                
+                document.getElementById('clip-total-count').textContent = clips.length;
+                selectedClips.clear();
+                document.getElementById('clip-selected-count').textContent = '0 / 3';
+
+                const tbody = document.getElementById('clips-body');
+                if (clips.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="org-empty"><div class="empty-icon">📹</div><p>No clips submitted this week.</p></div></td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = clips.map(c => {
+                    const dateStr = new Date(c.createdAt).toLocaleDateString();
+                    return `
+                        <tr>
+                            <td style="text-align:center; width: 120px;">
+                                <button class="org-btn btn-outline clip-select-btn" style="width: 105px; padding: 6px 0; font-size: 0.75rem; text-align: center; justify-content: center;" onclick="toggleClipSelection(this, '${c._id}')">SELECT</button>
+                            </td>
+                            <td><strong>${c.title}</strong></td>
+                            <td>${c.playerId} <br><span style="font-size:0.75rem; color: var(--text-muted);">${c.game}</span></td>
+                            <td><video src="${c.videoUrl}" controls width="180" style="border-radius:6px; background:#000; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></video></td>
+                            <td><span class="org-badge org-badge-upcoming">${c.status.toUpperCase()}</span></td>
+                            <td>${dateStr}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function startWeeklyVoting() {
+            if (selectedClips.size !== 3) {
+                alert('Please select EXACTLY 3 clips to feature for this week.');
+                return;
+            }
+            
+            const clipIds = Array.from(selectedClips);
+            
+            if (!confirm('Are you sure you want to save these 3 clips? They will automatically be revealed for voting on Saturday.')) return;
+            
+            try {
+                const res = await fetch('/api/organizer/voting-event/create', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token 
+                    },
+                    body: JSON.stringify({
+                        title: 'Top 3 Clips of the Week',
+                        game: 'Free Fire',
+                        clipIds: clipIds
+                    })
+                });
+                
+                if (res.ok) {
+                    showToast('Top 3 Clips Saved Successfully!', 'success');
+                    loadClips(); // Refresh the table
+                } else {
+                    const data = await res.json();
+                    showToast(data.msg || 'Failed to create voting event', 'error');
+                }
+            } catch(e) {
+                showToast('Server error', 'error');
+            }
+        }
+        function switchGlobalTab(tabId, el) {
+            document.querySelectorAll('.org-g-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            document.querySelectorAll('.org-panel-section').forEach(p => p.classList.remove('active'));
+            document.getElementById(`sec-${tabId}`).classList.add('active');
+        }
+
+        // --- Daily Content Logic ---
+        async function loadDailyContent() {
+            try {
+                const res = await fetch('/api/organizer/daily-content', { headers: { 'x-auth-token': token } });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.youtubeLink) document.getElementById('dc-yt').value = data.youtubeLink;
+                    if (data.facebookLink) document.getElementById('dc-fb').value = data.facebookLink;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function submitDailyContent(e) {
+            e.preventDefault();
+            const youtubeLink = document.getElementById('dc-yt').value;
+            const facebookLink = document.getElementById('dc-fb').value;
+
+            try {
+                const res = await fetch('/api/organizer/daily-content', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                    body: JSON.stringify({ youtubeLink, facebookLink, title: "Today's Highlights" })
+                });
+                
+                if (res.ok) {
+                    showToast('Daily Highlights updated successfully!', 'success');
+                } else {
+                    showToast('Failed to update daily highlights.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Server error.', 'error');
+            }
+        }
+        async function loadSlotReport() {
+            const reportContainer = document.getElementById('slot-report-container');
+            if (reportContainer) {
+                try {
+                    const res = await fetch(`/api/organizer/slot-report?t=${Date.now()}`, { 
+                        headers: { 'x-auth-token': token },
+                        cache: 'no-store' 
+                    });
+                    if (res.ok) {
+                        const report = await res.json();
+                        reportContainer.innerHTML = report.map(r => `
+                            <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:15px; min-width: 120px; text-align: center; flex: 1;">
+                                <div style="color:var(--text-400); font-size:0.85rem; margin-bottom: 8px; font-weight:600;">${r.date}</div>
+                                <div style="color:var(--cyan); font-size:1.8rem; font-family:var(--font-display);">${r.count} <span style="font-size:0.9rem; color:var(--text-muted);">/ 5</span></div>
+                            </div>
+                        `).join('');
+                    }
+                } catch(e) { console.error('Error loading slot report', e); }
+            }
+        }
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('org-toast');
+            toast.textContent = msg;
+            toast.className = `org-toast ${type} show`;
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        // Close modal on outside click
+        document.getElementById('tournamentModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeCreateModal();
+        });
+
+        // Init
+        loadStats();
+        loadTournaments();
+        loadRegistrations();
+        loadClips();
+        loadDailyContent();
+        loadSlotReport();
+    </script>
+</body>
+</html>
