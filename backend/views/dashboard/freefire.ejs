@@ -1389,35 +1389,67 @@
 
                     try {
                         const token = localStorage.getItem('blaze_token');
-                        const res = await fetch('/api/clips/submit', { // Correct route
-                            method: 'POST',
-                            headers: {
-                                'x-auth-token': token
-                            },
-                            body: formData
-                        });
+                        
+                        // Create a dynamic progress background on the button
+                        submitBtn.style.position = 'relative';
+                        submitBtn.style.overflow = 'hidden';
+                        submitBtn.innerHTML = '<span style="position:relative; z-index:2;">UPLOADING... 0%</span><div id="upload-progress-bar" style="position:absolute; top:0; left:0; height:100%; width:0%; background:rgba(255,255,255,0.2); z-index:1; transition:width 0.2s;"></div>';
+                        
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', '/api/clips/submit', true);
+                        xhr.setRequestHeader('x-auth-token', token);
 
-                        const data = await res.json();
-                        if (res.ok) {
-                            document.getElementById('clip-submit-modal').style.display = 'none';
-                            clipForm.reset();
-                            trimmerUi.style.display = 'none';
-                            videoPreview.src = '';
-                            
-                            // Hide the submit UI so they can't submit again
-                            const submitContainer = document.getElementById('submit-ui-container');
-                            if (submitContainer) {
-                                submitContainer.innerHTML = '<div style="background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: 12px; padding: 25px; text-align: center; margin-top: 20px;"><div style="color: #4ade80; font-size: 2rem; margin-bottom: 10px;">✅</div><h3 style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin: 0 0 5px 0;">CLIP SUBMITTED!</h3><p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin: 0;">Your highlight is now under review. Check back on Saturday!</p></div>';
+                        xhr.upload.onprogress = function(e) {
+                            if (e.lengthComputable) {
+                                const percentComplete = Math.round((e.loaded / e.total) * 100);
+                                const progressDiv = document.getElementById('upload-progress-bar');
+                                if (progressDiv) {
+                                    progressDiv.style.width = percentComplete + '%';
+                                    submitBtn.querySelector('span').innerText = `UPLOADING... ${percentComplete}%`;
+                                }
                             }
-                        } else {
-                            alert('Upload failed: ' + (data.msg || 'Unknown error'));
-                        }
+                        };
+
+                        xhr.onload = function() {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                document.getElementById('clip-submit-modal').style.display = 'none';
+                                clipForm.reset();
+                                trimmerUi.style.display = 'none';
+                                videoPreview.src = '';
+                                
+                                // Hide the submit UI so they can't submit again
+                                const submitContainer = document.getElementById('submit-ui-container');
+                                if (submitContainer) {
+                                    submitContainer.innerHTML = '<div style="background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: 12px; padding: 25px; text-align: center; margin-top: 20px;"><div style="color: #4ade80; font-size: 2rem; margin-bottom: 10px;">✅</div><h3 style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin: 0 0 5px 0;">CLIP SUBMITTED!</h3><p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin: 0;">Your highlight is now under review. Check back on Saturday!</p></div>';
+                                }
+                            } else {
+                                let msg = 'Unknown error';
+                                try {
+                                    const data = JSON.parse(xhr.responseText);
+                                    msg = data.msg || msg;
+                                } catch (e) {
+                                    if (xhr.status === 413) msg = 'File is too large for the server configuration.';
+                                    else msg = `Server returned status ${xhr.status}`;
+                                }
+                                alert('Upload failed: ' + msg);
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = 'SUBMIT CLIP FOR REVIEW';
+                            }
+                        };
+
+                        xhr.onerror = function() {
+                            alert('Network Error: The upload was interrupted. The file might be too large for your network/proxy.');
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = 'SUBMIT CLIP FOR REVIEW';
+                        };
+
+                        xhr.send(formData);
+
                     } catch (err) {
                         console.error('Upload Exception:', err);
                         alert('Error uploading clip: ' + err.message);
-                    } finally {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = 'SUBMIT CLIP FOR REVIEW';
+                        submitBtn.innerHTML = 'SUBMIT CLIP FOR REVIEW';
                     }
                 });
             }
