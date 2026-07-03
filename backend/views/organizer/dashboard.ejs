@@ -645,40 +645,7 @@
             </div>
         </div>
 
-        <!-- Global Tab Navigation -->
-        
-        <!-- Global Tab Navigation -->
-        <div class="org-global-tabs" style="display: flex; gap: 15px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
-            <a href="/organizer/tournaments" class="org-g-tab <%= activePage === '/organizer/tournaments' || activePage === '/organizer' ? 'active' : '' %>" style="text-decoration:none;">TOURNAMENTS</a>
-            <a href="/organizer/results" class="org-g-tab <%= activePage === '/organizer/results' ? 'active' : '' %>" style="text-decoration:none;">RESULTS</a>
-            <a href="/organizer/registrations" class="org-g-tab <%= activePage === '/organizer/registrations' ? 'active' : '' %>" style="text-decoration:none;">REGISTRATIONS</a>
-            <a href="/organizer/clips" class="org-g-tab <%= activePage === '/organizer/clips' ? 'active' : '' %>" style="text-decoration:none;">CLIP SUBMISSIONS</a>
-            <a href="/organizer/daily" class="org-g-tab <%= activePage === '/organizer/daily' ? 'active' : '' %>" style="text-decoration:none;">DAILY HIGHLIGHTS</a>
-        </div>
-
-
-        <style>
-            .org-g-tab {
-                padding: 10px 20px;
-                color: var(--text-muted);
-                font-family: var(--font-display);
-                font-size: 1.2rem;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                border-radius: 8px;
-                flex-shrink: 0;
-            }
-            .org-g-tab:hover {
-                background: rgba(255,255,255,0.05);
-                color: #fff;
-            }
-            .org-g-tab.active {
-                background: rgba(255, 87, 34, 0.15);
-                color: var(--orange);
-            }
-            .org-panel-section { display: none; } /* removed */ /* removed */ /* removed */
-            .org-panel-section.active { display: block; animation: fadeIn 0.4s ease; }
-            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        <!-- Internal Tabs Removed to avoid duplication with top Navbar -->
         </style>
 
         <div class="org-panels">
