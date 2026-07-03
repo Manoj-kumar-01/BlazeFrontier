@@ -34,7 +34,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 20 * 1024 * 1024 } // 20MB limit for 10s clips
+    limits: { fileSize: 500 * 1024 * 1024 } // 500MB limit for raw videos to be trimmed
 });
 
 // Middleware to verify JWT token
