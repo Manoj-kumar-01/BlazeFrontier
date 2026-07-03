@@ -1370,6 +1370,12 @@
 
                     if (!file) return;
 
+                    // Prevent massive video uploads that crash the server or timeout proxies
+                    if (file.size > 40 * 1024 * 1024) {
+                        alert('Your video file is too large! Please select a clip that is under 40MB.');
+                        return;
+                    }
+
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'UPLOADING...';
 
