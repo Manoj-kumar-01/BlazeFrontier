@@ -1237,7 +1237,7 @@
     </style>
     <!-- Clip Submission Modal -->
     <div id="clip-submit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center;">
-        <div style="background:#111116; border:1px solid rgba(255,87,34,0.3); border-radius:12px; padding:30px; width: 90%; max-width:450px; box-shadow:0 10px 40px rgba(0,0,0,0.5); position:relative;">
+        <div style="background:#111116; border:1px solid rgba(255,87,34,0.3); border-radius:12px; padding:30px; width: 90%; max-width:450px; max-height: 90vh; overflow-y: auto; box-shadow:0 10px 40px rgba(0,0,0,0.5); position:relative;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
                 <h2 style="font-family:var(--font-display); color:#fff; font-size:1.5rem; letter-spacing:1px; margin:0;">SUBMIT CLIP</h2>
                 <button onclick="document.getElementById('clip-submit-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">×</button>
@@ -1254,18 +1254,25 @@
                 </div>
                 <!-- Video Trimmer UI -->
                 <div id="cs-trimmer-ui" style="display:none; margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                    <video id="cs-video-preview" controls style="width:100%; border-radius:6px; background:#000; max-height:250px;"></video>
+                    <video id="cs-video-preview" controls style="width:100%; border-radius:6px; background:#000; max-height:250px; object-fit:contain;"></video>
                     
                     <div style="margin-top: 15px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 5px; color:var(--text-muted); font-size: 0.8rem;">
                             <span id="cs-start-display">Start: 0.0s</span>
                             <span id="cs-end-display">End: 10.0s</span>
                         </div>
-                        <input type="range" id="cs-trim-slider" min="0" max="100" value="0" step="0.1" style="width:100%;">
-                        <div style="color:var(--blaze-orange); font-size:0.75rem; margin-top:5px; text-align:center;">Select the start time. A maximum 10-second clip will be extracted.</div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="color:var(--text-300); font-size:0.7rem; display:block;">Start Time</label>
+                            <input type="range" id="cs-trim-start" min="0" max="100" value="0" step="0.1" style="width:100%; accent-color: var(--blaze-orange);">
+                        </div>
+                        <div>
+                            <label style="color:var(--text-300); font-size:0.7rem; display:block;">End Time</label>
+                            <input type="range" id="cs-trim-end" min="0" max="100" value="10" step="0.1" style="width:100%; accent-color: var(--blaze-orange);">
+                        </div>
+                        <div id="cs-duration-warning" style="color:#ef4444; font-size:0.75rem; margin-top:5px; text-align:center; display:none;">Clip duration cannot exceed 10 seconds!</div>
+                        <div style="color:var(--blaze-orange); font-size:0.75rem; margin-top:5px; text-align:center;">Select your 10-second highlight window.</div>
                     </div>
                 </div>
-                <div id="cs-duration-error" style="color: #ef4444; font-size: 0.75rem; margin-top: 5px; margin-bottom: 15px; display: none;">Invalid video file.</div>
                 <button type="submit" id="cs-submit-btn" style="width: 100%; background:var(--blaze-orange); color:#fff; border:none; padding:14px; border-radius:8px; font-weight:bold; cursor:pointer; transition:transform 0.2s;">SUBMIT CLIP FOR REVIEW</button>
             </form>
         </div>
@@ -1297,9 +1304,11 @@
             const fileInput = document.getElementById('cs-file');
             const trimmerUi = document.getElementById('cs-trimmer-ui');
             const videoPreview = document.getElementById('cs-video-preview');
-            const trimSlider = document.getElementById('cs-trim-slider');
+            const trimStart = document.getElementById('cs-trim-start');
+            const trimEnd = document.getElementById('cs-trim-end');
             const startDisplay = document.getElementById('cs-start-display');
             const endDisplay = document.getElementById('cs-end-display');
+            const durationWarning = document.getElementById('cs-duration-warning');
             
             let videoDuration = 0;
 
@@ -1313,10 +1322,12 @@
                             videoDuration = videoPreview.duration;
                             trimmerUi.style.display = 'block';
                             
-                            // Configure slider
-                            const maxStart = Math.max(0, videoDuration - 10);
-                            trimSlider.max = videoDuration;
-                            trimSlider.value = 0;
+                            // Configure sliders
+                            trimStart.max = videoDuration;
+                            trimStart.value = 0;
+                            
+                            trimEnd.max = videoDuration;
+                            trimEnd.value = Math.min(videoDuration, 10);
                             
                             updateTrimDisplay();
                         };
@@ -1327,22 +1338,48 @@
                 });
             }
 
-            if (trimSlider) {
-                trimSlider.addEventListener('input', () => {
-                    const maxStart = Math.max(0, videoDuration - 10);
-                    if (parseFloat(trimSlider.value) > maxStart && videoDuration > 10) {
-                        trimSlider.value = maxStart; // Prevent starting too late for a 10s clip
+            if (trimStart && trimEnd) {
+                trimStart.addEventListener('input', () => {
+                    let start = parseFloat(trimStart.value);
+                    let end = parseFloat(trimEnd.value);
+                    
+                    if (start >= end) {
+                        trimEnd.value = Math.min(videoDuration, start + 10);
+                    } else if (end - start > 10) {
+                        trimEnd.value = start + 10;
                     }
                     updateTrimDisplay();
-                    videoPreview.currentTime = parseFloat(trimSlider.value);
+                    videoPreview.currentTime = start;
+                });
+                
+                trimEnd.addEventListener('input', () => {
+                    let start = parseFloat(trimStart.value);
+                    let end = parseFloat(trimEnd.value);
+                    
+                    if (end <= start) {
+                        trimStart.value = Math.max(0, end - 10);
+                    } else if (end - start > 10) {
+                        trimStart.value = end - 10;
+                    }
+                    updateTrimDisplay();
+                    videoPreview.currentTime = end;
                 });
             }
 
             function updateTrimDisplay() {
-                const start = parseFloat(trimSlider.value);
-                const end = Math.min(videoDuration, start + 10);
+                const start = parseFloat(trimStart.value);
+                const end = parseFloat(trimEnd.value);
                 startDisplay.innerText = `Start: ${start.toFixed(1)}s`;
                 endDisplay.innerText = `End: ${end.toFixed(1)}s`;
+                
+                const submitBtn = document.getElementById('cs-submit-btn');
+                if (end - start > 10.1) {
+                    durationWarning.style.display = 'block';
+                    if(submitBtn) submitBtn.disabled = true;
+                } else {
+                    durationWarning.style.display = 'none';
+                    if(submitBtn) submitBtn.disabled = false;
+                }
             }
 
             if (clipForm) {
@@ -1363,8 +1400,8 @@
                     formData.append('game', 'Free Fire');
                     formData.append('clip', file); // Backend expects 'clip'
                     formData.append('playerId', typeof playerBlazeId !== 'undefined' ? playerBlazeId : 'Unknown');
-                    formData.append('startTime', parseFloat(trimSlider.value) || 0);
-                    formData.append('endTime', Math.min(videoDuration, (parseFloat(trimSlider.value) || 0) + 10));
+                    formData.append('startTime', parseFloat(trimStart.value) || 0);
+                    formData.append('endTime', parseFloat(trimEnd.value) || 10);
 
                     try {
                         const token = localStorage.getItem('blaze_token');
