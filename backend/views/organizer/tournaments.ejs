@@ -646,13 +646,16 @@
         </div>
 
         <!-- Global Tab Navigation -->
+        
+        <!-- Global Tab Navigation -->
         <div class="org-global-tabs" style="display: flex; gap: 15px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
-            <div class="org-g-tab active" onclick="switchGlobalTab('tournaments', this)">TOURNAMENTS</div>
-            <div class="org-g-tab" onclick="switchGlobalTab('results', this)">RESULTS</div>
-            <div class="org-g-tab" onclick="switchGlobalTab('registrations', this)">REGISTRATIONS</div>
-            <div class="org-g-tab" onclick="switchGlobalTab('clips', this)">CLIP SUBMISSIONS</div>
-            <div class="org-g-tab" onclick="switchGlobalTab('daily', this)">DAILY HIGHLIGHTS</div>
+            <a href="/organizer/tournaments" class="org-g-tab <%= activePage === '/organizer/tournaments' || activePage === '/organizer' ? 'active' : '' %>" style="text-decoration:none;">TOURNAMENTS</a>
+            <a href="/organizer/results" class="org-g-tab <%= activePage === '/organizer/results' ? 'active' : '' %>" style="text-decoration:none;">RESULTS</a>
+            <a href="/organizer/registrations" class="org-g-tab <%= activePage === '/organizer/registrations' ? 'active' : '' %>" style="text-decoration:none;">REGISTRATIONS</a>
+            <a href="/organizer/clips" class="org-g-tab <%= activePage === '/organizer/clips' ? 'active' : '' %>" style="text-decoration:none;">CLIP SUBMISSIONS</a>
+            <a href="/organizer/daily" class="org-g-tab <%= activePage === '/organizer/daily' ? 'active' : '' %>" style="text-decoration:none;">DAILY HIGHLIGHTS</a>
         </div>
+
 
         <style>
             .org-g-tab {
@@ -673,14 +676,14 @@
                 background: rgba(255, 87, 34, 0.15);
                 color: var(--orange);
             }
-            .org-panel-section { display: none; }
+            .org-panel-section { display: none; } /* removed */ /* removed */ /* removed */
             .org-panel-section.active { display: block; animation: fadeIn 0.4s ease; }
             @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         </style>
 
         <div class="org-panels">
             <!-- Tournaments Panel -->
-            <div class="org-panel-section active" id="sec-tournaments">
+            <div class="org-panel-section" id="sec-tournaments" style="display: block;" style="display: block;" style="display: block;">
                 <div class="org-panel">
                 <div class="org-panel-header">
                     <div class="org-panel-title">TOURNAMENTS</div>

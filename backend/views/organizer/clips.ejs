@@ -646,13 +646,16 @@
         </div>
 
         <!-- Global Tab Navigation -->
+        
+        <!-- Global Tab Navigation -->
         <div class="org-global-tabs" style="display: flex; gap: 15px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
-            <div class="org-g-tab active" onclick="switchGlobalTab('tournaments', this)">TOURNAMENTS</div>
-            <div class="org-g-tab" onclick="switchGlobalTab('results', this)">RESULTS</div>
-            <div class="org-g-tab" onclick="switchGlobalTab('registrations', this)">REGISTRATIONS</div>
-            <div class="org-g-tab" onclick="switchGlobalTab('clips', this)">CLIP SUBMISSIONS</div>
-            <div class="org-g-tab" onclick="switchGlobalTab('daily', this)">DAILY HIGHLIGHTS</div>
+            <a href="/organizer/tournaments" class="org-g-tab <%= activePage === '/organizer/tournaments' || activePage === '/organizer' ? 'active' : '' %>" style="text-decoration:none;">TOURNAMENTS</a>
+            <a href="/organizer/results" class="org-g-tab <%= activePage === '/organizer/results' ? 'active' : '' %>" style="text-decoration:none;">RESULTS</a>
+            <a href="/organizer/registrations" class="org-g-tab <%= activePage === '/organizer/registrations' ? 'active' : '' %>" style="text-decoration:none;">REGISTRATIONS</a>
+            <a href="/organizer/clips" class="org-g-tab <%= activePage === '/organizer/clips' ? 'active' : '' %>" style="text-decoration:none;">CLIP SUBMISSIONS</a>
+            <a href="/organizer/daily" class="org-g-tab <%= activePage === '/organizer/daily' ? 'active' : '' %>" style="text-decoration:none;">DAILY HIGHLIGHTS</a>
         </div>
+
 
         <style>
             .org-g-tab {
@@ -673,14 +676,14 @@
                 background: rgba(255, 87, 34, 0.15);
                 color: var(--orange);
             }
-            .org-panel-section { display: none; }
+            .org-panel-section { display: none; } /* removed */
             .org-panel-section.active { display: block; animation: fadeIn 0.4s ease; }
             @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         </style>
 
         <div class="org-panels">
             <!-- Tournaments Panel -->
-            <div class="org-panel-section active" id="sec-tournaments">
+            <div class="org-panel-section" id="sec-tournaments">
                 <div class="org-panel">
                 <div class="org-panel-header">
                     <div class="org-panel-title">TOURNAMENTS</div>
@@ -772,7 +775,7 @@
             </div>
 
             <!-- Clip Submissions Panel -->
-            <div class="org-panel-section" id="sec-clips">
+            <div class="org-panel-section" id="sec-clips" style="display: block;">
                 <div class="org-panel">
                 <div class="org-panel-header">
                     <div class="org-panel-title">CLIP SUBMISSIONS (WEEKLY REVIEW)</div>
@@ -842,7 +845,20 @@
 
     </div>
 
-    <!-- Create/Edit Tournament Modal -->
+    
+    <!-- Clip Watch Modal -->
+    <div class="org-modal-overlay" id="clipModal" style="z-index: 10000;">
+        <div class="org-modal" style="width: 95%; max-width: 1000px; padding: 24px; background: #000; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2 style="margin:0; font-size: 1.5rem;" id="clip-modal-title">WATCH CLIP</h2>
+                <button onclick="closeClipModal()" style="background: rgba(255,255,255,0.1); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;">&times;</button>
+            </div>
+            <div style="flex: 1; background: #000; border-radius: 12px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                <video id="clip-modal-video" controls playsinline style="max-width: 100%; max-height: 70vh; width: 100%; border-radius: 12px;"></video>
+            </div>
+        </div>
+    </div>
+\n    <!-- Create/Edit Tournament Modal -->
     <div class="org-modal-overlay" id="tournamentModal">
         <div class="org-modal">
             <h2 id="modal-title">CREATE TOURNAMENT</h2>
@@ -1636,7 +1652,7 @@
                             </td>
                             <td><strong>${c.title}</strong></td>
                             <td>${c.playerId} <br><span style="font-size:0.75rem; color: var(--text-muted);">${c.game}</span></td>
-                            <td><video src="${c.videoUrl}" controls width="180" style="border-radius:6px; background:#000; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></video></td>
+                            <td><button class="org-btn org-btn-primary" style="padding: 8px 16px; font-size: 0.8rem;" onclick="openClipModal(\'${c.videoUrl}\', \'${c.title}\')">▶ WATCH CLIP</button></td>
                             <td><span class="org-badge org-badge-upcoming">${c.status.toUpperCase()}</span></td>
                             <td>${dateStr}</td>
                         </tr>
@@ -1682,7 +1698,7 @@
                 showToast('Server error', 'error');
             }
         }
-        function switchGlobalTab(tabId, el) {
+        function openClipModal(url, title) { document.getElementById("clip-modal-title").innerText = title; document.getElementById("clip-modal-video").src = url; document.getElementById("clipModal").classList.add("active"); } function closeClipModal() { document.getElementById("clipModal").classList.remove("active"); document.getElementById("clip-modal-video").pause(); } function switchGlobalTab(tabId, el) {
             document.querySelectorAll('.org-g-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
 
