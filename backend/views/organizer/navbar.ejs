@@ -147,19 +147,21 @@
             width: 100%;
             max-width: 320px;
             padding: 16px 24px;
-            border-radius: 8px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-left: 3px solid transparent;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255,255,255,0.04);
             text-align: left;
             font-size: 1.1rem;
             letter-spacing: 1px;
             font-weight: 600;
             opacity: 0;
             transform: translateX(-20px);
-            transition: all 0.3s ease;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            color: var(--text-300);
         }
         .nav-menu.active .nav-item {
             opacity: 1;
@@ -173,30 +175,16 @@
         .nav-menu.active .nav-item:nth-child(4) { transition-delay: 0.22s; }
         .nav-menu.active .nav-item:nth-child(5) { transition-delay: 0.26s; }
         .nav-menu.active .nav-item:nth-child(6) { transition-delay: 0.30s; }
-        .nav-menu.active .nav-item:nth-child(7) { transition-delay: 0.34s; }
         
         .nav-item:active, .nav-item.active {
-            background: linear-gradient(90deg, rgba(255,87,34,0.15) 0%, rgba(255,87,34,0.05) 100%);
-            border-color: rgba(255, 87, 34, 0.3);
-            border-left: 3px solid #ff5722;
-            color: #fff;
-            transform: scale(1.02);
+            background: rgba(255, 87, 34, 0.08);
+            border-color: rgba(255, 87, 34, 0.25);
+            color: #ff5722;
+            transform: scale(0.98);
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.05);
         }
         
-        /* Edge glow effect on tap */
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 10% 50%, rgba(255,87,34,0.2) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        .nav-item:active::before, .nav-item.active::before {
-            opacity: 1;
-        }
-        .nav-item::after { display: none; }
+        .nav-item::before, .nav-item::after { display: none; }
     }
 </style>
 
