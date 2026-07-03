@@ -36,6 +36,60 @@
     setTimeout(() => { document.body.classList.add('loaded'); }, 3000);
 </script>
 
+<!-- High-end Smooth Scrolling & Page Navigation Transitions -->
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize Lenis for buttery smooth scrolling globally
+        if (typeof Lenis !== 'undefined') {
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                smooth: true,
+                smoothTouch: false,
+                touchMultiplier: 2
+            });
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+        }
+
+        // Intercept internal links to instantly show the logo preloader for seamless travelling feel
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.target === '_blank' || 
+                    this.getAttribute('href')?.startsWith('#') || 
+                    this.hasAttribute('onclick') || 
+                    e.ctrlKey || e.metaKey || 
+                    !this.href) return;
+                
+                try {
+                    const currentUrl = new URL(window.location.href);
+                    const targetUrl = new URL(this.href);
+                    
+                    if (currentUrl.origin === targetUrl.origin && currentUrl.pathname !== targetUrl.pathname) {
+                        e.preventDefault();
+                        // Instantly show the preloader by removing 'loaded' class
+                        document.body.classList.remove('loaded');
+                        // Allow small time for preloader to fade in, then navigate
+                        setTimeout(() => { window.location.href = this.href; }, 150);
+                    }
+                } catch(err) {}
+            });
+        });
+    });
+
+    // Ensure preloader is hidden if user navigates back via browser history (bfcache)
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            document.body.classList.add('loaded');
+        }
+    });
+</script>
+
 <nav class="nav scrolled" id="nav">
     <div class="nav-container">
         <a href="/organizer" class="logo" id="logo">
