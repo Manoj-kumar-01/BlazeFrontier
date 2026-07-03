@@ -612,14 +612,6 @@
             <div class="org-welcome">Welcome, <span id="org-username">Organizer</span></div>
         </div>
 
-        <!-- 7-DAY SLOT REPORT -->
-        <div style="margin-bottom: 32px; background: rgba(0,0,0,0.5); padding: 24px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
-            <div style="font-family: var(--font-display); font-size: 1.5rem; color: #fff; letter-spacing: 1px; margin-bottom: 8px;">7-DAY SLOT REPORT</div>
-            <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Overview of booked slots (Approved) for the next 7 days.</div>
-            <div id="slot-report-container" style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <div style="color:var(--text-muted); font-size:0.9rem;">Loading report...</div>
-            </div>
-        </div>
 
         <!-- Stats -->
         <div class="org-stats-compact" style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:24px; background:rgba(0,0,0,0.4); padding:16px 24px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
@@ -1022,7 +1014,7 @@
                 
                 // All Registrations (filter out incomplete)
                 allRegistrations = regs.filter(r => {
-                    return r.format !== 'Season Match' && r.userId && r.userId.inGameName && r.userId.playerId && r.userId.blazeId;
+                    return r.format !== 'Season Match' && r.userId && r.userId.inGameName && r.userId.playerId;
                 });
                 renderRegistrations(allRegistrations);
             } catch (e) { console.error(e); }
