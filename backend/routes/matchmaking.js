@@ -252,8 +252,8 @@ router.post('/request', authMiddleware, async (req, res) => {
 
         // 4. Check daily limit
         resetDailyIfNeeded(user);
-        if (user.matchmakingDailyCount >= 3) {
-            return res.status(403).json({ msg: 'Daily limit reached. You have used all 3 searches for today.' });
+        if (user.matchmakingDailyCount >= 5) {
+            return res.status(403).json({ msg: 'Daily limit reached. You have used all 5 searches for today.' });
         }
 
         // 5. Check BlazeCoins
@@ -448,8 +448,8 @@ router.post('/accept/:requestId', authMiddleware, async (req, res) => {
         }
 
         resetDailyIfNeeded(acceptor);
-        if (acceptor.matchmakingDailyCount >= 3) {
-            return res.status(403).json({ msg: 'Daily limit reached. You have used all 3 searches for today.' });
+        if (acceptor.matchmakingDailyCount >= 5) {
+            return res.status(403).json({ msg: 'Daily limit reached. You have used all 5 searches for today.' });
         }
 
         // ── Step 6: Validate requester (they might have been banned/modified since) ──
@@ -557,11 +557,11 @@ router.post('/chat/:matchId', authMiddleware, (req, res) => {
             if (!allowed.includes(message)) return res.status(400).json({ msg: 'Invalid message.' });
 
             const count = (match.msgCount[userId]) || 0;
-            if (count >= 3) {
-                return res.status(429).json({ msg: 'Message limit reached. Max 3 quick messages per match.' });
+            if (count >= 8) {
+                return res.status(429).json({ msg: 'Message limit reached. Max 8 quick messages per match.' });
             }
             match.msgCount[userId] = count + 1;
-            const remaining = 3 - match.msgCount[userId];
+            const remaining = 8 - match.msgCount[userId];
 
             emit(req, 'mm:chat_message', { sender: userId, type: 'text', message }, targetId);
             emit(req, 'mm:chat_message', { sender: userId, type: 'text', message, remaining }, userId);
