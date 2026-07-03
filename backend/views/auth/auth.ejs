@@ -373,7 +373,7 @@
 
             <div id="auth-retry" style="display:none; text-align:center; margin-top:16px;">
                 <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Google Sign-In didn't load. Try again or check your connection.</p>
-                <button onclick="initGoogleSignIn()" style="background: var(--blaze-orange); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-family: var(--font-display); font-size: 1rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s;">RETRY SIGN IN</button>
+                <button onclick="window.location.reload()" style="background: var(--blaze-orange); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-family: var(--font-display); font-size: 1rem; letter-spacing: 1px; cursor: pointer; transition: all 0.2s;">RETRY SIGN IN</button>
             </div>
 
             <div class="divider">SECURE CONNECTION</div>
@@ -446,9 +446,9 @@
                     callback: handleCredentialResponse,
                     ux_mode: 'popup',
                     context: 'signin',
-                    auto_select: true,
+                    auto_select: false,
                     itp_support: true,
-                    use_fedcm_for_prompt: true
+                    use_fedcm_for_prompt: false
                 });
 
                 let containerPadding = window.innerWidth <= 900 ? 50 : 80;
@@ -467,9 +467,6 @@
                     }
                 );
 
-                // Display the One Tap prompt
-                google.accounts.id.prompt();
-
                 // Check if button rendered after a delay
                 setTimeout(() => {
                     const btn = document.getElementById('google-signin-btn');
@@ -483,14 +480,10 @@
             }
         }
 
-        // Since the script is loaded synchronously in the head, google is guaranteed to be available
+        // Wait for Google script to load then initialize
         window.addEventListener('load', () => {
-            if (typeof google !== 'undefined' && google.accounts) {
-                initGoogleSignIn();
-            } else {
-                console.error('Google Identity Services failed to load');
-                document.getElementById('auth-retry').style.display = 'block';
-            }
+            // Small delay to ensure google.accounts is ready
+            setTimeout(initGoogleSignIn, 500);
         });
 
         async function handleCredentialResponse(response) {
