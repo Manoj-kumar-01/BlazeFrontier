@@ -703,4 +703,91 @@ router.get('/slot-report', async (req, res) => {
     }
 });
 
+// --- Player of the Day ---
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const potdStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = path.join(__dirname, '../../public/uploads/clips');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'potd-' + Date.now() + path.extname(file.originalname));
+    }
+});
+const potdUpload = multer({
+    storage: potdStorage,
+    limits: { fileSize: 50 * 1024 * 1024 } // 50MB
+});
+
+// @route   GET /api/organizer/potd-current
+// @desc    Get the current active Player of the Day
+router.get('/potd-current', async (req, res) => {
+    try {
+        const PlayerOfTheDay = require('../models/PlayerOfTheDay');
+        const potd = await PlayerOfTheDay.findOne({ isActive: true }).populate('userId', 'inGameName username playerId').lean();
+        if (!potd) return res.json(null);
+        res.json({
+            playerName: potd.playerName || (potd.userId && (potd.userId.inGameName || potd.userId.username)) || 'Unknown',
+            title: potd.title,
+            createdAt: potd.createdAt,
+            videoUrl: potd.videoUrl
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/organizer/potd
+// @desc    Set Player of the Day (same as admin, backup for organizers)
+router.post('/potd', potdUpload.single('video'), async (req, res) => {
+    try {
+        const PlayerOfTheDay = require('../models/PlayerOfTheDay');
+        const { playerId, title, playerName } = req.body;
+
+        if (!playerId) {
+            return res.status(400).json({ msg: 'Blaze ID is required' });
+        }
+        if (!req.file) {
+            return res.status(400).json({ msg: 'Video file is required' });
+        }
+
+        const user = await User.findOne({ playerId: playerId });
+        if (!user) {
+            return res.status(404).json({ msg: 'User with this Blaze ID not found' });
+        }
+
+        // Deactivate old
+        await PlayerOfTheDay.updateMany({}, { isActive: false });
+
+        // Create new
+        const newPotd = new PlayerOfTheDay({
+            userId: user._id,
+            playerName: playerName || user.inGameName || user.username,
+            title: title || 'Top Clip',
+            videoUrl: '/public/uploads/clips/' + req.file.filename,
+            isActive: true
+        });
+
+        await newPotd.save();
+
+        // Invalidate Hub caches
+        global.graphqlStatsCache = null;
+        if (global.clearApiStatsCache) {
+            global.clearApiStatsCache();
+        }
+
+        res.json({ msg: 'Player of the Day updated successfully!', potd: newPotd });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
