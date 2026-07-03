@@ -208,7 +208,7 @@
                     query: `
                         query {
                             getGlobalNavData {
-                                user { isGenuine hasCompletedTwoSeries role }
+                                user { isGenuine hasCompletedTwoSeries role inGameName gameUid playerId }
                                 tournaments { id game format mode status date }
                                 notifications { id title message type isRead createdAt }
                             }

@@ -166,7 +166,7 @@
         const applyUserStatus = (prof) => {
             if(prof) {
                 document.getElementById('display-ign').textContent = prof.inGameName || 'N/A';
-                document.getElementById('display-uid').textContent = prof.playerId || 'N/A';
+                document.getElementById('display-uid').textContent = prof.gameUid || prof.playerId || 'N/A';
             }
         };
 
