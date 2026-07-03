@@ -1275,11 +1275,24 @@
                     <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Highlight Title</label>
                     <input type="text" id="cs-title" required style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;" placeholder="e.g., Insane 1v4 Clutch">
                 </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Video File (MP4/WebM, Max 10s)</label>
+                <div style="margin-bottom: 15px;">
+                    <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Video File (MP4/WebM)</label>
                     <input type="file" id="cs-file" required accept="video/mp4,video/webm" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;">
-                    <div id="cs-duration-error" style="color: #ef4444; font-size: 0.75rem; margin-top: 5px; display: none;">Video duration exceeds 10 seconds! Please select a shorter clip.</div>
                 </div>
+                <!-- Video Trimmer UI -->
+                <div id="cs-trimmer-ui" style="display:none; margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    <video id="cs-video-preview" controls style="width:100%; border-radius:6px; background:#000; max-height:250px;"></video>
+                    
+                    <div style="margin-top: 15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 5px; color:var(--text-muted); font-size: 0.8rem;">
+                            <span id="cs-start-display">Start: 0.0s</span>
+                            <span id="cs-end-display">End: 10.0s</span>
+                        </div>
+                        <input type="range" id="cs-trim-slider" min="0" max="100" value="0" step="0.1" style="width:100%;">
+                        <div style="color:var(--blaze-orange); font-size:0.75rem; margin-top:5px; text-align:center;">Select the start time. A maximum 10-second clip will be extracted.</div>
+                    </div>
+                </div>
+                <div id="cs-duration-error" style="color: #ef4444; font-size: 0.75rem; margin-top: 5px; margin-bottom: 15px; display: none;">Invalid video file.</div>
                 <button type="submit" id="cs-submit-btn" style="width: 100%; background:var(--blaze-orange); color:#fff; border:none; padding:14px; border-radius:8px; font-weight:bold; cursor:pointer; transition:transform 0.2s;">SUBMIT CLIP FOR REVIEW</button>
             </form>
         </div>
@@ -1308,25 +1321,77 @@
 
             // Clip Submission Form Handler
             const clipForm = document.getElementById('clip-submit-form');
+            const fileInput = document.getElementById('cs-file');
+            const trimmerUi = document.getElementById('cs-trimmer-ui');
+            const videoPreview = document.getElementById('cs-video-preview');
+            const trimSlider = document.getElementById('cs-trim-slider');
+            const startDisplay = document.getElementById('cs-start-display');
+            const endDisplay = document.getElementById('cs-end-display');
+            
+            let videoDuration = 0;
+
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const url = URL.createObjectURL(file);
+                        videoPreview.src = url;
+                        videoPreview.onloadedmetadata = () => {
+                            videoDuration = videoPreview.duration;
+                            trimmerUi.style.display = 'block';
+                            
+                            // Configure slider
+                            const maxStart = Math.max(0, videoDuration - 10);
+                            trimSlider.max = videoDuration;
+                            trimSlider.value = 0;
+                            
+                            updateTrimDisplay();
+                        };
+                    } else {
+                        trimmerUi.style.display = 'none';
+                        videoPreview.src = '';
+                    }
+                });
+            }
+
+            if (trimSlider) {
+                trimSlider.addEventListener('input', () => {
+                    const maxStart = Math.max(0, videoDuration - 10);
+                    if (parseFloat(trimSlider.value) > maxStart && videoDuration > 10) {
+                        trimSlider.value = maxStart; // Prevent starting too late for a 10s clip
+                    }
+                    updateTrimDisplay();
+                    videoPreview.currentTime = parseFloat(trimSlider.value);
+                });
+            }
+
+            function updateTrimDisplay() {
+                const start = parseFloat(trimSlider.value);
+                const end = Math.min(videoDuration, start + 10);
+                startDisplay.innerText = `Start: ${start.toFixed(1)}s`;
+                endDisplay.innerText = `End: ${end.toFixed(1)}s`;
+            }
+
             if (clipForm) {
                 clipForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     
                     const title = document.getElementById('cs-title').value;
-                    const fileInput = document.getElementById('cs-file');
                     const file = fileInput.files[0];
                     const submitBtn = document.getElementById('cs-submit-btn');
 
                     if (!file) return;
 
                     submitBtn.disabled = true;
-                    submitBtn.textContent = 'UPLOADING...';
+                    submitBtn.textContent = 'UPLOADING & TRIMMING...';
 
                     const formData = new FormData();
                     formData.append('title', title);
                     formData.append('game', 'Free Fire');
-                    formData.append('clip', file); // Backend expects 'clip' not 'video'
-                    formData.append('playerId', typeof playerBlazeId !== 'undefined' ? playerBlazeId : 'Unknown'); // Backend expects playerId
+                    formData.append('clip', file); // Backend expects 'clip'
+                    formData.append('playerId', typeof playerBlazeId !== 'undefined' ? playerBlazeId : 'Unknown');
+                    formData.append('startTime', parseFloat(trimSlider.value) || 0);
+                    formData.append('endTime', Math.min(videoDuration, (parseFloat(trimSlider.value) || 0) + 10));
 
                     try {
                         const token = localStorage.getItem('blaze_token');
@@ -1342,6 +1407,8 @@
                         if (res.ok) {
                             document.getElementById('clip-submit-modal').style.display = 'none';
                             clipForm.reset();
+                            trimmerUi.style.display = 'none';
+                            videoPreview.src = '';
                             
                             // Hide the submit UI so they can't submit again
                             const submitContainer = document.getElementById('submit-ui-container');

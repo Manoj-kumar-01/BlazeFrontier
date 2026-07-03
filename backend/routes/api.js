@@ -44,7 +44,7 @@ const authMiddleware = require('../middleware/auth');
 // @desc    Submit a Top Clip (max 10s via frontend validation)
 router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, res) => {
     try {
-        const { playerId, title, game } = req.body;
+        const { playerId, title, game, startTime, endTime } = req.body;
         if (!playerId || !title || !game || !req.file) {
             return res.status(400).json({ msg: 'Please provide playerId, title, game, and a video clip.' });
         }
@@ -60,12 +60,50 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
             return res.status(400).json({ msg: 'You have already submitted a clip this week. Voting starts on Saturday!' });
         }
         
+        let finalVideoUrl = '/public/uploads/user_clips/' + req.file.filename;
+
+        if (startTime !== undefined && endTime !== undefined) {
+            const start = parseFloat(startTime);
+            const duration = parseFloat(endTime) - start;
+
+            if (duration > 0 && duration <= 10.5) {
+                const fs = require('fs');
+                const path = require('path');
+                const ffmpeg = require('fluent-ffmpeg');
+                const ffmpegStatic = require('ffmpeg-static');
+                ffmpeg.setFfmpegPath(ffmpegStatic);
+                
+                const originalPath = req.file.path;
+                const trimmedFilename = 'trimmed-' + req.file.filename;
+                const trimmedPath = path.join(path.dirname(originalPath), trimmedFilename);
+
+                try {
+                    await new Promise((resolve, reject) => {
+                        ffmpeg(originalPath)
+                            .setStartTime(start)
+                            .setDuration(duration)
+                            .output(trimmedPath)
+                            .on('end', () => resolve())
+                            .on('error', (err) => reject(err))
+                            .run();
+                    });
+
+                    // Delete original file
+                    try { fs.unlinkSync(originalPath); } catch (e) { console.error('Failed to delete original', e); }
+
+                    finalVideoUrl = '/public/uploads/user_clips/' + trimmedFilename;
+                } catch (trimErr) {
+                    console.error('Trimming error, using original file:', trimErr);
+                }
+            }
+        }
+
         const newSubmission = new ClipSubmission({
             userId: req.user.id,
             playerId: playerId,
             title: title,
             game: game,
-            videoUrl: '/public/uploads/user_clips/' + req.file.filename,
+            videoUrl: finalVideoUrl,
             status: 'Pending'
         });
 
