@@ -507,76 +507,72 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-
+            .org-wrap {
+                padding: 80px 15px 40px;
+            }
             .org-header {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 12px;
             }
-
             .org-header-left h1 {
                 font-size: 1.8rem;
             }
-
             .org-modal {
-                padding: 16px;
+                padding: 20px;
                 max-width: 95%;
             }
-
             .org-stats {
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
-
             .org-stat-card {
-                padding: 12px 16px;
+                padding: 16px;
+                min-height: auto;
             }
-
             .org-stat-card .stat-icon {
-                font-size: 1.5rem;
+                font-size: 2.5rem;
             }
-
             .org-stat-label {
-                font-size: 0.7rem;
-            }
-
-            .org-stat-val {
-                font-size: 1.2rem;
-            }
-
-            #slot-report-container > div {
-                flex: 1 1 100%;
-                margin-bottom: 8px;
-            }
-
-            .org-btn {
-                width: 100%;
-                justify-content: center;
-                margin-bottom: 8px;
-                padding: 12px 16px;
-            }
-
-            .org-panel-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .org-panel-header .org-btn {
-                width: 100%;
-                margin-top: 10px;
-            }
-            
-            .org-table-wrap {
-                margin: 0 -15px;
-            }
-            
-            .org-table td, .org-table th {
-                padding: 10px;
                 font-size: 0.75rem;
             }
-            
+            .org-stat-val {
+                font-size: 1.8rem;
+            }
+            #slot-report-container {
+                flex-direction: column;
+            }
+            #slot-report-container > div {
+                flex: 1 1 100%;
+                margin-bottom: 12px;
+            }
+            .org-panel-header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 16px;
+            }
+            .org-panel-header .org-btn {
+                width: 100%;
+                margin-top: 12px;
+                justify-content: center;
+            }
+            .org-panel-body {
+                padding: 16px 0;
+            }
+            .org-table-wrap {
+                margin: 0;
+                padding: 0 16px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+            .org-table td, .org-table th {
+                padding: 12px 10px;
+                white-space: nowrap;
+            }
             td .org-btn {
-                margin-bottom: 4px;
-                padding: 8px;
+                padding: 6px 12px;
+                font-size: 0.75rem;
             }
         }
 
