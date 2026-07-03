@@ -1096,28 +1096,6 @@
         #qs-panel-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         #qs-panel-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
     </style>
-    <!-- Clip Submission Modal -->
-    <div id="clip-submit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center;">
-        <div style="background:#111116; border:1px solid rgba(255,87,34,0.3); border-radius:12px; padding:30px; width: 90%; max-width:450px; box-shadow:0 10px 40px rgba(0,0,0,0.5); position:relative;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                <h2 style="font-family:var(--font-display); color:#fff; font-size:1.5rem; letter-spacing:1px; margin:0;">SUBMIT CLIP</h2>
-                <button onclick="document.getElementById('clip-submit-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">×</button>
-            </div>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">Submit your best 5-10s clip! Top 3 clips will be featured and awarded <span style="color:var(--blaze-orange); font-weight:bold;">50 BlazeCoins</span>. (Limit 1 submission per day)</p>
-            <form id="clip-submit-form">
-                <div style="margin-bottom: 15px;">
-                    <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Highlight Title</label>
-                    <input type="text" id="cs-title" placeholder="e.g. Crazy 1v4 Clutch" required style="width:100%; padding:10px 15px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; font-family:var(--font-sans);">
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="color:var(--text-300); font-size:0.8rem; margin-bottom:5px; display:block;">Upload Video (Max 10s)</label>
-                    <input type="file" id="cs-file" accept="video/mp4,video/webm" required style="width:100%; padding:10px; background:rgba(0,0,0,0.5); border:1px dashed rgba(255,255,255,0.2); border-radius:6px; color:var(--text-muted); cursor:pointer;">
-                    <div id="cs-duration-error" style="color:#ef4444; font-size:0.75rem; margin-top:5px; display:none;">Video exceeds 10 seconds. Please trim and try again.</div>
-                </div>
-                <button type="submit" id="cs-submit-btn" style="width:100%; background:linear-gradient(45deg, #ff5722, #ff9800); border:none; border-radius:6px; color:#fff; font-family:var(--font-display); font-size:1rem; padding:12px; cursor:pointer; letter-spacing:1px; transition:opacity 0.2s;">SUBMIT HIGHLIGHT</button>
-            </form>
-        </div>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1179,11 +1157,6 @@
                 console.error("Failed to load clips", e);
             }
 
-            // Clip Submission Logic
-            const fileInput = document.getElementById('cs-file');
-            const submitBtn = document.getElementById('cs-submit-btn');
-            const durationError = document.getElementById('cs-duration-error');
-            let isDurationValid = false;
             let playerBlazeId = '';
             try {
                 const pRes = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
