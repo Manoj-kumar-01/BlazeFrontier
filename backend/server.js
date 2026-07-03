@@ -17,6 +17,7 @@ const rateLimit = require('express-rate-limit');
 app.use(helmet({
     contentSecurityPolicy: false, // Disable CSP to allow embeds like YT/FB without strict configs
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false, // Allow video/image files to be loaded by the browser
     crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
     referrerPolicy: { policy: "strict-origin-when-cross-origin" }
 }));
