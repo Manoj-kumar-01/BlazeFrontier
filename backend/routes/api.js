@@ -1057,7 +1057,8 @@ router.get('/hub/:game/stats', async (req, res) => {
         
         const gameRegex = new RegExp(`^${req.params.game}$`, 'i');
         
-        const activeOperators = await User.countDocuments({});
+        const io = req.app.get('io');
+        const activeOperators = io ? io.engine.clientsCount : await User.countDocuments({});
         const liveMatches = await Series.countDocuments({ game: gameRegex, status: 'ONGOING' });
         const activeTournaments = await Tournament.countDocuments({ game: gameRegex, status: { $in: ['ACTIVE', 'UPCOMING'] } });
         
