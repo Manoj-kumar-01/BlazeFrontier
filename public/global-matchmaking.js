@@ -411,10 +411,10 @@ async function syncMatchmakingState() {
                 window.BlazeMatchmaking.startCooldown(new Date(state.blockedUntil));
             }
             // 2. Daily limits
-            if (state.dailyCount >= 3) {
+            if (state.dailyCount >= 5) {
                 showLimitOverlay();
             }
-            updateDailyLimitUIText(3 - state.dailyCount);
+            updateDailyLimitUIText(5 - state.dailyCount);
 
             // 3. My active request
             if (state.myRequest) {
@@ -689,7 +689,7 @@ function showLimitOverlay() {
                 const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
                 const m = Math.floor((diff % (1000 * 60 * 60)) / 60000).toString().padStart(2, '0');
                 const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-                sub.innerHTML = `<span style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; letter-spacing: 2px;">0/3 LEFT</span><br><span style="color:var(--blaze-orange); font-size:0.9rem; font-weight:bold; letter-spacing:1px;">RESETS IN ${h}:${m}:${s}</span>`;
+                sub.innerHTML = `<span style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; letter-spacing: 2px; text-transform: uppercase;">Daily Limit Reached</span><br><span style="color:var(--blaze-orange); font-size:0.9rem; font-weight:bold; letter-spacing:1px;">RESETS IN ${h}:${m}:${s}</span>`;
             }
         };
         updateMidnightTimer();
@@ -699,7 +699,7 @@ function showLimitOverlay() {
 
 function updateDailyLimitUIText(left) {
     const limitSpan = document.getElementById('mm-daily-limit');
-    if (limitSpan) limitSpan.innerText = `(${Math.max(0, left)}/3 Left)`;
+    if (limitSpan) limitSpan.innerText = `(${Math.max(0, left)}/5 Left)`;
 }
 
 function updateDailyLimitUI() {
