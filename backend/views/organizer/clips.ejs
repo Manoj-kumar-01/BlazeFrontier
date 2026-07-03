@@ -813,72 +813,11 @@
                     </div>
                 </div>
 
-                <!-- Player of the Day Panel -->
-                <div class="org-panel">
-                    <div class="org-panel-header">
-                        <div class="org-panel-title">🏆 SET PLAYER OF THE DAY</div>
-                    </div>
-                    <div class="org-panel-body">
-                        <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 20px;">Feature a standout player and their best clip on the Player Hub. This acts as a backup if the admin hasn't set it yet.</div>
-                        <div id="potd-current" style="margin-bottom: 20px; display: none; background: rgba(0,0,0,0.3); padding: 16px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px;">CURRENTLY SET</div>
-                            <div id="potd-current-info" style="color: #fff; font-size: 0.95rem;"></div>
-                        </div>
-                        <form id="potd-form" onsubmit="submitPotd(event)" style="max-width: 600px;">
-                            <div class="org-input-group">
-                                <label>Blaze ID</label>
-                                <input type="text" id="potd-player" class="org-input" placeholder="e.g. BZ-12345" required>
-                            </div>
-                            <div class="org-input-group">
-                                <label>Custom Player Name (Optional)</label>
-                                <input type="text" id="potd-name" class="org-input" placeholder="Overrides automatic fetch if provided">
-                            </div>
-                            <div class="org-input-group">
-                                <label>Highlight Title</label>
-                                <input type="text" id="potd-title" class="org-input" placeholder="e.g. Insane 1v4 Clutch" required>
-                            </div>
-                            <div class="org-input-group">
-                                <label>Upload Video Clip (Max 50MB)</label>
-                                <div style="background: rgba(0,0,0,0.2); border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px; padding: 15px; text-align: center;">
-                                    <input type="file" id="potd-clip" accept="video/mp4,video/webm" style="color: var(--text-muted); font-size: 0.85rem;" required>
-                                </div>
-                            </div>
-                            <button type="submit" id="potd-submit-btn" class="org-btn org-btn-primary" style="width: 100%; justify-content: center; margin-top: 8px; background: linear-gradient(90deg, #eab308, #f59e0b); color: #000; font-weight: 700;">SET PLAYER OF THE DAY</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Daily Highlights Panel -->
-            <div class="org-panel-section" id="sec-daily">
-                <div class="org-panel">
-                    <div class="org-panel-header">
-                        <div class="org-panel-title">UPDATE DAILY HIGHLIGHTS</div>
-                    </div>
-                    <div class="org-panel-body">
-                        <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 25px;">
-                            These links will automatically embed content in the player Hubs. Make sure you use the embed URL format.
-                        </div>
-                        <form id="daily-content-form" onsubmit="submitDailyContent(event)" style="max-width: 600px;">
-                            <div style="margin-bottom: 15px;">
-                                <label style="display:block; color:var(--text-300); font-size:0.85rem; font-weight:600; margin-bottom:8px;">YouTube Embed Link</label>
-                                <input type="text" id="dc-yt" class="org-input" style="width: 100%;" placeholder="e.g. https://www.youtube.com/embed/XXXXXX" required>
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <label style="display:block; color:var(--text-300); font-size:0.85rem; font-weight:600; margin-bottom:8px;">Facebook Embed Link</label>
-                                <input type="text" id="dc-fb" class="org-input" style="width: 100%;" placeholder="e.g. https://www.facebook.com/plugins/video.php?href=..." required>
-                            </div>
-                            <div style="display:flex; justify-content:flex-end;">
-                                <button type="submit" class="org-btn org-btn-primary" style="width: 250px;">SAVE DAILY CONTENT</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
             </div>
 
         </div>
-
     </div>
+
 
     
     <!-- Clip Watch Modal -->
@@ -1827,82 +1766,12 @@
             if (e.target === e.currentTarget) closeCreateModal();
         });
 
-        // --- Player of the Day Logic ---
-        async function submitPotd(e) {
-            e.preventDefault();
-            const playerId = document.getElementById('potd-player').value;
-            const playerName = document.getElementById('potd-name').value;
-            const title = document.getElementById('potd-title').value;
-            const videoFile = document.getElementById('potd-clip').files[0];
-
-            if (!playerId || !videoFile) {
-                showToast('Blaze ID and Video File are required!', 'error');
-                return;
-            }
-
-            if (videoFile.size > 50 * 1024 * 1024) {
-                showToast('Video file must be under 50MB!', 'error');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('playerId', playerId);
-            if (playerName) formData.append('playerName', playerName);
-            formData.append('title', title);
-            formData.append('video', videoFile);
-
-            const btn = document.getElementById('potd-submit-btn');
-            const origText = btn.innerText;
-            btn.innerText = 'UPLOADING...';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch('/api/organizer/potd', {
-                    method: 'POST',
-                    headers: { 'x-auth-token': token },
-                    body: formData
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    showToast('Player of the Day updated successfully!', 'success');
-                    document.getElementById('potd-form').reset();
-                    loadPotdStatus();
-                } else {
-                    showToast(data.msg || 'Failed to set POTD', 'error');
-                }
-            } catch (err) {
-                console.error(err);
-                showToast('Upload failed. Please try again.', 'error');
-            } finally {
-                btn.innerText = origText;
-                btn.disabled = false;
-            }
-        }
-
-        async function loadPotdStatus() {
-            try {
-                const res = await fetch('/api/organizer/potd-current', {
-                    headers: { 'x-auth-token': token }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.playerName) {
-                        const container = document.getElementById('potd-current');
-                        document.getElementById('potd-current-info').innerHTML = `<strong>${data.playerName}</strong> — ${data.title} <span style="color: var(--text-muted); font-size: 0.8rem;">(${new Date(data.createdAt).toLocaleDateString()})</span>`;
-                        container.style.display = 'block';
-                    }
-                }
-            } catch(e) { /* silent */ }
-        }
-
         // Init
         loadStats();
         loadTournaments();
         loadRegistrations();
         loadClips();
-        loadDailyContent();
         loadSlotReport();
-        loadPotdStatus();
     </script>
 </body>
 </html>

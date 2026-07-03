@@ -784,27 +784,38 @@
                                 </div>
                                 `;
                             } else {
-                                if (activeReq.roomId) {
+                                // Check 20-minute timing gate
+                                let showCreds = false;
+                                if (activeReq.roomId && activeReq.timeSlot && activeReq.date) {
+                                    const slotMatch = activeReq.timeSlot.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                                    if (slotMatch) {
+                                        let h = parseInt(slotMatch[1]);
+                                        const m = parseInt(slotMatch[2]);
+                                        const ap = slotMatch[3].toUpperCase();
+                                        if (ap === 'PM' && h !== 12) h += 12;
+                                        if (ap === 'AM' && h === 12) h = 0;
+                                        const slotStart = new Date(activeReq.date);
+                                        slotStart.setHours(h, m, 0, 0);
+                                        if (Date.now() >= slotStart.getTime() - 20 * 60 * 1000) showCreds = true;
+                                    }
+                                }
+
+                                if (activeReq.roomId && showCreds) {
                                     html += `
-                                    <div class="pmc-alert" style="background: rgba(0, 188, 212, 0.1); border-color: rgba(0, 188, 212, 0.3);">
-                                        <span style="font-size: 1.2rem;">🔑</span>
-                                        <div style="width: 100%;">
-                                            <strong style="color: #00bcd4; display:block; margin-bottom:6px; font-size:1.1rem;">Match Credentials Available!</strong>
-                                            <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 6px; border-left: 3px solid #00bcd4;">
-                                                <div style="color: var(--text-200); font-family: var(--font-mono); font-size: 1.1rem; margin-bottom: 4px;"><strong>Room ID:</strong> <span style="color:#fff;">${activeReq.roomId}</span></div>
-                                                <div style="color: var(--text-200); font-family: var(--font-mono); font-size: 1.1rem;"><strong>Password:</strong> <span style="color:#fff;">${activeReq.roomPassword}</span></div>
-                                            </div>
-                                            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;">Ensure you join before the match start time!</div>
+                                    <div class="pmc-alert" style="background: rgba(0, 188, 212, 0.08); border-color: rgba(0, 188, 212, 0.3); padding: 10px 14px; max-height: 80px;">
+                                        <span style="font-size: 1rem;">🔑</span>
+                                        <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                                            <div style="font-family: var(--font-mono); font-size: 0.95rem; color:#fff;"><strong style="color:#00bcd4;">ID:</strong> ${activeReq.roomId}</div>
+                                            <div style="font-family: var(--font-mono); font-size: 0.95rem; color:#fff;"><strong style="color:#00bcd4;">Pass:</strong> ${activeReq.roomPassword}</div>
                                         </div>
                                     </div>
                                     `;
                                 } else {
                                     html += `
-                                    <div class="pmc-alert">
-                                        <span style="font-size: 1.2rem;">🛡️</span>
-                                        <div>
-                                            <strong style="color: #00bcd4; display:block; margin-bottom:2px;">Match Credentials</strong>
-                                            Room ID & Password will be shared 10 mins prior.
+                                    <div class="pmc-alert" style="padding: 10px 14px; max-height: 60px;">
+                                        <span style="font-size: 1rem;">🛡️</span>
+                                        <div style="font-size: 0.85rem;">
+                                            <strong style="color: #00bcd4;">Credentials</strong> — available 20 mins before your slot.
                                         </div>
                                     </div>
                                     `;

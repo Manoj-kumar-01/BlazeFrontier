@@ -682,141 +682,10 @@
         </style>
 
         <div class="org-panels">
-            <!-- Tournaments Panel -->
-            <div class="org-panel-section" id="sec-tournaments">
-                <div class="org-panel">
-                <div class="org-panel-header">
-                    <div class="org-panel-title">TOURNAMENTS</div>
-                    <button class="org-btn org-btn-primary" onclick="openCreateModal()">+ CREATE</button>
-                </div>
-                <div class="org-panel-body">
-                    <div class="org-table-wrap">
-                        <table class="org-table" id="tournaments-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Slots</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tournaments-body">
-                                <tr><td colspan="7"><div class="org-empty"><div class="empty-icon">🏆</div><p>Loading tournaments...</p></div></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            </div>
-
-            <!-- Results Panel -->
-            <div class="org-panel-section" id="sec-results">
-                <div class="org-panel">
-                    <div class="org-panel-header">
-                        <div class="org-panel-title">TOURNAMENT RESULTS</div>
-                    </div>
-                    <div class="org-panel-body">
-                        <div class="org-table-wrap">
-                            <table class="org-table" id="results-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="results-body">
-                                    <tr><td colspan="4"><div class="org-empty"><div class="empty-icon">🏆</div><p>Loading results...</p></div></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Registrations Panel -->
-            <div class="org-panel-section" id="sec-registrations">
-                <div class="org-panel">
-                <div class="org-panel-header">
-                    <div class="org-panel-title">REGISTRATIONS</div>
-                    <div class="org-tabs">
-                        <div class="org-tab active" onclick="filterRegs('all', this)">All</div>
-                        <div class="org-tab" onclick="filterRegs('Pending', this)">Pending</div>
-                        <div class="org-tab" onclick="filterRegs('Approved', this)">Approved</div>
-                        <div class="org-tab" onclick="filterRegs('Completed', this)">Completed</div>
-                        <div class="org-tab" onclick="filterRegs('Missed', this)">Missed</div>
-                        <div class="org-tab" onclick="filterRegs('Rejected', this)">Rejected</div>
-                    </div>
-                </div>
-                <div class="org-panel-body">
-                    <div class="org-table-wrap" style="height: 400px; overflow-y: auto; position: relative;">
-                        <table class="org-table" id="registrations-table">
-                            <thead style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px); z-index: 10;">
-                                <tr>
-                                    <th>Match #</th>
-                                    <th>Player</th>
-                                    <th>Blaze ID</th>
-                                    <th>Slot</th>
-                                    <th>Format / Mode</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="registrations-body">
-                                <tr><td colspan="7"><div class="org-empty"><div class="empty-icon">📋</div><p>Loading registrations...</p></div></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                </div>
-            </div>
-
-            <!-- Clip Submissions Panel -->
-            <div class="org-panel-section" id="sec-clips">
-                <div class="org-panel">
-                <div class="org-panel-header">
-                    <div class="org-panel-title">CLIP SUBMISSIONS (WEEKLY REVIEW)</div>
-                    <button class="org-btn org-btn-primary" onclick="startWeeklyVoting()">SAVE TOP 3 CLIPS FOR THIS WEEK</button>
-                </div>
-                <div class="org-panel-body">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
-                            <strong>Total Received This Week:</strong> <span id="clip-total-count" style="color: #fff;">0</span>
-                        </div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">
-                            <strong>Selected for Voting:</strong> <span id="clip-selected-count" style="color: var(--blaze-orange); font-weight: bold; font-size: 1.1rem;">0 / 3</span>
-                        </div>
-                    </div>
-                    <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 15px;">
-                        Review user clips submitted this week. Select exactly 3 clips to save them. The voting event will automatically begin on Saturday with these clips!
-                    </div>
-                    <div class="org-table-wrap" style="height: 400px; overflow-y: auto; position: relative;">
-                        <table class="org-table" id="clips-table">
-                            <thead style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px); z-index: 10;">
-                                <tr>
-                                    <th>Select</th>
-                                    <th>Title</th>
-                                    <th>Player / Game</th>
-                                    <th>Video</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="clips-body">
-                                <tr><td colspan="6"><div class="org-empty"><div class="empty-icon">📹</div><p>Loading clips...</p></div></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            </div>
 
             <!-- Daily Highlights Panel -->
             <div class="org-panel-section" id="sec-daily" style="display: block;">
-                <div class="org-panel">
+                <div class="org-panel" style="margin-bottom: 24px;">
                     <div class="org-panel-header">
                         <div class="org-panel-title">UPDATE DAILY HIGHLIGHTS</div>
                     </div>
@@ -836,6 +705,41 @@
                             <div style="display:flex; justify-content:flex-end;">
                                 <button type="submit" class="org-btn org-btn-primary" style="width: 250px;">SAVE DAILY CONTENT</button>
                             </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Player of the Day Panel -->
+                <div class="org-panel">
+                    <div class="org-panel-header">
+                        <div class="org-panel-title">🏆 SET PLAYER OF THE DAY</div>
+                    </div>
+                    <div class="org-panel-body">
+                        <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 20px;">Feature a standout player and their best clip on the Player Hub. This acts as a backup if the admin hasn't set it yet.</div>
+                        <div id="potd-current" style="margin-bottom: 20px; display: none; background: rgba(0,0,0,0.3); padding: 16px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px;">CURRENTLY SET</div>
+                            <div id="potd-current-info" style="color: #fff; font-size: 0.95rem;"></div>
+                        </div>
+                        <form id="potd-form" onsubmit="submitPotd(event)" style="max-width: 600px;">
+                            <div class="org-input-group">
+                                <label>Blaze ID</label>
+                                <input type="text" id="potd-player" class="org-input" placeholder="e.g. BZ-12345" required>
+                            </div>
+                            <div class="org-input-group">
+                                <label>Custom Player Name (Optional)</label>
+                                <input type="text" id="potd-name" class="org-input" placeholder="Overrides automatic fetch if provided">
+                            </div>
+                            <div class="org-input-group">
+                                <label>Highlight Title</label>
+                                <input type="text" id="potd-title" class="org-input" placeholder="e.g. Insane 1v4 Clutch" required>
+                            </div>
+                            <div class="org-input-group">
+                                <label>Upload Video Clip (Max 50MB)</label>
+                                <div style="background: rgba(0,0,0,0.2); border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px; padding: 15px; text-align: center;">
+                                    <input type="file" id="potd-clip" accept="video/mp4,video/webm" style="color: var(--text-muted); font-size: 0.85rem;" required>
+                                </div>
+                            </div>
+                            <button type="submit" id="potd-submit-btn" class="org-btn org-btn-primary" style="width: 100%; justify-content: center; margin-top: 8px; background: linear-gradient(90deg, #eab308, #f59e0b); color: #000; font-weight: 700;">SET PLAYER OF THE DAY</button>
                         </form>
                     </div>
                 </div>
@@ -1755,18 +1659,79 @@
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // Close modal on outside click
-        document.getElementById('tournamentModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeCreateModal();
-        });
+        // --- Player of the Day Logic ---
+        async function submitPotd(e) {
+            e.preventDefault();
+            const playerId = document.getElementById('potd-player').value;
+            const playerName = document.getElementById('potd-name').value;
+            const title = document.getElementById('potd-title').value;
+            const videoFile = document.getElementById('potd-clip').files[0];
+
+            if (!playerId || !videoFile) {
+                showToast('Blaze ID and Video File are required!', 'error');
+                return;
+            }
+
+            if (videoFile.size > 50 * 1024 * 1024) {
+                showToast('Video file must be under 50MB!', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('playerId', playerId);
+            if (playerName) formData.append('playerName', playerName);
+            formData.append('title', title);
+            formData.append('video', videoFile);
+
+            const btn = document.getElementById('potd-submit-btn');
+            const origText = btn.innerText;
+            btn.innerText = 'UPLOADING...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/organizer/potd', {
+                    method: 'POST',
+                    headers: { 'x-auth-token': token },
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('Player of the Day updated successfully!', 'success');
+                    document.getElementById('potd-form').reset();
+                    loadPotdStatus();
+                } else {
+                    showToast(data.msg || 'Failed to set POTD', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Upload failed. Please try again.', 'error');
+            } finally {
+                btn.innerText = origText;
+                btn.disabled = false;
+            }
+        }
+
+        async function loadPotdStatus() {
+            try {
+                const res = await fetch('/api/organizer/potd-current', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.playerName) {
+                        const container = document.getElementById('potd-current');
+                        document.getElementById('potd-current-info').innerHTML = `<strong>${data.playerName}</strong> — ${data.title} <span style="color: var(--text-muted); font-size: 0.8rem;">(${new Date(data.createdAt).toLocaleDateString()})</span>`;
+                        container.style.display = 'block';
+                    }
+                }
+            } catch(e) { /* silent */ }
+        }
 
         // Init
         loadStats();
-        loadTournaments();
-        loadRegistrations();
-        loadClips();
         loadDailyContent();
         loadSlotReport();
+        loadPotdStatus();
     </script>
 </body>
 </html>
