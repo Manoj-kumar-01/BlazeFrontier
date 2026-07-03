@@ -1404,11 +1404,11 @@
                                 submitContainer.innerHTML = '<div style="background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: 12px; padding: 25px; text-align: center; margin-top: 20px;"><div style="color: #4ade80; font-size: 2rem; margin-bottom: 10px;">✅</div><h3 style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin: 0 0 5px 0;">CLIP SUBMITTED!</h3><p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin: 0;">Your highlight is now under review. Check back on Saturday!</p></div>';
                             }
                         } else {
-                            alert(data.msg || 'Upload failed.');
+                            alert('Upload failed: ' + (data.msg || 'Unknown error'));
                         }
                     } catch (err) {
-                        console.error(err);
-                        alert('Error uploading clip.');
+                        console.error('Upload Exception:', err);
+                        alert('Error uploading clip: ' + err.message);
                     } finally {
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'SUBMIT CLIP FOR REVIEW';

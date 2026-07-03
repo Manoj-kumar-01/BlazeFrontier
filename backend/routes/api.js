@@ -51,9 +51,14 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
 
         const ClipSubmission = require('../models/ClipSubmission');
         
+        const startOfWeek = new Date();
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
         // Limit to 1 submission per week
         const existingSubmission = await ClipSubmission.findOne({
-            userId: req.user.id
+            userId: req.user.id,
+            createdAt: { $gte: startOfWeek }
         });
 
         if (existingSubmission) {
@@ -129,8 +134,13 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
 router.get('/clip-submissions/me/this-week', authMiddleware, async (req, res) => {
     try {
         const ClipSubmission = require('../models/ClipSubmission');
+        const startOfWeek = new Date();
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
         const existingSubmission = await ClipSubmission.findOne({
-            userId: req.user.id
+            userId: req.user.id,
+            createdAt: { $gte: startOfWeek }
         });
 
         res.json({ hasSubmitted: !!existingSubmission });
