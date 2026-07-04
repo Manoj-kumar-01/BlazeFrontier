@@ -392,6 +392,20 @@
     <%- include('../partials/navbar') %>
 
     <div class="dash">
+        
+        <!-- Elite Verified Tagline (Top) -->
+        <div id="ff-verified-tagline" style="display: none; grid-column: 1 / 7; margin-bottom: 0px;">
+            <div style="background: linear-gradient(90deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 50%, transparent 100%); border-left: 4px solid #d4af37; padding: 12px 20px; border-radius: 8px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1); animation: pulseGlow 2s infinite alternate;">
+                <span style="font-size: 1.2rem;">✨</span>
+                <div style="color: #fff; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px;">
+                    <span style="color: #d4af37; font-weight: 800; text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);">VERIFIED ELITE:</span> You have unlocked all premium perks, exclusive scrims, and tournaments.
+                </div>
+            </div>
+            <style>
+                @keyframes pulseGlow { 0% { box-shadow: 0 0 5px rgba(212,175,55,0.1); border-left-color: rgba(212,175,55,0.6); } 100% { box-shadow: 0 0 20px rgba(212,175,55,0.4); border-left-color: #ffd700; } }
+            </style>
+        </div>
+
         <!-- Welcome -->
         <div class="card c-welcome" style="background: url('/public/FFMain.jpg') center/cover no-repeat;">
             <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(10,5,8,0.85) 0%, rgba(10,5,8,0.6) 50%, rgba(10,5,8,0.3) 100%); z-index: 0;"></div>
@@ -431,6 +445,8 @@
                                 if (qs) qs.style.display = 'none';
                                 const tc = document.getElementById('ff-trusted-section');
                                 if (tc) tc.style.display = 'block';
+                                const vt = document.getElementById('ff-verified-tagline');
+                                if (vt) vt.style.display = 'block';
                             });
                         }
                     }
@@ -561,14 +577,6 @@
 
                 <div id="ff-trusted-section" style="display: none;">
                     
-                    <!-- Mobile View -->
-                    <div class="trusted-mobile" style="background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 16px; align-items: center; justify-content: space-between; gap: 12px;">
-                        <div style="color: #fff; font-size: 0.95rem; line-height: 1.4;">
-                            <span style="color: #d4af37; font-weight: bold;">Verified.</span> You've unlocked all Elite perks and tournaments.
-                        </div>
-                        <a href="/dashboard/tournaments" style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; text-decoration: none; white-space: nowrap; border: 1px solid rgba(212, 175, 55, 0.3);">Enter →</a>
-                    </div>
-
                     <!-- PC View -->
                     <div class="trusted-pc pc-elite-dashboard">
                         <div class="elite-dash-header">

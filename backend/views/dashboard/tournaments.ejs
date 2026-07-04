@@ -26,90 +26,110 @@
 
         .page-wrap { max-width: 1200px; margin: 0 auto; padding: 100px 24px 80px; display: none; }
 
-        /* ELITE HERO SECTION */
-        .elite-hero {
-            position: relative; overflow: hidden; padding: 60px 40px; 
-            background: linear-gradient(145deg, #050505 0%, #151515 100%);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 24px; margin-bottom: 40px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 40px rgba(255, 215, 0, 0.05);
+        /* GLOSSY SPOTLIGHT HERO */
+        .spotlight-hero {
+            position: relative; overflow: hidden; padding: 60px 50px; 
+            background: linear-gradient(135deg, rgba(20,20,25,0.8) 0%, rgba(5,5,5,0.95) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 24px; margin-bottom: 50px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.9), inset 0 2px 20px rgba(255, 215, 0, 0.15);
             display: flex; flex-direction: column; justify-content: center;
-        }
-        
-        .elite-hero::before {
-            content: ''; position: absolute; inset: 0;
-            background: url('https://www.transparenttextures.com/patterns/cubes.png');
-            opacity: 0.03; mix-blend-mode: overlay; pointer-events: none;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            animation: slideDownFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
-        .elite-glow {
-            position: absolute; width: 400px; height: 400px;
-            background: radial-gradient(circle, var(--elite-gold-dim) 0%, transparent 70%);
-            top: -200px; right: -100px; border-radius: 50%;
+        .spotlight-hero::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 215, 0, 0.15) 0%, transparent 60%);
+            opacity: 0.8; pointer-events: none;
+            animation: slowRotate 20s linear infinite;
+        }
+
+        .spotlight-hero::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
             pointer-events: none;
         }
 
-        .elite-badge {
+        .sh-badge {
             display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(255, 215, 0, 0.15);
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+            border: 1px solid rgba(255, 215, 0, 0.4);
             color: var(--elite-gold);
             padding: 6px 16px; border-radius: 30px;
             font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800; letter-spacing: 2px;
-            margin-bottom: 20px;
+            margin-bottom: 20px; width: fit-content;
             box-shadow: 0 0 20px var(--elite-gold-glow);
-        }
-
-        .elite-title {
-            font-family: var(--font-display);
-            font-size: 4.5rem;
-            line-height: 1;
-            margin: 0 0 16px 0;
-            background: linear-gradient(180deg, #FFFFFF 0%, #A0A0A0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
             text-transform: uppercase;
         }
-        
-        .elite-title span {
-            background: linear-gradient(180deg, #FFE259 0%, #FFA751 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        .sh-title {
+            font-family: var(--font-display);
+            font-size: 4.5rem; line-height: 1.1; margin: 0 0 16px 0;
+            background: linear-gradient(180deg, #FFFFFF 0%, #FFE259 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: 2px; text-transform: uppercase;
+            text-shadow: 0 10px 30px rgba(255,215,0,0.2);
+            position: relative; z-index: 2;
         }
 
-        .elite-desc {
-            font-size: 1.1rem; color: #a1a1aa; max-width: 600px; line-height: 1.6; margin: 0;
+        .sh-meta {
+            display: flex; gap: 24px; margin-bottom: 32px; position: relative; z-index: 2;
         }
 
-        /* ELITE TABS */
-        .elite-tabs-wrapper { display: flex; justify-content: center; margin-bottom: 40px; }
-        .elite-tabs {
-            display: inline-flex; background: rgba(0,0,0,0.4);
-            padding: 6px; border-radius: 12px;
-            border: 1px solid var(--elite-border);
-            position: relative;
-            backdrop-filter: blur(10px);
+        .sh-stat {
+            background: rgba(0,0,0,0.5); padding: 12px 20px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            border-left: 3px solid #ffd700;
         }
 
-        .elite-tab {
-            position: relative; z-index: 1;
-            padding: 12px 32px; border: none; background: transparent;
-            font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 2px;
-            color: #71717a; cursor: pointer; transition: all 0.3s;
-            display: flex; align-items: center; gap: 8px;
-            border-radius: 8px;
+        .sh-btn {
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            color: #000; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 2px;
+            padding: 16px 40px; border-radius: 12px; text-decoration: none; border: none; cursor: pointer;
+            transition: all 0.3s; font-weight: bold; box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+            display: inline-block; width: fit-content; position: relative; z-index: 2;
+        }
+        .sh-btn:hover {
+            transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 40px rgba(255,215,0,0.6);
         }
 
-        .elite-tab:hover { color: #fff; }
-        .elite-tab.active { color: #fff; }
-        .elite-tab.active::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(255, 87, 34, 0.1));
-            border-bottom: 2px solid var(--elite-gold);
-            border-radius: 8px; z-index: -1;
-            animation: fadeIn 0.3s forwards;
+        /* SECTION HEADER & DROPDOWN */
+        .tournaments-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;
         }
+
+        .section-title {
+            font-family: var(--font-display); font-size: 2.5rem; color: #fff; margin: 0; letter-spacing: 1.5px;
+        }
+
+        .custom-dropdown {
+            position: relative; width: 220px;
+        }
+        .cd-btn {
+            width: 100%; background: rgba(15,15,20,0.8); border: 1px solid rgba(255,215,0,0.3);
+            color: #fff; padding: 14px 20px; border-radius: 12px; font-family: var(--font-display);
+            font-size: 1.2rem; letter-spacing: 1px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(10px); transition: all 0.3s;
+        }
+        .cd-btn:hover { border-color: rgba(255,215,0,0.6); box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+        .cd-menu {
+            position: absolute; top: calc(100% + 8px); left: 0; width: 100%;
+            background: rgba(15,15,20,0.95); border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 12px; overflow: hidden; backdrop-filter: blur(20px);
+            transform-origin: top; transform: scaleY(0); opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+        }
+        .custom-dropdown.open .cd-menu { transform: scaleY(1); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .cd-item {
+            padding: 14px 20px; color: #a1a1aa; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .cd-item:hover, .cd-item.active { background: rgba(255,215,0,0.1); color: #ffd700; padding-left: 28px; }
+
 
         .pulse-dot {
             width: 8px; height: 8px; background: #22c55e; border-radius: 50%;
@@ -242,11 +262,15 @@
         @keyframes fadeUpIn { 0% { opacity: 0; transform: translateY(40px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes slideDownFade { 0% { opacity: 0; transform: translateY(-30px); } 100% { opacity: 1; transform: translateY(0); } }
         @keyframes modalPop { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes slowRotate { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 
         @media (max-width: 768px) {
-            .elite-title { font-size: 3rem; }
-            .elite-hero { padding: 40px 24px; text-align: center; align-items: center; }
+            .sh-title { font-size: 3rem; }
+            .spotlight-hero { padding: 40px 24px; text-align: center; align-items: center; }
+            .sh-meta { flex-direction: column; gap: 12px; }
             .t-grid { grid-template-columns: 1fr; }
+            .tournaments-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .custom-dropdown { width: 100%; }
         }
     </style>
 </head>
@@ -255,24 +279,23 @@
     <%- include('../partials/navbar') %>
 
     <div class="page-wrap">
-        <div class="elite-hero">
-            <div class="elite-glow"></div>
-            <div class="elite-badge">💎 ELITE ACCESS</div>
-            <h1 class="elite-title">TRUSTED <span>TOURNAMENTS</span></h1>
-            <p class="elite-desc">Exclusive high-stakes series and tournaments reserved for verified genuine players. Prove your worth in the highest tiers of Blaze Frontier.</p>
+        
+        <div id="spotlight-container">
+            <!-- Dynamic Spotlight Hero injected here by JS -->
         </div>
 
-        <div class="elite-tabs-wrapper">
-            <div class="elite-tabs" id="view-tabs">
-                <button class="elite-tab active" data-view="live">
-                    <span class="pulse-dot"></span> LIVE NOW
+        <div class="tournaments-header">
+            <h2 class="section-title">AVAILABLE TOURNAMENTS</h2>
+            <div class="custom-dropdown" id="t-dropdown">
+                <button class="cd-btn" id="t-dropdown-btn">
+                    <span id="cd-selected">LIVE NOW</span>
+                    <span style="font-size:0.8rem">▼</span>
                 </button>
-                <button class="elite-tab" data-view="upcoming">
-                    UPCOMING
-                </button>
-                <button class="elite-tab" data-view="completed">
-                    COMPLETED
-                </button>
+                <div class="cd-menu">
+                    <div class="cd-item active" data-view="live">LIVE NOW</div>
+                    <div class="cd-item" data-view="upcoming">FUTURE / UPCOMING</div>
+                    <div class="cd-item" data-view="completed">COMPLETED</div>
+                </div>
             </div>
         </div>
 
@@ -337,6 +360,81 @@
                 });
             });
 
+            // Dropdown Logic
+            const dropdown = document.getElementById('t-dropdown');
+            const dropdownBtn = document.getElementById('t-dropdown-btn');
+            const dropdownMenu = dropdown.querySelector('.cd-menu');
+            const dropdownItems = dropdown.querySelectorAll('.cd-item');
+            const selectedText = document.getElementById('cd-selected');
+
+            dropdownBtn.addEventListener('click', () => {
+                dropdown.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target)) dropdown.classList.remove('open');
+            });
+
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    dropdownItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    selectedText.innerText = item.innerText;
+                    dropdown.classList.remove('open');
+                    renderView(item.dataset.view);
+                });
+            });
+
+            const renderSpotlight = (data) => {
+                const container = document.getElementById('spotlight-container');
+                let spotlightT = null;
+                const pool = [...(data.live || []), ...(data.upcoming || [])];
+                
+                if (pool.length > 0) {
+                    pool.sort((a, b) => {
+                        let aTot = 0, bTot = 0;
+                        if (a.participants && a.participants.includes('/')) aTot = parseInt(a.participants.split('/')[1]);
+                        if (b.participants && b.participants.includes('/')) bTot = parseInt(b.participants.split('/')[1]);
+                        return bTot - aTot;
+                    });
+                    spotlightT = pool[0];
+                }
+
+                if (spotlightT) {
+                    container.innerHTML = `
+                        <div class="spotlight-hero" onmousemove="const rect = this.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; const xc = rect.width/2; const yc = rect.height/2; const dx = x - xc; const dy = y - yc; this.style.transform = \\`rotateY(\\${dx/40}deg) rotateX(\\${-dy/40}deg)\\`;" onmouseleave="this.style.transform = 'rotateY(0) rotateX(0)';">
+                            <div class="sh-badge">🔥 FEATURED EVENT</div>
+                            <h1 class="sh-title">${spotlightT.name}</h1>
+                            <div class="sh-meta">
+                                <div class="sh-stat">
+                                    <div class="li-stat-label">GAME</div>
+                                    <div class="li-stat-val" style="color:#fff;">${spotlightT.game}</div>
+                                </div>
+                                <div class="sh-stat">
+                                    <div class="li-stat-label">REWARD POOL</div>
+                                    <div class="li-stat-val" style="color:var(--elite-gold);">${spotlightT.prize || 'Elite Standing'}</div>
+                                </div>
+                                <div class="sh-stat">
+                                    <div class="li-stat-label">FORMAT</div>
+                                    <div class="li-stat-val" style="color:#fff;">${spotlightT.team || 'Solo'}</div>
+                                </div>
+                            </div>
+                            <a href="${spotlightT.canRegister ? `/dashboard/tournaments/${spotlightT.id || spotlightT._id}/register` : '/dashboard/leaderboards'}" class="sh-btn">
+                                ${spotlightT.canRegister ? 'SECURE YOUR SLOT NOW' : 'SPECTATE LIVE'}
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="spotlight-hero">
+                            <div class="sh-badge">💎 ELITE ACCESS</div>
+                            <h1 class="sh-title">TRUSTED <span>TOURNAMENTS</span></h1>
+                            <p class="elite-desc" style="position:relative; z-index:2; color:#a1a1aa; font-size:1.1rem; max-width:600px; line-height:1.6;">Exclusive high-stakes series and tournaments reserved for verified genuine players. Prove your worth in the highest tiers of Blaze Frontier.</p>
+                        </div>
+                    `;
+                }
+            };
+
             const loadTournaments = async () => {
                 const container = document.getElementById('t-content');
                 container.innerHTML = '<div style="text-align:center;padding:100px"><div class="spinner-ring"></div></div>';
@@ -345,6 +443,7 @@
                     const res = await fetch('/api/tournaments', { headers: { 'x-auth-token': token } });
                     if (res.ok) {
                         window.tournamentData = await res.json();
+                        renderSpotlight(window.tournamentData);
                         renderView('live');
                     } else {
                         throw new Error('Failed to fetch');
@@ -360,6 +459,7 @@
                 
                 const list = window.tournamentData[view];
                 let html = '';
+
 
                 if (view === 'live') {
                     if (!list || list.length === 0) {
