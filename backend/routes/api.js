@@ -955,20 +955,19 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         
         let live = [];
         let upcoming = [];
+        let completed = [];
         
         const allRegs = await Registration.find({ userId: req.user.id }).sort({ createdAt: -1 }).lean();
         const userTourneyRegs = new Set(allRegs.filter(r => r.format === 'Tournament' && r.status !== 'Missed' && r.status !== 'Rejected').map(r => r.tournamentId ? r.tournamentId.toString() : ''));
 
         // 1. Generic Open Tournaments
-        const tournaments = await Tournament.find({ ...filter, status: { $ne: 'ENDED' } });
+        const tournaments = await Tournament.find({ ...filter }); // Fetch all including ENDED
         for (let t of tournaments) {
             const correctStatus = computeStatus(t.date);
             if (t.status !== correctStatus) {
                 t.status = correctStatus;
                 await t.save();
             }
-            
-            if (t.status === 'ENDED') continue;
 
             const isRegistered = userTourneyRegs.has(t._id.toString());
             const now = Date.now();
@@ -998,15 +997,16 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
             };
             if (t.status === 'ACTIVE') live.push(tObj);
             else if (t.status === 'UPCOMING') upcoming.push(tObj);
+            else if (t.status === 'ENDED') completed.push(tObj);
         }
         
         // 2. Global Approved Custom Series (Upcoming Matches for everyone)
-        const regFilter = { 
+        const upcomingRegFilter = { 
             status: 'Approved',
             format: { $ne: 'Qualification Series' }
         };
         
-        const approvedRegs = await Registration.find(regFilter).populate('userId', 'username inGameName').lean();
+        const approvedRegs = await Registration.find(upcomingRegFilter).populate('userId', 'username inGameName').lean();
         approvedRegs.forEach(r => {
             upcoming.push({
                 type: 'match',
@@ -1016,6 +1016,31 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
                 game: 'CUSTOM SERIES',
                 name: `${r.format.toUpperCase()} ${r.mode.toUpperCase()}`,
                 status: 'APPROVED',
+                participants: r.teamMembers ? r.teamMembers.length + 1 : 1,
+                date: r.startDate ? new Date(r.startDate).toLocaleDateString() : 'TBA',
+                matchNumber: r.matchId || 'TBA',
+                timeSlot: r.timeSlot,
+                playerName: r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown',
+                canRegister: false
+            });
+        });
+
+        // 2.b Global Completed Custom Series (Completed Matches for everyone)
+        const completedRegFilter = {
+            status: { $in: ['Completed', 'Verified'] },
+            format: { $ne: 'Qualification Series' }
+        };
+
+        const completedRegs = await Registration.find(completedRegFilter).populate('userId', 'username inGameName').sort({ updatedAt: -1 }).limit(20).lean();
+        completedRegs.forEach(r => {
+            completed.push({
+                type: 'match',
+                id: r._id,
+                team: r.mode ? r.mode : (r.teamMembers && r.teamMembers.length > 0 ? 'Squad' : 'Solo'),
+                slot: r.timeSlot,
+                game: 'CUSTOM SERIES',
+                name: `${r.format.toUpperCase()} ${r.mode.toUpperCase()}`,
+                status: r.status.toUpperCase(),
                 participants: r.teamMembers ? r.teamMembers.length + 1 : 1,
                 date: r.startDate ? new Date(r.startDate).toLocaleDateString() : 'TBA',
                 matchNumber: r.matchId || 'TBA',
@@ -1097,7 +1122,7 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
             else if (m.status === 'SCHEDULED') upcoming.push(obj);
         });
 
-        res.json({ live, upcoming, requests });
+        res.json({ live, upcoming, completed, requests });
     } catch (err) {
         require('fs').writeFileSync('temp_error.txt', err.stack);
         console.error(err.message);
@@ -1620,7 +1645,11 @@ router.get('/voting-event/active', async (req, res) => {
             .sort({ _id: -1 })
             .populate({
                 path: 'clips',
-                select: 'title videoUrl game playerId userId author' // author might not be in ClipSubmission, let's just select what's there
+                select: 'title videoUrl game playerId userId author',
+                populate: {
+                    path: 'userId',
+                    select: 'username playerId inGameName'
+                }
             })
             .lean();
         
@@ -1630,6 +1659,23 @@ router.get('/voting-event/active', async (req, res) => {
         if (new Date().getDay() !== 6) {
             event.isActive = false;
         }
+
+        // Fetch vote counts for each clip
+        const Vote = require('../models/Vote');
+        const voteCounts = await Vote.aggregate([
+            { $match: { eventId: event._id } },
+            { $group: { _id: "$clipId", count: { $sum: 1 } } }
+        ]);
+
+        const voteMap = {};
+        voteCounts.forEach(v => {
+            voteMap[v._id.toString()] = v.count;
+        });
+
+        event.clips = event.clips.map(clip => ({
+            ...clip,
+            voteCount: voteMap[clip._id.toString()] || 0
+        }));
 
         res.json(event);
     } catch (err) {

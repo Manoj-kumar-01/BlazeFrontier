@@ -75,6 +75,52 @@ router.post('/voting-event/create', async (req, res) => {
             { $set: { status: 'approved' } }
         );
 
+        // Send Email to the Top 3 selected users
+        try {
+            const selectedClips = await ClipSubmission.find({ _id: { $in: clipIds } }).populate('userId', 'email username');
+            const sendEmail = require('../utils/sendEmail');
+            
+            selectedClips.forEach(clip => {
+                if (clip.userId && clip.userId.email) {
+                    sendEmail({
+                        email: clip.userId.email,
+                        subject: 'Congratulations! Your Clip is in the Top 3! 🏆',
+                        html: `<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background: #1a1a24; color: #fff; border-radius: 8px;">
+                                <h2 style="color: #ff5722;">You made it to the Top 3!</h2>
+                                <p style="font-size: 1.1rem;">Hi <strong>${clip.userId.username}</strong>,</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6;">Your recent clip for <strong>${game}</strong> has been selected by our organizers as one of the Top 3 clips of the week!</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6;">Voting is now open to the community. Head over to the platform to check it out!</p>
+                                <p style="font-size: 1.1rem; color: #aaa;">Good luck,<br/>The Blaze Frontier Team</p>
+                               </div>`
+                    });
+                }
+            });
+        } catch (e) {
+            console.error('Email notification failed:', e.message);
+        }
+
+        // Notify Discord (Offline Notification)
+        try {
+            const { sendAnnouncement } = require('../discordBot');
+            sendAnnouncement(`🔥 **IT'S VOTING TIME!** 🔥\n\nThe Top 3 ${game} clips of the week have been selected! Head over to the platform and vote for your favorite clip now. Who will be the Player of the Week?`);
+        } catch (e) {
+            console.error('Discord notification failed:', e.message);
+        }
+
+        // Notify Website (Live Notification)
+        try {
+            const io = req.app.get('io');
+            if (io) {
+                io.emit('new_notification', {
+                    title: 'It\'s Voting Time!',
+                    message: `The Top 3 ${game} clips are ready. Go to the arena and cast your vote!`,
+                    type: 'info'
+                });
+            }
+        } catch (e) {
+            console.error('Platform notification failed:', e.message);
+        }
+
         res.json({ msg: 'Voting event created successfully', event: newEvent });
     } catch (err) {
         console.error(err.message);

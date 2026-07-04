@@ -156,6 +156,7 @@
         .ec-status { font-family: var(--font-display); font-size: 1rem; letter-spacing: 1.5px; padding: 4px 12px; border-radius: 20px; }
         .ec-status.live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
         .ec-status.upcoming { background: rgba(255,165,0,0.1); color: #ffa500; border: 1px solid rgba(255,165,0,0.3); }
+        .ec-status.completed { background: rgba(161,161,170,0.1); color: #a1a1aa; border: 1px solid rgba(161,161,170,0.3); }
         
         .ec-title { font-family: var(--font-display); font-size: 2rem; color: #fff; margin: 0 0 24px 0; line-height: 1.1; letter-spacing: 1px; }
 
@@ -240,6 +241,9 @@
                 </button>
                 <button class="elite-tab" data-view="upcoming">
                     UPCOMING
+                </button>
+                <button class="elite-tab" data-view="completed">
+                    COMPLETED
                 </button>
             </div>
         </div>
@@ -362,7 +366,7 @@
                             </div>
                         `).join('') + '</div>';
                     }
-                } else {
+                } else if (view === 'upcoming') {
                     if (!list || list.length === 0) {
                         html = '<div class="empty-state">No upcoming elite tournaments scheduled. Check back soon.</div>';
                     } else {
@@ -415,6 +419,33 @@
 
                                 ${t.canRegister ? `<a href="/dashboard/tournaments/${t.id || t._id}/register" class="ec-btn-primary" style="margin-bottom: 12px;">SECURE SLOT</a>` : ''}
                                 ${t.isListPublished ? `<button onclick="viewParticipants('${t.id || t._id}', '${t.name.replace(/'/g, "\\'")}')" class="ec-btn-secondary">VIEW ROSTER</button>` : ''}
+                            </div>
+                        `).join('') + '</div>';
+                    }
+                } else if (view === 'completed') {
+                    if (!list || list.length === 0) {
+                        html = '<div class="empty-state">No completed matches available yet.</div>';
+                    } else {
+                        html = '<div class="t-grid">' + list.map((t, index) => `
+                            <div class="elite-card" style="animation-delay: ${index * 0.1}s; opacity: 0.7; filter: grayscale(20%);">
+                                <div class="ec-header">
+                                    <span class="ec-game">${t.game}</span>
+                                    <span class="ec-status completed">COMPLETED</span>
+                                </div>
+                                <h3 class="ec-title">${t.name}</h3>
+                                
+                                <div class="ec-grid">
+                                    <div class="ec-stat">
+                                        <span class="ec-stat-label">Date Played</span>
+                                        <span class="ec-stat-val">${t.date}</span>
+                                    </div>
+                                    <div class="ec-stat">
+                                        <span class="ec-stat-label">Format</span>
+                                        <span class="ec-stat-val">${t.team || 'Solo'}</span>
+                                    </div>
+                                </div>
+
+                                <a href="/dashboard/leaderboards" class="ec-btn-secondary" style="margin-bottom: 12px;">VIEW RESULTS</a>
                             </div>
                         `).join('') + '</div>';
                     }

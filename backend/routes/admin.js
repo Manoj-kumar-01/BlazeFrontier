@@ -571,8 +571,8 @@ router.post('/ban/:userId', adminMiddleware, async (req, res) => {
         // 1. Create a BannedUser record
         const bannedUser = new BannedUser({
             originalUserId: user._id.toString(),
-            playerId: user.playerId,
-            username: user.username,
+            playerId: user.playerId || 'UNKNOWN',
+            username: user.username || user.inGameName || 'Unknown User',
             reason: 'Flagged for Cheating/TOS Violation by Admin'
         });
         await bannedUser.save();
@@ -589,6 +589,19 @@ router.post('/ban/:userId', adminMiddleware, async (req, res) => {
         await User.findByIdAndDelete(req.params.userId);
 
         res.json({ msg: 'User moved to banned database, deleted from main database, and stats nullified' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/admin/banned-users
+// @desc    Get all banned users for the admin panel
+router.get('/banned-users', adminMiddleware, async (req, res) => {
+    try {
+        const BannedUser = require('../models/BannedUser');
+        const banned = await BannedUser.find().sort({ bannedAt: -1 }).lean();
+        res.json(banned);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
