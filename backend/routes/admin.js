@@ -185,12 +185,18 @@ router.put('/verify-player/:id', adminMiddleware, async (req, res) => {
 
         // Make Genuine & Give 100 Coins
         user.isGenuine = true;
-        user.blazePoints = (user.blazePoints || 0) + 100;
+        user.trustedPlayerClaimed = true;
+        user.blazeCoins = (user.blazeCoins || 0) + 100;
         await user.save();
 
         // Update registration status to Verified
         reg.status = 'Verified';
         await reg.save();
+
+        global.graphqlStatsCache = null;
+        if (global.clearApiStatsCache) {
+            global.clearApiStatsCache();
+        }
 
         const agenda = require('../utils/queue');
 
@@ -770,6 +776,11 @@ router.put('/users/:userId/verify', adminMiddleware, async (req, res) => {
         }
 
         await user.save();
+
+        global.graphqlStatsCache = null;
+        if (global.clearApiStatsCache) {
+            global.clearApiStatsCache();
+        }
 
         res.json({ msg: `User is now ${user.isGenuine ? 'verified' : 'unverified'}`, isGenuine: user.isGenuine });
     } catch (err) {
