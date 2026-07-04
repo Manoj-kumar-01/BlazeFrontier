@@ -350,7 +350,11 @@
                 
                 window.addEventListener('globalUserDataReady', () => {
                     clearTimeout(fallbackTimeout);
-                    if (window.globalUserData) applyUserStatus(window.globalUserData);
+                    if (window.globalUserData) {
+                        applyUserStatus(window.globalUserData);
+                    } else {
+                        document.querySelector('.page-wrap').style.display = 'block';
+                    }
                 });
             }
 
