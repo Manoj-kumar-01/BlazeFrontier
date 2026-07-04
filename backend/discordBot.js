@@ -71,7 +71,26 @@ async function verifyUserInServer(discordName) {
     }
 }
 
+async function sendAnnouncement(channelId, messageContent) {
+    if (!process.env.DISCORD_BOT_TOKEN || !isBotReady) {
+        console.warn('Discord Bot not ready, skipping announcement.');
+        return false;
+    }
+    try {
+        const channel = await client.channels.fetch(channelId);
+        if (channel && channel.isTextBased()) {
+            await channel.send(messageContent);
+            return true;
+        }
+        return false;
+    } catch (err) {
+        console.error('Failed to send Discord announcement:', err);
+        return false;
+    }
+}
+
 module.exports = {
     client,
-    verifyUserInServer
+    verifyUserInServer,
+    sendAnnouncement
 };

@@ -237,6 +237,10 @@ async function startBackend() {
         await agenda.every('1 0 * * 1', 'cleanup-weekly-clips'); // Runs Monday at 00:01
         await agenda.every('1 minute', 'check-upcoming-slots');
         // console.log('Agenda Job Queue Started successfully.');
+
+        // Initialize Change Streams
+        const initChangeStreams = require('./utils/changeStreams');
+        initChangeStreams();
     })
     .catch(err => console.log('MongoDB Connection Error:', err));
 

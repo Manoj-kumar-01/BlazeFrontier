@@ -198,52 +198,8 @@ router.put('/verify-player/:id', adminMiddleware, async (req, res) => {
             global.clearApiStatsCache();
         }
 
-        const agenda = require('../utils/queue');
-
-        // Notification
-        agenda.now('send-inapp-notification', {
-            userId: user._id,
-            title: '🎉 You are now a Trusted Player!',
-            message: `Your recent matches have been verified! You have been granted the Trusted Player Golden Banner and 100 BlazeCoins!`,
-            type: 'success'
-        });
-
-        // Email
-        if (user.email) {
-            agenda.now('send-email', {
-                email: user.email,
-                subject: 'You are now a Trusted Player! - Blaze Frontier',
-                html: `
-                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-                        <div style="text-align: center; background-color: #111; padding: 20px;">
-                            <img src="cid:trusted_member.jpg" alt="Trusted Member Verified" style="max-width: 100%; border-radius: 12px; display: block; margin: 0 auto;">
-                        </div>
-                        <div style="padding: 30px; text-align: left;">
-                            <h2 style="color: #ff4e00; margin-top: 0;">Account Upgraded</h2>
-                            <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
-                            <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">Your recent matches were verified by the admin team. You are now officially a <strong>Trusted Player</strong> in Blaze Frontier.</p>
-                            <div style="background-color: #f1f1f1; padding: 15px; border-left: 4px solid #ff4e00; margin: 20px 0;">
-                                <p style="margin: 0 0 10px 0;"><strong>Rewards Unlocked:</strong></p>
-                                <ul style="margin: 0; padding-left: 20px;">
-                                    <li>Golden Trusted Player Banner</li>
-                                    <li>100 BlazeCoins</li>
-                                    <li>Access to Elite Tournaments</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div style="background-color: #111; padding: 15px; text-align: center;">
-                            <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- The Blaze Frontier Team</p>
-                        </div>
-                    </div>
-                `,
-                attachments: [
-                    {
-                        filename: 'trusted_member.jpg',
-                        path: require('path').join(__dirname, '../../public/trusted_member.jpg')
-                    }
-                ]
-            });
-        }
+        // Notification and email are now handled automatically by the MongoDB Change Stream 
+        // in backend/utils/changeStreams.js when isGenuine becomes true.
 
         res.json({ msg: 'Player verified successfully!' });
     } catch (err) {
@@ -743,42 +699,8 @@ router.put('/users/:userId/verify', adminMiddleware, async (req, res) => {
             user.trustedPlayerClaimed = true;
             user.blazeCoins = (user.blazeCoins || 0) + 100;
 
-            const agenda = require('../utils/queue');
-            agenda.now('send-inapp-notification', {
-                userId: user._id,
-                title: 'You are a Trusted Player!',
-                message: 'Congratulations! You are now a trusted member of Blaze Frontier and 100 BlazeCoins have been added to your wallet. You now have access to Elite Tournaments!',
-                type: 'success'
-            });
-
-            if (user.email) {
-                agenda.now('send-email', {
-                    email: user.email,
-                    subject: 'Welcome to the Trusted Players Club! - Blaze Frontier',
-                    html: `
-                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-                            <div style="text-align: center; background-color: #111; padding: 20px;">
-                                <img src="cid:trusted_member.jpg" alt="Trusted Member Verified" style="max-width: 100%; border-radius: 12px; display: block; margin: 0 auto;">
-                            </div>
-                            <div style="padding: 30px; text-align: left;">
-                                <h2 style="color: #ff4e00; margin-top: 0;">Account Upgraded</h2>
-                                <p style="font-size: 1.1rem; color: #333;">Hello <strong>${user.inGameName || user.username}</strong>,</p>
-                                <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">You have been manually verified as a Trusted Member of Blaze Frontier. We've added a special Golden Banner to your profile and awarded you 100 BlazeCoins!</p>
-                                <p style="font-size: 1.1rem; color: #333;">You now have full access to our Elite Tournaments tab.</p>
-                            </div>
-                            <div style="background-color: #111; padding: 15px; text-align: center;">
-                                <p style="color: #ff4e00; font-weight: bold; letter-spacing: 1px; margin: 0;">- The Blaze Frontier Team</p>
-                            </div>
-                        </div>
-                    `,
-                    attachments: [
-                        {
-                            filename: 'trusted_member.jpg',
-                            path: require('path').join(__dirname, '../../public/trusted_member.jpg')
-                        }
-                    ]
-                });
-            }
+            // Notification and email are now handled automatically by the MongoDB Change Stream 
+            // in backend/utils/changeStreams.js when isGenuine becomes true.
         }
 
         await user.save();
