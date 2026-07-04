@@ -970,7 +970,8 @@
                         if (stats.potd) {
                             const potdVid = document.getElementById('potd-video');
                             potdVid.style.display = 'block';
-                            potdVid.src = stats.potd.videoUrl;
+                            potdVid.muted = true;
+                            potdVid.innerHTML = `<source src="${stats.potd.videoUrl}" type="video/mp4">`;
                             potdVid.load();
                             const playPromise = potdVid.play();
                             if (playPromise !== undefined) {
