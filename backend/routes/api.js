@@ -1001,7 +1001,10 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         }
         
         // 2. Global Approved Custom Series (Upcoming Matches for everyone)
-        const regFilter = { status: 'Approved' };
+        const regFilter = { 
+            status: 'Approved',
+            format: { $ne: 'Qualification Series' }
+        };
         
         const approvedRegs = await Registration.find(regFilter).populate('userId', 'username inGameName').lean();
         approvedRegs.forEach(r => {

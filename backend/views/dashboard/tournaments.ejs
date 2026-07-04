@@ -3,104 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournaments | Blaze Frontier</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
+    <title>Elite Tournaments | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=block" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
     <style>
-        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 100px 24px 60px; display: none; }
-        .page-head { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
-        .page-head h1 { font-family: var(--font-display); font-size: 2.8rem; color: #fff; letter-spacing: 1px; }
-        .page-head p { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
-
-        .filter-group { display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
-        .filter-btn {
-            padding: 6px 14px; border-radius: 6px; border: none; background: transparent;
-            font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 1px;
-            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+        :root {
+            --elite-gold: #FFD700;
+            --elite-gold-glow: rgba(255, 215, 0, 0.4);
+            --elite-gold-dim: rgba(255, 215, 0, 0.1);
+            --elite-bg: #09090b;
+            --elite-card: rgba(20, 20, 24, 0.8);
+            --elite-border: rgba(255, 255, 255, 0.08);
         }
-        .filter-btn.active { background: var(--blaze-orange); color: #fff; }
-        .filter-btn:hover:not(.active) { color: #fff; }
 
-        .t-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .t-card {
-            background: #111116; border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 14px; padding: 28px; transition: border-color 0.2s, transform 0.2s;
+        body {
+            background-color: var(--elite-bg);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(255, 215, 0, 0.03), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(255, 87, 34, 0.04), transparent 25%);
+            color: #fff;
         }
-        .t-card:hover { border-color: rgba(255,87,34,0.3); transform: translateY(-3px); }
-        .t-game { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--blaze-orange); margin-bottom: 8px; }
-        .t-name { font-family: var(--font-display); font-size: 1.8rem; color: #fff; margin-bottom: 6px; line-height: 1.1; }
-        .t-status { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
-        .t-status.open { color: #22c55e; }
-        .t-status.closed { color: var(--text-muted); }
-        .t-meta { display: flex; justify-content: space-between; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
-        .t-stat-val { color: #fff; font-weight: 600; font-size: 1rem; }
-        .t-stat-label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
 
-        .empty-state { text-align: center; padding: 60px 0; color: var(--text-muted); font-size: 0.95rem; }
+        .page-wrap { max-width: 1200px; margin: 0 auto; padding: 100px 24px 80px; display: none; }
+
+        /* ELITE HERO SECTION */
+        .elite-hero {
+            position: relative;
+            padding: 60px 40px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 12, 0.95) 100%);
+            border: 1px solid var(--elite-border);
+            overflow: hidden;
+            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: slideDownFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .elite-hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.03; mix-blend-mode: overlay; pointer-events: none;
+        }
+
+        .elite-glow {
+            position: absolute; width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--elite-gold-dim) 0%, transparent 70%);
+            top: -200px; right: -100px; border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .elite-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: var(--elite-gold);
+            padding: 6px 16px; border-radius: 30px;
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800; letter-spacing: 2px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px var(--elite-gold-glow);
+        }
+
+        .elite-title {
+            font-family: var(--font-display);
+            font-size: 4.5rem;
+            line-height: 1;
+            margin: 0 0 16px 0;
+            background: linear-gradient(180deg, #FFFFFF 0%, #A0A0A0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .elite-title span {
+            background: linear-gradient(180deg, #FFE259 0%, #FFA751 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .elite-desc {
+            font-size: 1.1rem; color: #a1a1aa; max-width: 600px; line-height: 1.6; margin: 0;
+        }
+
+        /* ELITE TABS */
+        .elite-tabs-wrapper { display: flex; justify-content: center; margin-bottom: 40px; }
+        .elite-tabs {
+            display: inline-flex; background: rgba(0,0,0,0.4);
+            padding: 6px; border-radius: 12px;
+            border: 1px solid var(--elite-border);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .elite-tab {
+            position: relative; z-index: 1;
+            padding: 12px 32px; border: none; background: transparent;
+            font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 2px;
+            color: #71717a; cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; gap: 8px;
+            border-radius: 8px;
+        }
+
+        .elite-tab:hover { color: #fff; }
+        .elite-tab.active { color: #fff; }
+        .elite-tab.active::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(255, 87, 34, 0.1));
+            border-bottom: 2px solid var(--elite-gold);
+            border-radius: 8px; z-index: -1;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .pulse-dot {
+            width: 8px; height: 8px; background: #22c55e; border-radius: 50%;
+            box-shadow: 0 0 10px #22c55e;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* ELITE GRID & CARDS */
+        .t-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; perspective: 1000px; }
+        
+        .elite-card {
+            position: relative; background: var(--elite-card);
+            border: 1px solid var(--elite-border);
+            border-radius: 16px; padding: 28px;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            animation: fadeUpIn 0.6s backwards;
+        }
+        
+        .elite-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 215, 0, 0.06), transparent 40%);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+
+        .elite-card:hover { 
+            transform: translateY(-8px) scale(1.02); 
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+        .elite-card:hover::after { opacity: 1; }
+
+        .ec-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .ec-game { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800; color: var(--elite-gold); letter-spacing: 2px; background: rgba(255,215,0,0.1); padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,215,0,0.2); }
+        .ec-status { font-family: var(--font-display); font-size: 1rem; letter-spacing: 1.5px; padding: 4px 12px; border-radius: 20px; }
+        .ec-status.live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .ec-status.upcoming { background: rgba(255,165,0,0.1); color: #ffa500; border: 1px solid rgba(255,165,0,0.3); }
+        
+        .ec-title { font-family: var(--font-display); font-size: 2rem; color: #fff; margin: 0 0 24px 0; line-height: 1.1; letter-spacing: 1px; }
+
+        .ec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .ec-stat { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); }
+        .ec-stat-label { font-size: 0.7rem; color: #71717a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: block; }
+        .ec-stat-val { font-family: var(--font-mono); color: #fff; font-size: 1.1rem; font-weight: 600; }
+
+        .ec-prize { background: linear-gradient(90deg, rgba(255,215,0,0.05), transparent); border-left: 3px solid var(--elite-gold); padding: 12px 16px; margin-bottom: 24px; border-radius: 0 8px 8px 0; }
+        .ec-prize-label { font-size: 0.7rem; color: var(--elite-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold; }
+        .ec-prize-val { color: #fff; font-size: 0.95rem; }
+
+        .ec-cred { background: rgba(0, 188, 212, 0.1); border: 1px solid rgba(0, 188, 212, 0.3); padding: 16px; border-radius: 8px; margin-bottom: 24px; text-align: center; }
+        .ec-cred-title { font-size: 0.75rem; color: #00bcd4; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: bold; }
+        .ec-cred-val { color: #fff; font-family: var(--font-mono); font-size: 1.1rem; font-weight: bold; letter-spacing: 1px; }
+
+        .ec-btn-primary { 
+            display: block; width: 100%; text-align: center; background: linear-gradient(90deg, #FFD700, #FFA500); 
+            color: #000; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 2px; 
+            padding: 14px; border-radius: 8px; text-decoration: none; border: none; cursor: pointer;
+            transition: all 0.3s; font-weight: bold; box-shadow: 0 4px 15px rgba(255,215,0,0.2);
+            margin-top: auto;
+        }
+        .ec-btn-primary:hover { box-shadow: 0 6px 25px rgba(255,215,0,0.4); transform: translateY(-2px); }
+
+        .ec-btn-secondary {
+            display: block; width: 100%; text-align: center; background: transparent; 
+            color: #fff; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px; 
+            padding: 14px; border-radius: 8px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
+            transition: all 0.3s; margin-top: auto;
+        }
+        .ec-btn-secondary:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+
+        .ec-btn-green {
+            display: block; width: 100%; text-align: center; background: rgba(34, 197, 94, 0.1); 
+            color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3);
+            font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 2px; 
+            padding: 14px; border-radius: 8px; text-decoration: none; cursor: pointer;
+            transition: all 0.3s; margin-top: auto;
+        }
+        .ec-btn-green:hover { background: rgba(34, 197, 94, 0.2); transform: translateY(-2px); }
+
+        .empty-state { text-align: center; padding: 100px 0; color: #71717a; font-size: 1.1rem; }
+        
         .spinner-ring {
-            display: inline-block; width: 24px; height: 24px;
-            border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--blaze-orange);
-            border-radius: 50%; animation: spin 0.6s linear infinite;
+            display: inline-block; width: 32px; height: 32px;
+            border: 3px solid rgba(255,215,0,0.1); border-top-color: var(--elite-gold);
+            border-radius: 50%; animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         }
+
+        /* Animations */
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 70% { box-shadow: 0 0 0 10px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .cta-banner {
-            background: linear-gradient(90deg, rgba(255,87,34,0.1) 0%, #111116 100%);
-            border: 1px solid rgba(255,87,34,0.3); border-radius: 14px;
-            padding: 30px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-        }
-        .cta-content h2 { font-family: var(--font-display); font-size: 2rem; color: #fff; margin-bottom: 8px; letter-spacing: 1px; }
-        .cta-content p { color: var(--text-muted); font-size: 0.95rem; max-width: 600px; }
-        .cta-btn {
-            background: var(--blaze-orange); color: #fff; padding: 14px 28px; border-radius: 8px;
-            font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px; text-decoration: none;
-            transition: all 0.2s; white-space: nowrap;
-        }
-        .cta-btn:hover { box-shadow: 0 4px 20px rgba(255,87,34,0.3); transform: translateY(-2px); }
-        @media (max-width: 700px) {
-            .cta-banner { flex-direction: column; text-align: center; }
-        }
-        @media (max-width: 500px) {
-            .page-wrap { padding: 90px 12px 40px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeUpIn { 0% { opacity: 0; transform: translateY(40px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes slideDownFade { 0% { opacity: 0; transform: translateY(-30px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes modalPop { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+
+        @media (max-width: 768px) {
+            .elite-title { font-size: 3rem; }
+            .elite-hero { padding: 40px 24px; text-align: center; align-items: center; }
             .t-grid { grid-template-columns: 1fr; }
-            .page-head h1 { font-size: 2.2rem; }
         }
-
-        /* Hero Poster Animations */
-        .poster-frame { position: absolute; inset: 0; }
-        .fade-out { animation: fadeOut 0.5s forwards; }
-        .fade-in { animation: fadeIn 0.5s forwards; }
-        .slide-in-left { animation: slideInLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .slide-in-right { animation: slideInRight 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .pop-in { animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .slide-up { animation: slideUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-
-        /* Professional Match Card */
-        .pro-match-card {
-            position: relative; background: linear-gradient(145deg, rgba(20,20,28,0.9) 0%, rgba(10,10,15,0.95) 100%);
-            border: 1px solid rgba(255, 87, 34, 0.2); border-radius: 12px; padding: 20px;
-            margin-bottom: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            transition: all 0.3s ease;
-        }
-        .pro-match-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255, 87, 34, 0.15); border-color: rgba(255, 87, 34, 0.5); }
-        .pro-match-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
-            background: var(--blaze-orange); box-shadow: 0 0 15px var(--blaze-orange);
-        }
-        .pmc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .pmc-title { font-family: var(--font-display); font-size: 1.4rem; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
-        .pmc-badge { background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 6px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .pmc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .pmc-stat { display: flex; flex-direction: column; gap: 4px; }
-        .pmc-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .pmc-stat-val { font-family: var(--font-mono); color: #fff; font-size: 1rem; font-weight: 600; }
-        .pmc-alert { background: rgba(0, 188, 212, 0.1); border-left: 3px solid #00bcd4; padding: 10px 14px; border-radius: 4px; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: #e0f7fa; }
-
-        @keyframes fadeOut { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.05); } }
-        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
-        @keyframes slideInLeft { 0% { opacity: 0; transform: translateX(-100px); } 100% { opacity: 1; transform: translateX(0); } }
-        @keyframes slideInRight { 0% { opacity: 0; transform: translateX(100px); } 100% { opacity: 1; transform: translateX(0); } }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.2) rotate(-10deg); } 70% { transform: scale(1.1) rotate(5deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
-        @keyframes slideUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -108,31 +226,41 @@
     <%- include('../partials/navbar') %>
 
     <div class="page-wrap">
-        <div class="page-head">
-            <div>
-                <h1>TOURNAMENTS</h1>
+        <div class="elite-hero">
+            <div class="elite-glow"></div>
+            <div class="elite-badge">💎 ELITE ACCESS</div>
+            <h1 class="elite-title">TRUSTED <span>TOURNAMENTS</span></h1>
+            <p class="elite-desc">Exclusive high-stakes series and tournaments reserved for verified genuine players. Prove your worth in the highest tiers of Blaze Frontier.</p>
+        </div>
+
+        <div class="elite-tabs-wrapper">
+            <div class="elite-tabs" id="view-tabs">
+                <button class="elite-tab active" data-view="live">
+                    <span class="pulse-dot"></span> LIVE NOW
+                </button>
+                <button class="elite-tab" data-view="upcoming">
+                    UPCOMING
+                </button>
             </div>
         </div>
 
-        <div class="filter-group" id="view-tabs" style="margin-bottom: 24px; display: inline-flex;">
-            <button class="filter-btn active" data-view="live">LIVE</button>
-            <button class="filter-btn" data-view="upcoming">UPCOMING</button>
-        </div>
-
         <div id="t-content">
-            <div style="text-align:center;padding:60px"><div class="spinner-ring"></div></div>
+            <div style="text-align:center;padding:100px"><div class="spinner-ring"></div></div>
         </div>
-
     </div>
 
     <!-- Participants Modal -->
-    <div id="participants-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:9999; justify-content:center; align-items:center; padding:20px;">
-        <div style="background:#141418; border:1px solid rgba(255,255,255,0.1); border-radius:12px; width:100%; max-width:800px; height:80vh; display:flex; flex-direction:column; padding:30px; position:relative; animation:popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-            <button onclick="closeParticipantsModal()" style="position:absolute; top:20px; right:20px; background:transparent; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">&times;</button>
-            <h2 id="p-modal-title" style="margin-top:0; font-family:var(--font-display); letter-spacing:1px; color:#fff;">PARTICIPANTS</h2>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Verified Blaze IDs of registered players.</p>
-            <div id="p-modal-content" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); padding: 20px;">
-                <div style="text-align:center; padding:20px;"><div class="spinner-ring"></div></div>
+    <div id="participants-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:10000; justify-content:center; align-items:center; padding:20px;">
+        <div style="background:#111116; border:1px solid var(--elite-gold-glow); border-radius:16px; width:100%; max-width:700px; max-height:85vh; display:flex; flex-direction:column; padding:32px; position:relative; animation:modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(255,215,0,0.1);">
+            <button onclick="closeParticipantsModal()" style="position:absolute; top:24px; right:24px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); width:40px; height:40px; border-radius:50%; color:#fff; font-size:1.5rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">&times;</button>
+            
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom: 24px;">
+                <div style="width:40px; height:4px; background:var(--elite-gold); border-radius:2px;"></div>
+                <h2 id="p-modal-title" style="margin:0; font-family:var(--font-display); font-size:2rem; letter-spacing:1px; color:#fff;">PARTICIPANTS</h2>
+            </div>
+            
+            <div id="p-modal-content" style="flex: 1; overflow-y: auto; padding-right: 8px;">
+                <div style="text-align:center; padding:40px;"><div class="spinner-ring"></div></div>
             </div>
         </div>
     </div>
@@ -142,8 +270,6 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('blaze_token');
             if (!token) { window.location.href = '/auth'; return; }
-
-            let userGame = null;
 
             const applyUserStatus = (prof) => {
                 if (!prof.isGenuine) {
@@ -157,7 +283,6 @@
                     }
                 } else {
                     document.querySelector('.page-wrap').style.display = 'block';
-                    userGame = prof.game || 'Free Fire';
                 }
             };
 
@@ -169,22 +294,31 @@
                 });
             }
 
+            // Interactive cards glow effect
+            document.addEventListener('mousemove', (e) => {
+                document.querySelectorAll('.elite-card').forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
 
-
-            const loadTournaments = async (gameFilter) => {
+            const loadTournaments = async () => {
                 const container = document.getElementById('t-content');
-                container.innerHTML = '<div style="text-align:center;padding:60px"><div class="spinner-ring"></div></div>';
+                container.innerHTML = '<div style="text-align:center;padding:100px"><div class="spinner-ring"></div></div>';
 
-                let url = '/api/tournaments';
                 try {
-                    const res = await fetch(url, { headers: { 'x-auth-token': token } });
+                    const res = await fetch('/api/tournaments', { headers: { 'x-auth-token': token } });
                     if (res.ok) {
-                        let data = await res.json();
-                        window.tournamentData = data;
+                        window.tournamentData = await res.json();
                         renderView('live');
+                    } else {
+                        throw new Error('Failed to fetch');
                     }
                 } catch (e) {
-                    container.innerHTML = '<div class="empty-state">Failed to load tournaments.</div>';
+                    container.innerHTML = '<div class="empty-state">Unable to load tournaments at this time.</div>';
                 }
             };
 
@@ -196,93 +330,92 @@
                 let html = '';
 
                 if (view === 'live') {
-                    if (list.length === 0) {
-                        html = '<div class="empty-state" style="margin-bottom: 40px;">No live tournaments currently in this arena.</div>';
+                    if (!list || list.length === 0) {
+                        html = '<div class="empty-state">No live elite tournaments at the moment.</div>';
                     } else {
-                        html = '<div class="t-grid" style="margin-bottom: 40px;">' + list.map(t => `
-                            <div class="t-card" style="border-color: #22c55e;">
-                                <div class="t-game">${t.game}</div>
-                                <div class="t-name">${t.name}</div>
-                                <div class="t-status open" style="display:flex; align-items:center; gap:6px;"><div style="width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 1.2s infinite;"></div> ${t.status.toUpperCase()}</div>
-                                <div class="t-meta">
-                                    <div><div class="t-stat-val">${t.participants}</div><div class="t-stat-label">Players</div></div>
-                                    <div style="text-align:right"><div class="t-stat-val">${t.date}</div><div class="t-stat-label">Date</div></div>
+                        html = '<div class="t-grid">' + list.map((t, index) => `
+                            <div class="elite-card" style="animation-delay: ${index * 0.1}s; border-color: rgba(34,197,94,0.3);">
+                                <div class="ec-header">
+                                    <span class="ec-game">${t.game}</span>
+                                    <span class="ec-status live">LIVE NOW</span>
                                 </div>
-                                <div style="margin-top:15px; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); text-align:center;">
-                                    <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Perk</div>
-                                    <div style="color:#a78bfa; font-weight:600; font-size:0.9rem;">${t.prize || 'Player of the Day & Get Noticed'}</div>
+                                <h3 class="ec-title">${t.name}</h3>
+                                
+                                <div class="ec-grid">
+                                    <div class="ec-stat">
+                                        <span class="ec-stat-label">Players</span>
+                                        <span class="ec-stat-val">${t.participants}</span>
+                                    </div>
+                                    <div class="ec-stat">
+                                        <span class="ec-stat-label">Format</span>
+                                        <span class="ec-stat-val">${t.team || 'Solo'}</span>
+                                    </div>
                                 </div>
-                                <a href="/dashboard/leaderboards" style="display:block; text-align:center; margin-top:20px; background:rgba(34, 197, 94, 0.1); color:#22c55e; padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; text-decoration:none; transition:transform 0.2s;">SPECTATE / LEADERBOARD</a>
-                                ${t.isListPublished ? `<button onclick="viewParticipants('${t._id}', '${t.name.replace(/'/g, "\\'")}')" style="width:100%; display:block; text-align:center; margin-top:10px; background:transparent; border:1px solid #22c55e; color:#22c55e; padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; cursor:pointer; transition:background 0.2s;">VIEW PARTICIPANTS</button>` : ''}
+
+                                <div class="ec-prize">
+                                    <div class="ec-prize-label">Rewards Pool</div>
+                                    <div class="ec-prize-val">${t.prize || 'Elite Leaderboard Standing'}</div>
+                                </div>
+
+                                <a href="/dashboard/leaderboards" class="ec-btn-green" style="margin-bottom: 12px;">SPECTATE / LEADERBOARD</a>
+                                ${t.isListPublished ? `<button onclick="viewParticipants('${t.id || t._id}', '${t.name.replace(/'/g, "\\'")}')" class="ec-btn-secondary">VIEW ROSTER</button>` : ''}
                             </div>
                         `).join('') + '</div>';
                     }
                 } else {
-                    if (list.length === 0) {
-                        html = '<div class="empty-state">No upcoming tournaments open for registration.</div>';
+                    if (!list || list.length === 0) {
+                        html = '<div class="empty-state">No upcoming elite tournaments scheduled. Check back soon.</div>';
                     } else {
-                        html = '<div class="t-grid">' + list.map(t => `
-                            ${t.type === 'match' ? `
-                                <div class="pro-match-card">
-                                    <div class="pmc-header">
-                                        <div class="pmc-title">${t.name}</div>
-                                        <div class="pmc-badge">${t.status}</div>
+                        html = '<div class="t-grid">' + list.map((t, index) => `
+                            <div class="elite-card" style="animation-delay: ${index * 0.1}s;">
+                                <div class="ec-header">
+                                    <span class="ec-game">${t.game}</span>
+                                    <span class="ec-status upcoming">UPCOMING</span>
+                                </div>
+                                <h3 class="ec-title">${t.name}</h3>
+                                
+                                <div class="ec-grid">
+                                    <div class="ec-stat">
+                                        <span class="ec-stat-label">Date</span>
+                                        <span class="ec-stat-val">${t.date}</span>
                                     </div>
-                                    <div class="pmc-grid">
-                                        <div class="pmc-stat">
-                                            <span class="pmc-stat-label">Match ID</span>
-                                            <span class="pmc-stat-val" style="color: var(--blaze-orange);">${t.matchNumber}</span>
-                                        </div>
-                                        <div class="pmc-stat" style="text-align: right;">
-                                            <span class="pmc-stat-label">Date</span>
-                                            <span class="pmc-stat-val">${t.date}</span>
-                                        </div>
-                                        <div class="pmc-stat">
-                                            <span class="pmc-stat-label">Format</span>
-                                            <span class="pmc-stat-val">${t.team || 'Solo'}</span>
-                                        </div>
-                                        <div class="pmc-stat" style="text-align: right;">
-                                            <span class="pmc-stat-label">Timing</span>
-                                            <span class="pmc-stat-val">${t.timeSlot || 'TBA'}</span>
-                                        </div>
+                                    <div class="ec-stat">
+                                        <span class="ec-stat-label">Timing</span>
+                                        <span class="ec-stat-val">${t.timeSlot || 'TBA'}</span>
                                     </div>
-                                    <div class="pmc-alert">
-                                        <span style="font-size: 1.2rem;">🛡️</span>
-                                        <div>
-                                            <strong style="color: #00bcd4; display:block; margin-bottom:2px;">Match Credentials</strong>
-                                            Room ID & Password will be shared 20 mins prior.
-                                        </div>
+                                    <div class="ec-stat">
+                                        <span class="ec-stat-label">Format</span>
+                                        <span class="ec-stat-val">${t.team || 'Solo'}</span>
+                                    </div>
+                                    <div class="ec-stat">
+                                        <span class="ec-stat-label">Players</span>
+                                        <span class="ec-stat-val">${t.participants}</span>
                                     </div>
                                 </div>
-                            ` : `
-                                <div class="t-card">
-                                    <div class="t-game">${t.game}</div>
-                                    <div class="t-name">${t.name}</div>
-                                    <div class="t-status" style="color: var(--blaze-orange)">${t.status.toUpperCase()}</div>
-                                    <div class="t-meta">
-                                        <div><div class="t-stat-val">${t.participants}</div><div class="t-stat-label">Players</div></div>
-                                        <div style="text-align:right"><div class="t-stat-val">${t.date}</div><div class="t-stat-label">Date</div></div>
-                                    </div>
-                                    <div style="margin-top:15px; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); text-align:center;">
-                                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Perk</div>
-                                        <div style="color:#a78bfa; font-weight:600; font-size:0.9rem;">${t.prize || 'Player of the Day & Get Noticed'}</div>
-                                    </div>
-                                    ${t.showCredentials ? `
-                                    <div style="margin-top:15px; padding:10px; border-radius:8px; background:rgba(0,188,212,0.1); border:1px solid rgba(0,188,212,0.3); text-align:center;">
-                                        <div style="font-size:0.75rem; color:#00bcd4; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; font-weight:bold;">MATCH CREDENTIALS</div>
-                                        <div style="color:#fff; font-weight:600; font-size:1rem; margin-bottom:4px;">ID: ${t.credentials.roomId}</div>
-                                        <div style="color:#fff; font-weight:600; font-size:1rem;">Pass: ${t.credentials.roomPassword}</div>
-                                    </div>
-                                    ` : (t.isRegistered ? `
-                                    <div style="margin-top:15px; padding:10px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); text-align:center;">
-                                        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">MATCH CREDENTIALS</div>
-                                        <div style="color:#fff; font-size:0.85rem;">Room ID & Password will be shared here 20 mins prior.</div>
-                                    </div>
-                                    ` : '')}
-                                    ${t.canRegister ? `<a href="/dashboard/tournaments/${t._id}/register" style="display:block; text-align:center; margin-top:20px; background:var(--blaze-orange); color:#fff; padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; text-decoration:none; transition:transform 0.2s;">REGISTER NOW</a>` : (t.isRegistered ? '' : '<div style="display:block; text-align:center; margin-top:20px; background:rgba(255,255,255,0.05); color:var(--text-muted); padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; transition:transform 0.2s;">WAITING</div>')}
-                                    ${t.isListPublished ? `<button onclick="viewParticipants('${t._id}', '${t.name.replace(/'/g, "\\'")}')" style="width:100%; display:block; text-align:center; margin-top:10px; background:transparent; border:1px solid var(--blaze-orange); color:var(--blaze-orange); padding:12px; border-radius:8px; font-family:var(--font-display); letter-spacing:1px; cursor:pointer; transition:background 0.2s;">VIEW PARTICIPANTS</button>` : ''}
+
+                                ${(t.prize || t.type === 'tournament') ? `
+                                <div class="ec-prize">
+                                    <div class="ec-prize-label">Rewards Pool</div>
+                                    <div class="ec-prize-val">${t.prize || 'Elite Standing & Rewards'}</div>
                                 </div>
-                            `}
+                                ` : ''}
+
+                                ${t.showCredentials ? `
+                                <div class="ec-cred">
+                                    <div class="ec-cred-title">MATCH CREDENTIALS</div>
+                                    <div class="ec-cred-val">ID: ${t.credentials.roomId}</div>
+                                    <div class="ec-cred-val">PASS: ${t.credentials.roomPassword}</div>
+                                </div>
+                                ` : (t.isRegistered || t.canRegister === false ? `
+                                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 24px; border: 1px dashed rgba(255,255,255,0.1);">
+                                    <div style="font-size: 0.75rem; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px;">Status</div>
+                                    <div style="color: #fff; font-weight: 500;">Reserved / Waiting</div>
+                                </div>
+                                ` : '')}
+
+                                ${t.canRegister ? `<a href="/dashboard/tournaments/${t.id || t._id}/register" class="ec-btn-primary" style="margin-bottom: 12px;">SECURE SLOT</a>` : ''}
+                                ${t.isListPublished ? `<button onclick="viewParticipants('${t.id || t._id}', '${t.name.replace(/'/g, "\\'")}')" class="ec-btn-secondary">VIEW ROSTER</button>` : ''}
+                            </div>
                         `).join('') + '</div>';
                     }
                 }
@@ -291,9 +424,9 @@
             };
 
             // View Tabs
-            document.querySelectorAll('#view-tabs .filter-btn').forEach(btn => {
+            document.querySelectorAll('#view-tabs .elite-tab').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    document.querySelectorAll('#view-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('#view-tabs .elite-tab').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     renderView(btn.dataset.view);
                 });
@@ -307,7 +440,7 @@
             document.getElementById('p-modal-title').textContent = name.toUpperCase();
             document.getElementById('participants-modal').style.display = 'flex';
             const content = document.getElementById('p-modal-content');
-            content.innerHTML = '<div style="text-align:center; padding:20px;"><div class="spinner-ring"></div></div>';
+            content.innerHTML = '<div style="text-align:center; padding:40px;"><div class="spinner-ring"></div></div>';
 
             try {
                 const token = localStorage.getItem('blaze_token');
@@ -317,20 +450,20 @@
                 if (res.ok) {
                     const participants = await res.json();
                     if (participants.length === 0) {
-                        content.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">No participants yet.</div>';
+                        content.innerHTML = '<div style="padding: 40px; text-align: center; color: #a1a1aa; font-size: 1.1rem;">Roster is currently empty.</div>';
                     } else {
-                        content.innerHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">' + participants.map((p, i) => `
-                            <div style="padding: 12px 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; gap: 12px; transition: transform 0.2s, background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.transform='translateY(0)'">
-                                <div style="font-family: var(--font-mono); color: var(--blaze-orange); font-size: 0.8rem; font-weight: bold; width: 24px;">#${i + 1}</div>
-                                <div style="font-weight: 600; color: #fff; font-family: var(--font-display); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p}">${p}</div>
+                        content.innerHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;">' + participants.map((p, i) => `
+                            <div style="padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; display: flex; align-items: center; gap: 16px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.05)'; this.style.borderColor='rgba(255,215,0,0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='rgba(255,255,255,0.08)'; this.style.transform='translateY(0)'">
+                                <div style="font-family: var(--font-mono); color: var(--elite-gold); font-size: 0.9rem; font-weight: 800; background: rgba(255,215,0,0.1); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">${i + 1}</div>
+                                <div style="font-weight: 600; color: #fff; font-family: var(--font-display); letter-spacing: 0.5px; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${p}">${p}</div>
                             </div>
                         `).join('') + '</div>';
                     }
                 } else {
-                    content.innerHTML = '<div style="padding: 20px; text-align: center; color: #ef4444;">Could not load participants.</div>';
+                    content.innerHTML = '<div style="padding: 40px; text-align: center; color: #ef4444;">Could not load participants.</div>';
                 }
             } catch (e) {
-                content.innerHTML = '<div style="padding: 20px; text-align: center; color: #ef4444;">Network error.</div>';
+                content.innerHTML = '<div style="padding: 40px; text-align: center; color: #ef4444;">Network error. Please try again.</div>';
             }
         }
 
