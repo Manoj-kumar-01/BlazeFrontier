@@ -301,7 +301,8 @@ router.put('/verify-squad/:id', adminMiddleware, async (req, res) => {
 
         for (const user of squadUsers) {
             user.isGenuine = true;
-            user.blazePoints = (user.blazePoints || 0) + 100;
+            user.trustedPlayerClaimed = true;
+            user.blazeCoins = (user.blazeCoins || 0) + 100;
             await user.save();
 
             agenda.now('send-inapp-notification', {
@@ -351,6 +352,11 @@ router.put('/verify-squad/:id', adminMiddleware, async (req, res) => {
         reg.status = 'Verified';
         reg.isCompleted = true; // Auto mark completed
         await reg.save();
+
+        global.graphqlStatsCache = null;
+        if (global.clearApiStatsCache) {
+            global.clearApiStatsCache();
+        }
 
         res.json({ msg: 'Squad successfully verified!' });
     } catch (err) {
