@@ -893,6 +893,7 @@
 
         function renderResults(tournaments) {
             const tbody = document.getElementById('results-body');
+            if (!tbody) return;
             const now = new Date();
             
             // Filter tournaments that have passed their start date and are not ENDED

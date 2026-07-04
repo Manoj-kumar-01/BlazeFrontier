@@ -344,7 +344,12 @@
             if (window.globalUserData) {
                 applyUserStatus(window.globalUserData);
             } else {
+                const fallbackTimeout = setTimeout(() => {
+                    document.querySelector('.page-wrap').style.display = 'block';
+                }, 1500); // Prevent infinite blank page
+                
                 window.addEventListener('globalUserDataReady', () => {
+                    clearTimeout(fallbackTimeout);
                     if (window.globalUserData) applyUserStatus(window.globalUserData);
                 });
             }
