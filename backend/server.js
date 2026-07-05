@@ -147,7 +147,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Serve static assets (CSS, JS, images)
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: '1d' }));
 app.use('/public', express.static(path.join(__dirname, '../public'), { maxAge: '1d' }));
-app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, '../public/NEWLOGO.webp')));
+app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, '../public/Logo.png')));
 
 // Cache control handled globally above
 
