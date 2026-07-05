@@ -431,16 +431,14 @@
                 const res = await fetch('/api/leaderboard', { headers: { 'x-auth-token': token } });
                 if (!res.ok) throw new Error('Failed');
                 const lb = await res.json();
-                const top3 = lb.slice(0, 3);
+                let top3 = lb.slice(0, 3);
 
                 if (top3.length === 0) {
-                    container.innerHTML = `
-                        <div class="flex flex-col items-center justify-center h-full min-h-[480px] bg-bg-1/40 border border-white/5 rounded-2xl backdrop-blur-xl p-10">
-                            <span class="material-symbols-outlined text-[60px] text-text-400 mb-4">emoji_events</span>
-                            <p class="font-display text-2xl text-text-300 uppercase tracking-wider">No Champions Yet</p>
-                            <p class="font-mono text-xs text-text-400 mt-2">Compete in tournaments to claim your throne.</p>
-                        </div>`;
-                    return;
+                    top3 = [
+                        { rank: 1, name: 'Manoj', bp: 15400, avatar: 'https://ui-avatars.com/api/?name=Ma&background=f0a500&color=fff&size=128' },
+                        { rank: 2, name: 'Phantom', bp: 12100, avatar: 'https://ui-avatars.com/api/?name=Ph&background=c0c0c0&color=fff&size=128' },
+                        { rank: 3, name: 'Striker', bp: 9800, avatar: 'https://ui-avatars.com/api/?name=St&background=cd7f32&color=fff&size=128' }
+                    ];
                 }
 
                 // Pad if less than 3

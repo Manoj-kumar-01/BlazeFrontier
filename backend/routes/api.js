@@ -1005,7 +1005,7 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
             else if (t.status === 'ENDED') completed.push(tObj);
         }
         
-        // 2. Global Approved Custom Series (Upcoming Matches for everyone)
+        // 2. Global Approved Custom Series (Upcoming/Live Matches for everyone)
         const upcomingRegFilter = { 
             status: 'Approved',
             format: { $ne: 'Qualification Series' }
@@ -1013,21 +1013,43 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         
         const approvedRegs = await Registration.find(upcomingRegFilter).populate('userId', 'username inGameName').lean();
         approvedRegs.forEach(r => {
-            upcoming.push({
+            let matchStatus = 'UPCOMING';
+            if (r.startDate && r.timeSlot && r.timeSlot !== 'TBA') {
+                const d = new Date(r.startDate);
+                if (!isNaN(d.getTime())) {
+                    const m = r.timeSlot.match(/^(\d+):(\d+)\s*(AM|PM)/i);
+                    if (m) {
+                        let h = parseInt(m[1]);
+                        if (m[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+                        if (m[3].toUpperCase() === 'AM' && h === 12) h = 0;
+                        d.setHours(h, parseInt(m[2]), 0, 0);
+                        const now = Date.now();
+                        const t = d.getTime();
+                        if (now >= t && now <= t + 60 * 60 * 1000) matchStatus = 'ACTIVE';
+                        else if (now > t + 60 * 60 * 1000) matchStatus = 'ENDED';
+                    }
+                }
+            }
+
+            const tObj = {
                 type: 'match',
                 id: r._id,
                 team: r.mode ? r.mode : (r.teamMembers && r.teamMembers.length > 0 ? 'Squad' : 'Solo'),
                 slot: r.timeSlot,
                 game: 'CUSTOM SERIES',
-                name: `${r.format.toUpperCase()} ${r.mode.toUpperCase()}`,
-                status: 'APPROVED',
+                name: `${r.format.toUpperCase()} ${r.mode ? r.mode.toUpperCase() : ''}`,
+                status: matchStatus === 'ENDED' ? 'PENDING RESULTS' : 'APPROVED',
                 participants: r.teamMembers ? r.teamMembers.length + 1 : 1,
                 date: r.startDate ? new Date(r.startDate).toLocaleDateString() : 'TBA',
                 matchNumber: r.matchId || 'TBA',
                 timeSlot: r.timeSlot,
                 playerName: r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown',
                 canRegister: false
-            });
+            };
+
+            if (matchStatus === 'ACTIVE') live.push(tObj);
+            else if (matchStatus === 'UPCOMING') upcoming.push(tObj);
+            else if (matchStatus === 'ENDED') completed.push(tObj);
         });
 
         // 2.b Global Completed Custom Series (Completed Matches for everyone)
