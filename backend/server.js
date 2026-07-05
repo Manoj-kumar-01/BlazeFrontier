@@ -165,6 +165,7 @@ app.get('/dashboard/leaderboards', (req, res) => res.render('dashboard/leaderboa
 app.get('/dashboard/freefire', (req, res) => res.render('dashboard/freefire', { activePage: '/dashboard/freefire' }));
 app.get('/dashboard/content', (req, res) => res.render('dashboard/content', { activePage: '/dashboard/content' }));
 app.get('/dashboard/vote', (req, res) => res.render('dashboard/vote', { activePage: '/dashboard/vote' }));
+app.get('/dashboard/hall-of-fame', (req, res) => res.render('dashboard/hall_of_fame', { activePage: '/dashboard/hall-of-fame' }));
 app.get(adminPrefix, adminAuth, (req, res) => res.render('admin/index', { adminPrefix, activePage: 'admin' }));
 app.get(`${adminPrefix}/player/:playerId`, adminAuth, (req, res) => res.render('admin/profile', { adminPrefix, activePage: 'admin', playerId: req.params.playerId }));
 app.get('/banned', (req, res) => res.render('onboarding/banned'));
