@@ -836,4 +836,34 @@ router.post('/potd', potdUpload.single('video'), async (req, res) => {
     }
 });
 
+// @route   GET /api/organizer/users
+// @desc    List all users (players) with optional search
+router.get('/users', async (req, res) => {
+    try {
+        const search = req.query.search;
+        let filter = { role: 'player' };
+
+        if (search && search.trim()) {
+            const q = search.trim();
+            filter.$or = [
+                { username: new RegExp(q, 'i') },
+                { inGameName: new RegExp(q, 'i') },
+                { playerId: new RegExp(q, 'i') },
+                { email: new RegExp(q, 'i') }
+            ];
+        }
+
+        const users = await User.find(filter)
+            .select('username inGameName playerId email isGenuine blazeCoins location createdAt')
+            .sort({ createdAt: -1 })
+            .limit(100)
+            .lean();
+
+        res.json(users);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

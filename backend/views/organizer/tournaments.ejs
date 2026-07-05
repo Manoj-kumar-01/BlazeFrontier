@@ -663,6 +663,39 @@
                 </div>
             </div>
             </div>
+            </div>
+
+            <!-- All Users Panel -->
+            <div class="org-panel-section" id="sec-users" style="display: block; margin-top: 24px;">
+                <div class="org-panel">
+                    <div class="org-panel-header">
+                        <div class="org-panel-title">ALL USERS</div>
+                        <div style="display:flex; gap:8px; align-items:center; flex:1; max-width:400px;">
+                            <input type="text" id="user-search-input" class="org-input" placeholder="Search username, in-game name, Blaze ID, email..." style="margin:0; flex:1;">
+                        </div>
+                    </div>
+                    <div class="org-panel-body">
+                        <div class="org-table-wrap">
+                            <table class="org-table" id="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>In-Game Name</th>
+                                        <th>Blaze ID</th>
+                                        <th>Verified</th>
+                                        <th>Blaze Coins</th>
+                                        <th>Location</th>
+                                        <th>Joined</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-body">
+                                    <tr><td colspan="7"><div class="org-empty"><div class="empty-icon">👥</div><p>Loading users...</p></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
 
@@ -1586,10 +1619,57 @@
             if (e.target === e.currentTarget) closeCreateModal();
         });
 
+        // ===== ALL USERS =====
+        let userSearchTimeout = null;
+        async function loadUsers(search = '') {
+            const tbody = document.getElementById('users-body');
+            tbody.innerHTML = '<tr><td colspan="7"><div class="org-empty"><div class="empty-icon">⏳</div><p>Searching...</p></div></td></tr>';
+            try {
+                const url = search ? `/api/organizer/users?search=${encodeURIComponent(search)}` : '/api/organizer/users';
+                const res = await fetch(url, { headers: { 'x-auth-token': token } });
+                if (!res.ok) { tbody.innerHTML = '<tr><td colspan="7"><div class="org-empty"><p>Failed to load users.</p></div></td></tr>'; return; }
+                const users = await res.json();
+
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7"><div class="org-empty"><div class="empty-icon">🔍</div><p>No users found.</p></div></td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = users.map(u => {
+                    const joinDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                    const verifiedBadge = u.isGenuine
+                        ? '<span class="status-badge status-active">VERIFIED</span>'
+                        : '<span class="status-badge status-upcoming">UNVERIFIED</span>';
+                    return `
+                        <tr>
+                            <td style="font-weight:600; color:#fff;">${u.username || '—'}</td>
+                            <td>${u.inGameName || '—'}</td>
+                            <td style="font-family:var(--font-mono); font-size:0.8rem; color:var(--blaze-orange);">${u.playerId || '—'}</td>
+                            <td>${verifiedBadge}</td>
+                            <td style="font-family:var(--font-mono); color:#fbbf24;">${u.blazeCoins != null ? u.blazeCoins : 0}</td>
+                            <td>${u.location || '—'}</td>
+                            <td style="font-family:var(--font-mono); font-size:0.8rem;">${joinDate}</td>
+                        </tr>`;
+                }).join('');
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="7"><div class="org-empty"><p>Network error.</p></div></td></tr>';
+            }
+        }
+
+        // Debounced search
+        document.getElementById('user-search-input').addEventListener('input', (e) => {
+            clearTimeout(userSearchTimeout);
+            userSearchTimeout = setTimeout(() => {
+                loadUsers(e.target.value.trim());
+            }, 400);
+        });
+
         // Init
         loadStats();
         loadTournaments();
         loadSlotReport();
+        loadUsers();
     </script>
 </body>
 </html>
