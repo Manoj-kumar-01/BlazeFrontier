@@ -957,6 +957,8 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
 
         const filter = {};
         if (req.query.game) filter.game = new RegExp(req.query.game, 'i');
+        // Exclude Qualification series from the Elite Tournaments view
+        filter.name = { $not: /Qualification/i };
         
         let live = [];
         let upcoming = [];

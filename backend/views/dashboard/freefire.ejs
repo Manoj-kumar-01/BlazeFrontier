@@ -395,12 +395,15 @@
         
         <!-- Elite Verified Tagline (Top) -->
         <div id="ff-verified-tagline" style="display: none; grid-column: 1 / -1; margin-bottom: 0px;">
-            <div style="background: rgba(15, 10, 12, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 20px; border-radius: 8px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px);">
-                <span style="font-size: 1rem; opacity: 0.8;">✨</span>
-                <div style="color: rgba(255,255,255,0.7); font-family: var(--font-body); font-size: 0.9rem; letter-spacing: 0.5px;">
-                    <span style="color: #ffd700; font-weight: 600;">Verified Elite:</span> Premium access unlocked.
+            <div style="background: linear-gradient(90deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 50%, transparent 100%); border-left: 4px solid #d4af37; padding: 12px 20px; border-radius: 8px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1); animation: pulseGlow 2s infinite alternate;">
+                <span style="font-size: 1.2rem;">✨</span>
+                <div style="color: #fff; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px;">
+                    <span style="color: #d4af37; font-weight: 800; text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);">VERIFIED ELITE:</span> You have unlocked all premium perks, exclusive scrims, and tournaments.
                 </div>
             </div>
+            <style>
+                @keyframes pulseGlow { 0% { box-shadow: 0 0 5px rgba(212,175,55,0.1); border-left-color: rgba(212,175,55,0.6); } 100% { box-shadow: 0 0 20px rgba(212,175,55,0.4); border-left-color: #ffd700; } }
+            </style>
         </div>
 
         <!-- Welcome -->
@@ -518,90 +521,73 @@
                     </div>
                 </div>
 
-                <!-- Elite Member Section (Replaces QS for Trusted Players) -->
-                <!-- Elite Member Section (Replaces QS for Trusted Players) -->
+               <!-- Elite Member Section (Replaces QS for Trusted Players) -->
                 <style>
                     .trusted-mobile { display: none; }
-                    .trusted-pc { display: flex; flex-direction: column; gap: 24px; }
-                    
+                    .trusted-pc { display: block; }
                     @media (max-width: 768px) {
                         .trusted-mobile { display: flex; }
                         .trusted-pc { display: none; }
                     }
-
-                    .pc-elite-dashboard {
-                        background: linear-gradient(145deg, #050505 0%, #111 100%);
-                        border: 1px solid rgba(255, 215, 0, 0.2);
-                        border-radius: 20px;
-                        padding: 32px;
-                        box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+                    .pc-elite-banner {
+                        position: relative;
+                        overflow: hidden;
+                        background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(10,10,15,0.95) 100%);
+                        border: 1px solid rgba(212, 175, 55, 0.3);
+                        border-radius: 16px;
+                        padding: 30px;
+                        box-shadow: 0 8px 32px rgba(212, 175, 55, 0.05);
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        transition: all 0.4s ease;
+                        cursor: pointer;
+                        text-decoration: none;
                     }
-
-                    .elite-dash-header {
-                        display: flex; justify-content: space-between; align-items: center;
-                        margin-bottom: 24px;
-                        padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-                    }
-
-                    .elite-features-grid {
-                        display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-                    }
-
-                    .ef-card {
-                        background: rgba(15, 15, 20, 0.5);
-                        border: 1px solid rgba(255, 255, 255, 0.03);
-                        border-radius: 12px; padding: 24px;
-                        display: flex; flex-direction: column; gap: 12px;
-                        transition: all 0.3s ease;
-                    }
-
-                    .ef-card:hover {
-                        background: rgba(255, 215, 0, 0.03);
-                        border-color: rgba(255, 215, 0, 0.2);
+                    .pc-elite-banner:hover {
                         transform: translateY(-5px);
+                        border-color: rgba(212, 175, 55, 0.6);
+                        box-shadow: 0 15px 40px rgba(212, 175, 55, 0.15);
                     }
-
-                    .ef-icon {
-                        width: 48px; height: 48px; border-radius: 12px;
-                        background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.02));
-                        color: #ffd700; display: flex; align-items: center; justify-content: center;
-                        font-size: 1.5rem; border: 1px solid rgba(255,215,0,0.2);
+                    .pc-elite-banner::before {
+                        content: '';
+                        position: absolute;
+                        top: -50%; left: -50%;
+                        width: 200%; height: 200%;
+                        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+                        opacity: 0;
+                        transition: opacity 0.3s;
+                        pointer-events: none;
+                        transform: translate(var(--mouse-x, 0), var(--mouse-y, 0));
                     }
-
-                    .ef-title { font-family: var(--font-display); font-size: 1.1rem; color: #fff; letter-spacing: 0.5px; }
-                    .ef-desc { font-size: 0.85rem; color: #a1a1aa; line-height: 1.5; }
+                    .pc-elite-banner:hover::before { opacity: 1; }
                 </style>
 
                 <div id="ff-trusted-section" style="display: none;">
                     
-                    <!-- PC View -->
-                    <div class="trusted-pc pc-elite-dashboard">
-                        <div class="elite-dash-header">
-                            <div>
-                                <div style="color: #ffd700; font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 8px;">STATUS: ACTIVE</div>
-                                <h3 style="margin: 0; color: #fff; font-family: var(--font-display); font-size: 2rem; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">ELITE COMMAND CENTER</h3>
-                            </div>
-                            <a href="/dashboard/tournaments" style="background: linear-gradient(90deg, #FFD700, #FFA500); color: #000; font-family: var(--font-display); font-weight: bold; padding: 12px 28px; border-radius: 8px; letter-spacing: 1.5px; font-size: 1.1rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 10px 20px rgba(255,215,0,0.3)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">ENTER HUB</a>
+                    <!-- Mobile View -->
+                    <div class="trusted-mobile" style="background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 16px; align-items: center; justify-content: space-between; gap: 12px;">
+                        <div style="color: #fff; font-size: 0.95rem; line-height: 1.4;">
+                            <span style="color: #d4af37; font-weight: bold;">Verified.</span> You've unlocked all Elite perks and tournaments.
                         </div>
-                        
-                        <div class="elite-features-grid">
-                            <div class="ef-card">
-                                <div class="ef-icon">🎯</div>
-                                <div class="ef-title">Pro Scrims</div>
-                                <div class="ef-desc">Access high-tier practice lobbies and official scrims reserved only for verified rosters.</div>
-                            </div>
-                            <div class="ef-card">
-                                <div class="ef-icon">💰</div>
-                                <div class="ef-title">Premium Prizes</div>
-                                <div class="ef-desc">Compete in exclusive tournaments featuring massive prize pools and custom rewards.</div>
-                            </div>
-                            <div class="ef-card">
-                                <div class="ef-icon">⚡</div>
-                                <div class="ef-title">Direct Entry</div>
-                                <div class="ef-desc">Bypass the standard qualification series and secure direct slots in major events.</div>
-                            </div>
-                        </div>
+                        <a href="/dashboard/tournaments" style="background: rgba(212, 175, 55, 0.15); color: #d4af37; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; text-decoration: none; white-space: nowrap; border: 1px solid rgba(212, 175, 55, 0.3);">Enter →</a>
                     </div>
+
+                    <!-- PC View -->
+                    <a href="/dashboard/tournaments" class="trusted-pc pc-elite-banner" onmousemove="this.style.setProperty('--mouse-x', (event.clientX - this.getBoundingClientRect().left) + 'px'); this.style.setProperty('--mouse-y', (event.clientY - this.getBoundingClientRect().top) + 'px');">
+                        <div style="display: flex; align-items: center; gap: 24px; z-index: 2; position: relative;">
+                            <div style="width: 60px; height: 60px; background: rgba(212, 175, 55, 0.1); border: 2px solid #d4af37; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);">
+                                💎
+                            </div>
+                            <div>
+                                <h3 style="margin: 0 0 8px 0; color: #fff; font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">ELITE ACCESS GRANTED</h3>
+                                <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 0.95rem; max-width: 400px;">Command has verified your profile. You now have unrestricted access to premium major operations and rewards.</p>
+                            </div>
+                        </div>
+                        <div style="z-index: 2; position: relative; background: #d4af37; color: #000; font-family: var(--font-display); font-weight: bold; padding: 12px 24px; border-radius: 8px; letter-spacing: 1px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);">
+                            ENTER TOURNAMENTS
+                        </div>
+                    </a>
 
                 </div>
 
@@ -609,7 +595,7 @@
         </div>
 
         <!-- Sidebar -->
-        <div class="c-sidebar">
+        <div class="c-sidebar" id="ff-qs-section">
             <div class="side-panel">
                 <div class="sp-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <span style="color: #fff; font-family: var(--font-display); letter-spacing: 1px; font-size: 1.2rem;">HIGHLIGHTS</span>
