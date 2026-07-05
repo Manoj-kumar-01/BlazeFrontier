@@ -96,52 +96,70 @@
                         <h4 class="font-display text-4xl text-white uppercase tracking-wider m-0">HALL OF FAME</h4>
                     </div>
                     
-                    <div class="flex-1 bg-bg-1/80 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden group">
-                        <!-- Background effects -->
-                        <div class="absolute -top-32 -right-32 w-64 h-64 bg-gold/10 rounded-full blur-[100px] group-hover:bg-gold/20 transition-all duration-700"></div>
-                        <div class="absolute -bottom-32 -left-32 w-64 h-64 bg-accent/10 rounded-full blur-[100px] group-hover:bg-accent/20 transition-all duration-700"></div>
+                    <div class="flex-1 bg-bg-1/40 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden flex flex-col justify-end min-h-[450px]">
+                        <!-- Background Glows -->
+                        <div class="absolute -top-32 -right-32 w-96 h-96 bg-gold/10 rounded-full blur-[120px] pointer-events-none"></div>
+                        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-accent/10 rounded-full blur-[120px] pointer-events-none"></div>
                         
-                        <div class="relative z-10 flex flex-col gap-4">
-                            <!-- Rank 1 -->
-                            <div class="flex items-center gap-4 md:gap-6 p-4 rounded-xl bg-gradient-to-r from-gold/10 to-transparent border border-gold/20 hover:border-gold/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(240,165,0,0.15)]">
-                                <div class="font-display text-5xl text-gold drop-shadow-[0_0_10px_rgba(240,165,0,0.5)] w-8 md:w-12 text-center">1</div>
-                                <img src="https://ui-avatars.com/api/?name=Viper&background=f0a500&color=fff" class="w-12 h-12 md:w-14 md:h-14 rounded-lg border-2 border-gold shadow-[0_0_15px_rgba(240,165,0,0.3)]">
-                                <div class="flex-1">
-                                    <h5 class="font-display text-xl md:text-2xl text-white tracking-wide m-0">VIPER_99</h5>
-                                    <p class="font-mono text-[10px] md:text-xs text-gold/80 tracking-widest uppercase">Undisputed Champion</p>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-mono text-lg md:text-xl text-white font-bold">12,450</div>
-                                    <div class="font-mono text-[8px] md:text-[10px] text-text-400 uppercase tracking-widest">ELO RATING</div>
-                                </div>
-                            </div>
-                            <!-- Rank 2 -->
-                            <div class="flex items-center gap-4 md:gap-6 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/30 transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
-                                <div class="font-display text-4xl text-text-200 w-8 md:w-12 text-center">2</div>
-                                <img src="https://ui-avatars.com/api/?name=Ghost&background=333&color=fff" class="w-10 h-10 md:w-12 md:h-12 rounded-lg border border-text-400 grayscale">
-                                <div class="flex-1">
-                                    <h5 class="font-display text-lg md:text-xl text-text-100 tracking-wide m-0">GHOST_PROTOCOL</h5>
-                                    <p class="font-mono text-[9px] md:text-[10px] text-text-400 tracking-widest uppercase">Elite Contender</p>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-mono text-base md:text-lg text-text-200 font-bold">11,210</div>
+                        <!-- 3D Podium Container -->
+                        <div class="relative z-10 flex flex-col sm:flex-row justify-center items-end gap-4 sm:gap-2 lg:gap-6 mt-16 sm:mt-auto perspective-[1000px]">
+                            
+                            <!-- Rank 2 (Silver) -->
+                            <div class="relative w-full sm:w-1/3 h-auto sm:h-[260px] group" style="perspective: 1200px;">
+                                <div class="w-full h-full relative rounded-2xl border border-gray-400/30 bg-gradient-to-t from-gray-400/10 to-bg-2 p-6 flex flex-col items-center justify-start transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-4 group-hover:rotate-x-[10deg] group-hover:rotate-y-[-10deg] shadow-[0_10px_30px_rgba(0,0,0,0.8)] mt-10" style="transform-style: preserve-3d;">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-gray-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl pointer-events-none"></div>
+                                    
+                                    <div class="absolute -top-10 transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-2 group-hover:scale-110" style="transform: translateZ(50px);">
+                                        <img src="https://ui-avatars.com/api/?name=Ghost&background=333&color=fff" class="w-20 h-20 rounded-full border-[3px] border-gray-400 shadow-[0_0_20px_rgba(156,163,175,0.4)] grayscale group-hover:grayscale-0 transition-all duration-700">
+                                    </div>
+                                    
+                                    <div class="mt-10 text-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" style="transform: translateZ(30px);">
+                                        <div class="font-display text-4xl text-gray-400 drop-shadow-md mb-2">#2</div>
+                                        <h5 class="font-display text-xl text-white uppercase tracking-wide truncate w-full">GHOST_PROTOCOL</h5>
+                                        <div class="font-mono text-sm text-gray-400 font-bold mt-1 bg-gray-400/10 px-3 py-1 rounded inline-block">11,210 PTS</div>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Rank 3 -->
-                            <div class="flex items-center gap-4 md:gap-6 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/30 transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
-                                <div class="font-display text-4xl text-[#cd7f32] w-8 md:w-12 text-center">3</div>
-                                <img src="https://ui-avatars.com/api/?name=Slayer&background=cd7f32&color=fff" class="w-10 h-10 md:w-12 md:h-12 rounded-lg border border-[#cd7f32]/50">
-                                <div class="flex-1">
-                                    <h5 class="font-display text-lg md:text-xl text-text-100 tracking-wide m-0">N7_SLAYER</h5>
-                                    <p class="font-mono text-[9px] md:text-[10px] text-[#cd7f32]/80 tracking-widest uppercase">Rising Star</p>
+                            
+                            <!-- Rank 1 (Gold) -->
+                            <div class="relative w-full sm:w-1/3 h-auto sm:h-[340px] group z-20" style="perspective: 1200px;">
+                                <div class="w-full h-full relative rounded-2xl border-[2px] border-gold/50 bg-gradient-to-t from-gold/15 to-bg-2 p-6 flex flex-col items-center justify-start transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-6 group-hover:scale-105 shadow-[0_15px_40px_rgba(240,165,0,0.15)] overflow-visible" style="transform-style: preserve-3d;">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-gold/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl pointer-events-none"></div>
+                                    <div class="absolute -top-32 inset-x-0 h-32 bg-gradient-to-t from-gold/20 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none"></div>
+                                    
+                                    <div class="absolute -top-[70px] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-4 group-hover:scale-110 flex flex-col items-center" style="transform: translateZ(70px);">
+                                        <span class="material-symbols-outlined text-gold text-[40px] drop-shadow-[0_0_15px_rgba(240,165,0,0.8)] animate-pulse mb-[-10px] relative z-10">emoji_events</span>
+                                        <img src="https://ui-avatars.com/api/?name=Viper&background=f0a500&color=fff" class="w-24 h-24 rounded-full border-[4px] border-gold shadow-[0_0_30px_rgba(240,165,0,0.6)]">
+                                    </div>
+                                    
+                                    <div class="mt-[70px] text-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] w-full" style="transform: translateZ(40px);">
+                                        <div class="font-display text-[3.5rem] text-gold drop-shadow-[0_0_15px_rgba(240,165,0,0.5)] leading-none mb-3">#1</div>
+                                        <h5 class="font-display text-3xl text-white uppercase tracking-wider truncate w-full">VIPER_99</h5>
+                                        <div class="font-mono text-[10px] text-gold/80 tracking-widest uppercase mb-2 mt-1">Undisputed Champion</div>
+                                        <div class="font-mono text-lg text-gold font-bold bg-gold/10 px-4 py-1.5 rounded inline-block border border-gold/30 shadow-[0_0_15px_rgba(240,165,0,0.2)]">12,450 PTS</div>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="font-mono text-base md:text-lg text-text-200 font-bold">10,980</div>
+                            </div>
+                            
+                            <!-- Rank 3 (Bronze) -->
+                            <div class="relative w-full sm:w-1/3 h-auto sm:h-[220px] group" style="perspective: 1200px;">
+                                <div class="w-full h-full relative rounded-2xl border border-[#cd7f32]/40 bg-gradient-to-t from-[#cd7f32]/10 to-bg-2 p-6 flex flex-col items-center justify-start transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-4 group-hover:rotate-x-[10deg] group-hover:rotate-y-[10deg] shadow-[0_10px_30px_rgba(0,0,0,0.8)] mt-10 sm:mt-20" style="transform-style: preserve-3d;">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-[#cd7f32]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl pointer-events-none"></div>
+                                    
+                                    <div class="absolute -top-8 transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-2 group-hover:scale-110" style="transform: translateZ(50px);">
+                                        <img src="https://ui-avatars.com/api/?name=Slayer&background=cd7f32&color=fff" class="w-16 h-16 rounded-full border-[3px] border-[#cd7f32] shadow-[0_0_15px_rgba(205,127,50,0.4)] grayscale group-hover:grayscale-0 transition-all duration-700">
+                                    </div>
+                                    
+                                    <div class="mt-8 text-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" style="transform: translateZ(30px);">
+                                        <div class="font-display text-3xl text-[#cd7f32] drop-shadow-md mb-2">#3</div>
+                                        <h5 class="font-display text-lg text-white uppercase tracking-wide truncate w-full">N7_SLAYER</h5>
+                                        <div class="font-mono text-xs text-[#cd7f32] font-bold mt-1 bg-[#cd7f32]/10 px-3 py-1 rounded inline-block">10,980 PTS</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <a href="/dashboard/leaderboards" class="block w-full mt-6 text-center py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-mono text-xs tracking-widest text-text-200 hover:text-white transition-all uppercase">
+                        <a href="/dashboard/leaderboards" class="relative z-20 block w-full mt-10 text-center py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-mono text-xs tracking-widest text-text-200 hover:text-white transition-all uppercase backdrop-blur-md">
                             View Full Global Leaderboard
                         </a>
                     </div>
