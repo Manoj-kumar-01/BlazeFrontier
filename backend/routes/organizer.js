@@ -738,8 +738,9 @@ router.get('/slot-report', async (req, res) => {
         }
 
         for (const dateStr of dates) {
-            const count = await Registration.countDocuments({ startDate: dateStr, status: 'Approved' });
-            result.push({ date: dateStr, count: count });
+            const regs = await Registration.find({ startDate: dateStr, status: { $in: ['Pending', 'Approved'] } });
+            const uniqueSlots = new Set(regs.map(r => r.timeSlot).filter(Boolean));
+            result.push({ date: dateStr, count: uniqueSlots.size });
         }
 
         res.json(result);

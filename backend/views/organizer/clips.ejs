@@ -1035,7 +1035,7 @@
                 
                 // All Registrations (filter out incomplete)
                 allRegistrations = regs.filter(r => {
-                    return r.format !== 'Season Match' && r.userId && r.userId.inGameName && r.userId.playerId;
+                    return r.format !== 'Season Match';
                 });
                 renderRegistrations(allRegistrations);
             } catch (e) { console.error(e); }
