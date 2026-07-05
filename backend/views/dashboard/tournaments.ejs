@@ -86,66 +86,99 @@
             </div>
         </div>
 
-        <!-- Pro Rankings & Battle Pass Promo -->
-        <div class="max-w-[1400px] mx-auto px-6 relative z-20 pb-24">
-            <div class="flex flex-col md:flex-row gap-6 items-stretch">
-                <!-- Pro Rankings -->
-                <div class="w-full md:w-1/3 blaze-card p-8 border-t-2 border-t-accent">
-                    <h4 class="font-display text-3xl text-white mb-6 uppercase tracking-wider flex items-center gap-3">
-                        <span class="material-symbols-outlined text-accent">leaderboard</span> PRO RANKINGS
-                    </h4>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-4 bg-bg-2/80 p-4 rounded-lg border border-accent/20 hover:border-accent/60 hover:bg-bg-3 transition-all cursor-pointer">
-                            <span class="font-display text-3xl text-accent font-bold w-8">1</span>
-                            <div class="flex-1">
-                                <p class="text-white font-bold text-lg">Viper_99</p>
-                                <p class="text-xs text-accent font-mono">2,450 PTS</p>
-                            </div>
-                            <span class="material-symbols-outlined text-text-400">chevron_right</span>
-                        </div>
-                        <div class="flex items-center gap-4 bg-bg-1/50 p-4 rounded-lg border border-white/5 hover:border-white/20 transition-all cursor-pointer">
-                            <span class="font-display text-3xl text-text-400 font-bold w-8">2</span>
-                            <div class="flex-1">
-                                <p class="text-text-100 font-semibold text-base">Ghost_Protocol</p>
-                                <p class="text-xs text-text-400 font-mono">2,210 PTS</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4 bg-bg-1/50 p-4 rounded-lg border border-white/5 hover:border-white/20 transition-all cursor-pointer">
-                            <span class="font-display text-3xl text-text-400 font-bold w-8">3</span>
-                            <div class="flex-1">
-                                <p class="text-text-100 font-semibold text-base">N7_Slayer</p>
-                                <p class="text-xs text-text-400 font-mono">1,980 PTS</p>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="w-full mt-6 py-2.5 text-center font-mono text-sm text-text-300 hover:text-white border border-white/10 rounded hover:bg-white/5 transition-colors">
-                        VIEW FULL BOARD
-                    </button>
-                </div>
-                
-                <!-- Battle Pass Promo -->
-                <div class="w-full md:w-2/3 relative overflow-hidden rounded-xl bg-gradient-to-br from-bg-2 to-bg-1 border border-white/10 p-10 flex items-center group">
-                    <div class="absolute right-0 top-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/20 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
-                    <div class="absolute right-[-5%] top-[-10%] md:top-[-20%] font-display text-[8rem] md:text-[14rem] text-white/5 leading-none select-none pointer-events-none transform -rotate-6 transition-transform duration-700 group-hover:-rotate-12 group-hover:scale-110">
-                        PASS
+        <!-- Tournaments Bottom Sections -->
+        <div class="max-w-[1400px] mx-auto px-4 md:px-6 relative z-20 pb-24">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Hall of Fame / Pro Rankings -->
+                <div class="lg:col-span-7 flex flex-col">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-1 bg-gold rounded-full shadow-[0_0_15px_rgba(240,165,0,0.5)]"></div>
+                        <h4 class="font-display text-4xl text-white uppercase tracking-wider m-0">HALL OF FAME</h4>
                     </div>
                     
-                    <div class="relative z-10 w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-                        <div class="max-w-md">
-                            <div class="inline-block px-3 py-1 bg-white text-bg-0 font-mono font-bold text-xs rounded mb-4 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                                SEASON 4 EXCLUSIVE
+                    <div class="flex-1 bg-bg-1/80 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden group">
+                        <!-- Background effects -->
+                        <div class="absolute -top-32 -right-32 w-64 h-64 bg-gold/10 rounded-full blur-[100px] group-hover:bg-gold/20 transition-all duration-700"></div>
+                        <div class="absolute -bottom-32 -left-32 w-64 h-64 bg-accent/10 rounded-full blur-[100px] group-hover:bg-accent/20 transition-all duration-700"></div>
+                        
+                        <div class="relative z-10 flex flex-col gap-4">
+                            <!-- Rank 1 -->
+                            <div class="flex items-center gap-4 md:gap-6 p-4 rounded-xl bg-gradient-to-r from-gold/10 to-transparent border border-gold/20 hover:border-gold/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(240,165,0,0.15)]">
+                                <div class="font-display text-5xl text-gold drop-shadow-[0_0_10px_rgba(240,165,0,0.5)] w-8 md:w-12 text-center">1</div>
+                                <img src="https://ui-avatars.com/api/?name=Viper&background=f0a500&color=fff" class="w-12 h-12 md:w-14 md:h-14 rounded-lg border-2 border-gold shadow-[0_0_15px_rgba(240,165,0,0.3)]">
+                                <div class="flex-1">
+                                    <h5 class="font-display text-xl md:text-2xl text-white tracking-wide m-0">VIPER_99</h5>
+                                    <p class="font-mono text-[10px] md:text-xs text-gold/80 tracking-widest uppercase">Undisputed Champion</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-mono text-lg md:text-xl text-white font-bold">12,450</div>
+                                    <div class="font-mono text-[8px] md:text-[10px] text-text-400 uppercase tracking-widest">ELO RATING</div>
+                                </div>
                             </div>
-                            <h4 class="font-display text-4xl md:text-5xl text-white mb-4 uppercase leading-none tracking-wide">
-                                BLAZE ELITE <span class="text-accent">BATTLE PASS</span>
-                            </h4>
-                            <p class="text-text-300 text-lg mb-0 font-medium">
-                                Unlock exclusive tactical skins, custom banners, and priority matchmaking before the season ends.
-                            </p>
+                            <!-- Rank 2 -->
+                            <div class="flex items-center gap-4 md:gap-6 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/30 transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+                                <div class="font-display text-4xl text-text-200 w-8 md:w-12 text-center">2</div>
+                                <img src="https://ui-avatars.com/api/?name=Ghost&background=333&color=fff" class="w-10 h-10 md:w-12 md:h-12 rounded-lg border border-text-400 grayscale">
+                                <div class="flex-1">
+                                    <h5 class="font-display text-lg md:text-xl text-text-100 tracking-wide m-0">GHOST_PROTOCOL</h5>
+                                    <p class="font-mono text-[9px] md:text-[10px] text-text-400 tracking-widest uppercase">Elite Contender</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-mono text-base md:text-lg text-text-200 font-bold">11,210</div>
+                                </div>
+                            </div>
+                            <!-- Rank 3 -->
+                            <div class="flex items-center gap-4 md:gap-6 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/30 transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+                                <div class="font-display text-4xl text-[#cd7f32] w-8 md:w-12 text-center">3</div>
+                                <img src="https://ui-avatars.com/api/?name=Slayer&background=cd7f32&color=fff" class="w-10 h-10 md:w-12 md:h-12 rounded-lg border border-[#cd7f32]/50">
+                                <div class="flex-1">
+                                    <h5 class="font-display text-lg md:text-xl text-text-100 tracking-wide m-0">N7_SLAYER</h5>
+                                    <p class="font-mono text-[9px] md:text-[10px] text-[#cd7f32]/80 tracking-widest uppercase">Rising Star</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-mono text-base md:text-lg text-text-200 font-bold">10,980</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="shrink-0">
-                            <button class="w-full md:w-auto px-8 py-4 blaze-btn font-mono text-lg shadow-[0_0_30px_rgba(230,57,70,0.4)]">
-                                GET PASS NOW
-                            </button>
+                        
+                        <a href="/dashboard/leaderboards" class="block w-full mt-6 text-center py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-mono text-xs tracking-widest text-text-200 hover:text-white transition-all uppercase">
+                            View Full Global Leaderboard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Competitive Ecosystem -->
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    <div class="flex items-center gap-4 mb-2">
+                        <div class="w-12 h-1 bg-accent rounded-full shadow-[0_0_15px_rgba(230,57,70,0.5)]"></div>
+                        <h4 class="font-display text-4xl text-white uppercase tracking-wider m-0">ECOSYSTEM</h4>
+                    </div>
+
+                    <!-- Integrity Card -->
+                    <div class="relative bg-gradient-to-br from-bg-2 to-bg-1 border border-white/10 rounded-2xl p-6 md:p-8 overflow-hidden group hover:border-accent/30 transition-all duration-500">
+                        <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-700">
+                            <span class="material-symbols-outlined text-[100px] text-accent">shield</span>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-6 border border-accent/20 shadow-[0_0_20px_rgba(230,57,70,0.1)] group-hover:bg-accent/20 transition-colors">
+                                <span class="material-symbols-outlined text-accent">gpp_good</span>
+                            </div>
+                            <h5 class="font-display text-2xl text-white mb-2 uppercase">Anti-Cheat Enforced</h5>
+                            <p class="text-sm text-text-300 font-medium leading-relaxed">Blaze Frontier employs strict verification and server-side analysis to ensure 100% fair play. Cheaters are permanently hardware-banned.</p>
+                        </div>
+                    </div>
+
+                    <!-- Verified Only Card -->
+                    <div class="relative bg-gradient-to-br from-bg-2 to-bg-1 border border-white/10 rounded-2xl p-6 md:p-8 overflow-hidden group hover:border-gold/30 transition-all duration-500">
+                        <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-700">
+                            <span class="material-symbols-outlined text-[100px] text-gold">verified</span>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center mb-6 border border-gold/20 shadow-[0_0_20px_rgba(240,165,0,0.1)] group-hover:bg-gold/20 transition-colors">
+                                <span class="material-symbols-outlined text-gold">workspace_premium</span>
+                            </div>
+                            <h5 class="font-display text-2xl text-white mb-2 uppercase">Verified Elite Only</h5>
+                            <p class="text-sm text-text-300 font-medium leading-relaxed">Access to prize-pool tournaments is strictly limited to manually verified players. This maintains the highest caliber of competition.</p>
                         </div>
                     </div>
                 </div>
@@ -332,29 +365,32 @@
                         html = '<div class="text-center py-20 text-text-400 font-mono">No live elite tournaments at the moment.</div>';
                     } else {
                         html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">' + list.map((t, index) => `
-                            <div class="relative h-[420px] blaze-card flex flex-col justify-end p-8 cursor-pointer group" style="animation: fadeUpIn 0.6s ease forwards; animation-delay: ${index * 0.1}s; opacity: 0;">
+                            <div class="relative h-[420px] blaze-card flex flex-col justify-end p-8 cursor-pointer group rounded-2xl border-accent/20 hover:border-accent/80 overflow-hidden" style="animation: fadeUpIn 0.6s ease forwards; animation-delay: ${index * 0.1}s; opacity: 0;">
                                 <div class="absolute inset-0 z-0 overflow-hidden">
-                                    <img class="w-full h-full object-cover object-center motion-blur-img opacity-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCp0T-wxpyfI26kRykEmZGI52t7KWalgXs59G7cWnbe5iTPmxzdVz17gjhzl1rVjbqwuWM7v_ATKzo8svPmGnoiRUP7MRjweVX6l_7odJVdlBIZBp_DEFatNuP9e-vSkghQhNcV5wf7QW8stSsQF6yXLANFB7nijL6tlekxDkF5aWuZxvW3yQam9Oln0-i9PnghJVhVHuCKcO8JoYmzUNpJf4aPigymcVuWUzak1Tk9yAzTSP-dq6Ky" alt="Live Match" />
+                                    <img class="w-full h-full object-cover object-center motion-blur-img opacity-50 transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCp0T-wxpyfI26kRykEmZGI52t7KWalgXs59G7cWnbe5iTPmxzdVz17gjhzl1rVjbqwuWM7v_ATKzo8svPmGnoiRUP7MRjweVX6l_7odJVdlBIZBp_DEFatNuP9e-vSkghQhNcV5wf7QW8stSsQF6yXLANFB7nijL6tlekxDkF5aWuZxvW3yQam9Oln0-i9PnghJVhVHuCKcO8JoYmzUNpJf4aPigymcVuWUzak1Tk9yAzTSP-dq6Ky" alt="Live Match" />
                                     <div class="absolute inset-0 bg-gradient-to-t from-bg-0 via-bg-0/60 to-transparent"></div>
+                                    <div class="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                 </div>
-                                <div class="relative z-10 w-full flex flex-col h-full">
+                                <div class="relative z-10 w-full flex flex-col h-full transform transition-transform duration-500 group-hover:-translate-y-2">
                                     <div class="flex justify-between items-start mb-4">
-                                        <span class="bg-accent text-white px-2 py-1 md:px-3 font-mono text-[10px] md:text-xs font-bold rounded shadow-[0_0_15px_rgba(230,57,70,0.5)]">LIVE NOW</span>
-                                        <span class="font-mono text-[10px] md:text-sm text-text-300 font-bold uppercase tracking-widest break-all">${t.game}</span>
+                                        <span class="bg-accent text-white px-3 py-1 font-mono text-[10px] md:text-xs font-bold rounded shadow-[0_0_15px_rgba(230,57,70,0.5)] flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> LIVE NOW
+                                        </span>
+                                        <span class="font-mono text-[10px] md:text-sm text-white bg-white/10 px-3 py-1 rounded backdrop-blur-md font-bold uppercase tracking-widest break-all border border-white/5 group-hover:border-white/20 transition-colors">${t.game}</span>
                                     </div>
-                                    <h3 class="font-display text-3xl md:text-4xl text-white mb-4 uppercase tracking-wide leading-none break-words line-clamp-2">${t.name}</h3>
+                                    <h3 class="font-display text-3xl md:text-4xl text-white mb-4 uppercase tracking-wide leading-none break-words line-clamp-2 drop-shadow-lg">${t.name}</h3>
                                     
-                                    <div class="flex flex-wrap items-center gap-2 md:gap-4 mb-4 text-[10px] md:text-xs font-mono text-text-300 mt-auto">
-                                        <span>P: <span class="text-white">${t.participants}</span></span>
-                                        <span>F: <span class="text-white">${t.team || 'Solo'}</span></span>
-                                        <span>R: <span class="text-gold break-all line-clamp-1">${t.prize || 'Elite'}</span></span>
+                                    <div class="flex flex-wrap items-center gap-2 md:gap-4 mb-4 text-[10px] md:text-xs font-mono text-text-200 mt-auto bg-bg-1/40 p-3 rounded-lg backdrop-blur-sm border border-white/5">
+                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-text-400">group</span> <span class="text-white">${t.participants}</span></span>
+                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-text-400">swords</span> <span class="text-white">${t.team || 'Solo'}</span></span>
+                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold">trophy</span> <span class="text-gold break-all line-clamp-1 font-bold">${t.prize || 'Elite'}</span></span>
                                     </div>
                                     
-                                    <div class="flex flex-col sm:flex-row items-stretch justify-between border-t border-white/10 pt-4 md:pt-5 gap-3">
-                                        <a href="/dashboard/leaderboards" class="flex-1 text-center py-2.5 bg-white text-bg-0 hover:bg-text-200 rounded font-mono font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                                    <div class="flex flex-col sm:flex-row items-stretch justify-between pt-2 gap-3 opacity-90 group-hover:opacity-100 transition-opacity">
+                                        <a href="/dashboard/leaderboards" class="flex-1 text-center py-3 bg-white text-bg-0 hover:bg-accent hover:text-white rounded font-mono font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-lg">
                                             SPECTATE
                                         </a>
-                                        ${t.isListPublished ? `<button onclick="viewParticipants('${t.id || t._id}', '${t.name.replace(/'/g, "\\'")}')" class="flex-1 text-center py-2.5 blaze-btn-outline font-mono font-bold text-sm relative z-20">ROSTER</button>` : ''}
+                                        ${t.isListPublished ? `<button onclick="viewParticipants('${t.id || t._id}', '${t.name.replace(/'/g, "\\'")}')" class="flex-1 text-center py-3 blaze-btn-outline font-mono font-bold text-sm relative z-20 hover:border-white hover:text-white bg-black/20">ROSTER</button>` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -365,28 +401,29 @@
                         html = '<div class="text-center py-20 text-text-400 font-mono">No upcoming elite tournaments scheduled. Check back soon.</div>';
                     } else {
                         html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">' + list.map((t, index) => `
-                            <div class="relative h-[420px] blaze-card flex flex-col justify-end p-8 cursor-pointer group" style="animation: fadeUpIn 0.6s ease forwards; animation-delay: ${index * 0.1}s; opacity: 0;">
+                            <div class="relative h-[420px] blaze-card flex flex-col justify-end p-8 cursor-pointer group rounded-2xl border-white/10 hover:border-gold/40 overflow-hidden" style="animation: fadeUpIn 0.6s ease forwards; animation-delay: ${index * 0.1}s; opacity: 0;">
                                 <div class="absolute inset-0 z-0 overflow-hidden">
-                                    <img class="w-full h-full object-cover object-left motion-blur-img opacity-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlEqRxv13oTOeCqd3yqm4y7DXMTpEv6mvwlnPU9Q3LMZMsxeVVikZ8JSRHEZlpeaE0HyaxaHbGCVRVtis5_c_WeTndUvTuJ5smUnpUW0D5QK7mG4kNnDVX9N-0vXnPOVqkD9g72mkjAV0larpbRGppyGzDWWKMd8d6OkFtQtZEqtiufVLa6iNDEufJqNWVwad3dhSfIlbpTJU9xdg0KABgP5eVZ-7MAkDCH158VIuBK3vOu-JphQKS" alt="Upcoming Match"/>
-                                    <div class="absolute inset-0 bg-gradient-to-t from-bg-0 via-bg-0/60 to-transparent"></div>
+                                    <img class="w-full h-full object-cover object-left motion-blur-img opacity-40 transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlEqRxv13oTOeCqd3yqm4y7DXMTpEv6mvwlnPU9Q3LMZMsxeVVikZ8JSRHEZlpeaE0HyaxaHbGCVRVtis5_c_WeTndUvTuJ5smUnpUW0D5QK7mG4kNnDVX9N-0vXnPOVqkD9g72mkjAV0larpbRGppyGzDWWKMd8d6OkFtQtZEqtiufVLa6iNDEufJqNWVwad3dhSfIlbpTJU9xdg0KABgP5eVZ-7MAkDCH158VIuBK3vOu-JphQKS" alt="Upcoming Match"/>
+                                    <div class="absolute inset-0 bg-gradient-to-t from-bg-0 via-bg-0/70 to-transparent"></div>
+                                    <div class="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                 </div>
-                                <div class="relative z-10 w-full flex flex-col h-full">
+                                <div class="relative z-10 w-full flex flex-col h-full transform transition-transform duration-500 group-hover:-translate-y-2">
                                     <div class="flex justify-between items-start mb-4">
-                                        <span class="bg-white text-bg-0 px-2 py-1 md:px-3 font-mono text-[10px] md:text-xs font-bold rounded">UPCOMING</span>
-                                        <span class="font-mono text-[10px] md:text-sm text-text-300 font-bold uppercase tracking-widest break-all">${t.game}</span>
+                                        <span class="bg-white/90 text-bg-0 px-3 py-1 font-mono text-[10px] md:text-xs font-bold rounded shadow-[0_0_10px_rgba(255,255,255,0.2)]">UPCOMING</span>
+                                        <span class="font-mono text-[10px] md:text-sm text-white bg-white/10 px-3 py-1 rounded backdrop-blur-md font-bold uppercase tracking-widest break-all border border-white/5 group-hover:border-white/20 transition-colors">${t.game}</span>
                                     </div>
-                                    <h3 class="font-display text-2xl md:text-3xl text-white mb-4 uppercase tracking-wide leading-tight break-words line-clamp-2">${t.name}</h3>
+                                    <h3 class="font-display text-2xl md:text-3xl text-white mb-4 uppercase tracking-wide leading-tight break-words line-clamp-2 drop-shadow-md">${t.name}</h3>
                                     
-                                    <div class="flex flex-col gap-1.5 mb-6 text-[10px] md:text-xs font-mono text-text-300 mt-auto">
-                                        <div class="flex justify-between"><span>Date:</span> <span class="text-white text-right">${t.date}</span></div>
-                                        <div class="flex justify-between"><span>Time:</span> <span class="text-white text-right">${t.timeSlot || 'TBA'}</span></div>
-                                        <div class="flex justify-between"><span>Format:</span> <span class="text-white text-right">${t.team || 'Solo'}</span></div>
-                                        <div class="flex justify-between"><span>Reward:</span> <span class="text-gold text-right break-words max-w-[150px] line-clamp-1">${t.prize || 'Elite'}</span></div>
+                                    <div class="flex flex-col gap-2 mb-6 text-[10px] md:text-xs font-mono text-text-200 mt-auto bg-bg-1/50 p-4 rounded-lg backdrop-blur-sm border border-white/5">
+                                        <div class="flex justify-between items-center pb-2 border-b border-white/5"><span>Date:</span> <span class="text-white font-bold text-right">${t.date}</span></div>
+                                        <div class="flex justify-between items-center pb-2 border-b border-white/5"><span>Time:</span> <span class="text-white font-bold text-right">${t.timeSlot || 'TBA'}</span></div>
+                                        <div class="flex justify-between items-center pb-2 border-b border-white/5"><span>Format:</span> <span class="text-white font-bold text-right">${t.team || 'Solo'}</span></div>
+                                        <div class="flex justify-between items-center"><span>Reward:</span> <span class="text-gold font-bold text-right break-words max-w-[150px] line-clamp-1">${t.prize || 'Elite'}</span></div>
                                     </div>
                                     
-                                    <div class="flex flex-col sm:flex-row items-stretch gap-3">
-                                        ${t.canRegister ? `<a href="/dashboard/tournaments/${t.id || t._id}/register" class="flex-1 text-center py-3 blaze-btn font-mono text-sm relative z-20">SECURE SLOT</a>` : ''}
-                                        ${t.isListPublished ? `<button onclick="viewParticipants('${t.id || t._id}', '${t.name.replace(/'/g, "\\'")}')" class="flex-1 text-center py-3 blaze-btn-outline font-mono text-sm relative z-20">ROSTER</button>` : ''}
+                                    <div class="flex flex-col sm:flex-row items-stretch gap-3 opacity-90 group-hover:opacity-100 transition-opacity">
+                                        ${t.canRegister ? `<a href="/dashboard/tournaments/${t.id || t._id}/register" class="flex-1 text-center py-3 bg-gradient-to-r from-gold to-yellow-500 text-bg-0 font-mono font-bold text-sm relative z-20 rounded shadow-[0_0_15px_rgba(240,165,0,0.3)] hover:shadow-[0_0_25px_rgba(240,165,0,0.6)] hover:-translate-y-0.5 transition-all">SECURE SLOT</a>` : ''}
+                                        ${t.isListPublished ? `<button onclick="viewParticipants('${t.id || t._id}', '${t.name.replace(/'/g, "\\'")}')" class="flex-1 text-center py-3 blaze-btn-outline font-mono font-bold text-sm relative z-20 hover:border-white hover:text-white bg-black/20">ROSTER</button>` : ''}
                                     </div>
                                 </div>
                             </div>
