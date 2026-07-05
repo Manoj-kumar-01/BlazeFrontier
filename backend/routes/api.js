@@ -49,6 +49,11 @@ router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, 
             return res.status(400).json({ msg: 'Please provide playerId, title, game, and a video clip.' });
         }
 
+        const currentDay = new Date().getDay();
+        if (currentDay === 6 || currentDay === 0) {
+            return res.status(400).json({ msg: 'Clip submissions are only allowed Monday through Friday. Voting is on Saturday and Results are on Sunday!' });
+        }
+
         const ClipSubmission = require('../models/ClipSubmission');
         
         const startOfWeek = new Date();
@@ -1655,9 +1660,46 @@ router.get('/voting-event/active', async (req, res) => {
         
         if (!event) return res.status(404).json({ msg: 'No active voting event' });
         
+        const currentDay = new Date().getDay();
+        
         // Strictly enforce real-time logic: Voting ONLY on Saturday (Day 6)
-        if (new Date().getDay() !== 6) {
+        if (currentDay !== 6) {
             event.isActive = false;
+        }
+
+        if (currentDay === 0 && !event.isRewarded) {
+            // It's Sunday and not rewarded yet
+            const Vote = require('../models/Vote');
+            const User = require('../models/User'); 
+            const results = await Vote.aggregate([
+                { $match: { eventId: event._id } },
+                { $group: { _id: "$clipId", count: { $sum: 1 } } },
+                { $sort: { count: -1 } },
+                { $limit: 3 }
+            ]);
+
+            const rewards = [1000, 500, 250]; 
+            for (let i = 0; i < results.length; i++) {
+                const clip = await require('../models/ClipSubmission').findById(results[i]._id);
+                if (clip && clip.userId) {
+                    await User.findByIdAndUpdate(clip.userId, {
+                        $inc: { blazeCoins: rewards[i] }
+                    });
+                }
+            }
+            
+            const dbEvent = await VotingEvent.findById(event._id);
+            if (dbEvent) {
+                dbEvent.isActive = false;
+                dbEvent.isRewarded = true;
+                await dbEvent.save();
+            }
+            event.isRewarded = true;
+        }
+
+        if (currentDay >= 1 && currentDay <= 5) {
+            // Monday through Friday: submissions are active, old event shouldn't be shown as active or for voting.
+            return res.status(404).json({ msg: 'Currently accepting submissions! Voting starts on Saturday.' });
         }
 
         // Fetch vote counts for each clip
