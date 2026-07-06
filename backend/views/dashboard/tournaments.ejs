@@ -1,1563 +1,456 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Tournaments | Blaze Frontier</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Global Pro Circuit - Tournaments</title>
+    
+    <!-- Keep existing font & stylesheet so navbar stays styled correctly -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=block" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
+
+    <!-- Tailwind Requirements -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#988d9f",
+                        "on-primary-fixed": "#2c0051",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-background": "#e1e2e7",
+                        "error": "#ffb4ab",
+                        "inverse-surface": "#e1e2e7",
+                        "tertiary-fixed-dim": "#fabc4e",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface": "#111417",
+                        "secondary": "#adc6ff",
+                        "tertiary-container": "#bd871a",
+                        "on-primary-fixed-variant": "#6900b3",
+                        "outline-variant": "#4d4354",
+                        "tertiary-fixed": "#ffdead",
+                        "inverse-on-surface": "#2e3134",
+                        "on-secondary-container": "#e6ecff",
+                        "on-error-container": "#ffdad6",
+                        "on-surface": "#e1e2e7",
+                        "surface-tint": "#ddb7ff",
+                        "on-primary-container": "#400071",
+                        "on-tertiary-fixed": "#281900",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary": "#002e6a",
+                        "on-tertiary": "#432c00",
+                        "surface-dim": "#111417",
+                        "on-secondary-fixed": "#001a42",
+                        "on-surface-variant": "#cfc2d6",
+                        "on-tertiary-fixed-variant": "#604100",
+                        "surface-bright": "#37393d",
+                        "on-primary": "#490080",
+                        "background": "#111417",
+                        "surface-variant": "#323538",
+                        "primary": "#ddb7ff",
+                        "on-tertiary-container": "#3a2600",
+                        "on-error": "#690005",
+                        "secondary-container": "#0566d9",
+                        "surface-container-lowest": "#0b0e11",
+                        "surface-container-highest": "#323538",
+                        "tertiary": "#fabc4e",
+                        "primary-fixed": "#f0dbff",
+                        "primary-fixed-dim": "#ddb7ff",
+                        "surface-container-low": "#191c1f",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#842bd2",
+                        "primary-container": "#b76dff",
+                        "surface-container-high": "#272a2e",
+                        "surface-container": "#1d2023"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "xs": "4px",
+                        "base": "4px",
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "xl": "40px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* ========================================
-           TOURNAMENTS PAGE — CINEMATIC REDESIGN
-           ======================================== */
+        /* Existing global bg doesn't override tailwind classes if we scope it */
+        .glass-panel { background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-panel:hover { border-color: rgba(255, 255, 255, 0.3); box-shadow: inset 0 0 10px rgba(221, 183, 255, 0.2); transition: all 0.3s ease; }
+        .btn-primary { background-color: #A855F7; color: white; transition: all 0.3s ease; }
+        .btn-primary:hover { filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8)); }
+        .text-cyber-blue { color: #3B82F6; }
+        .border-cyber-blue { border-color: #3B82F6; }
+        .bg-cyber-blue { background-color: #3B82F6; }
+        .table-row-hover:hover { background-color: rgba(17, 24, 39, 0.8); }
 
-        :root {
-            --t-gold: #FFD700;
-            --t-gold-glow: rgba(255, 215, 0, 0.35);
-            --t-gold-dim: rgba(255, 215, 0, 0.08);
-            --t-orange: #FF6B35;
-            --t-red: #e63946;
-            --t-green: #22c55e;
-            --t-cyan: #06b6d4;
-            --t-bg: #07070d;
-            --t-surface: rgba(14, 14, 22, 0.75);
-            --t-surface-2: rgba(20, 20, 30, 0.6);
-            --t-border: rgba(255, 255, 255, 0.06);
-            --t-border-hover: rgba(255, 215, 0, 0.25);
-            --t-text: #f0eef5;
-            --t-text-dim: #8f8ca6;
-            --t-text-muted: #5c5a72;
-        }
-
-        body {
-            background: var(--t-bg);
-            color: var(--t-text);
-            overflow-x: hidden;
-        }
-
-        /* Background Ambient Effects */
-        .t-bg-scene {
-            position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
-        }
-        .t-bg-scene .orb {
-            position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.5;
-        }
-        .t-bg-scene .orb-1 {
-            width: 600px; height: 600px; top: -10%; left: -5%;
-            background: radial-gradient(circle, rgba(255, 107, 53, 0.12), transparent 70%);
-            animation: orbFloat1 20s ease-in-out infinite;
-        }
-        .t-bg-scene .orb-2 {
-            width: 500px; height: 500px; bottom: 10%; right: -5%;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.08), transparent 70%);
-            animation: orbFloat2 25s ease-in-out infinite;
-        }
-        .t-bg-scene .orb-3 {
-            width: 400px; height: 400px; top: 40%; left: 50%;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.06), transparent 70%);
-            animation: orbFloat3 22s ease-in-out infinite;
-        }
-
-        @keyframes orbFloat1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(60px, 40px); } }
-        @keyframes orbFloat2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-50px, -60px); } }
-        @keyframes orbFloat3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -40px); } }
-
-        /* Page Container */
-        .t-page {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 100px 24px 80px;
-        }
-
-        /* =====================
-           HERO SECTION — DYNAMIC
-           ===================== */
-        .t-hero {
-            position: relative;
-            border-radius: 28px;
-            overflow: hidden;
-            margin-bottom: 48px;
-            background: linear-gradient(160deg, rgba(12, 12, 20, 0.97) 0%, rgba(7, 7, 13, 0.99) 50%, rgba(20, 12, 8, 0.95) 100%);
-            border: 1px solid var(--t-border);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-            animation: heroReveal 1s var(--ease) forwards;
-            min-height: 420px;
-        }
-        .t-hero::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent 5%, var(--t-orange), var(--t-gold), var(--t-orange), transparent 95%);
-            z-index: 5;
-        }
-        .t-hero::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.15), transparent);
-            z-index: 5;
-        }
-
-        .t-hero-canvas {
-            position: absolute; inset: 0; z-index: 0; pointer-events: none;
-        }
-
-        .t-hero-layout {
-            position: relative; z-index: 2;
-            display: grid; grid-template-columns: 1fr 1fr;
-            min-height: 420px;
-        }
-
-        /* Left Column — Content */
-        .t-hero-left {
-            display: flex; flex-direction: column; justify-content: center;
-            padding: 52px 20px 52px 48px;
-        }
-
-        .t-hero-badge {
-            display: inline-flex; align-items: center; gap: 8px; width: fit-content;
-            background: rgba(255, 107, 53, 0.1);
-            border: 1px solid rgba(255, 107, 53, 0.25);
-            color: var(--t-orange);
-            padding: 6px 16px; border-radius: 30px;
-            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800;
-            letter-spacing: 2.5px; text-transform: uppercase;
-            margin-bottom: 20px;
-            animation: badgePulse 3s ease-in-out infinite;
-        }
-        .t-hero-badge .badge-dot {
-            width: 6px; height: 6px; background: var(--t-orange);
-            border-radius: 50%; animation: pulse 1.5s infinite;
-        }
-
-        .t-hero-title {
-            font-family: var(--font-display);
-            font-size: 4.8rem; line-height: 0.92;
-            margin: 0 0 18px; letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-        .t-hero-title .line-1 {
-            display: block;
-            background: linear-gradient(180deg, #FFFFFF 10%, #B0B0C0 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .t-hero-title .line-2 {
-            display: block; font-size: 5.2rem;
-            background: linear-gradient(90deg, #FFD700, #FF6B35, #FF4500, #FFD700);
-            background-size: 200% 100%;
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: heroGradientShift 6s ease-in-out infinite;
-            filter: drop-shadow(0 0 40px rgba(255, 107, 53, 0.25));
-        }
-
-        @keyframes heroGradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .t-hero-desc {
-            font-size: 1rem; color: var(--t-text-dim);
-            max-width: 460px; line-height: 1.7; margin: 0 0 28px;
-        }
-
-        .t-hero-actions {
-            display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
-        }
-        .t-hero-btn {
-            display: inline-flex; align-items: center; gap: 10px;
-            padding: 14px 32px; border-radius: 12px; border: none;
-            background: linear-gradient(135deg, #FF6B35, #FFD700);
-            color: #000; font-family: var(--font-display); font-size: 1.2rem;
-            letter-spacing: 3px; cursor: pointer; text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 6px 25px rgba(255, 107, 53, 0.25);
-            transition: all 0.3s var(--ease);
-        }
-        .t-hero-btn:hover {
-            transform: translateY(-3px) scale(1.04);
-            box-shadow: 0 12px 40px rgba(255, 107, 53, 0.45);
-        }
-        .t-hero-btn svg { width: 16px; height: 16px; fill: currentColor; }
-
-        .t-hero-btn-ghost {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 14px 28px; border-radius: 12px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--t-text-dim); font-family: var(--font-display); font-size: 1.1rem;
-            letter-spacing: 2px; cursor: pointer; text-decoration: none;
-            transition: all 0.3s;
-        }
-        .t-hero-btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-
-        /* Right Column — Dynamic Stats Panel */
-        .t-hero-right {
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; padding: 52px 48px 52px 20px;
-            position: relative;
-        }
-
-        .t-hero-stats-panel {
-            width: 100%; max-width: 380px;
-            background: rgba(10, 10, 16, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 28px;
-            backdrop-filter: blur(20px);
-            position: relative;
-            overflow: hidden;
-        }
-        .t-hero-stats-panel::before {
-            content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.3), transparent);
-        }
-
-        .t-hero-panel-title {
-            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800;
-            letter-spacing: 3px; color: var(--t-orange);
-            text-transform: uppercase; margin-bottom: 24px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .t-hero-panel-title .panel-pulse {
-            width: 8px; height: 8px; background: var(--t-green);
-            border-radius: 50%; box-shadow: 0 0 10px var(--t-green);
-            animation: pulse 1.5s infinite;
-        }
-
-        .t-hero-stat-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        }
-        .t-hero-stat-row:last-child { border-bottom: none; }
-
-        .t-hero-stat-info {
-            display: flex; align-items: center; gap: 14px;
-        }
-        .t-hero-stat-icon {
-            width: 44px; height: 44px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem;
-        }
-        .t-hero-stat-icon.s-live {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-        .t-hero-stat-icon.s-upcoming {
-            background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 165, 0, 0.05));
-            border: 1px solid rgba(255, 165, 0, 0.2);
-        }
-        .t-hero-stat-icon.s-completed {
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.05));
-            border: 1px solid rgba(6, 182, 212, 0.2);
-        }
-        .t-hero-stat-icon.s-players {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
-            border: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .t-hero-stat-name {
-            font-family: var(--font-display); font-size: 1.1rem;
-            color: #fff; letter-spacing: 1.5px;
-        }
-        .t-hero-stat-sub {
-            font-size: 0.7rem; color: var(--t-text-muted); letter-spacing: 1px;
-        }
-
-        .t-hero-stat-val {
-            font-family: var(--font-mono); font-size: 1.8rem;
-            font-weight: 800; color: #fff;
-            min-width: 50px; text-align: right;
-        }
-        .t-hero-stat-val.green { color: var(--t-green); }
-        .t-hero-stat-val.orange { color: #ffa500; }
-        .t-hero-stat-val.cyan { color: var(--t-cyan); }
-        .t-hero-stat-val.gold { color: var(--t-gold); }
-
-        /* Next Battle ticker */
-        .t-hero-ticker {
-            margin-top: 20px; padding: 16px;
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.08), rgba(255, 215, 0, 0.04));
-            border: 1px solid rgba(255, 107, 53, 0.15);
-            border-radius: 14px;
-            text-align: center;
-        }
-        .t-hero-ticker-label {
-            font-family: var(--font-mono); font-size: 0.65rem; font-weight: 800;
-            letter-spacing: 2px; color: var(--t-text-muted); text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-        .t-hero-ticker-name {
-            font-family: var(--font-display); font-size: 1.3rem;
-            color: var(--t-orange); letter-spacing: 2px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .t-hero-ticker-date {
-            font-family: var(--font-mono); font-size: 0.8rem;
-            color: var(--t-text-dim); margin-top: 4px;
-        }
-
-        /* Animated decorative ring */
-        .t-hero-ring {
-            position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
-            border: 1px solid rgba(255, 107, 53, 0.06);
-        }
-        .t-hero-ring-1 {
-            width: 500px; height: 500px; top: -200px; right: -150px;
-            animation: ringRotate 30s linear infinite;
-        }
-        .t-hero-ring-2 {
-            width: 350px; height: 350px; bottom: -120px; left: -100px;
-            border-color: rgba(255, 215, 0, 0.05);
-            animation: ringRotate 25s linear infinite reverse;
-        }
-        @keyframes ringRotate { to { transform: rotate(360deg); } }
-
-        /* Glow accents */
-        .t-hero-accent {
-            position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
-            filter: blur(100px);
-        }
-        .t-hero-accent-1 {
-            width: 400px; height: 400px; top: -100px; right: 0;
-            background: rgba(255, 107, 53, 0.12);
-        }
-        .t-hero-accent-2 {
-            width: 300px; height: 300px; bottom: -80px; left: -50px;
-            background: rgba(255, 215, 0, 0.06);
-        }
-        .t-hero-accent-3 {
-            width: 250px; height: 250px; top: 30%; left: 40%;
-            background: rgba(6, 182, 212, 0.05);
-        }
-
-        /* =====================
-           FEATURED TOURNAMENT
-           ===================== */
-        .t-featured {
-            position: relative;
-            border-radius: 20px;
-            padding: 36px;
-            margin-bottom: 48px;
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(14, 14, 22, 0.9) 60%, rgba(255, 215, 0, 0.04) 100%);
-            border: 1px solid rgba(255, 107, 53, 0.2);
-            box-shadow: 0 15px 50px rgba(255, 107, 53, 0.08);
-            display: none;
-            overflow: hidden;
-            animation: cardSlideUp 0.8s var(--ease) forwards;
-        }
-        .t-featured::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--t-orange), var(--t-gold), transparent);
-        }
-
-        .t-featured-content {
-            display: flex; justify-content: space-between; align-items: center; gap: 32px;
-            position: relative; z-index: 2;
-        }
-
-        .t-featured-tag {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(255, 107, 53, 0.15); color: var(--t-orange);
-            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800;
-            letter-spacing: 2px; padding: 5px 14px; border-radius: 20px;
-            border: 1px solid rgba(255, 107, 53, 0.3); margin-bottom: 14px;
-        }
-        .t-featured-tag .dot {
-            width: 6px; height: 6px; background: var(--t-orange); border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-
-        .t-featured-name {
-            font-family: var(--font-display); font-size: 2.8rem;
-            color: #fff; margin: 0 0 10px; letter-spacing: 2px; line-height: 1.05;
-        }
-        .t-featured-meta {
-            display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px;
-        }
-        .t-featured-meta-item {
-            font-size: 0.85rem; color: var(--t-text-dim);
-            display: flex; align-items: center; gap: 6px;
-        }
-        .t-featured-meta-item svg { width: 14px; height: 14px; fill: currentColor; opacity: 0.6; }
-        .t-featured-desc {
-            font-size: 0.95rem; color: var(--t-text-muted); max-width: 500px; line-height: 1.6;
-        }
-
-        .t-featured-cta {
-            flex-shrink: 0;
-        }
-        .t-btn-hero {
-            display: inline-flex; align-items: center; gap: 10px;
-            padding: 16px 36px; border-radius: 12px; border: none;
-            background: linear-gradient(135deg, #FF6B35, #FFD700);
-            color: #000; font-family: var(--font-display); font-size: 1.3rem;
-            letter-spacing: 3px; cursor: pointer; text-decoration: none;
-            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.3);
-            transition: all 0.3s var(--ease);
-            font-weight: bold;
-        }
-        .t-btn-hero:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 12px 40px rgba(255, 107, 53, 0.5);
-        }
-        .t-btn-hero svg { width: 18px; height: 18px; fill: currentColor; }
-
-        /* =====================
-           TABS
-           ===================== */
-        .t-tabs-section {
-            display: flex; justify-content: center; margin-bottom: 40px;
-        }
-        .t-tabs {
-            display: inline-flex;
-            background: rgba(10, 10, 18, 0.8);
-            border: 1px solid var(--t-border);
-            border-radius: 14px; padding: 5px;
-            backdrop-filter: blur(20px);
-            gap: 4px;
-        }
-        .t-tab {
-            position: relative; padding: 12px 28px;
-            border: none; background: transparent;
-            font-family: var(--font-display); font-size: 1.15rem;
-            letter-spacing: 2px; color: var(--t-text-muted);
-            cursor: pointer; transition: all 0.3s;
-            border-radius: 10px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .t-tab:hover { color: var(--t-text-dim); }
-        .t-tab.active {
-            color: #fff;
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 215, 0, 0.08));
-            border: 1px solid rgba(255, 107, 53, 0.25);
-            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.1);
-        }
-
-        .t-tab .live-dot {
-            width: 8px; height: 8px; background: var(--t-green);
-            border-radius: 50%; box-shadow: 0 0 10px var(--t-green);
-            animation: pulse 1.5s infinite;
-        }
-
-        .t-tab-count {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 2px 8px; border-radius: 6px;
-            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600;
-            color: var(--t-text-dim);
-        }
-        .t-tab.active .t-tab-count {
-            background: rgba(255, 107, 53, 0.2); color: var(--t-orange);
-        }
-
-        /* =====================
-           TOURNAMENT CARDS
-           ===================== */
-        .t-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 24px;
-            margin-bottom: 64px;
-            min-height: 200px;
-        }
-
-        .t-card {
-            position: relative;
-            background: var(--t-surface);
-            border: 1px solid var(--t-border);
-            border-radius: 18px;
-            padding: 28px;
-            backdrop-filter: blur(20px);
-            transition: all 0.4s var(--ease);
-            overflow: hidden;
-            display: flex; flex-direction: column;
-            animation: cardSlideUp 0.6s var(--ease) both;
-        }
-        .t-card::before {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 107, 53, 0.06), transparent 40%);
-            opacity: 0; transition: opacity 0.4s; pointer-events: none;
-        }
-        .t-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--t-border-hover);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.04);
-        }
-        .t-card:hover::before { opacity: 1; }
-
-        .t-card-head {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 16px;
-        }
-        .t-card-game {
-            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800;
-            letter-spacing: 2px; text-transform: uppercase;
-            color: var(--t-gold); background: var(--t-gold-dim);
-            padding: 4px 12px; border-radius: 6px;
-            border: 1px solid rgba(255, 215, 0, 0.15);
-        }
-        .t-card-status {
-            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
-            letter-spacing: 1.5px; padding: 4px 12px; border-radius: 20px;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .t-card-status.live {
-            background: rgba(34, 197, 94, 0.1); color: var(--t-green);
-            border: 1px solid rgba(34, 197, 94, 0.25);
-        }
-        .t-card-status.live::before {
-            content: ''; width: 6px; height: 6px; background: var(--t-green);
-            border-radius: 50%; animation: pulse 1.5s infinite;
-        }
-        .t-card-status.upcoming {
-            background: rgba(255, 165, 0, 0.1); color: #ffa500;
-            border: 1px solid rgba(255, 165, 0, 0.25);
-        }
-        .t-card-status.completed {
-            background: rgba(140, 140, 160, 0.1); color: #8c8ca0;
-            border: 1px solid rgba(140, 140, 160, 0.25);
-        }
-
-        .t-card-title {
-            font-family: var(--font-display); font-size: 1.9rem;
-            color: #fff; margin: 0 0 20px; letter-spacing: 1.5px; line-height: 1.1;
-        }
-
-        .t-card-details {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-            margin-bottom: 20px;
-        }
-        .t-card-detail {
-            background: rgba(0, 0, 0, 0.3); padding: 12px;
-            border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        .t-card-detail-label {
-            font-size: 0.65rem; color: var(--t-text-muted);
-            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;
-        }
-        .t-card-detail-val {
-            font-family: var(--font-mono); font-size: 1rem; font-weight: 600; color: #fff;
-        }
-
-        .t-card-prize {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.06), transparent);
-            border-left: 3px solid var(--t-gold);
-            padding: 12px 16px; margin-bottom: 20px; border-radius: 0 10px 10px 0;
-        }
-        .t-card-prize-label {
-            font-size: 0.65rem; color: var(--t-gold); text-transform: uppercase;
-            letter-spacing: 1.5px; font-weight: 800; margin-bottom: 4px;
-        }
-        .t-card-prize-val { font-size: 0.95rem; color: #fff; }
-
-        .t-card-creds {
-            background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25);
-            padding: 16px; border-radius: 10px; margin-bottom: 20px; text-align: center;
-        }
-        .t-card-creds-title {
-            font-size: 0.7rem; color: var(--t-cyan); text-transform: uppercase;
-            letter-spacing: 2px; font-weight: 800; margin-bottom: 6px;
-        }
-        .t-card-creds-val {
-            font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
-            color: #fff; letter-spacing: 1px;
-        }
-
-        .t-card-actions { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
-
-        /* Buttons */
-        .t-btn {
-            display: block; width: 100%; text-align: center;
-            padding: 13px 20px; border-radius: 10px;
-            font-family: var(--font-display); font-size: 1.1rem;
-            letter-spacing: 2px; cursor: pointer;
-            transition: all 0.3s var(--ease);
-            text-decoration: none; border: none;
-        }
-        .t-btn-primary {
-            background: linear-gradient(135deg, #FFD700, #FF6B35);
-            color: #000; font-weight: bold;
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
-        }
-        .t-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255, 215, 0, 0.35); }
-
-        .t-btn-green {
-            background: rgba(34, 197, 94, 0.1); color: var(--t-green);
-            border: 1px solid rgba(34, 197, 94, 0.25);
-        }
-        .t-btn-green:hover { background: rgba(34, 197, 94, 0.18); transform: translateY(-2px); }
-
-        .t-btn-ghost {
-            background: transparent; color: var(--t-text-dim);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .t-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.2); }
-
-        /* Empty + Loading */
-        .t-empty {
-            grid-column: 1 / -1; text-align: center; padding: 80px 20px;
-            color: var(--t-text-muted);
-        }
-        .t-empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; }
-        .t-empty-text { font-family: var(--font-display); font-size: 1.4rem; letter-spacing: 2px; color: var(--t-text-dim); }
-        .t-empty-sub { font-size: 0.9rem; color: var(--t-text-muted); margin-top: 8px; }
-
+        /* Loader */
         .t-spinner {
             display: inline-block; width: 36px; height: 36px;
-            border: 3px solid rgba(255, 107, 53, 0.1);
-            border-top-color: var(--t-orange);
+            border: 3px solid rgba(168, 85, 247, 0.2);
+            border-top-color: #A855F7;
             border-radius: 50%;
             animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         }
-
-        /* =====================
-           HALL OF FAME — TOP 3
-           ===================== */
-        .t-hof {
-            margin-top: 20px; margin-bottom: 64px;
-            padding-top: 60px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            animation: cardSlideUp 0.8s var(--ease) both;
-            animation-delay: 0.3s;
-        }
-
-        .t-section-header {
-            text-align: center; margin-bottom: 48px;
-        }
-        .t-section-label {
-            font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800;
-            letter-spacing: 3px; text-transform: uppercase;
-            color: var(--t-gold); margin-bottom: 12px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .t-section-label::before, .t-section-label::after {
-            content: ''; width: 40px; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--t-gold));
-        }
-        .t-section-label::after {
-            background: linear-gradient(90deg, var(--t-gold), transparent);
-        }
-        .t-section-title {
-            font-family: var(--font-display); font-size: 3.5rem;
-            color: #fff; letter-spacing: 3px; margin: 0;
-        }
-        .t-section-sub {
-            font-size: 0.95rem; color: var(--t-text-muted); margin-top: 8px;
-        }
-
-        /* Podium Container */
-        .t-podium {
-            display: flex; justify-content: center; align-items: flex-end;
-            gap: 20px; max-width: 900px; margin: 0 auto;
-            padding: 0 20px 20px;
-        }
-
-        .t-podium-card {
-            flex: 1; max-width: 280px;
-            text-align: center; padding: 32px 24px 28px;
-            border-radius: 20px;
-            position: relative; overflow: hidden;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .t-podium-card:hover { transform: translateY(-5px); }
-
-        .t-podium-card.gold {
-            background: linear-gradient(180deg, rgba(255, 215, 0, 0.08) 0%, rgba(15, 15, 22, 0.9) 100%);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 15px 50px rgba(255, 215, 0, 0.1);
-            order: 2;
-            padding-bottom: 40px;
-        }
-        .t-podium-card.silver {
-            background: linear-gradient(180deg, rgba(192, 192, 192, 0.06) 0%, rgba(15, 15, 22, 0.9) 100%);
-            border: 1px solid rgba(192, 192, 192, 0.25);
-            order: 1;
-        }
-        .t-podium-card.bronze {
-            background: linear-gradient(180deg, rgba(205, 127, 50, 0.06) 0%, rgba(15, 15, 22, 0.9) 100%);
-            border: 1px solid rgba(205, 127, 50, 0.25);
-            order: 3;
-        }
-
-        .t-podium-rank-bg {
-            position: absolute; top: -20px; right: -10px;
-            font-family: var(--font-display); font-size: 7rem;
-            line-height: 1; opacity: 0.06; z-index: 0; pointer-events: none;
-        }
-        .t-podium-card.gold .t-podium-rank-bg { color: #FFD700; opacity: 0.12; }
-        .t-podium-card.silver .t-podium-rank-bg { color: #C0C0C0; opacity: 0.1; }
-        .t-podium-card.bronze .t-podium-rank-bg { color: #CD7F32; opacity: 0.1; }
-
-        .t-podium-medal {
-            font-size: 2rem; margin-bottom: 12px; position: relative; z-index: 1;
-        }
-
-        .t-podium-avatar {
-            width: 80px; height: 80px; border-radius: 50%;
-            margin: 0 auto 16px; position: relative; z-index: 1;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            object-fit: cover;
-        }
-        .t-podium-card.gold .t-podium-avatar {
-            width: 100px; height: 100px;
-            border-color: rgba(255, 215, 0, 0.6);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-        }
-        .t-podium-card.silver .t-podium-avatar {
-            border-color: rgba(192, 192, 192, 0.5);
-            box-shadow: 0 0 20px rgba(192, 192, 192, 0.15);
-        }
-        .t-podium-card.bronze .t-podium-avatar {
-            border-color: rgba(205, 127, 50, 0.5);
-            box-shadow: 0 0 20px rgba(205, 127, 50, 0.15);
-        }
-
-        .t-podium-name {
-            font-family: var(--font-display); font-size: 1.7rem;
-            color: #fff; letter-spacing: 1.5px;
-            margin: 0 0 8px; position: relative; z-index: 1;
-        }
-        .t-podium-region {
-            font-size: 0.7rem; color: var(--t-text-muted);
-            letter-spacing: 1px; text-transform: uppercase;
-            margin-bottom: 12px; position: relative; z-index: 1;
-        }
-        .t-podium-bp {
-            display: inline-block; padding: 6px 18px; border-radius: 20px;
-            font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
-            position: relative; z-index: 1;
-        }
-        .t-podium-card.gold .t-podium-bp {
-            background: rgba(255, 215, 0, 0.1); color: #FFD700;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-        }
-        .t-podium-card.silver .t-podium-bp {
-            background: rgba(192, 192, 192, 0.1); color: #C0C0C0;
-            border: 1px solid rgba(192, 192, 192, 0.2);
-        }
-        .t-podium-card.bronze .t-podium-bp {
-            background: rgba(205, 127, 50, 0.1); color: #CD7F32;
-            border: 1px solid rgba(205, 127, 50, 0.2);
-        }
-
-        .t-hof-cta {
-            text-align: center; margin-top: 36px;
-        }
-        .t-hof-cta a {
-            font-family: var(--font-display); font-size: 1.1rem;
-            color: var(--t-gold); letter-spacing: 2px;
-            text-decoration: none; transition: all 0.3s;
-            display: inline-flex; align-items: center; gap: 8px;
-        }
-        .t-hof-cta a:hover { color: #fff; gap: 14px; }
-        .t-hof-cta a svg { width: 16px; height: 16px; fill: currentColor; transition: transform 0.3s; }
-        .t-hof-cta a:hover svg { transform: translateX(4px); }
-
-        /* =====================
-           HOW IT WORKS
-           ===================== */
-        .t-how {
-            margin-bottom: 64px;
-            animation: cardSlideUp 0.8s var(--ease) both;
-            animation-delay: 0.4s;
-        }
-
-        .t-steps {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 20px; max-width: 1100px; margin: 0 auto;
-            position: relative;
-        }
-        .t-steps::before {
-            content: ''; position: absolute;
-            top: 40px; left: 10%; right: 10%; height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.2), rgba(255, 215, 0, 0.2), transparent);
-            z-index: 0;
-        }
-
-        .t-step {
-            text-align: center; position: relative; z-index: 1;
-            padding: 24px 16px;
-        }
-        .t-step-num {
-            width: 56px; height: 56px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px;
-            font-family: var(--font-display); font-size: 1.4rem;
-            background: var(--t-surface);
-            border: 2px solid var(--t-border);
-            color: var(--t-orange);
-            transition: all 0.3s;
-        }
-        .t-step:hover .t-step-num {
-            border-color: var(--t-orange);
-            box-shadow: 0 0 25px rgba(255, 107, 53, 0.2);
-            transform: scale(1.1);
-        }
-        .t-step-icon { font-size: 1.8rem; margin-bottom: 12px; }
-        .t-step-title {
-            font-family: var(--font-display); font-size: 1.3rem;
-            color: #fff; letter-spacing: 2px; margin-bottom: 8px;
-        }
-        .t-step-desc {
-            font-size: 0.85rem; color: var(--t-text-muted); line-height: 1.5;
-        }
-
-        /* =====================
-           CTA BANNER
-           ===================== */
-        .t-cta {
-            position: relative;
-            border-radius: 20px; padding: 48px;
-            text-align: center;
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(14, 14, 22, 0.95) 50%, rgba(255, 215, 0, 0.06) 100%);
-            border: 1px solid rgba(255, 107, 53, 0.15);
-            overflow: hidden;
-            margin-bottom: 40px;
-            animation: cardSlideUp 0.8s var(--ease) both;
-            animation-delay: 0.5s;
-        }
-        .t-cta::before {
-            content: ''; position: absolute; inset: 0; z-index: 0;
-            background: radial-gradient(ellipse at center bottom, rgba(255, 107, 53, 0.1), transparent 60%);
-        }
-        .t-cta-title {
-            font-family: var(--font-display); font-size: 3rem;
-            color: #fff; letter-spacing: 3px; margin: 0 0 12px;
-            position: relative; z-index: 1;
-        }
-        .t-cta-desc {
-            font-size: 1rem; color: var(--t-text-dim);
-            max-width: 500px; margin: 0 auto 28px; line-height: 1.6;
-            position: relative; z-index: 1;
-        }
-        .t-cta .t-btn-hero { position: relative; z-index: 1; }
-
-        /* =====================
-           MODAL
-           ===================== */
-        .t-modal-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(15px);
-            z-index: 10000;
-            justify-content: center; align-items: center;
-            padding: 20px;
-        }
-        .t-modal {
-            background: #111118;
-            border: 1px solid rgba(255, 107, 53, 0.2);
-            border-radius: 20px;
-            width: 100%; max-width: 720px; max-height: 85vh;
-            display: flex; flex-direction: column;
-            padding: 32px; position: relative;
-            animation: modalPop 0.4s var(--ease);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 107, 53, 0.05);
-        }
-        .t-modal-close {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 40px; height: 40px; border-radius: 50%;
-            color: #fff; font-size: 1.4rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-        }
-        .t-modal-close:hover { background: rgba(255, 255, 255, 0.1); }
-        .t-modal-header {
-            display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
-        }
-        .t-modal-header-bar {
-            width: 40px; height: 4px; background: var(--t-orange); border-radius: 2px;
-        }
-        .t-modal-title {
-            font-family: var(--font-display); font-size: 1.8rem;
-            letter-spacing: 1.5px; color: #fff; margin: 0;
-        }
-        .t-modal-body { flex: 1; overflow-y: auto; padding-right: 8px; }
-        .t-modal-body::-webkit-scrollbar { width: 4px; }
-        .t-modal-body::-webkit-scrollbar-track { background: transparent; }
-        .t-modal-body::-webkit-scrollbar-thumb { background: rgba(255, 107, 53, 0.3); border-radius: 2px; }
-
-        /* =====================
-           ANIMATIONS
-           ===================== */
-        @keyframes heroReveal {
-            0% { opacity: 0; transform: translateY(-20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes cardSlideUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-        @keyframes badgePulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
-            50% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.15); }
-        }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes modalPop {
-            0% { opacity: 0; transform: scale(0.92) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        /* =====================
-           RESPONSIVE
-           ===================== */
-        @media (max-width: 900px) {
-            .t-hero-layout { grid-template-columns: 1fr; }
-            .t-hero-left { padding: 40px 28px 20px; text-align: center; align-items: center; }
-            .t-hero-right { padding: 0 28px 40px; }
-            .t-hero-title { font-size: 3.5rem; }
-            .t-hero-title .line-2 { font-size: 3.8rem; }
-            .t-hero-desc { margin-left: auto; margin-right: auto; }
-            .t-hero-actions { justify-content: center; }
-            .t-hero-stats-panel { max-width: 100%; }
-            .t-hero { min-height: auto; }
-            .t-featured-content { flex-direction: column; text-align: center; }
-            .t-featured-name { font-size: 2.2rem; }
-            .t-featured-meta { justify-content: center; }
-            .t-grid { grid-template-columns: 1fr; }
-            .t-steps { grid-template-columns: 1fr 1fr; }
-            .t-steps::before { display: none; }
-            .t-podium { flex-direction: column; align-items: center; }
-            .t-podium-card { max-width: 340px; width: 100%; }
-            .t-podium-card.gold { order: 0; }
-            .t-podium-card.silver { order: 1; }
-            .t-podium-card.bronze { order: 2; }
-            .t-section-title { font-size: 2.6rem; }
-        }
-
-        @media (max-width: 600px) {
-            .t-page { padding: 88px 16px 60px; }
-            .t-hero-title { font-size: 2.6rem; }
-            .t-hero-title .line-2 { font-size: 2.8rem; }
-            .t-hero-left { padding: 32px 20px 16px; }
-            .t-hero-right { padding: 0 20px 32px; }
-            .t-hero-actions { flex-direction: column; width: 100%; }
-            .t-hero-btn, .t-hero-btn-ghost { width: 100%; justify-content: center; }
-            .t-hero-stat-val { font-size: 1.4rem; }
-            .t-tabs { flex-direction: column; width: 100%; }
-            .t-tab { justify-content: center; }
-            .t-steps { grid-template-columns: 1fr; }
-            .t-cta { padding: 32px 20px; }
-            .t-cta-title { font-size: 2.2rem; }
-            .t-featured { padding: 24px; }
-            .t-grid { grid-template-columns: 1fr; }
-        }
     </style>
 </head>
-<body>
+<body class="font-body-md text-body-md antialiased overflow-x-hidden min-h-screen flex flex-col bg-[#050709] text-[#e1e2e7]">
 
     <%- include('../partials/navbar') %>
 
-    <!-- Ambient Background -->
-    <div class="t-bg-scene">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
-
-    <div class="t-page" id="t-page">
-
-        <!-- ===================== HERO ===================== -->
-        <section class="t-hero">
-            <canvas class="t-hero-canvas" id="hero-canvas"></canvas>
-            <div class="t-hero-ring t-hero-ring-1"></div>
-            <div class="t-hero-ring t-hero-ring-2"></div>
-            <div class="t-hero-accent t-hero-accent-1"></div>
-            <div class="t-hero-accent t-hero-accent-2"></div>
-            <div class="t-hero-accent t-hero-accent-3"></div>
-
-            <div class="t-hero-layout">
-                <!-- Left: Content -->
-                <div class="t-hero-left">
-                    <div class="t-hero-badge">
-                        <span class="badge-dot"></span>
-                        VERIFIED WARRIORS ONLY
-                    </div>
-                    <h1 class="t-hero-title">
-                        <span class="line-1">ELITE</span>
-                        <span class="line-2">TOURNAMENTS</span>
-                    </h1>
-                    <p class="t-hero-desc">
-                        High-stakes battles for the verified few. Real prizes. Global rankings. Live tracking. Enter the arena and prove your dominance.
-                    </p>
-                    <div class="t-hero-actions">
-                        <a href="/dashboard/tournaments/register" class="t-hero-btn">
-                            ENTER ARENA
-                            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-                        </a>
-                        <a href="/dashboard/leaderboards" class="t-hero-btn-ghost">
-                            🏆 LEADERBOARDS
-                        </a>
-                    </div>
+    <!-- Hero Section -->
+    <header class="relative w-full h-[600px] flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBxF2QFbW30GpayFzu5LK_Lb1rBm-GV3NawF1fvK2RuEXVhLnId-gMIsxCxCcze5UH3BT-_GxAAwEIHP1qIdu_mezJ74qQTigHCFopGa_V3KuMXeXsrY7s-g86U1b9oWJ-MyunLvU3bp-GXB2KWeQVRQLaMCPCbZ6QCRjbDUVHnHkLy1hjlhScI-ZKuDrF_MCTqjCl2qpdGN_PsBGuEo80_uLaRKRntVWsl_0R4_7k-UGXyT9FYceO38w'); opacity: 0.4;"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#050709] via-transparent to-[#050709]/50"></div>
+        
+        <div class="relative z-10 text-center max-w-container-max mx-auto px-margin-mobile md:px-xl flex flex-col items-center gap-lg">
+            <h1 class="font-display-lg text-display-lg text-white drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">THE GLOBAL PRO CIRCUIT</h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Enter the arena. Compete in high-stakes tournaments against the world's best.</p>
+            
+            <div class="flex flex-wrap justify-center gap-lg mt-md">
+                <div class="glass-panel px-lg py-md rounded-lg flex flex-col items-center min-w-[150px]">
+                    <span class="font-headline-md text-headline-md text-primary" id="stat-live">0</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Active Tournaments</span>
                 </div>
-
-                <!-- Right: Live Stats Panel -->
-                <div class="t-hero-right">
-                    <div class="t-hero-stats-panel">
-                        <div class="t-hero-panel-title">
-                            <span class="panel-pulse"></span>
-                            LIVE BATTLEFIELD STATUS
-                        </div>
-
-                        <div class="t-hero-stat-row">
-                            <div class="t-hero-stat-info">
-                                <div class="t-hero-stat-icon s-live">🔴</div>
-                                <div>
-                                    <div class="t-hero-stat-name">LIVE NOW</div>
-                                    <div class="t-hero-stat-sub">Active battles</div>
-                                </div>
-                            </div>
-                            <div class="t-hero-stat-val green" id="stat-live">0</div>
-                        </div>
-
-                        <div class="t-hero-stat-row">
-                            <div class="t-hero-stat-info">
-                                <div class="t-hero-stat-icon s-upcoming">⚔️</div>
-                                <div>
-                                    <div class="t-hero-stat-name">UPCOMING</div>
-                                    <div class="t-hero-stat-sub">Scheduled events</div>
-                                </div>
-                            </div>
-                            <div class="t-hero-stat-val orange" id="stat-upcoming">0</div>
-                        </div>
-
-                        <div class="t-hero-stat-row">
-                            <div class="t-hero-stat-info">
-                                <div class="t-hero-stat-icon s-completed">✅</div>
-                                <div>
-                                    <div class="t-hero-stat-name">COMPLETED</div>
-                                    <div class="t-hero-stat-sub">Past tournaments</div>
-                                </div>
-                            </div>
-                            <div class="t-hero-stat-val cyan" id="stat-completed">0</div>
-                        </div>
-
-                        <div class="t-hero-stat-row">
-                            <div class="t-hero-stat-info">
-                                <div class="t-hero-stat-icon s-players">👥</div>
-                                <div>
-                                    <div class="t-hero-stat-name">TOTAL PLAYERS</div>
-                                    <div class="t-hero-stat-sub">Registered warriors</div>
-                                </div>
-                            </div>
-                            <div class="t-hero-stat-val gold" id="stat-players">0</div>
-                        </div>
-
-                        <!-- Next Battle Ticker -->
-                        <div class="t-hero-ticker" id="hero-ticker" style="display:none;">
-                            <div class="t-hero-ticker-label">⚡ NEXT BATTLE</div>
-                            <div class="t-hero-ticker-name" id="ticker-name">—</div>
-                            <div class="t-hero-ticker-date" id="ticker-date">—</div>
-                        </div>
-                    </div>
+                <div class="glass-panel px-lg py-md rounded-lg flex flex-col items-center min-w-[150px]">
+                    <span class="font-headline-md text-headline-md text-tertiary" id="stat-upcoming">0</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Upcoming Matches</span>
+                </div>
+                <div class="glass-panel px-lg py-md rounded-lg flex flex-col items-center min-w-[150px]">
+                    <span class="font-headline-md text-headline-md text-cyber-blue" id="stat-players">0</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Players Registered</span>
                 </div>
             </div>
-        </section>
-
-        <!-- ===================== FEATURED TOURNAMENT ===================== -->
-        <section class="t-featured" id="featured-section">
-            <!-- Populated by JS -->
-        </section>
-
-        <!-- ===================== TABS ===================== -->
-        <div class="t-tabs-section">
-            <div class="t-tabs" id="t-tabs">
-                <button class="t-tab active" data-view="live">
-                    <span class="live-dot"></span> LIVE NOW
-                    <span class="t-tab-count" id="tab-count-live">0</span>
-                </button>
-                <button class="t-tab" data-view="upcoming">
-                    UPCOMING
-                    <span class="t-tab-count" id="tab-count-upcoming">0</span>
-                </button>
-                <button class="t-tab" data-view="completed">
-                    COMPLETED
-                    <span class="t-tab-count" id="tab-count-completed">0</span>
-                </button>
-            </div>
+            
+            <a href="/dashboard/tournaments/register" class="btn-primary mt-lg px-xl py-md rounded-full font-label-md text-label-md uppercase tracking-widest cursor-pointer inline-flex items-center gap-sm">
+                <span>Join the Arena</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
         </div>
+    </header>
 
-        <!-- ===================== TOURNAMENT GRID ===================== -->
-        <div class="t-grid" id="t-grid">
-            <div class="t-empty"><div class="t-spinner"></div></div>
-        </div>
-
-        <!-- ===================== HALL OF FAME ===================== -->
-        <section class="t-hof">
-            <div class="t-section-header">
-                <div class="t-section-label">🇮🇳 TOP WARRIORS OF INDIA</div>
-                <h2 class="t-section-title">HALL OF FAME</h2>
-                <p class="t-section-sub">The most dominant players in the Indian competitive scene</p>
-            </div>
-            <div class="t-podium" id="hof-podium">
-                <div class="t-empty" style="width:100%;"><div class="t-spinner"></div></div>
-            </div>
-            <div class="t-hof-cta">
-                <a href="/dashboard/hall-of-fame">
-                    VIEW FULL RANKINGS
-                    <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+    <main class="flex-grow max-w-container-max w-full mx-auto px-margin-mobile md:px-xl py-xl flex flex-col gap-[64px]" id="t-page">
+        <!-- Featured Tournaments -->
+        <section class="flex flex-col gap-lg">
+            <div class="flex items-center justify-between">
+                <h2 class="font-headline-lg text-headline-lg text-white flex items-center gap-sm">
+                    <span class="material-symbols-outlined text-primary">local_fire_department</span>
+                    Featured Tournaments
+                </h2>
+                <a class="font-label-md text-label-md text-primary hover:text-primary-fixed transition-colors flex items-center gap-xs" href="#">
+                    View All <span class="material-symbols-outlined text-[16px]">chevron_right</span>
                 </a>
             </div>
-        </section>
-
-        <!-- ===================== HOW IT WORKS ===================== -->
-        <section class="t-how">
-            <div class="t-section-header">
-                <div class="t-section-label">⚡ THE PROCESS</div>
-                <h2 class="t-section-title">HOW IT WORKS</h2>
-            </div>
-            <div class="t-steps">
-                <div class="t-step">
-                    <div class="t-step-num">01</div>
-                    <div class="t-step-icon">🛡️</div>
-                    <div class="t-step-title">GET VERIFIED</div>
-                    <div class="t-step-desc">Complete player verification to prove you're a genuine competitor</div>
-                </div>
-                <div class="t-step">
-                    <div class="t-step-num">02</div>
-                    <div class="t-step-icon">🔍</div>
-                    <div class="t-step-title">BROWSE EVENTS</div>
-                    <div class="t-step-desc">Explore live and upcoming tournaments with real-time stats</div>
-                </div>
-                <div class="t-step">
-                    <div class="t-step-num">03</div>
-                    <div class="t-step-icon">🎮</div>
-                    <div class="t-step-title">REGISTER & PLAY</div>
-                    <div class="t-step-desc">Secure your slot, join the room, and battle for glory</div>
-                </div>
-                <div class="t-step">
-                    <div class="t-step-num">04</div>
-                    <div class="t-step-icon">🏆</div>
-                    <div class="t-step-title">WIN REWARDS</div>
-                    <div class="t-step-desc">Climb the leaderboard, earn Blaze Points, and claim prizes</div>
-                </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter" id="featured-grid">
+                <div class="w-full text-center py-xl"><div class="t-spinner"></div></div>
             </div>
         </section>
 
-        <!-- ===================== CTA BANNER ===================== -->
-        <section class="t-cta">
-            <h2 class="t-cta-title">READY TO COMPETE?</h2>
-            <p class="t-cta-desc">
-                Register for the next tournament and prove you belong among the elite. The battlefield awaits.
-            </p>
-            <a href="/dashboard/tournaments/register" class="t-btn-hero">
-                ENTER THE ARENA
-                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-            </a>
-        </section>
-    </div>
+        <!-- Bento Grid Layout for Table & Leaderboard -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+            
+            <!-- Tournament Table (Spans 2 columns on lg) -->
+            <section class="lg:col-span-2 flex flex-col gap-md glass-panel rounded-xl p-md md:p-lg">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-sm">
+                    <h2 class="font-headline-md text-headline-md text-white flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-cyber-blue">calendar_month</span>
+                        Upcoming Matches
+                    </h2>
+                    <!-- Filters -->
+                    <div class="flex flex-wrap gap-sm">
+                        <button class="px-sm py-xs rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm border border-transparent">All Games</button>
+                        <button class="px-sm py-xs rounded bg-surface text-on-surface-variant font-label-sm text-label-sm border border-outline-variant hover:border-cyber-blue transition-colors">Free Fire</button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+                                <th class="py-sm px-xs font-normal">Tournament</th>
+                                <th class="py-sm px-xs font-normal">Game</th>
+                                <th class="py-sm px-xs font-normal">Start Time</th>
+                                <th class="py-sm px-xs font-normal">Prize</th>
+                                <th class="py-sm px-xs font-normal text-right">Slots</th>
+                                <th class="py-sm px-xs font-normal text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="font-body-md text-body-md" id="upcoming-table">
+                            <tr><td colspan="6" class="text-center py-xl"><div class="t-spinner"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Community Leaderboard -->
+            <section class="glass-panel rounded-xl p-md md:p-lg flex flex-col gap-md">
+                <h2 class="font-headline-md text-headline-md text-white flex items-center gap-sm mb-xs">
+                    <span class="material-symbols-outlined text-tertiary">leaderboard</span>
+                    Top Warriors
+                </h2>
+                <div class="flex flex-col gap-sm" id="hof-podium">
+                    <div class="text-center py-lg"><div class="t-spinner"></div></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer Component Generated from JSON -->
+    <footer class="bg-surface-container-lowest w-full py-xl border-t border-white/10 mt-auto">
+        <div class="max-w-container-max mx-auto px-margin-mobile lg:px-xl flex flex-col md:flex-row justify-between items-center gap-md">
+            <div class="text-headline-md font-headline-md font-bold text-primary">
+                Global Pro Circuit
+            </div>
+            <nav class="flex flex-wrap justify-center gap-md">
+                <a class="text-on-surface-variant text-label-sm font-label-sm hover:text-primary transition-colors duration-200 opacity-80" href="#">Terms of Service</a>
+                <a class="text-on-surface-variant text-label-sm font-label-sm hover:text-primary transition-colors duration-200 opacity-80" href="#">Privacy Policy</a>
+                <a class="text-on-surface-variant text-label-sm font-label-sm hover:text-primary transition-colors duration-200 opacity-80" href="#">Tournament Rules</a>
+            </nav>
+            <div class="text-body-md font-body-md text-on-surface-variant">
+                © 2024 Global Pro Circuit. All rights reserved.
+            </div>
+        </div>
+    </footer>
 
     <!-- ===================== PARTICIPANTS MODAL ===================== -->
-    <div class="t-modal-overlay" id="participants-modal">
-        <div class="t-modal">
-            <button class="t-modal-close" onclick="closeParticipantsModal()">&times;</button>
-            <div class="t-modal-header">
-                <div class="t-modal-header-bar"></div>
-                <h2 class="t-modal-title" id="p-modal-title">PARTICIPANTS</h2>
+    <div id="participants-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 justify-center items-center p-4">
+        <div class="bg-[#111118] border border-[#A855F7]/30 rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col p-8 relative shadow-2xl">
+            <button onclick="closeParticipantsModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/5 border border-white/10 text-white flex items-center justify-center hover:bg-white/10 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-1 bg-primary rounded-full"></div>
+                <h2 class="text-2xl font-bold text-white uppercase tracking-wider" id="p-modal-title">PARTICIPANTS</h2>
             </div>
-            <div class="t-modal-body" id="p-modal-content">
-                <div style="text-align:center; padding:40px;"><div class="t-spinner"></div></div>
+            <div class="flex-1 overflow-y-auto pr-2" id="p-modal-content">
+                <div class="text-center py-10"><div class="t-spinner"></div></div>
             </div>
         </div>
     </div>
 
+    <!-- JS Logic -->
     <script src="/script.js?v=1.2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('blaze_token');
             if (!token) { window.location.href = '/auth'; return; }
 
-            // State
-            let currentView = 'live';
-            let tournamentData = { live: [], upcoming: [], completed: [] };
-
-            // Card hover glow tracking
-            document.addEventListener('mousemove', (e) => {
-                document.querySelectorAll('.t-card').forEach(card => {
-                    const rect = card.getBoundingClientRect();
-                    card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-                    card.style.setProperty('--my', `${e.clientY - rect.top}px`);
-                });
-            });
-
-            // Tab switching
-            document.querySelectorAll('.t-tab').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.t-tab').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentView = btn.dataset.view;
-                    renderCards();
-                });
-            });
-
-            // Render featured tournament
-            const renderFeatured = () => {
-                const section = document.getElementById('featured-section');
-                let featured = null;
-
-                // Find the most registered upcoming tournament
-                if (tournamentData.upcoming.length > 0) {
-                    featured = tournamentData.upcoming.reduce((prev, curr) => {
-                        const prevCount = typeof prev.participants === 'string' ? parseInt(prev.participants) || 0 : prev.participants || 0;
-                        const currCount = typeof curr.participants === 'string' ? parseInt(curr.participants) || 0 : curr.participants || 0;
-                        return currCount > prevCount ? curr : prev;
-                    }, tournamentData.upcoming[0]);
-                } else if (tournamentData.live.length > 0) {
-                    featured = tournamentData.live[0];
-                }
-
-                if (featured) {
-                    section.style.display = 'block';
-                    section.innerHTML = `
-                        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--t-orange),var(--t-gold),transparent);"></div>
-                        <div class="t-featured-content">
-                            <div>
-                                <div class="t-featured-tag"><span class="dot"></span> FEATURED EVENT</div>
-                                <h2 class="t-featured-name">${featured.name.toUpperCase()}</h2>
-                                <div class="t-featured-meta">
-                                    <span class="t-featured-meta-item">
-                                        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                                        ${featured.date || 'TBA'}
-                                    </span>
-                                    <span class="t-featured-meta-item">
-                                        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                                        ${featured.participants || 0} Registered
-                                    </span>
-                                    ${featured.prize ? `<span class="t-featured-meta-item">
-                                        <svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/></svg>
-                                        ${featured.prize}` : ''}
-                                    </span>
-                                </div>
-                                <p class="t-featured-desc">The most anticipated battle in Blaze Frontier. Limited slots available — register now and secure your entry.</p>
-                            </div>
-                            <div class="t-featured-cta">
-                                <a href="/dashboard/tournaments/register" class="t-btn-hero">
-                                    REGISTER NOW
-                                    <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    section.style.display = 'none';
-                }
-            };
-
-            // Render tournament cards
-            const renderCards = () => {
-                const grid = document.getElementById('t-grid');
-                let list = [];
-                if (currentView === 'live') list = tournamentData.live;
-                else if (currentView === 'upcoming') list = tournamentData.upcoming;
-                else list = tournamentData.completed;
-
-                // Show featured only on live tab
-                const featured = document.getElementById('featured-section');
-                if (currentView === 'live') renderFeatured();
-                else featured.style.display = 'none';
-
-                if (list.length === 0) {
-                    const labels = { live: 'live', upcoming: 'upcoming', completed: 'completed' };
-                    const icons = { live: '📡', upcoming: '⏳', completed: '📋' };
-                    grid.innerHTML = `
-                        <div class="t-empty">
-                            <div class="t-empty-icon">${icons[currentView]}</div>
-                            <div class="t-empty-text">NO ${labels[currentView].toUpperCase()} TOURNAMENTS</div>
-                            <div class="t-empty-sub">Check back soon for new events</div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                grid.innerHTML = list.map((t, i) => {
-                    const statusClass = currentView === 'live' ? 'live' : currentView === 'upcoming' ? 'upcoming' : 'completed';
-                    const statusLabel = currentView === 'live' ? 'LIVE NOW' : currentView === 'upcoming' ? 'UPCOMING' : 'COMPLETED';
-
-                    // Credentials section
-                    let credsHtml = '';
-                    if (t.showCredentials && t.credentials) {
-                        credsHtml = `
-                            <div class="t-card-creds">
-                                <div class="t-card-creds-title">Room Credentials</div>
-                                <div class="t-card-creds-val">ID: ${t.credentials.roomId} | Pass: ${t.credentials.roomPassword}</div>
-                            </div>
-                        `;
-                    }
-
-                    // Action buttons
-                    let btnHtml = '';
-                    if (currentView === 'live') {
-                        btnHtml = `<a href="/dashboard/tournaments/register" class="t-btn t-btn-green">⚡ WATCH STREAM</a>`;
-                    } else if (currentView === 'upcoming') {
-                        btnHtml = `<a href="/dashboard/tournaments/register" class="t-btn t-btn-primary">🎯 REGISTER SLOT</a>`;
-                    } else {
-                        btnHtml = `<a href="/dashboard/leaderboards" class="t-btn t-btn-ghost">📊 VIEW RESULTS</a>`;
-                    }
-
-                    // Roster button
-                    let rosterHtml = '';
-                    if (t.isListPublished) {
-                        const safeName = (t.name || '').replace(/'/g, "\\'");
-                        rosterHtml = `<button onclick="viewParticipants('${t.id || t._id}', '${safeName}')" class="t-btn t-btn-ghost">👥 VIEW ROSTER</button>`;
-                    }
-
-                    return `
-                        <div class="t-card" style="animation-delay: ${i * 0.08}s">
-                            <div class="t-card-head">
-                                <span class="t-card-game">${t.game || 'FREE FIRE'}</span>
-                                <span class="t-card-status ${statusClass}">${statusLabel}</span>
-                            </div>
-                            <h3 class="t-card-title">${t.name}</h3>
-                            <div class="t-card-details">
-                                <div class="t-card-detail">
-                                    <div class="t-card-detail-label">Schedule</div>
-                                    <div class="t-card-detail-val">${t.date || 'TBA'}</div>
-                                </div>
-                                <div class="t-card-detail">
-                                    <div class="t-card-detail-label">Players</div>
-                                    <div class="t-card-detail-val">${t.participants || '—'}</div>
-                                </div>
-                                ${t.format ? `
-                                <div class="t-card-detail">
-                                    <div class="t-card-detail-label">Format</div>
-                                    <div class="t-card-detail-val">${t.format}</div>
-                                </div>` : ''}
-                                ${t.mode ? `
-                                <div class="t-card-detail">
-                                    <div class="t-card-detail-label">Mode</div>
-                                    <div class="t-card-detail-val">${t.mode}</div>
-                                </div>` : ''}
-                            </div>
-                            ${t.prize ? `
-                            <div class="t-card-prize">
-                                <div class="t-card-prize-label">🏆 Prize Pool</div>
-                                <div class="t-card-prize-val">${t.prize}</div>
-                            </div>` : ''}
-                            ${credsHtml}
-                            <div class="t-card-actions">
-                                ${btnHtml}
-                                ${rosterHtml}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            };
-
             // Animated Number Counter
             const animateValue = (id, start, end, duration) => {
-                if (start === end) {
-                    document.getElementById(id).textContent = end;
+                const el = document.getElementById(id);
+                if (!el || start === end) {
+                    if (el) el.textContent = end;
                     return;
                 }
                 let startTimestamp = null;
                 const step = (timestamp) => {
                     if (!startTimestamp) startTimestamp = timestamp;
                     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    // ease out quad
                     const easeProgress = progress * (2 - progress);
-                    document.getElementById(id).textContent = Math.floor(easeProgress * (end - start) + start);
+                    el.textContent = Math.floor(easeProgress * (end - start) + start);
                     if (progress < 1) {
                         window.requestAnimationFrame(step);
                     } else {
-                        document.getElementById(id).textContent = end;
+                        el.textContent = end;
                     }
                 };
                 window.requestAnimationFrame(step);
             };
 
+            // Backgrounds for Featured Tournaments
+            const featuredBgs = [
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuA_v-Vip_ysVL2hIakmU6m4sg5MyPmJchfbNJ8uYtv4ppGxuz8tOvJ9sdl4JpAXF4To7o94Qx2NYHvzmRwaHMXqh4L53BQu9YAa2-U5INzGdyx6s-yGKtG45zs4TnvKJ6j7X0oRIzbBncZRgnD0wTX7taD4dJ2Etd3VNbl7VkKEBwUdgJPrYAaLbyKIIU96Wsp2Gxmxh-hySWVppRibtH1xnhHic-x7nsGJDDr0LgwsRzNzdc-fv8WHNA",
+                "https://lh3.googleusercontent.com/aida-public/AB6AXuCuIve0PsNoKVv6dNKORuEbmgqQA1h6fKNRVrPaapPiOJXzaisvWsjxkt1nNBJlXkFaXjmKJU14lEb_9g1dvJpmSyVaLO7_WGq-IfXeppVZ4GytjcjI6oQJGohjqAXAbGsW0l-4hZqA4lqCbXVFM2Jrdnj_p2fiTGjCGvuNwvlO5q74joD4wpWCZybkOmejcqrkBkQZHsWJ1yLvVhovZNlcWvlCuFndSjjXtdwFQXg71ISocILZaHAoDw"
+            ];
+
             // Load tournaments from API
             const loadTournaments = async () => {
-                const grid = document.getElementById('t-grid');
-                grid.innerHTML = '<div class="t-empty"><div class="t-spinner"></div></div>';
+                const featuredGrid = document.getElementById('featured-grid');
+                const tableBody = document.getElementById('upcoming-table');
+                
                 try {
                     const res = await fetch('/api/tournaments?game=freefire', { headers: { 'x-auth-token': token } });
                     if (!res.ok) throw new Error('Failed');
                     const data = await res.json();
-                    tournamentData = data;
-
+                    
                     // Update stats with animation
                     animateValue('stat-live', 0, (data.live || []).length, 1500);
                     animateValue('stat-upcoming', 0, (data.upcoming || []).length, 1500);
-                    animateValue('stat-completed', 0, (data.completed || []).length, 1500);
-
-                    // Calculate total participants for the 'Total Players' stat
+                    
                     let totalParticipants = 0;
                     [...(data.live || []), ...(data.upcoming || []), ...(data.completed || [])].forEach(t => {
-                        if (t.participants && !isNaN(parseInt(t.participants))) {
-                            totalParticipants += parseInt(t.participants);
-                        }
+                        if (t.participants && !isNaN(parseInt(t.participants))) totalParticipants += parseInt(t.participants);
                     });
-                    if (totalParticipants === 0) totalParticipants = 1245; // Fallback realistic number
+                    if (totalParticipants === 0) totalParticipants = 1200; // Fallback
                     animateValue('stat-players', 0, totalParticipants, 2000);
 
-                    // Update tab counts
-                    document.getElementById('tab-count-live').textContent = (data.live || []).length;
-                    document.getElementById('tab-count-upcoming').textContent = (data.upcoming || []).length;
-                    document.getElementById('tab-count-completed').textContent = (data.completed || []).length;
-
-                    // Update Next Battle Ticker
-                    const ticker = document.getElementById('hero-ticker');
-                    if (data.upcoming && data.upcoming.length > 0) {
-                        const nextBattle = data.upcoming[0]; // Assuming sorted by date
-                        document.getElementById('ticker-name').textContent = (nextBattle.name || 'Upcoming Tournament').toUpperCase();
-                        document.getElementById('ticker-date').textContent = nextBattle.date || 'TBA';
-                        ticker.style.display = 'block';
-                    } else {
-                        ticker.style.display = 'none';
+                    // Combine live and upcoming for the main feed
+                    const allTournaments = [...(data.live || []), ...(data.upcoming || [])];
+                    
+                    // 1. Render Featured (Top 2)
+                    if (allTournaments.length === 0) {
+                        featuredGrid.innerHTML = '<div class="col-span-1 md:col-span-2 text-center text-on-surface-variant">No active tournaments currently available.</div>';
+                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-md text-on-surface-variant">No matches scheduled.</td></tr>';
+                        return;
                     }
 
-                    renderFeatured();
-                    renderCards();
+                    const featuredTournaments = allTournaments.slice(0, 2);
+                    featuredGrid.innerHTML = featuredTournaments.map((t, i) => {
+                        const bg = featuredBgs[i % featuredBgs.length];
+                        const statusClass = t.status === 'LIVE' ? 'bg-[#22c55e]' : 'bg-[#A855F7]';
+                        const statusText = t.status === 'LIVE' ? 'LIVE NOW' : 'S-Tier';
+                        
+                        return `
+                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[300px] flex flex-col justify-end" onclick="window.location.href='/dashboard/tournaments/register'">
+                            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('${bg}'); opacity: 0.5;"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#050709] to-transparent"></div>
+                            
+                            <div class="absolute top-md right-md ${statusClass} text-white font-label-sm text-label-sm px-sm py-xs rounded flex items-center gap-xs shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+                                ${statusText}
+                            </div>
+                            
+                            <div class="relative z-10 p-lg w-full">
+                                <h3 class="font-headline-md text-headline-md text-white mb-xs group-hover:text-primary transition-colors">${t.name}</h3>
+                                <div class="flex items-center justify-between mt-md border-t border-white/10 pt-sm">
+                                    <div class="flex items-center gap-sm">
+                                        <span class="material-symbols-outlined text-tertiary">monetization_on</span>
+                                        <span class="font-label-md text-label-md text-white">${t.prize || 'TBA'}</span>
+                                    </div>
+                                    <div class="flex items-center gap-sm">
+                                        <span class="material-symbols-outlined text-cyber-blue">groups</span>
+                                        <span class="font-label-md text-label-md text-on-surface-variant">${t.participants || '—'} Slots</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    // 2. Render Table (Remaining Tournaments)
+                    const remainingTournaments = allTournaments.slice(2);
+                    if (remainingTournaments.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-md text-on-surface-variant">No further matches scheduled.</td></tr>';
+                    } else {
+                        tableBody.innerHTML = remainingTournaments.map(t => {
+                            const isLive = t.status === 'LIVE';
+                            const badgeColor = isLive ? 'text-[#22c55e] border-[#22c55e]/30' : 'text-cyber-blue border-cyber-blue/30';
+                            
+                            let rosterHtml = '';
+                            if (t.isListPublished) {
+                                const safeName = (t.name || '').replace(/'/g, "\\'");
+                                rosterHtml = `<button onclick="viewParticipants(event, '${t.id || t._id}', '${safeName}')" class="px-2 py-1 rounded bg-surface border border-outline-variant hover:border-primary text-xs transition-colors">View Roster</button>`;
+                            }
+
+                            return `
+                            <tr class="border-b border-white/5 table-row-hover cursor-pointer transition-colors" onclick="window.location.href='/dashboard/tournaments/register'">
+                                <td class="py-md px-xs text-white font-medium">${t.name}</td>
+                                <td class="py-md px-xs text-on-surface-variant">${t.game || 'Free Fire'}</td>
+                                <td class="py-md px-xs text-on-surface-variant">${t.date || 'TBA'}</td>
+                                <td class="py-md px-xs text-tertiary">${t.prize || '—'}</td>
+                                <td class="py-md px-xs text-right">
+                                    <span class="inline-block px-2 py-1 rounded bg-surface border ${badgeColor} text-xs">${t.participants || '—'}</span>
+                                </td>
+                                <td class="py-md px-xs text-right">${rosterHtml}</td>
+                            </tr>`;
+                        }).join('');
+                    }
                 } catch (e) {
-                    grid.innerHTML = `
-                        <div class="t-empty">
-                            <div class="t-empty-icon">⚠️</div>
-                            <div class="t-empty-text">COULD NOT LOAD TOURNAMENTS</div>
-                            <div class="t-empty-sub">Please check your connection and try again</div>
-                        </div>
-                    `;
+                    featuredGrid.innerHTML = '<div class="col-span-1 md:col-span-2 text-center text-error">Failed to load tournaments.</div>';
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-md text-error">Failed to load tournaments.</td></tr>';
                 }
             };
 
-            // Load Hall of Fame — India Top 3
+            // Load Hall of Fame (Top 5)
             const loadHallOfFame = async () => {
                 const container = document.getElementById('hof-podium');
                 try {
                     const res = await fetch('/api/leaderboard?region=india', { headers: { 'x-auth-token': token } });
                     if (!res.ok) throw new Error('Failed');
                     let lb = await res.json();
-                    let top3 = lb.slice(0, 3);
+                    let top5 = lb.slice(0, 5);
 
-                    // Fallback
-                    if (top3.length === 0) {
-                        top3 = [
+                    if (top5.length === 0) {
+                        top5 = [
                             { rank: 1, name: 'Manoj', bp: 15400, region: 'India' },
                             { rank: 2, name: 'Phantom', bp: 12100, region: 'India' },
-                            { rank: 3, name: 'Striker', bp: 9800, region: 'India' }
+                            { rank: 3, name: 'Striker', bp: 9800, region: 'India' },
+                            { rank: 4, name: 'Ninja', bp: 8500, region: 'India' },
+                            { rank: 5, name: 'Ghost', bp: 7200, region: 'India' }
                         ];
                     }
-                    while (top3.length < 3) top3.push({ rank: top3.length + 1, name: '???', bp: 0, region: 'India' });
+                    while (top5.length < 5) top5.push({ rank: top5.length + 1, name: 'TBA', bp: 0, region: 'India' });
 
-                    const medals = ['👑', '🥈', '🥉'];
-                    const classes = ['gold', 'silver', 'bronze'];
+                    container.innerHTML = top5.map((p, i) => {
+                        const isRank1 = i === 0;
+                        const bgClass = isRank1 ? 'bg-surface-container-highest border-l-2 border-tertiary' : 'bg-surface/50 hover:bg-surface-container-high';
+                        const rankColor = isRank1 ? 'text-tertiary' : 'text-on-surface-variant';
+                        const labelClass = isRank1 ? 'font-headline-md' : 'font-label-md';
 
-                    container.innerHTML = top3.map((p, i) => {
-                        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=111118&color=fff&size=128&bold=true&font-size=0.4`;
                         return `
-                            <div class="t-podium-card ${classes[i]}">
-                                <div class="t-podium-rank-bg">#${p.rank}</div>
-                                <div class="t-podium-medal">${medals[i]}</div>
-                                <img src="${avatarUrl}" class="t-podium-avatar" alt="${p.name}">
-                                <h4 class="t-podium-name">${p.name.toUpperCase()}</h4>
-                                <div class="t-podium-region">🇮🇳 ${p.region || 'India'}</div>
-                                <div class="t-podium-bp">${p.bp.toLocaleString()} BP</div>
+                        <div class="flex items-center gap-sm p-sm rounded ${bgClass} transition-colors cursor-pointer" onclick="window.location.href='/dashboard/hall-of-fame'">
+                            <span class="${labelClass} ${rankColor} w-6 text-center">${p.rank}</span>
+                            <div class="flex-grow">
+                                <div class="font-label-md text-white">${p.name.toUpperCase()}</div>
+                                <div class="font-label-sm text-on-surface-variant">${p.region || 'India'}</div>
                             </div>
-                        `;
+                            <div class="font-label-md text-cyber-blue">${p.bp.toLocaleString()} pts</div>
+                        </div>`;
                     }).join('');
                 } catch (e) {
-                    container.innerHTML = '<div style="width:100%;text-align:center;color:var(--t-text-muted);font-family:var(--font-mono);padding:40px;">Could not load Hall of Fame rankings.</div>';
+                    container.innerHTML = '<div class="text-center py-md text-on-surface-variant">Could not load rankings.</div>';
                 }
             };
 
-            // Init Hero Canvas Particle System
-            const initHeroCanvas = () => {
-                const canvas = document.getElementById('hero-canvas');
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-                let width, height;
-                let particles = [];
-
-                const resize = () => {
-                    width = canvas.width = canvas.offsetWidth;
-                    height = canvas.height = canvas.offsetHeight;
-                };
-                window.addEventListener('resize', resize);
-                resize();
-
-                class Particle {
-                    constructor() {
-                        this.x = Math.random() * width;
-                        this.y = Math.random() * height;
-                        this.vx = (Math.random() - 0.5) * 0.5;
-                        this.vy = (Math.random() - 0.5) * 0.5;
-                        this.size = Math.random() * 2;
-                        this.alpha = Math.random() * 0.5 + 0.1;
-                        this.color = Math.random() > 0.5 ? '255, 107, 53' : '255, 215, 0';
-                    }
-                    update() {
-                        this.x += this.vx;
-                        this.y += this.vy;
-                        if (this.x < 0) this.x = width;
-                        if (this.x > width) this.x = 0;
-                        if (this.y < 0) this.y = height;
-                        if (this.y > height) this.y = 0;
-                    }
-                    draw() {
-                        ctx.beginPath();
-                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                        ctx.fillStyle = \`rgba(\${this.color}, \${this.alpha})\`;
-                        ctx.fill();
-                        
-                        // subtle glow
-                        ctx.shadowBlur = 10;
-                        ctx.shadowColor = \`rgba(\${this.color}, \${this.alpha})\`;
-                    }
-                }
-
-                for (let i = 0; i < 60; i++) particles.push(new Particle());
-
-                const render = () => {
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.shadowBlur = 0; // reset for lines
-                    
-                    particles.forEach(p => {
-                        p.update();
-                        p.draw();
-                    });
-
-                    // Draw connections
-                    ctx.lineWidth = 0.5;
-                    for (let i = 0; i < particles.length; i++) {
-                        for (let j = i + 1; j < particles.length; j++) {
-                            const dx = particles[i].x - particles[j].x;
-                            const dy = particles[i].y - particles[j].y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            if (dist < 100) {
-                                ctx.beginPath();
-                                ctx.moveTo(particles[i].x, particles[i].y);
-                                ctx.lineTo(particles[j].x, particles[j].y);
-                                ctx.strokeStyle = \`rgba(255, 107, 53, \${0.15 * (1 - dist / 100)})\`;
-                                ctx.stroke();
-                            }
-                        }
-                    }
-                    requestAnimationFrame(render);
-                };
-                render();
-            };
-
-            // Init All
-            initHeroCanvas();
             await loadTournaments();
             await loadHallOfFame();
         });
 
         // Participants modal functions
-        async function viewParticipants(id, name) {
+        window.viewParticipants = async function(e, id, name) {
+            e.stopPropagation(); // prevent row click
             document.getElementById('p-modal-title').textContent = name.toUpperCase();
-            document.getElementById('participants-modal').style.display = 'flex';
+            
+            const modal = document.getElementById('participants-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
             const content = document.getElementById('p-modal-content');
-            content.innerHTML = '<div style="text-align:center; padding:40px;"><div class="t-spinner"></div></div>';
+            content.innerHTML = '<div class="text-center py-10"><div class="t-spinner"></div></div>';
 
             try {
                 const token = localStorage.getItem('blaze_token');
@@ -1565,28 +458,29 @@
                 if (res.ok) {
                     const participants = await res.json();
                     if (participants.length === 0) {
-                        content.innerHTML = '<div style="text-align:center; padding:40px; color:var(--t-text-muted); font-family:var(--font-mono);">Roster is currently empty.</div>';
+                        content.innerHTML = '<div class="text-center py-10 text-on-surface-variant font-body-md">Roster is currently empty.</div>';
                     } else {
-                        content.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">' + participants.map((p, i) => `
-                            <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:12px; transition: all 0.2s;">
-                                <div style="background:rgba(255,107,53,0.12); color:var(--t-orange); font-family:var(--font-mono); font-weight:bold; min-width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-size:0.85rem;">${i + 1}</div>
-                                <div style="font-family:var(--font-display); font-size:1.1rem; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:0.5px;">${p}</div>
+                        content.innerHTML = '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">' + participants.map((p, i) => `
+                            <div class="bg-white/5 border border-white/10 rounded-lg py-2 px-3 flex items-center gap-3">
+                                <div class="bg-primary/20 text-primary font-bold min-w-[28px] h-7 flex items-center justify-center rounded text-sm">${i + 1}</div>
+                                <div class="font-bold text-white whitespace-nowrap overflow-hidden text-ellipsis text-sm">${p}</div>
                             </div>
                         `).join('') + '</div>';
                     }
                 } else {
-                    content.innerHTML = '<div style="text-align:center; padding:40px; color:#ef4444; font-family:var(--font-mono);">Could not load participants.</div>';
+                    content.innerHTML = '<div class="text-center py-10 text-error">Could not load participants.</div>';
                 }
-            } catch (e) {
-                content.innerHTML = '<div style="text-align:center; padding:40px; color:#ef4444; font-family:var(--font-mono);">Network error. Please try again.</div>';
+            } catch (err) {
+                content.innerHTML = '<div class="text-center py-10 text-error">Network error. Please try again.</div>';
             }
-        }
+        };
 
-        function closeParticipantsModal() {
-            document.getElementById('participants-modal').style.display = 'none';
-        }
+        window.closeParticipantsModal = function() {
+            const modal = document.getElementById('participants-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
 
-        // Close modal on overlay click
         document.getElementById('participants-modal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) closeParticipantsModal();
         });
