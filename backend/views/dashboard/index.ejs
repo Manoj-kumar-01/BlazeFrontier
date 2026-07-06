@@ -971,7 +971,8 @@
                             const potdVid = document.getElementById('potd-video');
                             potdVid.style.display = 'block';
                             potdVid.muted = true;
-                            potdVid.innerHTML = `<source src="${stats.potd.videoUrl}" type="video/mp4">`;
+                            // Using high-end HTTP 206 Partial Content Streaming endpoint for 0-lag buffering
+                            potdVid.innerHTML = `<source src="/api/stream/potd" type="video/mp4">`;
                             potdVid.load();
                             const playPromise = potdVid.play();
                             if (playPromise !== undefined) {
