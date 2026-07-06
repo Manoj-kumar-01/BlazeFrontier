@@ -935,17 +935,28 @@
                             box.style.borderRadius = '3px';
                             box.style.transition = 'transform 0.2s, box-shadow 0.2s';
                             box.style.position = 'relative';
+                            box.style.cursor = 'pointer';
                             
-                            box.onmouseover = () => { 
-                                box.style.transform = 'scale(1.2)'; 
-                                box.style.boxShadow = '0 0 8px rgba(255,87,34,0.5)'; 
-                                box.style.zIndex = '10';
-                            };
-                            box.onmouseout = () => { 
-                                box.style.transform = 'scale(1)'; 
-                                box.style.boxShadow = 'none'; 
-                                box.style.zIndex = '1';
-                            };
+                            let tooltip = document.getElementById('heatmap-tooltip');
+                            if (!tooltip) {
+                                tooltip = document.createElement('div');
+                                tooltip.id = 'heatmap-tooltip';
+                                tooltip.style.position = 'absolute';
+                                tooltip.style.display = 'none';
+                                tooltip.style.background = 'rgba(17, 17, 22, 0.98)';
+                                tooltip.style.border = '1px solid rgba(255, 87, 34, 0.4)';
+                                tooltip.style.padding = '8px 12px';
+                                tooltip.style.borderRadius = '8px';
+                                tooltip.style.fontSize = '0.75rem';
+                                tooltip.style.color = '#fff';
+                                tooltip.style.zIndex = '9999';
+                                tooltip.style.pointerEvents = 'none';
+                                tooltip.style.boxShadow = '0 6px 16px rgba(0,0,0,0.8)';
+                                tooltip.style.whiteSpace = 'nowrap';
+                                tooltip.style.transform = 'translate(-50%, -100%)';
+                                tooltip.style.fontFamily = 'var(--font-main)';
+                                document.body.appendChild(tooltip);
+                            }
                             
                             // Get date
                             const date = new Date();
@@ -982,12 +993,49 @@
 
                             box.style.background = bg;
                             
-                            // tooltip with accurate dynamic date and active minutes
+                            // tooltip logic with accurate dynamic date and active minutes
                             const dateStr = date.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                            box.title = `${activeMinutes} mins on ${dateStr}`;
+                            
+                            const showTooltip = (e) => {
+                                box.style.transform = 'scale(1.2)'; 
+                                box.style.boxShadow = '0 0 8px rgba(255,87,34,0.5)'; 
+                                box.style.zIndex = '10';
+                                
+                                let info = '<span style="color:var(--text-muted)">Activity:</span> <span style="color:#fff">No logins</span>';
+                                if (activeMinutes >= 30) info = '<span style="color:var(--text-muted)">Activity:</span> <span style="color:#ff5722; font-weight:bold;">High</span> (' + activeMinutes + ' mins)';
+                                else if (activeMinutes >= 15) info = '<span style="color:var(--text-muted)">Activity:</span> <span style="color:#f4714d; font-weight:bold;">Med</span> (' + activeMinutes + ' mins)';
+                                else if (activeMinutes > 0) info = '<span style="color:var(--text-muted)">Activity:</span> <span style="color:#e0937a;">Low</span> (' + activeMinutes + ' mins)';
+                                
+                                tooltip.innerHTML = `<strong>${dateStr}</strong><br><div style="margin-top: 4px;">${info}</div>`;
+                                tooltip.style.display = 'block';
+                                
+                                const rect = box.getBoundingClientRect();
+                                tooltip.style.left = `${rect.left + window.scrollX + (rect.width / 2)}px`;
+                                tooltip.style.top = `${rect.top + window.scrollY - 8}px`;
+                                
+                                // Prevent click from instantly closing if clicking on mobile
+                                e.stopPropagation();
+                            };
+
+                            const hideTooltip = () => {
+                                box.style.transform = 'scale(1)'; 
+                                box.style.boxShadow = 'none'; 
+                                box.style.zIndex = '1';
+                                tooltip.style.display = 'none';
+                            };
+
+                            box.onmouseover = showTooltip;
+                            box.onclick = showTooltip;
+                            box.onmouseout = hideTooltip;
 
                             heatmapGrid.appendChild(box);
                         }
+                        
+                        // Close tooltip globally on click elsewhere for mobile
+                        document.addEventListener('click', () => {
+                            const tooltip = document.getElementById('heatmap-tooltip');
+                            if (tooltip) tooltip.style.display = 'none';
+                        });
                     }
 
                     updateRewardsStatus(u);
