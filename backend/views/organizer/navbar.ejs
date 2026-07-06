@@ -1,4 +1,4 @@
-﻿<!-- Global Page Preloader -->
+<!-- Global Page Preloader -->
 <div id="global-preloader">
     <img src="/public/NEWLOGO.webp" alt="Loading..." class="preloader-logo">
 </div>
@@ -37,26 +37,8 @@
 </script>
 
 <!-- High-end Smooth Scrolling & Page Navigation Transitions -->
-<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Initialize Lenis for buttery smooth scrolling globally
-        if (typeof Lenis !== 'undefined') {
-            const lenis = new Lenis({
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                direction: 'vertical',
-                smooth: true,
-                smoothTouch: false,
-                touchMultiplier: 2
-            });
-            function raf(time) {
-                lenis.raf(time);
-                requestAnimationFrame(raf);
-            }
-            requestAnimationFrame(raf);
-        }
-
         // Intercept internal links to instantly show the logo preloader for seamless travelling feel
         document.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -100,7 +82,7 @@
             <div class="nav-menu" id="nav-menu">
                 <div class="nav-item" style="padding: 8px 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,87,34,0.3); display: flex; align-items: center; gap: 8px; cursor: default; justify-content: space-between;">
                     <input type="text" id="nav-search-blaze-id" placeholder="Search Blaze ID" onkeypress="if(event.key === 'Enter'){ event.preventDefault(); searchUserProfileNav(); }" style="background: transparent; border: none; color: #fff; outline: none; width: 100%; font-size: 0.9rem;">
-                    <button type="button" onclick="searchUserProfileNav()" style="background: transparent; border: none; color: var(--blaze-orange); cursor: pointer; padding: 4px;">ðŸ”</button>
+                    <button type="button" onclick="searchUserProfileNav()" style="background: transparent; border: none; color: var(--blaze-orange); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
                 </div>
                 <a href="/organizer" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/organizer' ? 'active' : '' %>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
@@ -454,6 +436,7 @@
         }
     }
 </script>
+
 
 
 
