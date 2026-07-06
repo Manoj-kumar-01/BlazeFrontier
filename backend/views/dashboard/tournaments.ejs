@@ -300,8 +300,8 @@
                     if (totalParticipants === 0) totalParticipants = 1200; // Fallback
                     animateValue('stat-players', 0, totalParticipants, 2000);
 
-                    // Combine live and upcoming for the main feed
-                    const allTournaments = [...(data.live || []), ...(data.upcoming || [])];
+                    // Combine live and upcoming for the main feed, excluding Qualification Series
+                    const allTournaments = [...(data.live || []), ...(data.upcoming || [])].filter(t => t.game !== 'CUSTOM SERIES');
                     
                     // 1. Render Featured (Top 2)
                     if (allTournaments.length === 0) {

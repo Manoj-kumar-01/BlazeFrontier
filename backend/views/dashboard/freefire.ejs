@@ -341,6 +341,7 @@
         .skeleton-val { height: 38px; width: 60px; display: inline-block; border-radius: 6px; }
 
         @media (max-width: 1100px) {
+            body.is-genuine #ff-qs-section { display: none !important; }
             .dash { display: flex; flex-direction: column; gap: 16px; }
             .c-welcome, .c-featured, .c-stat, .c-main, .c-sidebar { width: 100%; clip-path: none !important; }
             .c-welcome { flex-direction: column; text-align: center; padding: 30px 20px; }
@@ -804,6 +805,7 @@
 
                             html += `</div>`;
                     } else if (isGenuine) {
+                        document.body.classList.add('is-genuine');
                         const vt = document.getElementById('ff-verified-tagline');
                         if (vt) vt.style.display = 'block';
                         
