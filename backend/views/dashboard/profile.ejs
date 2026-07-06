@@ -459,7 +459,7 @@
                     <div class="heatmap-scroll" style="overflow-x: auto; padding-bottom: 12px;">
                         <div id="heatmap-months" style="display: flex; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; margin-left: 30px; position: relative; height: 16px;"></div>
                         <div style="display: flex; gap: 6px;">
-                            <div style="display: grid; grid-template-rows: repeat(7, 1fr); font-size: 0.65rem; color: var(--text-muted); align-items: center; width: 24px; text-align: right;">
+                            <div style="display: grid; grid-template-rows: repeat(7, 1fr); font-size: 0.65rem; color: var(--text-muted); align-items: center; width: 24px; text-align: right; position: sticky; left: 0; z-index: 5; background: #111116; padding-right: 4px;">
                                 <div></div>
                                 <div>Mon</div>
                                 <div></div>
@@ -915,7 +915,7 @@
                         
                         const today = new Date();
                         const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-                        const numWeeks = 15; // 15 past weeks + current week
+                        const numWeeks = 5; // Start from June (5 weeks ago)
                         const totalDays = (numWeeks * 7) + (dayOfWeek + 1);
                         
                         let currentMonth = -1;
@@ -952,8 +952,8 @@
                                 const colIndex = Math.floor(i / 7);
                                 const currentLeft = colIndex * colWidth;
                                 
-                                // Only place a label if it's sufficiently spaced from the last one (at least 35px)
-                                if (currentLeft - lastLabelLeft >= 35) {
+                                // Increase minimum spacing between month labels to 45px for clarity
+                                if (currentLeft - lastLabelLeft >= 45) {
                                     const monthLabel = document.createElement('div');
                                     monthLabel.textContent = date.toLocaleString('default', { month: 'short' });
                                     monthLabel.style.position = 'absolute';
