@@ -503,68 +503,69 @@
                         <div class="dp-item"><span class="dp-key">Player ID</span><span class="dp-val" id="dp-pid"
                                 style="font-size:0.75rem">—</span></div>
                     </div>
+                    </div>
+                </div>
 
-                    <!-- Rewards Section -->
-                    <style>
-                        @keyframes fallCoin {
-                            0% { transform: translateY(-30px) rotate(0deg); opacity: 0; }
-                            10% { opacity: 0.8; }
-                            90% { opacity: 0.8; }
-                            100% { transform: translateY(250px) rotate(360deg); opacity: 0; }
-                        }
-                        .rewards-panel {
-                            position: relative;
-                            overflow: hidden;
-                            border: 1px solid rgba(255, 215, 0, 0.06) !important;
-                        }
-                        .coin-bg {
-                            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-                            pointer-events: none; z-index: 0;
-                        }
-                        .c-particle {
-                            position: absolute;
-                            width: 32px; height: 32px;
-                            background-image: url('/public/blaze_coin.jpg');
-                            background-size: cover;
-                            background-position: center;
-                            border-radius: 50%;
-                            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-                            top: -40px; opacity: 0;
-                            z-index: 0;
-                        }
-                        .c-1 { left: 10%; animation: fallCoin 12s linear infinite 0s; }
-                        .c-2 { left: 35%; animation: fallCoin 15s linear infinite 3s; }
-                        .c-3 { left: 60%; animation: fallCoin 10s linear infinite 1s; }
-                        .c-4 { left: 80%; animation: fallCoin 14s linear infinite 5s; }
-                        .c-5 { left: 90%; animation: fallCoin 18s linear infinite 2s; }
-                        .rewards-panel > * {
-                            position: relative;
-                            z-index: 1;
-                        }
-                    </style>
-                    <div class="detail-panel rewards-panel" style="grid-column: 1 / -1;">
-                        <div class="coin-bg">
-                            <div class="c-particle c-1"></div>
-                            <div class="c-particle c-2"></div>
-                            <div class="c-particle c-3"></div>
-                            <div class="c-particle c-4"></div>
-                            <div class="c-particle c-5"></div>
-                        </div>
-                        <div class="dp-title" style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>EARN REWARDS</span>
-                        </div>
-                        <div class="dp-item reward-item" id="first-login-container" style="align-items: center;"><span class="dp-key">First Login (100
-                                BC)</span><button id="first-login-btn" class="action-btn action-primary"
-                                style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
-                        </div>
-                        <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">Daily Login (10
-                                BC)</span><button id="daily-login-btn" class="action-btn action-primary"
-                                style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
-                        </div>
-                        <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">Trusted Player (100
-                                BC)</span><button id="trusted-player-btn" class="action-btn action-primary"
-                                style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
-                        </div>
+                <!-- Rewards Section -->
+                <style>
+                    @keyframes fallCoin {
+                        0% { transform: translateY(-30px) rotate(0deg); opacity: 0; }
+                        10% { opacity: 0.8; }
+                        90% { opacity: 0.8; }
+                        100% { transform: translateY(250px) rotate(360deg); opacity: 0; }
+                    }
+                    .rewards-panel {
+                        position: relative;
+                        overflow: hidden;
+                        border: 1px solid rgba(255, 215, 0, 0.06) !important;
+                    }
+                    .coin-bg {
+                        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+                        pointer-events: none; z-index: 0;
+                    }
+                    .c-particle {
+                        position: absolute;
+                        width: 32px; height: 32px;
+                        background-image: url('/public/blaze_coin.jpg');
+                        background-size: cover;
+                        background-position: center;
+                        border-radius: 50%;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+                        top: -40px; opacity: 0;
+                        z-index: 0;
+                    }
+                    .c-1 { left: 10%; animation: fallCoin 12s linear infinite 0s; }
+                    .c-2 { left: 35%; animation: fallCoin 15s linear infinite 3s; }
+                    .c-3 { left: 60%; animation: fallCoin 10s linear infinite 1s; }
+                    .c-4 { left: 80%; animation: fallCoin 14s linear infinite 5s; }
+                    .c-5 { left: 90%; animation: fallCoin 18s linear infinite 2s; }
+                    .rewards-panel > * {
+                        position: relative;
+                        z-index: 1;
+                    }
+                </style>
+                <div class="detail-panel rewards-panel" style="margin-top: 24px;">
+                    <div class="coin-bg">
+                        <div class="c-particle c-1"></div>
+                        <div class="c-particle c-2"></div>
+                        <div class="c-particle c-3"></div>
+                        <div class="c-particle c-4"></div>
+                        <div class="c-particle c-5"></div>
+                    </div>
+                    <div class="dp-title" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>EARN REWARDS</span>
+                    </div>
+                    <div class="dp-item reward-item" id="first-login-container" style="align-items: center;"><span class="dp-key">First Login (100
+                            BC)</span><button id="first-login-btn" class="action-btn action-primary"
+                            style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
+                    </div>
+                    <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">Daily Login (10
+                            BC)</span><button id="daily-login-btn" class="action-btn action-primary"
+                            style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
+                    </div>
+                    <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">Trusted Player (100
+                            BC)</span><button id="trusted-player-btn" class="action-btn action-primary"
+                            style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
                     </div>
                 </div>
 
@@ -836,10 +837,15 @@
                     document.getElementById('ph-name').textContent = u.inGameName || u.username;
                     document.getElementById('ph-region').textContent = u.location || '—';
                     document.getElementById('ph-uid').textContent = u.gameUid || '—';
-                    if (u.profilePic) {
-                        document.getElementById('ph-avatar').src = u.profilePic;
+                    
+                    const avatarEl = document.getElementById('ph-avatar');
+                    if (u.profilePic && u.profilePic.trim() !== '') {
+                        const tempImg = new Image();
+                        tempImg.onload = () => { avatarEl.src = u.profilePic; };
+                        tempImg.onerror = () => { avatarEl.src = '/public/blaze_avatar.png'; };
+                        tempImg.src = u.profilePic;
                     } else {
-                        document.getElementById('ph-avatar').src = '/public/blaze_avatar.png';
+                        avatarEl.src = '/public/blaze_avatar.png';
                     }
 
                     document.getElementById('st-bp').textContent = u.blazeCoins || 0;
