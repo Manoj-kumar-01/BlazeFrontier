@@ -99,11 +99,69 @@ agenda.define('publish-tournament-list', async (job) => {
     const { tournamentId } = job.attrs.data;
     try {
         const Tournament = require('../models/Tournament');
+        const User = require('../models/User');
+        const Notification = require('../models/Notification');
+        const PushSubscription = require('../models/PushSubscription');
+        const webpush = require('web-push');
+        const sendEmail = require('./sendEmail');
+
         const tournament = await Tournament.findById(tournamentId);
         if (tournament) {
             tournament.isListPublished = true;
             await tournament.save();
             console.log(`[Queue] Tournament list published automatically for ${tournament.name}`);
+
+            // Notify all organizers
+            const organizers = await User.find({ role: 'organizer' });
+            for (const org of organizers) {
+                const title = 'Tournament Registration Ended';
+                const message = `The registration time for "${tournament.name}" has ended. The player list is ready. Please prepare and dispatch the room credentials.`;
+
+                // 1. In-App Notification
+                await Notification.create({
+                    userId: org._id,
+                    title,
+                    message,
+                    type: 'info'
+                });
+
+                // 2. Offline / Web-Push Notification
+                const subscriptions = await PushSubscription.find({ userId: org._id });
+                if (subscriptions.length > 0) {
+                    const payload = JSON.stringify({ title, body: message });
+                    subscriptions.forEach(sub => {
+                        webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).catch(err => {
+                            if (err.statusCode === 404 || err.statusCode === 410) {
+                                PushSubscription.deleteOne({ endpoint: sub.endpoint }).exec();
+                            }
+                        });
+                    });
+                }
+
+                // 3. Email Notification
+                if (org.email) {
+                    try {
+                        const emailHtml = `
+                            <div style="font-family: Arial, sans-serif; background-color: #1a1a1f; color: #fff; padding: 20px; border-radius: 8px;">
+                                <h2 style="color: #ff3c1e;">Registration Ended!</h2>
+                                <p>Hello ${org.username || 'Organizer'},</p>
+                                <p>The registration period for the tournament <strong>${tournament.name}</strong> has just ended.</p>
+                                <p>The final participant list is now automatically published and ready.</p>
+                                <p style="color: #ff3c1e; font-weight: bold;">Please log in to the Organizer Dashboard and prepare to dispatch the match room credentials to the verified participants.</p>
+                                <br/>
+                                <p>Best regards,<br/>Blaze Frontier System</p>
+                            </div>
+                        `;
+                        await sendEmail({
+                            email: org.email,
+                            subject: `[Reminder] Registration Ended for ${tournament.name}`,
+                            html: emailHtml
+                        });
+                    } catch (emailErr) {
+                        console.error(`[Queue Error] Failed to send email to ${org.email}: ${emailErr.message}`);
+                    }
+                }
+            }
         }
     } catch (err) {
         console.error(`[Queue Error] Failed to publish tournament list: ${err.message}`);
