@@ -890,7 +890,10 @@
                         <td><span class="status-badge status-active">AWAITING RESULTS</span></td>
                         <td style="font-family:var(--font-mono); font-size:0.8rem;">${t.date}</td>
                         <td>
-                            <button class="org-btn org-btn-sm org-btn-primary" onclick="openAwardModal('${t._id}', '${t.name.replace(/'/g, "\\'")}')">🏆 AWARD WINNERS</button>
+                            <div style="display:flex; gap:6px;">
+                                <button class="org-btn org-btn-sm org-btn-primary" onclick="openAwardModal('${t._id}', '${t.name.replace(/'/g, "\\'")}')">🏆 AWARD WINNERS</button>
+                                <button class="org-btn org-btn-sm org-btn-ghost" onclick="viewRegistrations('${t._id}', '${t.name.replace(/'/g, "\\'")}', ${t.isListPublished})">👥 VIEW LIST</button>
+                            </div>
                         </td>
                     </tr>
                 `;
