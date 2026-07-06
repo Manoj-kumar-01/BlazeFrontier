@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -1045,12 +1045,18 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
                 credentials = { roomId: t.roomId, roomPassword: t.roomPassword };
             }
 
+            const registeredCount = await Registration.countDocuments({
+                tournamentId: t._id,
+                status: { $nin: ['Missed', 'Rejected'] }
+            });
+
             const tObj = {
                 type: 'tournament',
                 game: t.game.toUpperCase(),
                 name: t.name,
                 status: t.status,
                 participants: t.participants,
+                registeredCount: registeredCount,
                 date: t.date,
                 _id: t._id,
                 prize: t.prize,
