@@ -433,27 +433,6 @@
             </div>
         </div>
 
-        <script>
-            (function() {
-                try {
-                    const cached = localStorage.getItem('blaze_profile_cache');
-                    if (cached) {
-                        const u = JSON.parse(cached);
-                        if (u.isGenuine) {
-                            // The elements below might not be parsed yet, wait for DOM
-                            document.addEventListener('DOMContentLoaded', () => {
-                                const qs = document.getElementById('ff-qs-section');
-                                if (qs) qs.style.display = 'none';
-                                const tc = document.getElementById('ff-trusted-section');
-                                if (tc) tc.style.display = 'block';
-                                const vt = document.getElementById('ff-verified-tagline');
-                                if (vt) vt.style.display = 'block';
-                            });
-                        }
-                    }
-                } catch(e) {}
-            })();
-        </script>
 
         <!-- Stats row -->
         <div class="card c-stat c-stat-active" style="position: relative; background: rgba(20,10,12,0.85); border: 1px solid rgba(255, 87, 34, 0.15); border-radius: 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%); display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 24px; box-shadow: inset 0 0 30px rgba(255, 87, 34, 0.05); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
@@ -825,6 +804,9 @@
 
                             html += `</div>`;
                     } else if (isGenuine) {
+                        const vt = document.getElementById('ff-verified-tagline');
+                        if (vt) vt.style.display = 'block';
+                        
                         html = `
                         <div style="text-align:center; padding: 20px 10px;">
                             <div style="font-size: 2rem; margin-bottom: 12px;">✅</div>
