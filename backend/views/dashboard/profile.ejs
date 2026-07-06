@@ -152,7 +152,7 @@
         /* Main: Stats grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
 
@@ -418,6 +418,16 @@
                     <div id="ph-watermark" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; display: flex; justify-content: center; align-items: center; pointer-events: none;">
                         <div style="font-family: var(--font-display); font-size: 6.5rem; color: rgba(255, 215, 0, 0.04); font-weight: 800; letter-spacing: 10px; white-space: nowrap; user-select: none; transform: translateY(-10px);">TRUSTED</div>
                     </div>
+                    
+                    <!-- 7-Day Login Streak Row -->
+                    <div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 24px; position: relative; z-index: 2;">
+                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold; margin-right: 4px; text-transform: uppercase;">Streak</div>
+                        <div id="streak-days" style="display: flex; gap: 6px;">
+                            <!-- Injected by JS -->
+                        </div>
+                        <div style="margin-left: 4px; font-size: 0.85rem; font-weight: bold; color: #ffd700; background: rgba(255, 215, 0, 0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255, 215, 0, 0.2); box-shadow: 0 0 10px rgba(255,215,0,0.1);">+100 💰</div>
+                    </div>
+
                     <div style="position: relative; display: inline-block; padding: 10px; z-index: 1;">
                         <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar" referrerpolicy="no-referrer" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; display: block; position: relative; z-index: 1; margin: 0; background-color: #111116;" onerror="this.onerror=null; this.src='/public/blaze_avatar.png';">
                         <button onclick="openEditProfileModal()" style="position: absolute; bottom: 6px; right: 6px; background: var(--blaze-orange); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.2s; z-index: 2;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
@@ -466,15 +476,6 @@
             <div class="profile-main">
                 <!-- Stats -->
                 <div class="stats-grid">
-                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 87, 34, 0.2); position: relative; overflow: hidden;">
-                        <div class="streak-icon" style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🔥</div>
-                        <div class="stat-label" style="color: #ff5722; position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center;">
-                            Login Streak
-                            <span id="streak-progress" style="font-size: 0.7rem; background: rgba(255,87,34,0.2); padding: 2px 6px; border-radius: 4px;">0 / 7</span>
-                        </div>
-                        <div class="stat-val" id="st-streak" style="color: #fff; position: relative; z-index: 1;">0<span style="font-size: 1rem; color: var(--text-muted);">d</span></div>
-                        <button id="claim-streak-btn" onclick="claimStreakReward()" style="display: none; width: 100%; margin-top: 10px; background: #ff5722; color: #fff; border: none; padding: 6px; border-radius: 4px; font-family: var(--font-display); font-size: 0.8rem; cursor: pointer; position: relative; z-index: 1; box-shadow: 0 0 10px rgba(255,87,34,0.4); transition: transform 0.2s;">CLAIM 50 BC</button>
-                    </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 215, 0, 0.2); position: relative; overflow: hidden;">
                         <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">💰</div>
                         <div class="stat-label" style="color: #fcd34d; position: relative; z-index: 1;">Blaze Coins</div>
@@ -726,27 +727,6 @@
             }, 3000);
         }
 
-        async function claimStreakReward() {
-            try {
-                const token = localStorage.getItem('blaze_token');
-                const res = await fetch('/api/claim-streak', {
-                    method: 'POST',
-                    headers: { 'x-auth-token': token }
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    showToast(data.msg || 'Streak reward claimed!', 'success');
-                    document.getElementById('claim-streak-btn').style.display = 'none';
-                    // Refresh data
-                    window.location.reload();
-                } else {
-                    showToast(data.msg || 'Failed to claim reward', 'error');
-                }
-            } catch (err) {
-                showToast('Error claiming reward', 'error');
-            }
-        }
-
         async function searchUserProfile() {
             const pid = document.getElementById('search-blaze-id').value.trim();
             if (!pid) return showToast('Please enter a Blaze ID', 'error');
@@ -928,17 +908,20 @@
                     document.getElementById('st-bp').textContent = u.blazeCoins || 0;
                     document.getElementById('st-matches').textContent = u.tourneysWon || 0;
                     
-                    // Render Streak
+                    // Render Streak Row
                     const currentStreak = u.currentStreak || 0;
-                    document.getElementById('st-streak').innerHTML = `${currentStreak}<span style="font-size: 1rem; color: var(--text-muted);">d</span>`;
-                    document.getElementById('streak-progress').textContent = `${currentStreak} / 7`;
-                    
-                    const claimBtn = document.getElementById('claim-streak-btn');
-                    if (currentStreak >= 7) {
-                        claimBtn.style.display = 'block';
-                    } else {
-                        claimBtn.style.display = 'none';
+                    const visualStreak = currentStreak % 7 === 0 && currentStreak > 0 ? 7 : currentStreak % 7;
+                    const daysContainer = document.getElementById('streak-days');
+                    let daysHTML = '';
+                    for (let i = 1; i <= 7; i++) {
+                        if (i <= visualStreak) {
+                            daysHTML += `<div style="width: 24px; height: 24px; border-radius: 50%; background: var(--blaze-orange); display: flex; justify-content: center; align-items: center; box-shadow: 0 0 8px rgba(255,87,34,0.6);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>`;
+                        } else {
+                            daysHTML += `<div style="width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; color: var(--text-muted); font-size: 0.7rem; font-weight: bold;">${i}</div>`;
+                        }
                     }
+                    daysContainer.innerHTML = daysHTML;
+                    
                     const stWinsEl = document.getElementById('st-wins');
                     if (stWinsEl) stWinsEl.textContent = u.tourneysWon || 0;
                     

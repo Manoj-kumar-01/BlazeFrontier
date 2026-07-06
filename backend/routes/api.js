@@ -69,6 +69,11 @@ router.post('/heartbeat', authMiddleware, async (req, res) => {
                 user.currentStreak = 1;
             }
             user.lastStreakUpdate = today;
+            
+            // Automatic 100 Coins every 7 days!
+            if (user.currentStreak % 7 === 0) {
+                user.blazeCoins = (user.blazeCoins || 0) + 100;
+            }
         }
 
         await user.save();
