@@ -67,7 +67,6 @@
             max-width: 1300px;
             margin: 0 auto;
             padding: 100px 24px 80px;
-            display: none;
         }
 
         /* =====================
@@ -1177,30 +1176,6 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('blaze_token');
             if (!token) { window.location.href = '/auth'; return; }
-
-            // Genuine player gating
-            const applyUserStatus = (prof) => {
-                if (!prof.isGenuine) {
-                    const modal = document.getElementById('tournaments-lock-modal');
-                    if (modal) {
-                        modal.style.display = 'flex';
-                        const btn = modal.querySelector('button');
-                        if(btn) btn.onclick = () => { window.location.href = '/dashboard'; };
-                    } else {
-                        window.location.href = '/dashboard';
-                    }
-                } else {
-                    document.getElementById('t-page').style.display = 'block';
-                }
-            };
-
-            if (window.globalUserData) {
-                applyUserStatus(window.globalUserData);
-            } else {
-                window.addEventListener('globalUserDataReady', () => {
-                    if (window.globalUserData) applyUserStatus(window.globalUserData);
-                });
-            }
 
             // State
             let currentView = 'live';
