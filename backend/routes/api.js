@@ -956,7 +956,13 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         }
 
         const filter = {};
-        if (req.query.game) filter.game = new RegExp(req.query.game, 'i');
+        if (req.query.game) {
+            if (req.query.game.toLowerCase() === 'freefire') {
+                filter.game = /free\s*fire/i;
+            } else {
+                filter.game = new RegExp(req.query.game, 'i');
+            }
+        }
         // Exclude Qualification series from the Elite Tournaments view
         filter.name = { $not: /Qualification/i };
         
@@ -1132,7 +1138,10 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         
         matches.forEach(m => {
             const gameName = m.seriesId ? m.seriesId.game.toUpperCase() : 'GLOBAL';
-            if (req.query.game && !gameName.match(new RegExp(req.query.game, 'i'))) return;
+            if (req.query.game) {
+                let matchRegex = req.query.game.toLowerCase() === 'freefire' ? /free\s*fire/i : new RegExp(req.query.game, 'i');
+                if (!gameName.match(matchRegex)) return;
+            }
             
             const obj = {
                 type: 'match',
