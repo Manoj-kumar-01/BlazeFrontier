@@ -134,12 +134,12 @@
     <%- include('../partials/navbar') %>
 
     <!-- Hero Section -->
-    <header class="relative w-full h-[600px] flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBxF2QFbW30GpayFzu5LK_Lb1rBm-GV3NawF1fvK2RuEXVhLnId-gMIsxCxCcze5UH3BT-_GxAAwEIHP1qIdu_mezJ74qQTigHCFopGa_V3KuMXeXsrY7s-g86U1b9oWJ-MyunLvU3bp-GXB2KWeQVRQLaMCPCbZ6QCRjbDUVHnHkLy1hjlhScI-ZKuDrF_MCTqjCl2qpdGN_PsBGuEo80_uLaRKRntVWsl_0R4_7k-UGXyT9FYceO38w'); opacity: 0.4;"></div>
+    <header class="relative w-full min-h-[600px] h-auto pt-32 pb-16 flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/blaze_arena_bg.png'); opacity: 0.5;"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#050709] via-transparent to-[#050709]/50"></div>
         
         <div class="relative z-10 text-center max-w-container-max mx-auto px-margin-mobile md:px-xl flex flex-col items-center gap-lg">
-            <h1 class="font-display-lg text-display-lg text-white drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">THE GLOBAL PRO CIRCUIT</h1>
+            <h1 class="font-display-lg text-display-lg text-white drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">BLAZE FRONTIER ARENA</h1>
             <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Enter the arena. Compete in high-stakes tournaments against the world's best.</p>
             
             <div class="flex flex-wrap justify-center gap-lg mt-md">
@@ -157,7 +157,7 @@
                 </div>
             </div>
             
-            <a href="/dashboard/tournaments/register" class="btn-primary mt-lg px-xl py-md rounded-full font-label-md text-label-md uppercase tracking-widest cursor-pointer inline-flex items-center gap-sm shadow-[0_0_20px_rgba(168,85,247,0.8)] hover:scale-105 hover:shadow-[0_0_30px_rgba(168,85,247,1)]">
+            <a href="#t-page" class="btn-primary mt-lg px-xl py-md rounded-full font-label-md text-label-md uppercase tracking-widest cursor-pointer inline-flex items-center gap-sm shadow-[0_0_20px_rgba(168,85,247,0.8)] hover:scale-105 hover:shadow-[0_0_30px_rgba(168,85,247,1)]">
                 <span class="font-bold">PROVE YOUR DOMINANCE</span>
                 <span class="material-symbols-outlined text-[20px]">swords</span>
             </a>
@@ -314,7 +314,7 @@
                         const statusText = t.status === 'LIVE' ? 'LIVE NOW' : 'S-Tier';
                         
                         return `
-                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[300px] flex flex-col justify-end" onclick="window.location.href='/dashboard/tournaments/register'">
+                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[300px] flex flex-col justify-end" onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
                             <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('${bg}'); opacity: 0.5;"></div>
                             <div class="absolute inset-0 bg-gradient-to-t from-[#050709] to-transparent"></div>
                             
@@ -354,7 +354,7 @@
                             }
 
                             return `
-                            <tr class="border-b border-white/5 table-row-hover cursor-pointer transition-colors" onclick="window.location.href='/dashboard/tournaments/register'">
+                            <tr class="border-b border-white/5 table-row-hover cursor-pointer transition-colors" onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
                                 <td class="py-md px-xs text-white font-medium">${t.name}</td>
                                 <td class="py-md px-xs text-on-surface-variant">${t.date || 'TBA'}</td>
                                 <td class="py-md px-xs text-tertiary">${t.prize || '—'}</td>
