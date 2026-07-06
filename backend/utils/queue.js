@@ -94,6 +94,23 @@ agenda.define('resolve-weekly-voting', async (job) => {
     }
 });
 
+// Define Job: Publish Tournament List
+agenda.define('publish-tournament-list', async (job) => {
+    const { tournamentId } = job.attrs.data;
+    try {
+        const Tournament = require('../models/Tournament');
+        const tournament = await Tournament.findById(tournamentId);
+        if (tournament) {
+            tournament.isListPublished = true;
+            await tournament.save();
+            console.log(`[Queue] Tournament list published automatically for ${tournament.name}`);
+        }
+    } catch (err) {
+        console.error(`[Queue Error] Failed to publish tournament list: ${err.message}`);
+        throw err;
+    }
+});
+
 // Define Job: Clean Up Weekly Clips (Deletes from DB and filesystem)
 agenda.define('cleanup-weekly-clips', async (job) => {
     try {

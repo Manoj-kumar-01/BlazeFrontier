@@ -29,6 +29,9 @@ const TournamentSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    registrationEndTime: {
+        type: Date
+    },
     roomId: {
         type: String,
         default: ''

@@ -717,6 +717,10 @@
                 <input type="datetime-local" class="org-input" id="t-date">
             </div>
             <div class="org-input-group">
+                <label>Registration End Time (Optional)</label>
+                <input type="datetime-local" class="org-input" id="t-registrationEndTime">
+            </div>
+            <div class="org-input-group">
                 <label>Max Participants</label>
                 <input type="text" class="org-input" id="t-participants" placeholder="e.g. 48">
             </div>
@@ -1178,6 +1182,7 @@
             document.getElementById('t-participants').value = '';
             document.getElementById('t-roomId').value = '';
             document.getElementById('t-roomPassword').value = '';
+            document.getElementById('t-registrationEndTime').value = '';
             document.getElementById('tournamentModal').classList.add('active');
         }
 
@@ -1208,7 +1213,8 @@
                 date: document.getElementById('t-date').value,
                 participants: document.getElementById('t-participants').value,
                 roomId: document.getElementById('t-roomId').value,
-                roomPassword: document.getElementById('t-roomPassword').value
+                roomPassword: document.getElementById('t-roomPassword').value,
+                registrationEndTime: document.getElementById('t-registrationEndTime').value
             };
 
             if (!body.name || !body.date || !body.participants) {

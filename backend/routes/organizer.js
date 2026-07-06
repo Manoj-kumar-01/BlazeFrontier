@@ -210,7 +210,7 @@ router.get('/tournaments', async (req, res) => {
 // @desc    Create a new tournament
 router.post('/tournaments', async (req, res) => {
     try {
-        const { name, date, participants, roomId, roomPassword } = req.body;
+        const { name, date, participants, roomId, roomPassword, registrationEndTime } = req.body;
 
         if (!name || !date || !participants) {
             return res.status(400).json({ msg: 'All required fields must be provided' });
@@ -224,10 +224,17 @@ router.post('/tournaments', async (req, res) => {
             date,
             participants,
             roomId,
-            roomPassword
+            roomPassword,
+            registrationEndTime: registrationEndTime ? new Date(registrationEndTime) : undefined
         });
 
         await tournament.save();
+        
+        if (tournament.registrationEndTime) {
+            const agenda = require('../utils/queue');
+            agenda.schedule(tournament.registrationEndTime, 'publish-tournament-list', { tournamentId: tournament._id });
+        }
+
         res.json(tournament);
     } catch (err) {
         console.error(err.message);
@@ -373,7 +380,7 @@ router.post('/tournaments/:id/publish-list', async (req, res) => {
 // @desc    List all registrations with optional status filter
 router.get('/registrations', async (req, res) => {
     try {
-        const filter = {};
+        const filter = { format: { $ne: 'Tournament' } };
         if (req.query.status) {
             filter.status = req.query.status;
         }
