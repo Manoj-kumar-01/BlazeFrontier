@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const organizerAuth = require('../middleware/organizerAuth');
 const Tournament = require('../models/Tournament');
@@ -84,7 +84,7 @@ router.post('/voting-event/create', async (req, res) => {
                 if (clip.userId && clip.userId.email) {
                     sendEmail({
                         email: clip.userId.email,
-                        subject: 'Congratulations! Your Clip is in the Top 3! 🏆',
+                        subject: 'Congratulations! Your Clip is in the Top 3! ðŸ†',
                         html: `<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background: #1a1a24; color: #fff; border-radius: 8px;">
                                 <h2 style="color: #ff5722;">You made it to the Top 3!</h2>
                                 <p style="font-size: 1.1rem;">Hi <strong>${clip.userId.username}</strong>,</p>
@@ -102,7 +102,7 @@ router.post('/voting-event/create', async (req, res) => {
         // Notify Discord (Offline Notification)
         try {
             const { sendAnnouncement } = require('../discordBot');
-            sendAnnouncement(`🔥 **IT'S VOTING TIME!** 🔥\n\nThe Top 3 ${game} clips of the week have been selected! Head over to the platform and vote for your favorite clip now. Who will be the Player of the Week?`);
+            sendAnnouncement(`ðŸ”¥ **IT'S VOTING TIME!** ðŸ”¥\n\nThe Top 3 ${game} clips of the week have been selected! Head over to the platform and vote for your favorite clip now. Who will be the Player of the Week?`);
         } catch (e) {
             console.error('Discord notification failed:', e.message);
         }
@@ -887,5 +887,38 @@ router.get('/users', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+// @route   GET /api/organizer/player/:playerId
+// @desc    Get public profile data of any user by their Blaze ID (playerId) for Organizer
+router.get('/player/:playerId', async (req, res) => {
+    try {
+        const targetUser = await User.findOne({ $or: [{ playerId: new RegExp('^' + req.params.playerId + '$', 'i') }, { username: new RegExp('^' + req.params.playerId + '$', 'i') }, { inGameName: new RegExp('^' + req.params.playerId + '$', 'i') }, { gameUid: new RegExp('^' + req.params.playerId + '$', 'i') }] }).select('-password -email -phoneNumber');
+        if (!targetUser) {
+            return res.status(404).json({ msg: 'Player not found with this Blaze ID' });
+        }
+
+        const Match = require('../models/Match');
+        const userMatches = await Match.find({ playerId: targetUser._id, status: 'COMPLETED' });
+        
+        res.json({
+            username: targetUser.username,
+            inGameName: targetUser.inGameName,
+            gameUid: targetUser.gameUid,
+            location: targetUser.location,
+            profilePic: targetUser.profilePic,
+            playerId: targetUser.playerId,
+            isGenuine: targetUser.isGenuine,
+            isSetupComplete: targetUser.isSetupComplete,
+            role: targetUser.role || 'player',
+            blazeCoins: targetUser.blazeCoins || 0,
+            totalMatches: userMatches.length,
+            tournamentsWon: userMatches.filter(m => m.placement === 1).length
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
 
 module.exports = router;
+
+

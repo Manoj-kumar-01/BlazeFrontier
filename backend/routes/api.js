@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -532,7 +532,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
 // @desc    Get public profile data of any user by their Blaze ID (playerId)
 router.get('/player/:playerId', authMiddleware, async (req, res) => {
     try {
-        const targetUser = await User.findOne({ playerId: req.params.playerId }).select('-password -email -phoneNumber');
+        const targetUser = await User.findOne({ $or: [{ playerId: new RegExp('^' + req.params.playerId + '$', 'i') }, { username: new RegExp('^' + req.params.playerId + '$', 'i') }, { inGameName: new RegExp('^' + req.params.playerId + '$', 'i') }, { gameUid: new RegExp('^' + req.params.playerId + '$', 'i') }] }).select('-password -email -phoneNumber');
         if (!targetUser) {
             return res.status(404).json({ msg: 'Player not found with this Blaze ID' });
         }
@@ -906,7 +906,7 @@ router.get('/poster/:id', async (req, res) => {
         const teamA = (match.userId && match.userId.inGameName) ? match.userId.inGameName.toUpperCase() : 'UNKNOWN';
         const teamB = 'CHALLENGERS';
         const formatStr = `${match.format.toUpperCase()} ${match.mode.toUpperCase()}`;
-        const dateStr = `${match.startDate} • ${match.timeSlot}`;
+        const dateStr = `${match.startDate} â€¢ ${match.timeSlot}`;
 
         // Function to draw background
         const drawBackground = () => {
@@ -1504,7 +1504,7 @@ router.get('/game/:gameId/overview', async (req, res) => {
             featuredStreamer: {
                 name: "SargeDestroyer",
                 viewers: `1.5K`,
-                highlight: `💣 24 kills`
+                highlight: `ðŸ’£ 24 kills`
             },
             topStreamer: {
                 name: "RocketKing",
@@ -1877,3 +1877,5 @@ router.get('/voting-event/:eventId/results', async (req, res) => {
 });
 
 module.exports = router;
+
+
