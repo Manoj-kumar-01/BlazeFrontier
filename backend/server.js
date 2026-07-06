@@ -271,6 +271,10 @@ async function startBackend() {
             console.log(`Blaze Frontier Backend running on port ${PORT}`);
             // console.log(`GraphQL endpoint available at http://localhost:${PORT}/graphql`);
         });
+        
+        // Prevent intermittent 502 Bad Gateway errors
+        server.keepAliveTimeout = 65000; // 65 seconds
+        server.headersTimeout = 66000; // 66 seconds
     }
 }
 
