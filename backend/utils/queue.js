@@ -162,6 +162,22 @@ agenda.define('publish-tournament-list', async (job) => {
                     }
                 }
             }
+
+            // Notify all registered participants
+            const Registration = require('../models/Registration');
+            const registrations = await Registration.find({
+                tournamentId: tournament._id,
+                status: { $nin: ['Missed', 'Rejected'] }
+            });
+            
+            for (const reg of registrations) {
+                await Notification.create({
+                    userId: reg.userId,
+                    title: 'Participant List Ready',
+                    message: `The registration for "${tournament.name}" is now closed and the final player list has been generated! Check the tournament page for updates.`,
+                    type: 'info'
+                });
+            }
         }
     } catch (err) {
         console.error(`[Queue Error] Failed to publish tournament list: ${err.message}`);
