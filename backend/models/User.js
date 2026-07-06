@@ -110,6 +110,14 @@ const UserSchema = new mongoose.Schema({
         of: Number,
         default: {}
     },
+    currentStreak: {
+        type: Number,
+        default: 0
+    },
+    lastStreakUpdate: {
+        type: Date,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now

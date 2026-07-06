@@ -41,16 +41,62 @@ const upload = multer({
 const authMiddleware = require('../middleware/auth');
 
 // @route   POST /api/heartbeat
-// @desc    Track user active time on the site
+// @desc    Track user active time on the site and calculate login streak
 router.post('/heartbeat', authMiddleware, async (req, res) => {
     try {
         const dateStr = new Date().toISOString().split('T')[0];
-        await User.findByIdAndUpdate(req.user.id, {
-            $inc: { [`activityLog.${dateStr}`]: 1 }
-        });
+        
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).send('User not found');
+        
+        // Activity Tracking
+        const currentActivity = user.activityLog ? user.activityLog.get(dateStr) || 0 : 0;
+        user.set(`activityLog.${dateStr}`, currentActivity + 1);
+
+        // Streak Tracking
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        const todayStr = today.toISOString().split('T')[0];
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        const lastStr = user.lastStreakUpdate ? user.lastStreakUpdate.toISOString().split('T')[0] : null;
+
+        if (lastStr !== todayStr) {
+            if (lastStr === yesterdayStr) {
+                user.currentStreak += 1;
+            } else {
+                user.currentStreak = 1;
+            }
+            user.lastStreakUpdate = today;
+        }
+
+        await user.save();
         res.status(200).send();
     } catch (err) {
         console.error('Heartbeat Error:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/claim-streak
+// @desc    Claim 50 BlazeCoins for a 7-day login streak
+router.post('/claim-streak', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+        
+        if (user.currentStreak < 7) {
+            return res.status(400).json({ msg: 'You need a 7-day streak to claim this reward.' });
+        }
+        
+        user.blazeCoins += 50;
+        user.currentStreak = 0; // Reset streak so they can start building a new one
+        await user.save();
+        
+        res.json({ msg: 'Claimed 50 BlazeCoins!', coins: user.blazeCoins, currentStreak: user.currentStreak });
+    } catch (err) {
+        console.error('Claim Streak Error:', err);
         res.status(500).send('Server Error');
     }
 });

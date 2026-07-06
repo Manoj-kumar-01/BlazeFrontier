@@ -152,7 +152,7 @@
         /* Main: Stats grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 16px;
         }
 
@@ -299,9 +299,6 @@
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .stats-grid > .stat-card:last-child {
-                grid-column: 1 / -1;
-            }
 
             .detail-row {
                 grid-template-columns: 1fr;
@@ -369,6 +366,42 @@
         .btn { padding: 12px 24px; font-family: var(--font-display); font-size: 1.1rem; border-radius: 8px; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; }
         .btn-primary { background: var(--blaze-orange); color: #fff; }
         .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+        /* Toast System */
+        .org-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #1e1e24;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: var(--font-main);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 99999;
+            pointer-events: none;
+            border-left: 4px solid #fff;
+        }
+        .org-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .org-toast.success { border-left-color: #22c55e; }
+        .org-toast.error { border-left-color: #ef4444; }
+        .org-toast.info { border-left-color: #3b82f6; }
+        
+        /* Fire Animation for Streak */
+        @keyframes subtle-flicker {
+            0% { transform: rotate(-15deg) scale(1); opacity: 0.05; text-shadow: 0 0 10px rgba(255,87,34,0.1); }
+            50% { transform: rotate(-13deg) scale(1.05); opacity: 0.08; text-shadow: 0 0 20px rgba(255,87,34,0.4); }
+            100% { transform: rotate(-15deg) scale(1); opacity: 0.05; text-shadow: 0 0 10px rgba(255,87,34,0.1); }
+        }
+        .streak-icon {
+            animation: subtle-flicker 3s infinite alternate ease-in-out;
+        }
     </style>
 </head>
 
@@ -433,6 +466,15 @@
             <div class="profile-main">
                 <!-- Stats -->
                 <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 87, 34, 0.2); position: relative; overflow: hidden;">
+                        <div class="streak-icon" style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🔥</div>
+                        <div class="stat-label" style="color: #ff5722; position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center;">
+                            Login Streak
+                            <span id="streak-progress" style="font-size: 0.7rem; background: rgba(255,87,34,0.2); padding: 2px 6px; border-radius: 4px;">0 / 7</span>
+                        </div>
+                        <div class="stat-val" id="st-streak" style="color: #fff; position: relative; z-index: 1;">0<span style="font-size: 1rem; color: var(--text-muted);">d</span></div>
+                        <button id="claim-streak-btn" onclick="claimStreakReward()" style="display: none; width: 100%; margin-top: 10px; background: #ff5722; color: #fff; border: none; padding: 6px; border-radius: 4px; font-family: var(--font-display); font-size: 0.8rem; cursor: pointer; position: relative; z-index: 1; box-shadow: 0 0 10px rgba(255,87,34,0.4); transition: transform 0.2s;">CLAIM 50 BC</button>
+                    </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 215, 0, 0.2); position: relative; overflow: hidden;">
                         <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">💰</div>
                         <div class="stat-label" style="color: #fcd34d; position: relative; z-index: 1;">Blaze Coins</div>
@@ -620,7 +662,7 @@
                         <span id="sp-user" style="color: #fff; font-family: var(--font-mono);">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                        <span style="color: var(--text-muted);">Blaze ID</span>
+                        <span style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">Blaze ID</span>
                         <span id="sp-pid" style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
@@ -667,9 +709,44 @@
             </form>
         </div>
     </div>
+    
+    <div id="toast-container"></div>
 
     <script src="/script.js?v=1.2"></script>
     <script>
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `org-toast ${type} show`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        async function claimStreakReward() {
+            try {
+                const token = localStorage.getItem('blaze_token');
+                const res = await fetch('/api/claim-streak', {
+                    method: 'POST',
+                    headers: { 'x-auth-token': token }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.msg || 'Streak reward claimed!', 'success');
+                    document.getElementById('claim-streak-btn').style.display = 'none';
+                    // Refresh data
+                    window.location.reload();
+                } else {
+                    showToast(data.msg || 'Failed to claim reward', 'error');
+                }
+            } catch (err) {
+                showToast('Error claiming reward', 'error');
+            }
+        }
+
         async function searchUserProfile() {
             const pid = document.getElementById('search-blaze-id').value.trim();
             if (!pid) return showToast('Please enter a Blaze ID', 'error');
@@ -849,7 +926,19 @@
                     }
 
                     document.getElementById('st-bp').textContent = u.blazeCoins || 0;
-                    document.getElementById('st-matches').textContent = u.totalMatches || 0;
+                    document.getElementById('st-matches').textContent = u.tourneysWon || 0;
+                    
+                    // Render Streak
+                    const currentStreak = u.currentStreak || 0;
+                    document.getElementById('st-streak').innerHTML = `${currentStreak}<span style="font-size: 1rem; color: var(--text-muted);">d</span>`;
+                    document.getElementById('streak-progress').textContent = `${currentStreak} / 7`;
+                    
+                    const claimBtn = document.getElementById('claim-streak-btn');
+                    if (currentStreak >= 7) {
+                        claimBtn.style.display = 'block';
+                    } else {
+                        claimBtn.style.display = 'none';
+                    }
                     const stWinsEl = document.getElementById('st-wins');
                     if (stWinsEl) stWinsEl.textContent = u.tourneysWon || 0;
                     
