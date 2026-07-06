@@ -274,6 +274,16 @@ router.post('/tournaments/:id/register', authMiddleware, async (req, res) => {
             return res.status(400).json({ msg: 'You have already registered for this tournament.' });
         }
 
+        const existingCount = await Registration.countDocuments({
+            tournamentId: tournament._id,
+            status: { $nin: ['Missed', 'Rejected'] }
+        });
+
+        const maxParticipants = parseInt(tournament.participants) || 0;
+        if (maxParticipants > 0 && existingCount >= maxParticipants) {
+            return res.status(400).json({ msg: 'Tournament is full.' });
+        }
+
         const maxReg = await Registration.findOne().sort({ matchId: -1 });
         const nextMatchId = maxReg && maxReg.matchId ? maxReg.matchId + 1 : 1;
 
@@ -286,10 +296,51 @@ router.post('/tournaments/:id/register', authMiddleware, async (req, res) => {
             startDate: new Date().toLocaleDateString(),
             timeSlot: timeSlot,
             matchId: nextMatchId,
-            status: 'Pending'
+            status: 'Approved' // Auto-approve
         });
 
         await newReg.save();
+
+        // Send Notifications
+        const agenda = require('../utils/queue');
+        const formatMode = `${newReg.format.toUpperCase()} ${newReg.mode.toUpperCase()}`;
+
+        // In-App Notification
+        agenda.now('send-inapp-notification', {
+            userId: user._id,
+            title: 'Registration Approved!',
+            message: `Your registration for the ${formatMode} tournament on ${newReg.startDate} has been Approved. Get ready for battle!`,
+            type: 'success'
+        });
+
+        // Email Notification
+        if (user.email) {
+            agenda.now('send-email', {
+                email: user.email,
+                subject: 'Tournament Registration Approved! - Blaze Frontier',
+                html: `
+                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                        <div style="text-align: center; background-color: #111; padding: 20px;">
+                            <h2 style="color: #ff5722; margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px;">Blaze Frontier</h2>
+                        </div>
+                        <div style="padding: 30px; background-color: #ffffff;">
+                            <h3 style="color: #333; margin-top: 0;">Registration Approved</h3>
+                            <p style="color: #555; font-size: 16px; line-height: 1.6;">Hi <strong>${user.username}</strong>,</p>
+                            <p style="color: #555; font-size: 16px; line-height: 1.6;">Your registration for the <strong>${formatMode}</strong> tournament on <strong>${newReg.startDate}</strong> has been automatically <strong>Approved</strong>!</p>
+                            <p style="color: #555; font-size: 16px; line-height: 1.6;">Since this tournament operates on a first-come, first-serve basis, your spot is secured. Prepare yourself for the upcoming battle.</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="https://blazefrontier.in/dashboard" style="background-color: #ff5722; color: #fff; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-block;">View Dashboard</a>
+                            </div>
+                            <p style="color: #555; font-size: 16px; line-height: 1.6;">Good luck and have fun!</p>
+                        </div>
+                        <div style="background-color: #eee; padding: 15px; text-align: center; font-size: 12px; color: #888;">
+                            &copy; ${new Date().getFullYear()} Blaze Frontier. All rights reserved.
+                        </div>
+                    </div>
+                `
+            });
+        }
+
         res.json({ msg: `Successfully registered for ${tournament.name}` });
     } catch (err) {
         console.error(err.message);

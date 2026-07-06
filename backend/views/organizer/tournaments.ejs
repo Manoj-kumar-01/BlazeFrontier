@@ -651,7 +651,7 @@
                                     <th>Name</th>
                                     <th>Status</th>
                                     <th>Date</th>
-                                    <th>Slots</th>
+                                    <th>Max Players</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -746,6 +746,7 @@
                             <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">In-Game Name</th>
                             <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">In-Game ID (UID)</th>
                             <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">Blaze ID</th>
+                            <th style="position: sticky; top: 0; background: rgba(20,20,24,0.95); backdrop-filter: blur(10px);">Username</th>
                         </tr>
                     </thead>
                     <tbody id="regs-modal-body">
@@ -1303,8 +1304,9 @@
                     return `
                         <tr>
                             <td style="font-weight:600; color:#fff;">${p.inGameName || '—'}</td>
-                            <td style="font-family:var(--font-mono); font-size:0.8rem;">${p.playerId || '—'}</td>
-                            <td style="color:#a78bfa;">${p.username || '—'}</td>
+                            <td style="font-family:var(--font-mono); font-size:0.8rem;">${p.gameUid || '—'}</td>
+                            <td style="color:#a78bfa; font-family:var(--font-mono); font-size:0.8rem;">${p.playerId || '—'}</td>
+                            <td style="color:#9ca3af;">${p.username || '—'}</td>
                         </tr>
                     `;
                 }).join('');

@@ -400,7 +400,7 @@ router.get('/tournaments/:id/registrations', async (req, res) => {
         }
         
         const registrations = await Registration.find(filter)
-            .populate('userId', 'username inGameName playerId email profilePic')
+            .populate('userId', 'username inGameName gameUid playerId email profilePic')
             .populate('tournamentId', 'name')
             .sort({ createdAt: -1 });
         
