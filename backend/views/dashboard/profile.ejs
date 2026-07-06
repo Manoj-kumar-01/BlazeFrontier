@@ -914,9 +914,14 @@
                         heatmapMonths.innerHTML = '';
                         
                         const today = new Date();
-                        const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-                        const numWeeks = 4; // 4 past weeks + current week to stay strictly inside June
-                        const totalDays = (numWeeks * 7) + (dayOfWeek + 1);
+                        
+                        // Dynamically calculate grid start: 1st of the previous month, anchored to Sunday
+                        const firstDayOfPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                        const startOfGrid = new Date(firstDayOfPrevMonth);
+                        startOfGrid.setDate(firstDayOfPrevMonth.getDate() - firstDayOfPrevMonth.getDay());
+                        
+                        // Exact days passed since the grid start
+                        const totalDays = Math.floor((today - startOfGrid) / (1000 * 60 * 60 * 24)) + 1;
                         
                         let currentMonth = -1;
                         let lastLabelLeft = -50; // Track position of last label to avoid clustering
@@ -952,8 +957,10 @@
                                 const colIndex = Math.floor(i / 7);
                                 const currentLeft = colIndex * colWidth;
                                 
-                                // Increase minimum spacing between month labels to 45px for clarity
-                                if (currentLeft - lastLabelLeft >= 45) {
+                                // Skip printing if it's the very first column but just the tail end of an unwanted month (e.g., May 31)
+                                if (i < 7 && date.getDate() > 20) {
+                                    // Skip to cleanly start labels with the target month
+                                } else if (currentLeft - lastLabelLeft >= 45) {
                                     const monthLabel = document.createElement('div');
                                     monthLabel.textContent = date.toLocaleString('default', { month: 'short' });
                                     monthLabel.style.position = 'absolute';
