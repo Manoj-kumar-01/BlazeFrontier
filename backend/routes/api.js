@@ -527,7 +527,10 @@ router.get('/profile', authMiddleware, async (req, res) => {
             canClaimDaily = true;
         } else {
             const lastClaim = new Date(user.lastLoginClaimDate);
-            if (lastClaim.toDateString() !== now.toDateString()) {
+            const isSameDayUTC = lastClaim.getUTCFullYear() === now.getUTCFullYear() &&
+                                 lastClaim.getUTCMonth() === now.getUTCMonth() &&
+                                 lastClaim.getUTCDate() === now.getUTCDate();
+            if (!isSameDayUTC) {
                 canClaimDaily = true;
             }
         }
@@ -738,7 +741,10 @@ router.post('/user/claim-bonus', authMiddleware, async (req, res) => {
             canClaimDaily = true;
         } else {
             const lastClaim = new Date(user.lastLoginClaimDate);
-            if (lastClaim.toDateString() !== now.toDateString()) {
+            const isSameDayUTC = lastClaim.getUTCFullYear() === now.getUTCFullYear() &&
+                                 lastClaim.getUTCMonth() === now.getUTCMonth() &&
+                                 lastClaim.getUTCDate() === now.getUTCDate();
+            if (!isSameDayUTC) {
                 canClaimDaily = true;
             }
         }
