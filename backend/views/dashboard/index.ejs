@@ -915,8 +915,7 @@
                         }
                     }
 
-                    // Fetch dynamic stats (GraphQL vs REST Performance Comparison)
-                    const t0_gql = performance.now();
+                    // Fetch dynamic stats
                     const graphqlQuery = {
                         query: `
                         query {
@@ -939,16 +938,6 @@
                         headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
                         body: JSON.stringify(graphqlQuery)
                     });
-                    const t1_gql = performance.now();
-                    console.log(`[GraphQL] Hub Stats retrieved in ${(t1_gql - t0_gql).toFixed(2)} ms`);
-
-                    // Compare with REST (for console logging only)
-                    const t0_rest = performance.now();
-                    fetch('/api/dashboard/stats', { headers: { 'x-auth-token': token } })
-                        .then(() => {
-                            const t1_rest = performance.now();
-                            console.log(`[REST API] Hub Stats retrieved in ${(t1_rest - t0_rest).toFixed(2)} ms`);
-                        }).catch(e => console.error(e));
 
                     if (statsRes.ok) {
                         const { data } = await statsRes.json();
