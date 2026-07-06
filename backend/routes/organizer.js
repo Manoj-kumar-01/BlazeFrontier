@@ -382,6 +382,41 @@ router.post('/tournaments/:id/award', async (req, res) => {
             }
         }
 
+        // --- Participation Rewards for All Other Approved Players ---
+        const Registration = require('../models/Registration');
+        const winnerIds = awards.map(a => a.userId.toString());
+        
+        const participants = await Registration.find({ tournamentId: tournament._id, status: 'Approved' });
+        for (const reg of participants) {
+            if (!winnerIds.includes(reg.userId.toString())) {
+                const user = await User.findById(reg.userId);
+                if (user) {
+                    user.blazeCoins = (user.blazeCoins || 0) + 10;
+                    user.blazePoints = (user.blazePoints || 0) + 10;
+                    await user.save();
+
+                    // Create a Match record to sync participation points with the Leaderboard
+                    const newMatch = new Match({
+                        tournamentId: tournament._id,
+                        matchNumber: 1,
+                        playerId: user._id,
+                        team: 'Solo',
+                        slot: 'Participated',
+                        format: 'Tournament',
+                        mode: tournament.name,
+                        kills: 0,
+                        survivalTimeMinutes: 0,
+                        placement: 4, // >3 indicates participation
+                        blazePoints: 10,
+                        isCompleted: true,
+                        status: 'COMPLETED',
+                        startTime: new Date()
+                    });
+                    await newMatch.save();
+                }
+            }
+        }
+
         tournament.status = 'ENDED';
         await tournament.save();
 
