@@ -104,7 +104,7 @@
                 </a>
                 <a href="#" id="nav-tournaments-tab" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/dashboard/tournaments' ? 'active' : '' %>" style="filter: blur(1.5px); opacity: 0.8;" onclick="event.preventDefault(); document.getElementById('tournaments-lock-modal').style.display = 'flex';">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    <span>Tournaments <span style="margin-left: 6px; filter: none; opacity: 1; display: inline-block;">🔒</span></span>
+                    <span>Leagues <span style="margin-left: 6px; filter: none; opacity: 1; display: inline-block;">🔒</span></span>
                 </a>
                 <a href="/dashboard/leaderboards" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/dashboard/leaderboards' ? 'active' : '' %>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -158,7 +158,7 @@
                     if (tTab) {
                         tTab.style.filter = 'none';
                         tTab.style.opacity = '1';
-                        tTab.innerHTML = 'Tournaments';
+                        tTab.innerHTML = 'Leagues';
                         tTab.href = '/dashboard/tournaments';
                         tTab.removeAttribute('onclick');
                     }
@@ -174,7 +174,7 @@
         <div style="position:absolute; top:-20px; right:-20px; font-size:8rem; opacity:0.05; transform:rotate(15deg);">🛡️</div>
         <div style="font-size:3.5rem; margin-bottom:16px;">🔒</div>
         <h2 style="font-family:var(--font-display); color:#fff; font-size:2rem; letter-spacing:1px; margin-bottom:12px;">ACCESS RESTRICTED</h2>
-        <p style="color:var(--text-muted); font-size:1rem; margin-bottom:30px; line-height:1.5;">You must complete the 2-Series Qualification process to become a Verified Trusted Player before unlocking ELITE Tournaments.</p>
+        <p style="color:var(--text-muted); font-size:1rem; margin-bottom:30px; line-height:1.5;">You must complete the 2-Series Qualification process to become a Verified Trusted Player before unlocking ELITE Leagues.</p>
         <button onclick="document.getElementById('tournaments-lock-modal').style.display='none'" style="background:var(--blaze-orange); color:#fff; border:none; padding:14px 28px; border-radius:8px; font-family:var(--font-display); font-size:1.1rem; letter-spacing:1px; cursor:pointer; transition:transform 0.2s;">ACKNOWLEDGE</button>
     </div>
 </div>
@@ -434,7 +434,7 @@
                         if (tTab) {
                             tTab.style.filter = 'none';
                             tTab.style.opacity = '1';
-                            tTab.innerHTML = 'Tournaments';
+                            tTab.innerHTML = 'Leagues';
                             tTab.href = '/dashboard/tournaments';
                             tTab.removeAttribute('onclick');
                         }

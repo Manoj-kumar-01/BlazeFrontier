@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>All Tournaments | Blaze Frontier</title>
+    <title>All Leagues | Blaze Frontier</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=block" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -56,16 +56,16 @@
         
         <div class="mb-8">
             <a href="/dashboard/tournaments" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-xs mb-4 inline-flex">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Back to Tournaments
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Back to Leagues
             </a>
             
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-cyber-blue">Tournament Explorer</h1>
+                <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-cyber-blue">League Explorer</h1>
                 
                 <div class="flex items-center gap-3">
                     <label for="status-filter" class="text-sm text-on-surface-variant font-medium uppercase tracking-wider">Filter by Status:</label>
                     <select id="status-filter" class="bg-[#111118] text-white border border-[#334155] rounded-md px-4 py-2 font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors cursor-pointer">
-                        <option value="all" class="bg-[#111118] text-white">All Tournaments</option>
+                        <option value="all" class="bg-[#111118] text-white">All Leagues</option>
                         <option value="live" class="bg-[#111118] text-white">Live Now</option>
                         <option value="upcoming" class="bg-[#111118] text-white">Upcoming</option>
                         <option value="completed" class="bg-[#111118] text-white">Completed</option>
@@ -79,7 +79,7 @@
                 <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="border-b border-white/10 text-on-surface-variant text-sm uppercase tracking-wider">
-                            <th class="py-3 px-2 font-normal">Tournament</th>
+                            <th class="py-3 px-2 font-normal">League</th>
                             <th class="py-3 px-2 font-normal">Status</th>
                             <th class="py-3 px-2 font-normal">Start Time</th>
                             <th class="py-3 px-2 font-normal">Prize Pool</th>
@@ -91,7 +91,7 @@
                         <tr>
                             <td colspan="6" class="text-center py-10 text-on-surface-variant">
                                 <span class="material-symbols-outlined animate-spin text-3xl">refresh</span>
-                                <p class="mt-2">Loading tournaments...</p>
+                                <p class="mt-2">Loading leagues...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -138,7 +138,7 @@
                     throw new Error('Failed to fetch');
                 }
             } catch (e) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-error">Failed to load tournaments.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-error">Failed to load leagues.</td></tr>';
             }
         }
 
@@ -157,7 +157,7 @@
             }
 
             if (list.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant">No tournaments found for this category.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant">No leagues found for this category.</td></tr>';
                 return;
             }
 

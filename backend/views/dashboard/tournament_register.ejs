@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Tournament Registration | Blaze Frontier</title>
+    <title>League Registration | Blaze Frontier</title>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=block" rel="stylesheet">
@@ -75,7 +75,7 @@
         <!-- Left Column: Tournament Info -->
         <div class="w-full md:w-5/12 flex flex-col gap-6">
             <a href="/dashboard/tournaments" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 inline-flex w-fit">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Back to Tournaments
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Back to Leagues
             </a>
             
             <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl relative h-full min-h-[400px] flex flex-col justify-end">
@@ -84,7 +84,7 @@
                 
                 <div class="relative z-10 p-8 flex flex-col gap-4">
                     <div class="inline-flex items-center gap-2 bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-md text-xs font-bold tracking-widest uppercase w-fit shadow-[0_0_10px_rgba(168,85,247,0.3)]">
-                        <span class="material-symbols-outlined text-[16px]">local_fire_department</span> Official Tournament
+                        <span class="material-symbols-outlined text-[16px]">local_fire_department</span> Official League
                     </div>
                     
                     <h1 class="font-display text-5xl text-white tracking-wide leading-tight drop-shadow-lg" id="display-t-name">Loading...</h1>
@@ -118,7 +118,7 @@
                     </div>
                     <div class="font-display text-4xl text-white tracking-wide mb-4">REGISTRATION CONFIRMED</div>
                     <div class="text-on-surface-variant text-lg max-w-md mx-auto mb-8 leading-relaxed">
-                        You are officially registered. Please monitor the tournament page for room credentials and match timings when the event begins.
+                        You are officially registered. Please monitor the league page for room credentials and match timings when the event begins.
                     </div>
                     <a href="/dashboard/tournaments" class="btn-primary px-8 py-4 rounded-xl font-bold tracking-widest uppercase flex items-center gap-2">
                         RETURN TO ARENA <span class="material-symbols-outlined">arrow_forward</span>
@@ -234,7 +234,7 @@
                             fetchAndShowParticipants(tid);
                         }
                     } else {
-                        document.getElementById('display-t-name').textContent = "Tournament Not Found";
+                        document.getElementById('display-t-name').textContent = "League Not Found";
                         submitBtn.disabled = true;
                         submitBtn.textContent = "UNAVAILABLE";
                     }

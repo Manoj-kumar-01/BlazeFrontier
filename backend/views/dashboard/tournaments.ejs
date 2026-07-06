@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Global Pro Circuit - Tournaments</title>
+    <title>Global Pro Circuit - Leagues</title>
     
     <!-- Keep existing font & stylesheet so navbar stays styled correctly -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=block" rel="stylesheet">
@@ -140,12 +140,12 @@
         
         <div class="relative z-10 text-center max-w-container-max mx-auto px-margin-mobile md:px-xl flex flex-col items-center gap-lg">
             <h1 class="font-display-lg text-display-lg bg-clip-text text-transparent bg-gradient-to-r from-primary via-[#ffb700] to-cyber-blue drop-shadow-[0_2px_10px_rgba(168,85,247,0.4)] tracking-wide" style="line-height: 1.1;">ELITE COMPETITIVE CIRCUIT</h1>
-            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Enter the arena. Compete in high-stakes tournaments against the world's best.</p>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Enter the arena. Compete in high-stakes leagues against the world's best.</p>
             
             <div class="flex flex-wrap justify-center gap-lg mt-md">
                 <div class="glass-panel px-lg py-md rounded-lg flex flex-col items-center min-w-[150px]">
                     <span class="font-headline-md text-headline-md text-primary" id="stat-live">0</span>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Active Tournaments</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Active Leagues</span>
                 </div>
                 <div class="glass-panel px-lg py-md rounded-lg flex flex-col items-center min-w-[150px]">
                     <span class="font-headline-md text-headline-md text-tertiary" id="stat-upcoming">0</span>
@@ -165,12 +165,12 @@
     </header>
 
     <main class="flex-grow max-w-container-max w-full mx-auto px-margin-mobile md:px-xl py-xl flex flex-col gap-[64px]" id="t-page">
-        <!-- Featured Tournaments -->
+        <!-- Featured Leagues -->
         <section class="flex flex-col gap-lg">
             <div class="flex items-center justify-between">
                 <h2 class="text-xl md:text-2xl font-bold font-display text-white flex items-center gap-sm whitespace-nowrap">
                     <span class="material-symbols-outlined text-primary text-[24px]">local_fire_department</span>
-                    Featured Tournaments
+                    Featured Leagues
                 </h2>
                 <a class="font-label-md text-label-md text-primary hover:text-primary-fixed transition-colors flex items-center gap-xs flex-shrink-0 whitespace-nowrap" href="/dashboard/tournaments/all">
                     View All <span class="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -201,7 +201,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-white/10 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
-                                <th class="py-sm px-xs font-normal">Tournament</th>
+                                <th class="py-sm px-xs font-normal">League</th>
                                 <th class="py-sm px-xs font-normal">Start Time</th>
                                 <th class="py-sm px-xs font-normal">Prize</th>
                                 <th class="py-sm px-xs font-normal text-right">Slots</th>
@@ -273,7 +273,7 @@
                 window.requestAnimationFrame(step);
             };
 
-            // Backgrounds for Featured Tournaments
+            // Backgrounds for Featured Leagues
             const featuredBgs = [
                 "https://lh3.googleusercontent.com/aida-public/AB6AXuA_v-Vip_ysVL2hIakmU6m4sg5MyPmJchfbNJ8uYtv4ppGxuz8tOvJ9sdl4JpAXF4To7o94Qx2NYHvzmRwaHMXqh4L53BQu9YAa2-U5INzGdyx6s-yGKtG45zs4TnvKJ6j7X0oRIzbBncZRgnD0wTX7taD4dJ2Etd3VNbl7VkKEBwUdgJPrYAaLbyKIIU96Wsp2Gxmxh-hySWVppRibtH1xnhHic-x7nsGJDDr0LgwsRzNzdc-fv8WHNA",
                 "https://lh3.googleusercontent.com/aida-public/AB6AXuCuIve0PsNoKVv6dNKORuEbmgqQA1h6fKNRVrPaapPiOJXzaisvWsjxkt1nNBJlXkFaXjmKJU14lEb_9g1dvJpmSyVaLO7_WGq-IfXeppVZ4GytjcjI6oQJGohjqAXAbGsW0l-4hZqA4lqCbXVFM2Jrdnj_p2fiTGjCGvuNwvlO5q74joD4wpWCZybkOmejcqrkBkQZHsWJ1yLvVhovZNlcWvlCuFndSjjXtdwFQXg71ISocILZaHAoDw"
@@ -305,7 +305,7 @@
                     
                     // 1. Render Featured (Top 2)
                     if (allTournaments.length === 0) {
-                        featuredGrid.innerHTML = '<div class="col-span-1 md:col-span-2 text-center text-on-surface-variant">No active tournaments currently available.</div>';
+                        featuredGrid.innerHTML = '<div class="col-span-1 md:col-span-2 text-center text-on-surface-variant">No Active Leagues currently available.</div>';
                         tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-md text-on-surface-variant">No matches scheduled.</td></tr>';
                         return;
                     }
@@ -369,8 +369,8 @@
                         }).join('');
                     }
                 } catch (e) {
-                    featuredGrid.innerHTML = '<div class="col-span-1 md:col-span-2 text-center text-error">Failed to load tournaments.</div>';
-                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-md text-error">Failed to load tournaments.</td></tr>';
+                    featuredGrid.innerHTML = '<div class="col-span-1 md:col-span-2 text-center text-error">Failed to load leagues.</div>';
+                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-md text-error">Failed to load leagues.</td></tr>';
                 }
             };
 
