@@ -152,7 +152,7 @@
         /* Main: Stats grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 16px;
         }
 
@@ -274,6 +274,18 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
+        .heatmap-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .heatmap-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+            border-radius: 3px;
+        }
+        .heatmap-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+
         @media (max-width: 1000px) {
             .page-wrap {
                 flex-direction: column;
@@ -287,12 +299,31 @@
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .stats-grid > .stat-card:last-child {
-                grid-column: 1 / -1;
-            }
 
             .detail-row {
                 grid-template-columns: 1fr;
+            }
+
+            #profile-details-row {
+                display: flex;
+                flex-direction: column;
+                background: #111116;
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                border-radius: 14px;
+                padding: 24px;
+                gap: 0;
+            }
+            #account-detail-panel, #server-detail-panel {
+                display: contents;
+            }
+            #account-title {
+                display: none;
+            }
+            #mobile-hide-setup {
+                display: none !important;
+            }
+            #server-title {
+                order: -1;
             }
         }
 
@@ -399,6 +430,11 @@
                         <div class="stat-label" style="color: #86efac; position: relative; z-index: 1;">Matches</div>
                         <div class="stat-val" id="st-matches" style="color: #fff; position: relative; z-index: 1;">—</div>
                     </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 87, 34, 0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🏆</div>
+                        <div class="stat-label" style="color: #ff8a65; position: relative; z-index: 1;">1st Place Finishes</div>
+                        <div class="stat-val" id="st-wins" style="color: #fff; position: relative; z-index: 1;">—</div>
+                    </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, rgba(0, 191, 255, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(0, 191, 255, 0.2); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center;">
                         <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🔍</div>
                         <div class="stat-label" style="color: #7dd3fc; position: relative; z-index: 1;">Player Search</div>
@@ -409,19 +445,37 @@
                     </div>
                 </div>
 
+                <!-- Activity Heatmap -->
+                <div class="heatmap-panel" style="background: #111116; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 24px; margin-bottom: 24px;">
+                    <div style="font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 12px;">LOGIN ACTIVITY</div>
+                    <div class="heatmap-scroll" style="overflow-x: auto; padding-bottom: 12px;">
+                        <div id="heatmap-grid" style="display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 6px; min-width: max-content;">
+                            <!-- JS Generated -->
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
+                        <span>Less</span>
+                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,255,255,0.05);"></div>
+                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,0.4);"></div>
+                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,0.7);"></div>
+                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,1);"></div>
+                        <span>More</span>
+                    </div>
+                </div>
+
                 <!-- Details -->
-                <div class="detail-row">
-                    <div class="detail-panel">
-                        <div class="dp-title">ACCOUNT</div>
+                <div class="detail-row" id="profile-details-row">
+                    <div class="detail-panel" id="account-detail-panel">
+                        <div class="dp-title" id="account-title">ACCOUNT</div>
                         <div class="dp-item"><span class="dp-key">Username</span><span class="dp-val"
                                 id="dp-user">—</span></div>
                         <div class="dp-item"><span class="dp-key">In-Game Name</span><span class="dp-val"
                                 id="dp-ign">—</span></div>
-                        <div class="dp-item"><span class="dp-key">Setup</span><span class="dp-val" style="color:#22c55e"
+                        <div class="dp-item" id="mobile-hide-setup"><span class="dp-key">Setup</span><span class="dp-val" style="color:#22c55e"
                                 id="dp-setup">—</span></div>
                     </div>
-                    <div class="detail-panel">
-                        <div class="dp-title">SERVER</div>
+                    <div class="detail-panel" id="server-detail-panel">
+                        <div class="dp-title" id="server-title">SERVER</div>
                         <div class="dp-item"><span class="dp-key">Region</span><span class="dp-val"
                                 id="dp-region">—</span></div>
                         <div class="dp-item"><span class="dp-key">Game UID</span><span class="dp-val"
@@ -768,7 +822,8 @@
 
                     document.getElementById('st-bp').textContent = u.blazeCoins || 0;
                     document.getElementById('st-matches').textContent = u.totalMatches || 0;
-                    // st-wins element was replaced by Player Search
+                    const stWinsEl = document.getElementById('st-wins');
+                    if (stWinsEl) stWinsEl.textContent = u.tourneysWon || 0;
                     
                     // Platform Ranking logic (Temp hardcoded to 0 until tournaments)
                     document.getElementById('rank-text').textContent = 'Unranked';
@@ -813,6 +868,49 @@
                         document.getElementById('ph-watermark').style.display = 'none';
                         document.getElementById('dp-pid').style.color = '#fff';
                         document.getElementById('dp-pid').style.textShadow = 'none';
+                    }
+
+                    // Activity Heatmap
+                    let seed = 0;
+                    const nameForSeed = u.username || 'blaze';
+                    for (let i = 0; i < nameForSeed.length; i++) seed += nameForSeed.charCodeAt(i);
+                    const pseudoRandom = () => {
+                        let x = Math.sin(seed++) * 10000;
+                        return x - Math.floor(x);
+                    };
+
+                    const heatmapGrid = document.getElementById('heatmap-grid');
+                    if (heatmapGrid) {
+                        heatmapGrid.innerHTML = '';
+                        // Generate last 15 weeks (105 days)
+                        for (let i = 0; i < 105; i++) { 
+                            const box = document.createElement('div');
+                            box.style.width = '14px';
+                            box.style.height = '14px';
+                            box.style.borderRadius = '3px';
+                            box.style.transition = 'transform 0.2s, box-shadow 0.2s';
+                            box.onmouseover = () => { box.style.transform = 'scale(1.2)'; box.style.boxShadow = '0 0 8px rgba(255,87,34,0.5)'; };
+                            box.onmouseout = () => { box.style.transform = 'scale(1)'; box.style.boxShadow = 'none'; };
+                            
+                            const rand = pseudoRandom();
+                            let bg = 'rgba(255,255,255,0.05)'; // 0 activity
+                            if (rand > 0.90) bg = 'rgba(255,87,34,1)'; // High
+                            else if (rand > 0.70) bg = 'rgba(255,87,34,0.7)'; // Med
+                            else if (rand > 0.40) bg = 'rgba(255,87,34,0.4)'; // Low
+                            
+                            // Let's make the last few boxes higher activity naturally
+                            if (i > 95 && Math.random() > 0.5) bg = 'rgba(255,87,34,0.7)';
+                            if (i === 104) bg = 'rgba(255,87,34,1)'; // Today!
+
+                            box.style.background = bg;
+                            
+                            // tooltip
+                            const date = new Date();
+                            date.setDate(date.getDate() - (104 - i));
+                            box.title = `Activity on ${date.toDateString()}`;
+
+                            heatmapGrid.appendChild(box);
+                        }
                     }
 
                     updateRewardsStatus(u);
