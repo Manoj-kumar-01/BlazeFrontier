@@ -40,6 +40,21 @@ const upload = multer({
 // Middleware to verify JWT token
 const authMiddleware = require('../middleware/auth');
 
+// @route   POST /api/heartbeat
+// @desc    Track user active time on the site
+router.post('/heartbeat', authMiddleware, async (req, res) => {
+    try {
+        const dateStr = new Date().toISOString().split('T')[0];
+        await User.findByIdAndUpdate(req.user.id, {
+            $inc: { [`activityLog.${dateStr}`]: 1 }
+        });
+        res.status(200).send();
+    } catch (err) {
+        console.error('Heartbeat Error:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
 // @route   POST /api/clips/submit
 // @desc    Submit a Top Clip (max 10s via frontend validation)
 router.post('/clips/submit', authMiddleware, upload.single('clip'), async (req, res) => {

@@ -582,3 +582,36 @@
 <script src="/public/global-matchmaking.js?v=7"></script>
 <script src="/public/custom-confirm.js"></script>
 
+<script>
+    // Global User Activity Heartbeat
+    (function() {
+        let isActive = false;
+        const markActive = () => isActive = true;
+        
+        window.addEventListener('mousemove', markActive, { once: true });
+        window.addEventListener('keydown', markActive, { once: true });
+        window.addEventListener('scroll', markActive, { once: true, capture: true });
+        window.addEventListener('touchstart', markActive, { once: true });
+
+        setInterval(async () => {
+            if (!isActive) return;
+            const token = localStorage.getItem('blaze_token');
+            if (token) {
+                try {
+                    await fetch('/api/heartbeat', {
+                        method: 'POST',
+                        headers: { 'x-auth-token': token }
+                    });
+                } catch (e) {
+                    console.error('Heartbeat failed');
+                }
+            }
+            isActive = false;
+            // Re-attach listeners for the next minute
+            window.addEventListener('mousemove', markActive, { once: true });
+            window.addEventListener('keydown', markActive, { once: true });
+            window.addEventListener('scroll', markActive, { once: true, capture: true });
+            window.addEventListener('touchstart', markActive, { once: true });
+        }, 60000); // Send heartbeat every 60 seconds if active
+    })();
+</script>

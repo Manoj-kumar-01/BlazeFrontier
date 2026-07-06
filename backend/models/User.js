@@ -105,6 +105,11 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    activityLog: {
+        type: Map,
+        of: Number,
+        default: {}
+    },
     createdAt: {
         type: Date,
         default: Date.now

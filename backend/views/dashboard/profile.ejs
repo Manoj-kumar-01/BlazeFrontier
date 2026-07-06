@@ -457,8 +457,20 @@
                 <div class="heatmap-panel" style="background: #111116; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 24px; margin-bottom: 24px;">
                     <div style="font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 12px;">LOGIN ACTIVITY</div>
                     <div class="heatmap-scroll" style="overflow-x: auto; padding-bottom: 12px;">
-                        <div id="heatmap-grid" style="display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 6px; min-width: max-content;">
-                            <!-- JS Generated -->
+                        <div id="heatmap-months" style="display: flex; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; margin-left: 30px; position: relative; height: 16px;"></div>
+                        <div style="display: flex; gap: 6px;">
+                            <div style="display: grid; grid-template-rows: repeat(7, 1fr); font-size: 0.65rem; color: var(--text-muted); align-items: center; width: 24px; text-align: right;">
+                                <div></div>
+                                <div>Mon</div>
+                                <div></div>
+                                <div>Wed</div>
+                                <div></div>
+                                <div>Fri</div>
+                                <div></div>
+                            </div>
+                            <div id="heatmap-grid" style="display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 6px; min-width: max-content;">
+                                <!-- JS Generated -->
+                            </div>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
@@ -888,14 +900,20 @@
                     };
 
                     const heatmapGrid = document.getElementById('heatmap-grid');
-                    if (heatmapGrid) {
+                    const heatmapMonths = document.getElementById('heatmap-months');
+                    if (heatmapGrid && heatmapMonths) {
                         heatmapGrid.innerHTML = '';
+                        heatmapMonths.innerHTML = '';
                         
                         const today = new Date();
                         const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
                         const numWeeks = 15; // 15 past weeks + current week
                         const totalDays = (numWeeks * 7) + (dayOfWeek + 1);
                         
+                        let currentMonth = -1;
+                        const colWidth = 20; // 14px width + 6px gap
+                        const activity = u.activityLog || {};
+
                         for (let i = 0; i < totalDays; i++) { 
                             const box = document.createElement('div');
                             box.style.width = '14px';
@@ -915,23 +933,36 @@
                                 box.style.zIndex = '1';
                             };
                             
-                            const rand = pseudoRandom();
-                            let bg = 'rgba(255,255,255,0.05)'; // 0 activity
-                            if (rand > 0.90) bg = 'rgba(255,87,34,1)'; // High
-                            else if (rand > 0.70) bg = 'rgba(255,87,34,0.7)'; // Med
-                            else if (rand > 0.40) bg = 'rgba(255,87,34,0.4)'; // Low
+                            // Get date
+                            const date = new Date();
+                            date.setDate(today.getDate() - (totalDays - 1 - i));
                             
-                            // Make recent days more active naturally
-                            if (i > totalDays - 10 && Math.random() > 0.5) bg = 'rgba(255,87,34,0.7)';
-                            if (i === totalDays - 1) bg = 'rgba(255,87,34,1)'; // Today!
+                            // Check for month change to place label
+                            if (date.getMonth() !== currentMonth) {
+                                currentMonth = date.getMonth();
+                                const colIndex = Math.floor(i / 7);
+                                const monthLabel = document.createElement('div');
+                                monthLabel.textContent = date.toLocaleString('default', { month: 'short' });
+                                monthLabel.style.position = 'absolute';
+                                monthLabel.style.left = `${colIndex * colWidth}px`;
+                                heatmapMonths.appendChild(monthLabel);
+                            }
+
+                            // Match the backend UTC date string key
+                            const dateStrKey = date.toISOString().split('T')[0];
+                            const activeMinutes = activity[dateStrKey] || 0;
+
+                            let bg = 'rgba(255,255,255,0.05)'; // 0 activity
+                            if (activeMinutes >= 30) bg = 'rgba(255,87,34,1)'; // High
+                            else if (activeMinutes >= 15) bg = 'rgba(255,87,34,0.8)'; // Med
+                            else if (activeMinutes >= 5) bg = 'rgba(255,87,34,0.6)'; // Low
+                            else if (activeMinutes > 0) bg = 'rgba(255,87,34,0.3)'; // Very low (just logged in)
 
                             box.style.background = bg;
                             
-                            // tooltip with accurate dynamic date
-                            const date = new Date();
-                            date.setDate(today.getDate() - (totalDays - 1 - i));
+                            // tooltip with accurate dynamic date and active minutes
                             const dateStr = date.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                            box.title = `Activity on ${dateStr}`;
+                            box.title = `${activeMinutes} mins on ${dateStr}`;
 
                             heatmapGrid.appendChild(box);
                         }
