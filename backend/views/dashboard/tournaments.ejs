@@ -172,12 +172,12 @@
                     <span class="material-symbols-outlined text-primary">local_fire_department</span>
                     Featured Tournaments
                 </h2>
-                <a class="font-label-md text-label-md text-primary hover:text-primary-fixed transition-colors flex items-center gap-xs" href="#">
+                <a class="font-label-md text-label-md text-primary hover:text-primary-fixed transition-colors flex items-center gap-xs" href="/dashboard/tournaments/all">
                     View All <span class="material-symbols-outlined text-[16px]">chevron_right</span>
                 </a>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter" id="featured-grid">
+            <div class="flex flex-nowrap overflow-x-auto gap-gutter pb-sm snap-x snap-mandatory custom-scrollbar" id="featured-grid">
                 <div class="w-full text-center py-xl"><div class="t-spinner"></div></div>
             </div>
         </section>
@@ -317,7 +317,7 @@
                         const statusText = t.status === 'LIVE' ? 'LIVE NOW' : 'S-Tier';
                         
                         return `
-                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[180px] flex flex-col justify-end" onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
+                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[180px] flex flex-col justify-end min-w-[300px] md:min-w-0 md:flex-1 shrink-0 snap-center" onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
                             <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('${bg}'); opacity: 0.5;"></div>
                             <div class="absolute inset-0 bg-gradient-to-t from-[#050709] to-transparent"></div>
                             
