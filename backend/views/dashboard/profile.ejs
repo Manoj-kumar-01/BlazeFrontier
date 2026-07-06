@@ -386,7 +386,7 @@
                         <div style="font-family: var(--font-display); font-size: 6.5rem; color: rgba(255, 215, 0, 0.04); font-weight: 800; letter-spacing: 10px; white-space: nowrap; user-select: none; transform: translateY(-10px);">TRUSTED</div>
                     </div>
                     <div style="position: relative; display: inline-block; padding: 10px; z-index: 1;">
-                        <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; display: block; position: relative; z-index: 1; margin: 0; background-color: #111116;" onerror="this.onerror=null; this.src='/public/blaze_avatar.png';">
+                        <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar" referrerpolicy="no-referrer" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; display: block; position: relative; z-index: 1; margin: 0; background-color: #111116;" onerror="this.onerror=null; this.src='/public/blaze_avatar.png';">
                         <button onclick="openEditProfileModal()" style="position: absolute; bottom: 6px; right: 6px; background: var(--blaze-orange); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.2s; z-index: 2;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                         </button>
@@ -419,12 +419,12 @@
                 </div>
 
                 <!-- 1st Place Finishes Box -->
-                <div class="first-place-box" style="position: relative; border: 1px solid rgba(255, 215, 0, 0.4); border-radius: 14px; padding: 24px; text-align: center; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); min-height: 180px; justify-content: center;">
+                <div class="first-place-box" style="position: relative; border: 1px solid rgba(255, 215, 0, 0.4); border-radius: 14px; padding: 24px; text-align: center; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); min-height: 260px; justify-content: center;">
                     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('/public/1st_place_bg.jpg') center/cover; opacity: 0.6; z-index: 0;"></div>
                     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(17,17,22,0.95) 0%, rgba(17,17,22,0.1) 100%); z-index: 0;"></div>
                     <div style="position: relative; z-index: 1; margin-top: auto;">
-                        <div style="font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 2px; color: #ffd700; text-transform: uppercase; text-shadow: 0 2px 6px rgba(0,0,0,0.9);">1st Place Finishes</div>
-                        <div id="st-wins" style="font-family: var(--font-display); font-size: 3.5rem; color: #fff; text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 4px 8px rgba(0,0,0,0.9); line-height: 1; margin-top: 8px;">—</div>
+                        <div style="font-family: var(--font-display); font-size: 1.3rem; letter-spacing: 2px; color: #ffd700; text-transform: uppercase; text-shadow: 0 2px 6px rgba(0,0,0,0.9);">1st Place Finishes</div>
+                        <div id="st-wins" style="font-family: var(--font-display); font-size: 4.5rem; color: #fff; text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 4px 8px rgba(0,0,0,0.9); line-height: 1; margin-top: 12px;">—</div>
                     </div>
                 </div>
             </div>
@@ -913,6 +913,7 @@
                         const totalDays = (numWeeks * 7) + (dayOfWeek + 1);
                         
                         let currentMonth = -1;
+                        let lastLabelLeft = -50; // Track position of last label to avoid clustering
                         const colWidth = 20; // 14px width + 6px gap
                         const activity = u.activityLog || {};
 
@@ -943,11 +944,17 @@
                             if (date.getMonth() !== currentMonth) {
                                 currentMonth = date.getMonth();
                                 const colIndex = Math.floor(i / 7);
-                                const monthLabel = document.createElement('div');
-                                monthLabel.textContent = date.toLocaleString('default', { month: 'short' });
-                                monthLabel.style.position = 'absolute';
-                                monthLabel.style.left = `${colIndex * colWidth}px`;
-                                heatmapMonths.appendChild(monthLabel);
+                                const currentLeft = colIndex * colWidth;
+                                
+                                // Only place a label if it's sufficiently spaced from the last one (at least 35px)
+                                if (currentLeft - lastLabelLeft >= 35) {
+                                    const monthLabel = document.createElement('div');
+                                    monthLabel.textContent = date.toLocaleString('default', { month: 'short' });
+                                    monthLabel.style.position = 'absolute';
+                                    monthLabel.style.left = `${currentLeft}px`;
+                                    heatmapMonths.appendChild(monthLabel);
+                                    lastLabelLeft = currentLeft;
+                                }
                             }
 
                             // Match the backend UTC date string key
