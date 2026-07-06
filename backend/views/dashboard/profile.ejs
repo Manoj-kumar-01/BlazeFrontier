@@ -915,7 +915,7 @@
                         
                         const today = new Date();
                         const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-                        const numWeeks = 5; // Start from June (5 weeks ago)
+                        const numWeeks = 4; // 4 past weeks + current week to stay strictly inside June
                         const totalDays = (numWeeks * 7) + (dayOfWeek + 1);
                         
                         let currentMonth = -1;
