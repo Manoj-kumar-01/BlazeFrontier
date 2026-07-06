@@ -341,34 +341,32 @@
         .skeleton-val { height: 38px; width: 60px; display: inline-block; border-radius: 6px; }
 
         @media (max-width: 1100px) {
-            .dash { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto auto; }
-            .c-welcome { grid-column: 1 / -1; }
-            .c-main { grid-column: 1 / -1; }
-            .c-sidebar { grid-column: 1 / -1; grid-row: auto; flex-direction: row; }
+            .dash { display: flex; flex-direction: column; gap: 16px; }
+            .c-welcome, .c-featured, .c-stat, .c-main, .c-sidebar { width: 100%; clip-path: none !important; }
+            .c-welcome { flex-direction: column; text-align: center; padding: 30px 20px; }
+            .c-featured { flex-direction: column; text-align: center; padding: 30px 20px; gap: 20px; }
+            .cf-action { width: fit-content; }
+            .c-sidebar { flex-direction: row; flex-wrap: wrap; }
+            .side-panel { flex: 1; min-width: 300px; }
             .grid-2 { grid-template-columns: 1fr; }
+            .c-stat { padding: 20px; flex-direction: row; justify-content: space-between; align-items: center; }
+            .cs-val { margin-left: auto; }
+            .cs-sub { display: none; }
         }
         @media (max-width: 700px) {
-            .dash { grid-template-columns: 1fr 1fr; padding: 88px 10px 10px; }
-            .c-welcome, .c-featured, .c-main, .c-sidebar { grid-column: 1 / -1; }
-            .c-stat:nth-child(3) { display: none; } /* Hide first stat to allow 2x grid */
-            
-            .c-welcome { flex-direction: column; text-align: center; padding: 24px; }
+            .dash { padding: 88px 12px 20px; gap: 12px; }
             .cw-title { font-size: 1.8rem; }
-            .cw-sub { font-size: 0.8rem; }
-            
-            .c-featured { flex-direction: column; text-align: center; padding: 20px; gap: 16px; }
-            .cf-title { font-size: 1.5rem; margin-bottom: 8px; }
-            .cf-sub { font-size: 0.8rem; margin-bottom: 0; max-width: 100%; }
-            .cf-action { width: 100%; text-align: center; font-size: 1rem; padding: 12px; }
-            
+            .cf-title { font-size: 1.5rem; }
+            .cf-action { width: 100%; text-align: center; font-size: 1.1rem; padding: 14px; }
             .c-sidebar { flex-direction: column; }
-            .cs-val { font-size: 1.8rem; }
-            
-            .qs-section { padding: 16px; }
-            .qs-header-container { grid-template-columns: 1fr; gap: 8px; text-align: center; }
-            .qs-title { justify-self: center; font-size: 1.4rem; text-align: center; }
-            .qs-subtitle { justify-self: center; text-align: center; }
-            .qs-view-all { justify-self: center; margin-top: 4px; }
+            .side-panel { min-width: 100%; }
+            .qs-section { padding: 20px 16px; }
+            .qs-header-container { grid-template-columns: 1fr; gap: 12px; text-align: center; }
+            .qs-title { justify-self: center; font-size: 1.4rem; }
+            .qs-subtitle { justify-self: center; }
+            .qs-view-all { justify-self: center; margin-top: 8px; }
+            .c-stat { flex-direction: column; align-items: center; text-align: center; }
+            .cs-val { margin-left: 0; margin-top: 8px; font-size: 2rem; }
         }
         /* ═══════ NEON BACKGROUND SYSTEM ═══════ */
         body { background-color: #08080e; margin: 0; position: relative; overflow-x: hidden; }
