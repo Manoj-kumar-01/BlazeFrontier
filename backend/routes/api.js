@@ -1682,7 +1682,7 @@ router.get('/voting-event/active', async (req, res) => {
             })
             .lean();
         
-        if (!event) return res.status(404).json({ msg: 'No active voting event' });
+        if (!event) return res.status(200).json(null);
         
         const currentDay = new Date().getDay();
         

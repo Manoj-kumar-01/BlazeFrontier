@@ -945,19 +945,22 @@
                 const clipsRes = await fetch('/api/game/freefire/clips');
                 if (clipsRes.ok) {
                     const clipsData = await clipsRes.json();
-                    const container = document.getElementById('top-clips-container');
-                    if (clipsData.length === 0) {
-                        container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">No top clips for today yet. Submit yours!</div>';
-                    } else {
-                        container.innerHTML = clipsData.map(c => `
-                            <div class="clip-item">
-                                <a href="${c.url}" target="_blank" class="ci-play" style="text-decoration:none;">▶</a>
-                                <div class="ci-info">
-                                    <div class="ci-title">${c.title}</div>
-                                    <div class="ci-author">By ${c.author}</div>
+                    const container = document.getElementById('dynamic-clips-container');
+                    const isVotingActive = document.getElementById('voting-prompt-container') && document.getElementById('voting-prompt-container').style.display === 'block';
+                    if (container && !isVotingActive) {
+                        if (clipsData.length === 0) {
+                            container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">No top clips for today yet. Submit yours!</div>';
+                        } else {
+                            container.innerHTML = clipsData.map(c => `
+                                <div class="clip-item">
+                                    <a href="${c.url}" target="_blank" class="ci-play" style="text-decoration:none;">▶</a>
+                                    <div class="ci-info">
+                                        <div class="ci-title">${c.title}</div>
+                                        <div class="ci-author">By ${c.author}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        `).join('');
+                            `).join('');
+                        }
                     }
                 }
             } catch (e) {
