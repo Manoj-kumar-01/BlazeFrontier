@@ -98,6 +98,10 @@
         </a>
         <div style="display: flex; align-items: center; gap: 20px;">
             <div class="nav-menu" id="nav-menu">
+                <div class="nav-item" style="padding: 8px 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,87,34,0.3); display: flex; align-items: center; gap: 8px; cursor: default; justify-content: space-between;">
+                    <input type="text" id="nav-search-blaze-id" placeholder="Search Blaze ID" onkeypress="if(event.key === 'Enter'){ event.preventDefault(); searchUserProfileNav(); }" style="background: transparent; border: none; color: #fff; outline: none; width: 100%; font-size: 0.9rem;">
+                    <button type="button" onclick="searchUserProfileNav()" style="background: transparent; border: none; color: var(--blaze-orange); cursor: pointer; padding: 4px;">üîç</button>
+                </div>
                 <a href="/organizer" class="nav-item <%= typeof activePage !== 'undefined' && activePage === '/organizer' ? 'active' : '' %>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
                     <span>Dashboard</span>
@@ -288,5 +292,165 @@
             mobileToggle.classList.toggle('active');
             navMenu.classList.toggle('active');
         });
+    }
+</script>
+
+<!-- View Profile Modal (Global) -->
+<div class="org-modal-overlay" id="viewProfileModal">
+    <div class="org-modal" style="max-width: 450px; padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2 style="margin: 0; font-size: 1.5rem; text-transform: uppercase;">Player Profile</h2>
+            <button onclick="closeViewProfileModal()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem;">&times;</button>
+        </div>
+        
+        <div id="search-loading" style="display: none; text-align: center; padding: 20px; color: var(--text-muted);">
+            Searching database...
+        </div>
+        
+        <div id="search-error" style="display: none; text-align: center; padding: 40px 20px; color: #ef4444; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">??</div>
+            NO PROFILE EXISTS
+        </div>
+
+        <div id="search-result" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <img id="sp-avatar" src="/public/blaze_avatar.png" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);">
+                <div>
+                    <div id="sp-name" style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1;">ó</div>
+                    <div id="sp-badge" style="font-size: 0.75rem; font-family: var(--font-mono); margin-top: 6px; padding: 2px 6px; border-radius: 4px; display: inline-block;"></div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,215,0,0.2);">
+                    <div style="font-size: 0.65rem; color: #fcd34d; text-transform: uppercase; font-weight: bold;">Blaze Coins</div>
+                    <div id="sp-bc" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                    <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Matches</div>
+                    <div id="sp-matches" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
+                </div>
+                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                    <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Wins</div>
+                    <div id="sp-wins" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted);">Username</span>
+                    <span id="sp-user" style="color: #fff; font-family: var(--font-mono);">ó</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted);">Blaze ID</span>
+                    <span id="sp-pid" style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">ó</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted);">Game UID</span>
+                    <span id="sp-uid" style="color: #fff; font-family: var(--font-mono);">ó</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted);">Region</span>
+                    <span id="sp-region" style="color: #fff; font-family: var(--font-mono);">ó</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted);">Setup Complete</span>
+                    <span id="sp-setup" style="color: #22c55e; font-family: var(--font-mono); font-weight: bold;">ó</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('viewProfileModal');
+        if(modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeViewProfileModal();
+            });
+        }
+    });
+
+    function closeViewProfileModal() {
+        const modal = document.getElementById('viewProfileModal');
+        if(modal) modal.classList.remove('active');
+    }
+
+    async function searchUserProfileNav() {
+        const pid = document.getElementById('nav-search-blaze-id').value.trim();
+        if (!pid) {
+            if(typeof showToast === 'function') {
+                showToast('Please enter a Blaze ID', 'error');
+            } else {
+                alert('Please enter a Blaze ID');
+            }
+            return;
+        }
+        
+        const modal = document.getElementById('viewProfileModal');
+        modal.classList.add('active');
+        
+        document.getElementById('search-loading').style.display = 'block';
+        document.getElementById('search-result').style.display = 'none';
+        document.getElementById('search-error').style.display = 'none';
+        
+        try {
+            const token = localStorage.getItem('blaze_token');
+            const res = await fetch(/api/player/ + pid, {
+                headers: { 'x-auth-token': token }
+            });
+            
+            if (!res.ok) {
+                document.getElementById('search-loading').style.display = 'none';
+                document.getElementById('search-error').style.display = 'block';
+                return;
+            }
+            
+            const data = await res.json();
+            document.getElementById('sp-name').textContent = data.inGameName || data.username;
+            document.getElementById('sp-avatar').src = data.profilePic || '/public/blaze_avatar.png';
+            document.getElementById('sp-bc').textContent = data.blazeCoins || 0;
+            document.getElementById('sp-matches').textContent = data.totalMatches || 0;
+            document.getElementById('sp-wins').textContent = data.tournamentsWon || 0;
+            document.getElementById('sp-user').textContent = data.username || 'ó';
+            document.getElementById('sp-pid').textContent = data.playerId;
+            document.getElementById('sp-uid').textContent = data.gameUid || 'ó';
+            document.getElementById('sp-region').textContent = data.location || 'ó';
+            
+            const setupEl = document.getElementById('sp-setup');
+            if (data.isSetupComplete) {
+                setupEl.textContent = 'COMPLETE';
+                setupEl.style.color = '#22c55e';
+            } else {
+                setupEl.textContent = 'PENDING';
+                setupEl.style.color = '#ef4444';
+            }
+            
+            const badge = document.getElementById('sp-badge');
+            if (data.role === 'organizer') {
+                badge.textContent = 'ORGANIZER';
+                badge.style.background = 'rgba(139, 92, 246, 0.2)';
+                badge.style.color = '#a78bfa';
+                badge.style.border = '1px solid rgba(139, 92, 246, 0.4)';
+            } else if (data.isGenuine) {
+                badge.textContent = 'VERIFIED PLAYER';
+                badge.style.background = 'rgba(14, 165, 233, 0.2)';
+                badge.style.color = '#38bdf8';
+                badge.style.border = '1px solid rgba(14, 165, 233, 0.4)';
+            } else {
+                badge.textContent = 'NEW PLAYER';
+                badge.style.background = 'rgba(255, 255, 255, 0.05)';
+                badge.style.color = 'var(--text-muted)';
+                badge.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+            }
+            
+            document.getElementById('search-loading').style.display = 'none';
+            document.getElementById('search-result').style.display = 'block';
+        } catch (err) {
+            console.error('Search error:', err);
+            document.getElementById('search-loading').style.display = 'none';
+            document.getElementById('search-error').style.display = 'block';
+        }
     }
 </script>
