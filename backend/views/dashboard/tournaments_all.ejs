@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>All Tournaments | Blaze Frontier</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#a855f7",
+                        "primary-container": "rgba(168, 85, 247, 0.15)",
+                        "on-primary-container": "#d8b4fe",
+                        secondary: "#3b82f6",
+                        tertiary: "#f59e0b",
+                        "cyber-blue": "#06b6d4",
+                        surface: "#111118",
+                        "surface-variant": "#1a1a24",
+                        "on-surface": "#ffffff",
+                        "on-surface-variant": "#94a3b8",
+                        outline: "#334155",
+                        "outline-variant": "#1e293b",
+                    },
+                    fontFamily: {
+                        body: ["Inter", "sans-serif"],
+                        headline: ["Inter", "sans-serif"],
+                        display: ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050709; color: #ffffff; margin: 0; padding: 0; }
+        .glass-panel { background: rgba(17, 17, 24, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .table-row-hover:hover { background-color: rgba(168, 85, 247, 0.08); }
+        .btn-primary { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); color: white; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4); }
+        select { background-color: #111118; color: white; border: 1px solid #334155; padding: 8px 12px; border-radius: 6px; outline: none; }
+        select:focus { border-color: #a855f7; }
+    </style>
+    
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-[#050709] text-on-surface antialiased min-h-screen flex flex-col">
+
+    <%- include('../partials/navbar') %>
+
+    <main class="flex-grow w-full max-w-[1500px] mx-auto px-4 md:px-8 pt-32 pb-16">
+        
+        <div class="mb-8">
+            <a href="/dashboard/tournaments" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-xs mb-4 inline-flex">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Back to Tournaments
+            </a>
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-cyber-blue">Tournament Explorer</h1>
+                
+                <div class="flex items-center gap-3">
+                    <label for="status-filter" class="text-sm text-on-surface-variant font-medium uppercase tracking-wider">Filter by Status:</label>
+                    <select id="status-filter" class="font-medium">
+                        <option value="all">All Tournaments</option>
+                        <option value="live">Live Now</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <section class="glass-panel rounded-xl p-4 md:p-8">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+                    <thead>
+                        <tr class="border-b border-white/10 text-on-surface-variant text-sm uppercase tracking-wider">
+                            <th class="py-3 px-2 font-normal">Tournament</th>
+                            <th class="py-3 px-2 font-normal">Status</th>
+                            <th class="py-3 px-2 font-normal">Start Time</th>
+                            <th class="py-3 px-2 font-normal">Prize Pool</th>
+                            <th class="py-3 px-2 font-normal text-right">Registered</th>
+                            <th class="py-3 px-2 font-normal text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tournament-table-body">
+                        <tr>
+                            <td colspan="6" class="text-center py-10 text-on-surface-variant">
+                                <span class="material-symbols-outlined animate-spin text-3xl">refresh</span>
+                                <p class="mt-2">Loading tournaments...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Participants Modal (Reused) -->
+    <div id="participants-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 justify-center items-center p-4">
+        <div class="bg-[#111118] border border-[#A855F7]/30 rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col p-8 relative shadow-2xl">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors cursor-pointer" onclick="document.getElementById('participants-modal').classList.add('hidden')">
+                <span class="material-symbols-outlined text-[28px]">close</span>
+            </button>
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">groups</span>
+                Registered Participants
+            </h2>
+            <div class="overflow-y-auto flex-1 pr-2 custom-scrollbar">
+                <ul id="modal-participants-list" class="flex flex-col gap-3"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('blaze_token');
+        if (!token) window.location.href = '/auth';
+
+        let allData = { live: [], upcoming: [], completed: [] };
+        
+        const tableBody = document.getElementById('tournament-table-body');
+        const statusFilter = document.getElementById('status-filter');
+
+        async function loadTournaments() {
+            try {
+                const res = await fetch('/api/tournaments?game=freefire', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (res.ok) {
+                    allData = await res.json();
+                    renderTable();
+                } else {
+                    throw new Error('Failed to fetch');
+                }
+            } catch (e) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-error">Failed to load tournaments.</td></tr>';
+            }
+        }
+
+        function renderTable() {
+            const filter = statusFilter.value;
+            let list = [];
+            
+            if (filter === 'all' || filter === 'live') {
+                list = list.concat(allData.live.map(t => ({ ...t, status: 'LIVE' })));
+            }
+            if (filter === 'all' || filter === 'upcoming') {
+                list = list.concat(allData.upcoming.map(t => ({ ...t, status: 'UPCOMING' })));
+            }
+            if (filter === 'all' || filter === 'completed') {
+                list = list.concat(allData.completed.map(t => ({ ...t, status: 'COMPLETED' })));
+            }
+
+            if (list.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant">No tournaments found for this category.</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = list.map(t => {
+                let badgeColor = 'border-cyber-blue text-cyber-blue';
+                if (t.status === 'LIVE') badgeColor = 'border-[#ef4444] text-[#ef4444] bg-[#ef4444]/10';
+                if (t.status === 'COMPLETED') badgeColor = 'border-outline text-on-surface-variant bg-surface-variant';
+                
+                let actionBtn = '';
+                if (t.status === 'COMPLETED') {
+                    actionBtn = `<span class="text-on-surface-variant text-sm">Ended</span>`;
+                } else if (t.participantListPublished) {
+                    actionBtn = `<button class="btn-primary px-3 py-1.5 text-xs rounded-md shadow-[0_0_10px_rgba(168,85,247,0.4)]" onclick="event.stopPropagation(); viewParticipants('${t._id}')">View Roster</button>`;
+                } else {
+                    actionBtn = `<span class="text-tertiary text-sm">Registering</span>`;
+                }
+
+                return `
+                <tr class="border-b border-white/5 table-row-hover cursor-pointer transition-colors" onclick="if('${t.status}' !== 'COMPLETED') window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
+                    <td class="py-4 px-2 text-white font-medium">${t.name}</td>
+                    <td class="py-4 px-2">
+                        <span class="inline-block px-2 py-0.5 rounded border text-xs font-semibold ${badgeColor}">${t.status}</span>
+                    </td>
+                    <td class="py-4 px-2 text-on-surface-variant">${t.date || 'TBA'}</td>
+                    <td class="py-4 px-2 text-tertiary">${t.prize || '—'}</td>
+                    <td class="py-4 px-2 text-right">
+                        <span class="inline-block px-2 py-1 rounded bg-[#111118] border border-outline text-xs">${t.participants || '—'}</span>
+                    </td>
+                    <td class="py-4 px-2 text-right">${actionBtn}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function viewParticipants(tid) {
+            try {
+                const res = await fetch(`/api/tournaments/${tid}/participants`, { headers: { 'x-auth-token': token } });
+                const data = await res.json();
+                const listEl = document.getElementById('modal-participants-list');
+                
+                if (res.ok && data.participants && data.participants.length > 0) {
+                    listEl.innerHTML = data.participants.map(p => `
+                        <li class="p-3 bg-surface rounded border border-white/5 flex items-center justify-between">
+                            <span class="text-white font-medium">${p.inGameName}</span>
+                            <span class="text-xs text-on-surface-variant font-mono bg-[#050709] px-2 py-1 rounded">UID: ${p.gameUid}</span>
+                        </li>
+                    `).join('');
+                } else {
+                    listEl.innerHTML = '<li class="text-on-surface-variant text-center py-4">No participants found or list is not public yet.</li>';
+                }
+                document.getElementById('participants-modal').classList.remove('hidden');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        statusFilter.addEventListener('change', renderTable);
+        loadTournaments();
+    </script>
+</body>
+</html>

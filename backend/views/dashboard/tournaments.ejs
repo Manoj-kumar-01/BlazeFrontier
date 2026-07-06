@@ -139,7 +139,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-[#050709] via-transparent to-[#050709]/50"></div>
         
         <div class="relative z-10 text-center max-w-container-max mx-auto px-margin-mobile md:px-xl flex flex-col items-center gap-lg">
-            <h1 class="font-display-lg text-display-lg text-white drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]">BLAZE FRONTIER ARENA</h1>
+            <h1 class="font-display-lg text-display-lg bg-clip-text text-transparent bg-gradient-to-r from-primary via-[#ffb700] to-cyber-blue drop-shadow-[0_2px_10px_rgba(168,85,247,0.4)] tracking-wide" style="line-height: 1.1;">ELITE COMPETITIVE CIRCUIT</h1>
             <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Enter the arena. Compete in high-stakes tournaments against the world's best.</p>
             
             <div class="flex flex-wrap justify-center gap-lg mt-md">
@@ -192,6 +192,9 @@
                         <span class="material-symbols-outlined text-cyber-blue">calendar_month</span>
                         Upcoming Matches
                     </h2>
+                    <a href="/dashboard/tournaments/all" class="text-cyber-blue hover:text-white font-label-md text-label-md transition-colors flex items-center gap-xs">
+                        View All <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </a>
                 </div>
                 
                 <div class="overflow-x-auto">
@@ -314,7 +317,7 @@
                         const statusText = t.status === 'LIVE' ? 'LIVE NOW' : 'S-Tier';
                         
                         return `
-                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[300px] flex flex-col justify-end" onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
+                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[180px] flex flex-col justify-end" onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
                             <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('${bg}'); opacity: 0.5;"></div>
                             <div class="absolute inset-0 bg-gradient-to-t from-[#050709] to-transparent"></div>
                             
