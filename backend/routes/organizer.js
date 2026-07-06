@@ -738,9 +738,23 @@ router.get('/slot-report', async (req, res) => {
         }
 
         for (const dateStr of dates) {
-            const regs = await Registration.find({ startDate: dateStr, status: { $in: ['Pending', 'Approved'] } });
+            const regs = await Registration.find({ startDate: dateStr, status: { $in: ['Pending', 'Approved'] } })
+                .populate('userId', 'username inGameName playerId email')
+                .lean();
             const uniqueSlots = new Set(regs.map(r => r.timeSlot).filter(Boolean));
-            result.push({ date: dateStr, count: uniqueSlots.size });
+            result.push({ 
+                date: dateStr, 
+                count: uniqueSlots.size,
+                details: regs.map(r => ({
+                    timeSlot: r.timeSlot,
+                    mode: r.mode,
+                    format: r.format,
+                    status: r.status,
+                    playerName: r.userId ? (r.userId.inGameName || r.userId.username) : 'Unknown',
+                    playerId: r.userId ? r.userId.playerId : 'N/A',
+                    discord: r.discord
+                }))
+            });
         }
 
         res.json(result);
