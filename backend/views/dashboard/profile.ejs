@@ -152,7 +152,7 @@
         /* Main: Stats grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
 
@@ -299,6 +299,9 @@
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            .stats-grid > .stat-card:last-child {
+                grid-column: 1 / -1;
+            }
 
             .detail-row {
                 grid-template-columns: 1fr;
@@ -414,6 +417,16 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 1st Place Finishes Box -->
+                <div class="first-place-box" style="position: relative; background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border: 1px solid rgba(255, 87, 34, 0.2); border-radius: 14px; padding: 24px; text-align: center; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('/public/blaze_arena_bg.png') center/cover; opacity: 0.1; z-index: 0; mix-blend-mode: luminosity;"></div>
+                    <div style="position: relative; z-index: 1;">
+                        <div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,138,101,0.5)); margin-bottom: 8px;">🏆</div>
+                        <div style="font-family: var(--font-display); font-size: 1rem; letter-spacing: 2px; color: #ff8a65; text-transform: uppercase;">1st Place Finishes</div>
+                        <div id="st-wins" style="font-family: var(--font-display); font-size: 3rem; color: #fff; text-shadow: 0 0 15px rgba(255,87,34,0.6); line-height: 1; margin-top: 8px;">—</div>
+                    </div>
+                </div>
             </div>
 
             <!-- MAIN CONTENT -->
@@ -429,11 +442,6 @@
                         <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🎮</div>
                         <div class="stat-label" style="color: #86efac; position: relative; z-index: 1;">Matches</div>
                         <div class="stat-val" id="st-matches" style="color: #fff; position: relative; z-index: 1;">—</div>
-                    </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(255, 87, 34, 0.2); position: relative; overflow: hidden;">
-                        <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🏆</div>
-                        <div class="stat-label" style="color: #ff8a65; position: relative; z-index: 1;">1st Place Finishes</div>
-                        <div class="stat-val" id="st-wins" style="color: #fff; position: relative; z-index: 1;">—</div>
                     </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, rgba(0, 191, 255, 0.1) 0%, rgba(17, 17, 22, 1) 100%); border-color: rgba(0, 191, 255, 0.2); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center;">
                         <div style="position: absolute; right: -15px; bottom: -15px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);">🔍</div>
