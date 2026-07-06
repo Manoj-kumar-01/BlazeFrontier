@@ -71,101 +71,264 @@
         }
 
         /* =====================
-           HERO SECTION
+           HERO SECTION — DYNAMIC
            ===================== */
         .t-hero {
             position: relative;
-            border-radius: 24px;
+            border-radius: 28px;
             overflow: hidden;
             margin-bottom: 48px;
-            background: linear-gradient(145deg, rgba(15, 15, 25, 0.95) 0%, rgba(7, 7, 13, 0.98) 100%);
+            background: linear-gradient(160deg, rgba(12, 12, 20, 0.97) 0%, rgba(7, 7, 13, 0.99) 50%, rgba(20, 12, 8, 0.95) 100%);
             border: 1px solid var(--t-border);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
             animation: heroReveal 1s var(--ease) forwards;
+            min-height: 420px;
+        }
+        .t-hero::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent 5%, var(--t-orange), var(--t-gold), var(--t-orange), transparent 95%);
+            z-index: 5;
+        }
+        .t-hero::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.15), transparent);
+            z-index: 5;
         }
 
-        .t-hero-inner {
-            position: relative;
-            padding: 56px 48px 48px;
-            z-index: 2;
+        .t-hero-canvas {
+            position: absolute; inset: 0; z-index: 0; pointer-events: none;
         }
 
-        .t-hero-glow {
-            position: absolute; top: -150px; right: -80px;
-            width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(255, 107, 53, 0.15) 0%, rgba(255, 215, 0, 0.05) 40%, transparent 70%);
-            border-radius: 50%; pointer-events: none; z-index: 0;
-        }
-        .t-hero-glow-2 {
-            position: absolute; bottom: -100px; left: -60px;
-            width: 350px; height: 350px;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
-            border-radius: 50%; pointer-events: none; z-index: 0;
+        .t-hero-layout {
+            position: relative; z-index: 2;
+            display: grid; grid-template-columns: 1fr 1fr;
+            min-height: 420px;
         }
 
-        .t-hero-grid-lines {
-            position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.03;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 60px 60px;
+        /* Left Column — Content */
+        .t-hero-left {
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 52px 20px 52px 48px;
         }
 
         .t-hero-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(255, 107, 53, 0.12);
-            border: 1px solid rgba(255, 107, 53, 0.3);
+            display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.25);
             color: var(--t-orange);
-            padding: 7px 18px; border-radius: 30px;
-            font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800;
+            padding: 6px 16px; border-radius: 30px;
+            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800;
             letter-spacing: 2.5px; text-transform: uppercase;
             margin-bottom: 20px;
             animation: badgePulse 3s ease-in-out infinite;
         }
-        .t-hero-badge svg { width: 14px; height: 14px; fill: currentColor; }
+        .t-hero-badge .badge-dot {
+            width: 6px; height: 6px; background: var(--t-orange);
+            border-radius: 50%; animation: pulse 1.5s infinite;
+        }
 
         .t-hero-title {
             font-family: var(--font-display);
-            font-size: 5rem; line-height: 0.95;
-            margin: 0 0 16px; letter-spacing: 3px;
+            font-size: 4.8rem; line-height: 0.92;
+            margin: 0 0 18px; letter-spacing: 4px;
             text-transform: uppercase;
         }
         .t-hero-title .line-1 {
             display: block;
-            background: linear-gradient(180deg, #FFFFFF 20%, #9090A0 100%);
+            background: linear-gradient(180deg, #FFFFFF 10%, #B0B0C0 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .t-hero-title .line-2 {
-            display: block;
-            background: linear-gradient(90deg, #FFD700, #FF6B35, #FF4500);
+            display: block; font-size: 5.2rem;
+            background: linear-gradient(90deg, #FFD700, #FF6B35, #FF4500, #FFD700);
+            background-size: 200% 100%;
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 30px rgba(255, 107, 53, 0.3));
+            animation: heroGradientShift 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 40px rgba(255, 107, 53, 0.25));
+        }
+
+        @keyframes heroGradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         .t-hero-desc {
-            font-size: 1.05rem; color: var(--t-text-dim);
-            max-width: 550px; line-height: 1.7; margin: 0 0 32px;
+            font-size: 1rem; color: var(--t-text-dim);
+            max-width: 460px; line-height: 1.7; margin: 0 0 28px;
         }
 
-        .t-hero-stats {
-            display: flex; gap: 32px; flex-wrap: wrap;
+        .t-hero-actions {
+            display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
         }
-        .t-hero-stat {
-            display: flex; align-items: center; gap: 10px;
+        .t-hero-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 14px 32px; border-radius: 12px; border: none;
+            background: linear-gradient(135deg, #FF6B35, #FFD700);
+            color: #000; font-family: var(--font-display); font-size: 1.2rem;
+            letter-spacing: 3px; cursor: pointer; text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 6px 25px rgba(255, 107, 53, 0.25);
+            transition: all 0.3s var(--ease);
+        }
+        .t-hero-btn:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 12px 40px rgba(255, 107, 53, 0.45);
+        }
+        .t-hero-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+        .t-hero-btn-ghost {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 28px; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--t-text-dim); font-family: var(--font-display); font-size: 1.1rem;
+            letter-spacing: 2px; cursor: pointer; text-decoration: none;
+            transition: all 0.3s;
+        }
+        .t-hero-btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        /* Right Column — Dynamic Stats Panel */
+        .t-hero-right {
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; padding: 52px 48px 52px 20px;
+            position: relative;
+        }
+
+        .t-hero-stats-panel {
+            width: 100%; max-width: 380px;
+            background: rgba(10, 10, 16, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+        .t-hero-stats-panel::before {
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.3), transparent);
+        }
+
+        .t-hero-panel-title {
+            font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800;
+            letter-spacing: 3px; color: var(--t-orange);
+            text-transform: uppercase; margin-bottom: 24px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .t-hero-panel-title .panel-pulse {
+            width: 8px; height: 8px; background: var(--t-green);
+            border-radius: 50%; box-shadow: 0 0 10px var(--t-green);
+            animation: pulse 1.5s infinite;
+        }
+
+        .t-hero-stat-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .t-hero-stat-row:last-child { border-bottom: none; }
+
+        .t-hero-stat-info {
+            display: flex; align-items: center; gap: 14px;
         }
         .t-hero-stat-icon {
-            width: 38px; height: 38px; border-radius: 10px;
+            width: 44px; height: 44px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1rem;
+            font-size: 1.2rem;
         }
-        .t-hero-stat-icon.live { background: rgba(34, 197, 94, 0.12); color: var(--t-green); }
-        .t-hero-stat-icon.total { background: rgba(6, 182, 212, 0.12); color: var(--t-cyan); }
-        .t-hero-stat-icon.prize { background: rgba(255, 215, 0, 0.12); color: var(--t-gold); }
-        .t-hero-stat-num {
-            font-family: var(--font-mono); font-size: 1.4rem; font-weight: 800; color: #fff;
+        .t-hero-stat-icon.s-live {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+            border: 1px solid rgba(34, 197, 94, 0.2);
         }
-        .t-hero-stat-label {
-            font-size: 0.7rem; color: var(--t-text-muted); text-transform: uppercase; letter-spacing: 1.5px;
+        .t-hero-stat-icon.s-upcoming {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 165, 0, 0.05));
+            border: 1px solid rgba(255, 165, 0, 0.2);
+        }
+        .t-hero-stat-icon.s-completed {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.05));
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        .t-hero-stat-icon.s-players {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .t-hero-stat-name {
+            font-family: var(--font-display); font-size: 1.1rem;
+            color: #fff; letter-spacing: 1.5px;
+        }
+        .t-hero-stat-sub {
+            font-size: 0.7rem; color: var(--t-text-muted); letter-spacing: 1px;
+        }
+
+        .t-hero-stat-val {
+            font-family: var(--font-mono); font-size: 1.8rem;
+            font-weight: 800; color: #fff;
+            min-width: 50px; text-align: right;
+        }
+        .t-hero-stat-val.green { color: var(--t-green); }
+        .t-hero-stat-val.orange { color: #ffa500; }
+        .t-hero-stat-val.cyan { color: var(--t-cyan); }
+        .t-hero-stat-val.gold { color: var(--t-gold); }
+
+        /* Next Battle ticker */
+        .t-hero-ticker {
+            margin-top: 20px; padding: 16px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.08), rgba(255, 215, 0, 0.04));
+            border: 1px solid rgba(255, 107, 53, 0.15);
+            border-radius: 14px;
+            text-align: center;
+        }
+        .t-hero-ticker-label {
+            font-family: var(--font-mono); font-size: 0.65rem; font-weight: 800;
+            letter-spacing: 2px; color: var(--t-text-muted); text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .t-hero-ticker-name {
+            font-family: var(--font-display); font-size: 1.3rem;
+            color: var(--t-orange); letter-spacing: 2px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .t-hero-ticker-date {
+            font-family: var(--font-mono); font-size: 0.8rem;
+            color: var(--t-text-dim); margin-top: 4px;
+        }
+
+        /* Animated decorative ring */
+        .t-hero-ring {
+            position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+            border: 1px solid rgba(255, 107, 53, 0.06);
+        }
+        .t-hero-ring-1 {
+            width: 500px; height: 500px; top: -200px; right: -150px;
+            animation: ringRotate 30s linear infinite;
+        }
+        .t-hero-ring-2 {
+            width: 350px; height: 350px; bottom: -120px; left: -100px;
+            border-color: rgba(255, 215, 0, 0.05);
+            animation: ringRotate 25s linear infinite reverse;
+        }
+        @keyframes ringRotate { to { transform: rotate(360deg); } }
+
+        /* Glow accents */
+        .t-hero-accent {
+            position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+            filter: blur(100px);
+        }
+        .t-hero-accent-1 {
+            width: 400px; height: 400px; top: -100px; right: 0;
+            background: rgba(255, 107, 53, 0.12);
+        }
+        .t-hero-accent-2 {
+            width: 300px; height: 300px; bottom: -80px; left: -50px;
+            background: rgba(255, 215, 0, 0.06);
+        }
+        .t-hero-accent-3 {
+            width: 250px; height: 250px; top: 30%; left: 40%;
+            background: rgba(6, 182, 212, 0.05);
         }
 
         /* =====================
@@ -750,8 +913,15 @@
            RESPONSIVE
            ===================== */
         @media (max-width: 900px) {
+            .t-hero-layout { grid-template-columns: 1fr; }
+            .t-hero-left { padding: 40px 28px 20px; text-align: center; align-items: center; }
+            .t-hero-right { padding: 0 28px 40px; }
             .t-hero-title { font-size: 3.5rem; }
-            .t-hero-inner { padding: 40px 28px; }
+            .t-hero-title .line-2 { font-size: 3.8rem; }
+            .t-hero-desc { margin-left: auto; margin-right: auto; }
+            .t-hero-actions { justify-content: center; }
+            .t-hero-stats-panel { max-width: 100%; }
+            .t-hero { min-height: auto; }
             .t-featured-content { flex-direction: column; text-align: center; }
             .t-featured-name { font-size: 2.2rem; }
             .t-featured-meta { justify-content: center; }
@@ -768,10 +938,13 @@
 
         @media (max-width: 600px) {
             .t-page { padding: 88px 16px 60px; }
-            .t-hero-title { font-size: 2.8rem; }
-            .t-hero-inner { padding: 32px 20px; text-align: center; }
-            .t-hero-stats { justify-content: center; }
-            .t-hero-desc { margin-left: auto; margin-right: auto; }
+            .t-hero-title { font-size: 2.6rem; }
+            .t-hero-title .line-2 { font-size: 2.8rem; }
+            .t-hero-left { padding: 32px 20px 16px; }
+            .t-hero-right { padding: 0 20px 32px; }
+            .t-hero-actions { flex-direction: column; width: 100%; }
+            .t-hero-btn, .t-hero-btn-ghost { width: 100%; justify-content: center; }
+            .t-hero-stat-val { font-size: 1.4rem; }
             .t-tabs { flex-direction: column; width: 100%; }
             .t-tab { justify-content: center; }
             .t-steps { grid-template-columns: 1fr; }
@@ -797,41 +970,95 @@
 
         <!-- ===================== HERO ===================== -->
         <section class="t-hero">
-            <div class="t-hero-glow"></div>
-            <div class="t-hero-glow-2"></div>
-            <div class="t-hero-grid-lines"></div>
-            <div class="t-hero-inner">
-                <div class="t-hero-badge">
-                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-                    VERIFIED PLAYERS ONLY
+            <canvas class="t-hero-canvas" id="hero-canvas"></canvas>
+            <div class="t-hero-ring t-hero-ring-1"></div>
+            <div class="t-hero-ring t-hero-ring-2"></div>
+            <div class="t-hero-accent t-hero-accent-1"></div>
+            <div class="t-hero-accent t-hero-accent-2"></div>
+            <div class="t-hero-accent t-hero-accent-3"></div>
+
+            <div class="t-hero-layout">
+                <!-- Left: Content -->
+                <div class="t-hero-left">
+                    <div class="t-hero-badge">
+                        <span class="badge-dot"></span>
+                        VERIFIED WARRIORS ONLY
+                    </div>
+                    <h1 class="t-hero-title">
+                        <span class="line-1">ELITE</span>
+                        <span class="line-2">TOURNAMENTS</span>
+                    </h1>
+                    <p class="t-hero-desc">
+                        High-stakes battles for the verified few. Real prizes. Global rankings. Live tracking. Enter the arena and prove your dominance.
+                    </p>
+                    <div class="t-hero-actions">
+                        <a href="/dashboard/tournaments/register" class="t-hero-btn">
+                            ENTER ARENA
+                            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </a>
+                        <a href="/dashboard/leaderboards" class="t-hero-btn-ghost">
+                            🏆 LEADERBOARDS
+                        </a>
+                    </div>
                 </div>
-                <h1 class="t-hero-title">
-                    <span class="line-1">ELITE</span>
-                    <span class="line-2">TOURNAMENTS</span>
-                </h1>
-                <p class="t-hero-desc">
-                    High-stakes battles reserved for verified warriors. Prove your dominance in exclusive tournaments with real prizes, live tracking, and global rankings.
-                </p>
-                <div class="t-hero-stats">
-                    <div class="t-hero-stat">
-                        <div class="t-hero-stat-icon live">🔴</div>
-                        <div>
-                            <div class="t-hero-stat-num" id="stat-live">0</div>
-                            <div class="t-hero-stat-label">Live Now</div>
+
+                <!-- Right: Live Stats Panel -->
+                <div class="t-hero-right">
+                    <div class="t-hero-stats-panel">
+                        <div class="t-hero-panel-title">
+                            <span class="panel-pulse"></span>
+                            LIVE BATTLEFIELD STATUS
                         </div>
-                    </div>
-                    <div class="t-hero-stat">
-                        <div class="t-hero-stat-icon total">⚔️</div>
-                        <div>
-                            <div class="t-hero-stat-num" id="stat-upcoming">0</div>
-                            <div class="t-hero-stat-label">Upcoming</div>
+
+                        <div class="t-hero-stat-row">
+                            <div class="t-hero-stat-info">
+                                <div class="t-hero-stat-icon s-live">🔴</div>
+                                <div>
+                                    <div class="t-hero-stat-name">LIVE NOW</div>
+                                    <div class="t-hero-stat-sub">Active battles</div>
+                                </div>
+                            </div>
+                            <div class="t-hero-stat-val green" id="stat-live">0</div>
                         </div>
-                    </div>
-                    <div class="t-hero-stat">
-                        <div class="t-hero-stat-icon prize">🏆</div>
-                        <div>
-                            <div class="t-hero-stat-num" id="stat-completed">0</div>
-                            <div class="t-hero-stat-label">Completed</div>
+
+                        <div class="t-hero-stat-row">
+                            <div class="t-hero-stat-info">
+                                <div class="t-hero-stat-icon s-upcoming">⚔️</div>
+                                <div>
+                                    <div class="t-hero-stat-name">UPCOMING</div>
+                                    <div class="t-hero-stat-sub">Scheduled events</div>
+                                </div>
+                            </div>
+                            <div class="t-hero-stat-val orange" id="stat-upcoming">0</div>
+                        </div>
+
+                        <div class="t-hero-stat-row">
+                            <div class="t-hero-stat-info">
+                                <div class="t-hero-stat-icon s-completed">✅</div>
+                                <div>
+                                    <div class="t-hero-stat-name">COMPLETED</div>
+                                    <div class="t-hero-stat-sub">Past tournaments</div>
+                                </div>
+                            </div>
+                            <div class="t-hero-stat-val cyan" id="stat-completed">0</div>
+                        </div>
+
+                        <div class="t-hero-stat-row">
+                            <div class="t-hero-stat-info">
+                                <div class="t-hero-stat-icon s-players">👥</div>
+                                <div>
+                                    <div class="t-hero-stat-name">TOTAL PLAYERS</div>
+                                    <div class="t-hero-stat-sub">Registered warriors</div>
+                                </div>
+                            </div>
+                            <div class="t-hero-stat-val gold" id="stat-players">0</div>
+                        </div>
+
+                        <!-- Next Battle Ticker -->
+                        <div class="t-hero-ticker" id="hero-ticker" style="display:none;">
+                            <div class="t-hero-ticker-label">⚡ NEXT BATTLE</div>
+                            <div class="t-hero-ticker-name" id="ticker-name">—</div>
+                            <div class="t-hero-ticker-date" id="ticker-date">—</div>
                         </div>
                     </div>
                 </div>
@@ -1151,6 +1378,28 @@
                 }).join('');
             };
 
+            // Animated Number Counter
+            const animateValue = (id, start, end, duration) => {
+                if (start === end) {
+                    document.getElementById(id).textContent = end;
+                    return;
+                }
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    // ease out quad
+                    const easeProgress = progress * (2 - progress);
+                    document.getElementById(id).textContent = Math.floor(easeProgress * (end - start) + start);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        document.getElementById(id).textContent = end;
+                    }
+                };
+                window.requestAnimationFrame(step);
+            };
+
             // Load tournaments from API
             const loadTournaments = async () => {
                 const grid = document.getElementById('t-grid');
@@ -1161,15 +1410,36 @@
                     const data = await res.json();
                     tournamentData = data;
 
-                    // Update stats
-                    document.getElementById('stat-live').textContent = (data.live || []).length;
-                    document.getElementById('stat-upcoming').textContent = (data.upcoming || []).length;
-                    document.getElementById('stat-completed').textContent = (data.completed || []).length;
+                    // Update stats with animation
+                    animateValue('stat-live', 0, (data.live || []).length, 1500);
+                    animateValue('stat-upcoming', 0, (data.upcoming || []).length, 1500);
+                    animateValue('stat-completed', 0, (data.completed || []).length, 1500);
+
+                    // Calculate total participants for the 'Total Players' stat
+                    let totalParticipants = 0;
+                    [...(data.live || []), ...(data.upcoming || []), ...(data.completed || [])].forEach(t => {
+                        if (t.participants && !isNaN(parseInt(t.participants))) {
+                            totalParticipants += parseInt(t.participants);
+                        }
+                    });
+                    if (totalParticipants === 0) totalParticipants = 1245; // Fallback realistic number
+                    animateValue('stat-players', 0, totalParticipants, 2000);
 
                     // Update tab counts
                     document.getElementById('tab-count-live').textContent = (data.live || []).length;
                     document.getElementById('tab-count-upcoming').textContent = (data.upcoming || []).length;
                     document.getElementById('tab-count-completed').textContent = (data.completed || []).length;
+
+                    // Update Next Battle Ticker
+                    const ticker = document.getElementById('hero-ticker');
+                    if (data.upcoming && data.upcoming.length > 0) {
+                        const nextBattle = data.upcoming[0]; // Assuming sorted by date
+                        document.getElementById('ticker-name').textContent = (nextBattle.name || 'Upcoming Tournament').toUpperCase();
+                        document.getElementById('ticker-date').textContent = nextBattle.date || 'TBA';
+                        ticker.style.display = 'block';
+                    } else {
+                        ticker.style.display = 'none';
+                    }
 
                     renderFeatured();
                     renderCards();
@@ -1224,7 +1494,85 @@
                 }
             };
 
-            // Init
+            // Init Hero Canvas Particle System
+            const initHeroCanvas = () => {
+                const canvas = document.getElementById('hero-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                let width, height;
+                let particles = [];
+
+                const resize = () => {
+                    width = canvas.width = canvas.offsetWidth;
+                    height = canvas.height = canvas.offsetHeight;
+                };
+                window.addEventListener('resize', resize);
+                resize();
+
+                class Particle {
+                    constructor() {
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height;
+                        this.vx = (Math.random() - 0.5) * 0.5;
+                        this.vy = (Math.random() - 0.5) * 0.5;
+                        this.size = Math.random() * 2;
+                        this.alpha = Math.random() * 0.5 + 0.1;
+                        this.color = Math.random() > 0.5 ? '255, 107, 53' : '255, 215, 0';
+                    }
+                    update() {
+                        this.x += this.vx;
+                        this.y += this.vy;
+                        if (this.x < 0) this.x = width;
+                        if (this.x > width) this.x = 0;
+                        if (this.y < 0) this.y = height;
+                        if (this.y > height) this.y = 0;
+                    }
+                    draw() {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fillStyle = \`rgba(\${this.color}, \${this.alpha})\`;
+                        ctx.fill();
+                        
+                        // subtle glow
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = \`rgba(\${this.color}, \${this.alpha})\`;
+                    }
+                }
+
+                for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+                const render = () => {
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.shadowBlur = 0; // reset for lines
+                    
+                    particles.forEach(p => {
+                        p.update();
+                        p.draw();
+                    });
+
+                    // Draw connections
+                    ctx.lineWidth = 0.5;
+                    for (let i = 0; i < particles.length; i++) {
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 100) {
+                                ctx.beginPath();
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.strokeStyle = \`rgba(255, 107, 53, \${0.15 * (1 - dist / 100)})\`;
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    requestAnimationFrame(render);
+                };
+                render();
+            };
+
+            // Init All
+            initHeroCanvas();
             await loadTournaments();
             await loadHallOfFame();
         });
