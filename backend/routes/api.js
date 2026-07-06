@@ -1058,6 +1058,7 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
                 participants: t.participants,
                 registeredCount: registeredCount,
                 date: t.date,
+                registrationEndTime: t.registrationEndTime,
                 _id: t._id,
                 prize: t.prize,
                 canRegister: t.status === 'UPCOMING' && !isRegistered,

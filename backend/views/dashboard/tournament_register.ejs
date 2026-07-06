@@ -205,6 +205,34 @@
                     if (t) {
                         document.getElementById('display-t-name').textContent = t.name;
                         document.getElementById('display-t-date').textContent = t.date;
+
+                        // Check if registration ended
+                        if (t.registrationEndTime && new Date(t.registrationEndTime) < new Date()) {
+                            document.getElementById('reg-form').style.display = 'none';
+                            const titleSection = document.querySelector('.w-full.md\\:w-7\\/12 h2');
+                            if (titleSection) titleSection.textContent = 'REGISTRATION ENDED';
+                            const descSection = document.querySelector('.w-full.md\\:w-7\\/12 p');
+                            if (descSection) descSection.textContent = 'The participant list is final and displayed below.';
+                            
+                            // Add a style tag for the animation
+                            if (!document.getElementById('list-animations')) {
+                                const style = document.createElement('style');
+                                style.id = 'list-animations';
+                                style.innerHTML = `
+                                    @keyframes listFadeIn {
+                                        from { opacity: 0; transform: translateY(15px); }
+                                        to { opacity: 1; transform: translateY(0); }
+                                    }
+                                    .list-item-anim {
+                                        animation: listFadeIn 0.4s ease forwards;
+                                        opacity: 0;
+                                    }
+                                `;
+                                document.head.appendChild(style);
+                            }
+
+                            fetchAndShowParticipants(tid);
+                        }
                     } else {
                         document.getElementById('display-t-name').textContent = "Tournament Not Found";
                         submitBtn.disabled = true;
@@ -215,6 +243,45 @@
                 console.error(e);
             }
         }
+        
+        async function fetchAndShowParticipants(tid) {
+            let container = document.getElementById('participants-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'participants-container';
+                container.className = 'mt-6 h-[calc(100%-120px)] overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-3';
+                document.querySelector('.glass-panel.rounded-2xl.p-8').appendChild(container);
+            }
+            container.innerHTML = '<div class="text-center text-on-surface-variant py-8 font-mono tracking-widest text-sm animate-pulse">LOADING SECURE LIST...</div>';
+            
+            try {
+                const res = await fetch(`/api/tournaments/${tid}/participants`, { headers: { 'x-auth-token': token } });
+                const data = await res.json();
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="text-center text-on-surface-variant py-8 border border-white/5 rounded-xl bg-black/20">No players registered.</div>';
+                    return;
+                }
+                
+                container.innerHTML = data.map((p, index) => `
+                    <div class="list-item-anim flex items-center gap-4 bg-black/40 border border-white/5 p-4 rounded-xl hover:bg-black/60 hover:border-primary/30 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]" style="animation-delay: ${index * 0.05}s;">
+                        <div class="w-10 h-10 min-w-[40px] rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/30 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+                            #${index + 1}
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <div class="text-white font-bold tracking-wide truncate">${p.name || 'Unknown'}</div>
+                            <div class="text-xs text-on-surface-variant font-mono mt-1 truncate">ID: ${p.uid || p.id || 'N/A'}</div>
+                        </div>
+                        <div class="text-[10px] font-bold px-3 py-1 bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/30 rounded-full tracking-widest">
+                            VERIFIED
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<div class="text-center text-[#ef4444] py-8">Failed to load participant list.</div>';
+            }
+        }
+
         fetchTourneyDetails();
         
         const applyUserStatus = (prof) => {
