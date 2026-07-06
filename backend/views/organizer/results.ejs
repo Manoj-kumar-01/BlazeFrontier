@@ -734,23 +734,26 @@
             <input type="hidden" id="award-tournament-id">
             
             <div id="award-modal-content">
-                <div class="org-input-group">
-                    <label>🥇 1st Place (100 Coins + 100 BP)</label>
-                    <select class="org-select" id="winner-1">
-                        <option value="">Loading users...</option>
-                    </select>
+                <div class="org-input-group" style="padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,215,0,0.2);">
+                    <label style="color: #ffd700;">🥇 1st Place (100 Coins + 100 BP)</label>
+                    <div style="display:flex; gap:12px; margin-top:8px;">
+                        <input type="text" class="org-input" id="winner-1-blaze" placeholder="Blaze ID (e.g. BLZ-...)">
+                        <input type="text" class="org-input" id="winner-1-ign" placeholder="In-Game Name/UID">
+                    </div>
                 </div>
-                <div class="org-input-group">
-                    <label>🥈 2nd Place (50 Coins + 50 BP)</label>
-                    <select class="org-select" id="winner-2">
-                        <option value="">Loading users...</option>
-                    </select>
+                <div class="org-input-group" style="padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(192,192,192,0.2);">
+                    <label style="color: #c0c0c0;">🥈 2nd Place (50 Coins + 50 BP)</label>
+                    <div style="display:flex; gap:12px; margin-top:8px;">
+                        <input type="text" class="org-input" id="winner-2-blaze" placeholder="Blaze ID (e.g. BLZ-...)">
+                        <input type="text" class="org-input" id="winner-2-ign" placeholder="In-Game Name/UID">
+                    </div>
                 </div>
-                <div class="org-input-group">
-                    <label>🥉 3rd Place (25 Coins + 25 BP)</label>
-                    <select class="org-select" id="winner-3">
-                        <option value="">Loading users...</option>
-                    </select>
+                <div class="org-input-group" style="padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(205,127,50,0.2);">
+                    <label style="color: #cd7f32;">🥉 3rd Place (25 Coins + 25 BP)</label>
+                    <div style="display:flex; gap:12px; margin-top:8px;">
+                        <input type="text" class="org-input" id="winner-3-blaze" placeholder="Blaze ID (e.g. BLZ-...)">
+                        <input type="text" class="org-input" id="winner-3-ign" placeholder="In-Game Name/UID">
+                    </div>
                 </div>
             </div>
 
@@ -859,33 +862,8 @@
                 });
                 if (!res.ok) return;
                 const tournaments = await res.json();
-                const tbody = document.getElementById('tournaments-body');
-
-                if (tournaments.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7"><div class="org-empty"><div class="empty-icon">🏆</div><p>No tournaments yet. Create one!</p></div></td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = tournaments.map(t => {
-                    const statusClass = t.status === 'ACTIVE' ? 'status-active' : (t.status === 'UPCOMING' ? 'status-upcoming' : 'status-ended');
-                    return `
-                        <tr>
-                            <td style="font-weight:600; color:#fff;">${t.name}</td>
-                            <td><span class="status-badge ${statusClass}">${t.status}</span></td>
-                            <td style="font-family:var(--font-mono); font-size:0.8rem;">${t.date}</td>
-                            <td>${t.participants}</td>
-                            <td>
-                                <div style="display:flex; gap:6px;">
-                                    <button class="org-btn org-btn-sm org-btn-primary" onclick="viewRegistrations('${t._id}', '${t.name.replace(/'/g, "\\'")}', ${t.isListPublished})">👥 VIEW</button>
-                                    <button class="org-btn org-btn-sm org-btn-ghost" onclick="openEditModal('${t._id}', '${t.name.replace(/'/g, "\\'")}', '${t.date}', '${t.participants}', '${t.status}', '${t.roomId || ''}', '${t.roomPassword || ''}')">✏️</button>
-                                    <button class="org-btn org-btn-sm org-btn-danger" onclick="deleteTournament('${t._id}')">🗑️</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
                 
-                // Also render results tab
+                // Only render results tab since this is the results page
                 renderResults(tournaments);
             } catch (e) { console.error(e); }
         }
@@ -919,31 +897,15 @@
             }).join('');
         }
 
-        async function openAwardModal(tournamentId, tournamentName) {
+        function openAwardModal(tournamentId, tournamentName) {
             document.getElementById('award-modal-title').textContent = 'AWARD: ' + tournamentName.toUpperCase();
             document.getElementById('award-tournament-id').value = tournamentId;
             document.getElementById('awardModal').classList.add('active');
             
-            const selects = ['winner-1', 'winner-2', 'winner-3'].map(id => document.getElementById(id));
-            selects.forEach(s => s.innerHTML = '<option value="">Loading users...</option>');
-
-            try {
-                const res = await fetch(`/api/organizer/tournaments/${tournamentId}/registrations`, {
-                    headers: { 'x-auth-token': token }
-                });
-                if (res.ok) {
-                    const regs = await res.json();
-                    let options = '<option value="">Select a user...</option>';
-                    regs.forEach(r => {
-                        const u = r.userId;
-                        if (u) {
-                            options += `<option value="${u._id}">${u.inGameName || u.username} (${u.playerId})</option>`;
-                        }
-                    });
-                    selects.forEach(s => s.innerHTML = options);
-                }
-            } catch (e) {
-                console.error(e);
+            // Clear inputs
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`winner-${i}-blaze`).value = '';
+                document.getElementById(`winner-${i}-ign`).value = '';
             }
         }
 
@@ -954,16 +916,21 @@
         async function submitAwards() {
             const btn = document.getElementById('award-submit-btn');
             const tournamentId = document.getElementById('award-tournament-id').value;
-            const winner1 = document.getElementById('winner-1').value;
-            const winner2 = document.getElementById('winner-2').value;
-            const winner3 = document.getElementById('winner-3').value;
-
-            if (!winner1 || !winner2 || !winner3) {
-                showToast('Please select all 3 winners.', 'error');
-                return;
+            
+            const winners = [];
+            for (let i = 1; i <= 3; i++) {
+                const blazeId = document.getElementById(`winner-${i}-blaze`).value.trim();
+                const ign = document.getElementById(`winner-${i}-ign`).value.trim();
+                if (!blazeId || !ign) {
+                    showToast(`Please enter both Blaze ID and In-Game ID for Winner ${i}.`, 'error');
+                    return;
+                }
+                winners.push({ blazeId, inGameId: ign });
             }
 
-            if (new Set([winner1, winner2, winner3]).size !== 3) {
+            // Check for duplicates
+            const blazeIds = new Set(winners.map(w => w.blazeId.toLowerCase()));
+            if (blazeIds.size !== 3) {
                 showToast('All 3 winners must be unique players.', 'error');
                 return;
             }
@@ -975,14 +942,14 @@
                 const res = await fetch(`/api/organizer/tournaments/${tournamentId}/award`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
-                    body: JSON.stringify({ winner1, winner2, winner3 })
+                    body: JSON.stringify({ winners })
                 });
 
                 if (res.ok) {
                     showToast('Awards successfully distributed!', 'success');
                     closeAwardModal();
                     setTimeout(() => {
-                        window.location.href = '/dashboard/leaderboards';
+                        window.location.href = '/dashboard/leaderboards'; // Navigate somewhere else, or just reload
                     }, 1500);
                 } else {
                     const err = await res.json();

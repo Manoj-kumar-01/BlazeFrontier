@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const organizerAuth = require('../middleware/organizerAuth');
 const Tournament = require('../models/Tournament');
@@ -217,6 +217,9 @@ router.post('/tournaments', async (req, res) => {
         }
 
         const computedStatus = computeStatus(date);
+        
+        const orgUser = await User.findById(req.user.id).select('username inGameName email');
+        const organizerName = orgUser ? (orgUser.inGameName || orgUser.username || 'Organizer') : 'System';
 
         const tournament = new Tournament({
             name,
@@ -225,7 +228,8 @@ router.post('/tournaments', async (req, res) => {
             participants,
             roomId,
             roomPassword,
-            registrationEndTime: registrationEndTime ? new Date(registrationEndTime) : undefined
+            registrationEndTime: registrationEndTime ? new Date(registrationEndTime) : undefined,
+            organizerName
         });
 
         await tournament.save();
@@ -301,24 +305,53 @@ router.post('/tournaments/:id/award', async (req, res) => {
             return res.status(400).json({ msg: 'Tournament is already ended and awarded' });
         }
 
-        const { winner1, winner2, winner3 } = req.body;
-        if (!winner1 || !winner2 || !winner3) {
+        const { winners } = req.body; // Array of { blazeId, inGameId }
+        if (!winners || winners.length !== 3) {
             return res.status(400).json({ msg: 'Please provide all Top 3 winners' });
         }
 
-        // Make sure all 3 winners are unique
-        if (new Set([winner1, winner2, winner3]).size !== 3) {
+        // Make sure all 3 winners are unique by blazeId
+        const blazeIds = new Set(winners.map(w => w.blazeId.toLowerCase()));
+        if (blazeIds.size !== 3) {
             return res.status(400).json({ msg: 'Winners must be unique players' });
         }
 
         const User = require('../models/User');
         const Match = require('../models/Match');
 
-        const awards = [
-            { userId: winner1, coins: 100, points: 100, rank: 1 },
-            { userId: winner2, coins: 50, points: 50, rank: 2 },
-            { userId: winner3, coins: 25, points: 25, rank: 3 }
+        const awards = [];
+        const prizeMap = [
+            { coins: 100, points: 100 },
+            { coins: 50, points: 50 },
+            { coins: 25, points: 25 }
         ];
+
+        for (let i = 0; i < 3; i++) {
+            const w = winners[i];
+            // Find user by blazeId (case-insensitive)
+            const user = await User.findOne({ playerId: new RegExp('^' + w.blazeId + '$', 'i') });
+            if (!user) {
+                return res.status(404).json({ msg: `Player not found for Blaze ID: ${w.blazeId}` });
+            }
+            
+            // Double confirmation check (inGameName or gameUid)
+            const ign = w.inGameId.toLowerCase();
+            const matchesIgn = user.inGameName && user.inGameName.toLowerCase() === ign;
+            const matchesUid = user.gameUid && user.gameUid.toString().toLowerCase() === ign;
+            
+            if (!matchesIgn && !matchesUid) {
+                return res.status(400).json({ 
+                    msg: `Verification failed for ${w.blazeId}. Provided In-Game ID "${w.inGameId}" does not match their registered In-Game Name or UID.` 
+                });
+            }
+
+            awards.push({
+                userId: user._id,
+                coins: prizeMap[i].coins,
+                points: prizeMap[i].points,
+                rank: i + 1
+            });
+        }
 
         for (const award of awards) {
             const user = await User.findById(award.userId);

@@ -652,6 +652,7 @@
                                     <th>Status</th>
                                     <th>Date</th>
                                     <th>Max Players</th>
+                                    <th>Organizer</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -913,6 +914,7 @@
                             <td><span class="status-badge ${statusClass}">${t.status}</span></td>
                             <td style="font-family:var(--font-mono); font-size:0.8rem;">${t.date}</td>
                             <td>${t.participants}</td>
+                            <td style="color:var(--blaze-orange); font-size:0.85rem; font-weight:600;">${t.organizerName || 'System'}</td>
                             <td>
                                 <div style="display:flex; gap:6px;">
                                     <button class="org-btn org-btn-sm org-btn-primary" onclick="viewRegistrations('${t._id}', '${t.name.replace(/'/g, "\\'")}', ${t.isListPublished})">👥 VIEW</button>
