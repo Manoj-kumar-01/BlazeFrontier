@@ -1384,7 +1384,11 @@
                     formData.append('title', title);
                     formData.append('game', 'Free Fire');
                     formData.append('clip', file); // Backend expects 'clip'
-                    formData.append('playerId', typeof playerBlazeId !== 'undefined' ? playerBlazeId : 'Unknown');
+                    let currentPlayerId = 'Unknown';
+                    if (typeof playerBlazeId !== 'undefined') currentPlayerId = playerBlazeId;
+                    else if (window.globalUserData && window.globalUserData.playerId) currentPlayerId = window.globalUserData.playerId;
+                    
+                    formData.append('playerId', currentPlayerId);
                     formData.append('startTime', parseFloat(trimStart.value) || 0);
                     formData.append('endTime', parseFloat(trimEnd.value) || 10);
 
