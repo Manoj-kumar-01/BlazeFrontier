@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>All Tournaments | Blaze Frontier</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=block" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     
     <script id="tailwind-config">
@@ -30,7 +30,8 @@
                     fontFamily: {
                         body: ["Inter", "sans-serif"],
                         headline: ["Inter", "sans-serif"],
-                        display: ["Inter", "sans-serif"],
+                        display: ["Bebas Neue", "cursive"],
+                        mono: ["JetBrains Mono", "monospace"]
                     },
                 },
             },
@@ -38,18 +39,16 @@
     </script>
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #050709; color: #ffffff; margin: 0; padding: 0; }
+        body { background-color: #050709; color: #ffffff; margin: 0; padding: 0; }
         .glass-panel { background: rgba(17, 17, 24, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .table-row-hover:hover { background-color: rgba(168, 85, 247, 0.08); }
         .btn-primary { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); color: white; transition: all 0.3s ease; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4); }
-        select { background-color: #111118; color: white; border: 1px solid #334155; padding: 8px 12px; border-radius: 6px; outline: none; }
-        select:focus { border-color: #a855f7; }
     </style>
     
     <link rel="stylesheet" href="/style.css">
 </head>
-<body class="bg-[#050709] text-on-surface antialiased min-h-screen flex flex-col">
+<body class="font-body antialiased overflow-x-hidden min-h-screen flex flex-col bg-[#050709] text-[#e1e2e7]">
 
     <%- include('../partials/navbar') %>
 
@@ -65,11 +64,11 @@
                 
                 <div class="flex items-center gap-3">
                     <label for="status-filter" class="text-sm text-on-surface-variant font-medium uppercase tracking-wider">Filter by Status:</label>
-                    <select id="status-filter" class="font-medium">
-                        <option value="all">All Tournaments</option>
-                        <option value="live">Live Now</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="completed">Completed</option>
+                    <select id="status-filter" class="bg-[#111118] text-white border border-[#334155] rounded-md px-4 py-2 font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors cursor-pointer">
+                        <option value="all" class="bg-[#111118] text-white">All Tournaments</option>
+                        <option value="live" class="bg-[#111118] text-white">Live Now</option>
+                        <option value="upcoming" class="bg-[#111118] text-white">Upcoming</option>
+                        <option value="completed" class="bg-[#111118] text-white">Completed</option>
                     </select>
                 </div>
             </div>
