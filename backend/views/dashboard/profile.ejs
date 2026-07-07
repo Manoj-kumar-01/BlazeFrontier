@@ -152,7 +152,7 @@
         /* Main: Stats grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 16px;
         }
 
@@ -293,8 +293,16 @@
             }
 
             .profile-sidebar, .profile-main {
-                width: 100%;
+                display: contents;
             }
+            .profile-header { order: 1; }
+            .streak-panel { order: 2; }
+            .rank-bar { order: 3; }
+            .stats-grid { order: 4; }
+            .first-place-box { order: 5; }
+            .heatmap-panel { order: 6; }
+            .detail-row { order: 7; }
+            .rewards-panel { order: 8; }
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -440,14 +448,17 @@
                         </div>
                     </div>
                     
-                    <!-- 7-Day Login Streak Row -->
-                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 24px; position: relative; z-index: 2; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,87,34,0.1);">
-                        <div style="font-size: 0.85rem; color: var(--blaze-orange); font-weight: bold; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase;">7-Day Streak</div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div id="streak-days" style="display: flex; gap: 6px;">
-                                <!-- Injected by JS -->
-                            </div>
-                            <div style="margin-left: 8px; font-size: 0.85rem; font-weight: bold; color: #ffd700; background: rgba(255, 215, 0, 0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255, 215, 0, 0.2); box-shadow: 0 0 10px rgba(255,215,0,0.1);">+100 💰</div>
+                    </div>
+
+                <!-- 7-Day Login Streak Row -->
+                <div class="streak-panel" style="background: #111116; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+                    <div style="font-size: 0.9rem; color: var(--blaze-orange); font-weight: bold; margin-bottom: 16px; letter-spacing: 1.5px; text-transform: uppercase; font-family: var(--font-display);">7-Day Login Streak</div>
+                    <div style="display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center; flex-wrap: wrap;">
+                        <div id="streak-days" style="display: flex; gap: 8px;">
+                            <!-- Injected by JS -->
+                        </div>
+                        <div style="margin-left: 12px; font-size: 0.9rem; font-weight: bold; color: #ffd700; background: rgba(255, 215, 0, 0.1); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255, 215, 0, 0.2); box-shadow: 0 0 10px rgba(255,215,0,0.1); display: flex; align-items: center; gap: 6px;">
+                            +100 <span style="font-family: var(--font-display); font-size: 0.9rem; letter-spacing: 1px;">BlazeCoins</span>
                         </div>
                     </div>
                 </div>
@@ -1034,8 +1045,7 @@
                             }
                             
                             // Get date
-                            const date = new Date();
-                            date.setDate(today.getDate() - (totalDays - 1 - i));
+                            const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (totalDays - 1 - i));
                             
                             // Check for month change to place label
                             if (date.getMonth() !== currentMonth) {
@@ -1056,8 +1066,8 @@
                                 }
                             }
 
-                            // Match the backend UTC date string key
-                            const dateStrKey = date.toISOString().split('T')[0];
+                            // Match the backend local date string key
+                            const dateStrKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                             const activeMinutes = activity[dateStrKey] || 0;
 
                             let bg = 'rgba(255,255,255,0.05)'; // 0 activity
@@ -1207,7 +1217,7 @@
                             const freshRes = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                             if (freshRes.ok) {
                                 const freshU = await freshRes.json();
-                                localStorage.setItem('blaze_profile_cache', JSON.stringify(freshU));
+                                localStorage.setItem(window.getBlazeCacheKey ? window.getBlazeCacheKey() : 'blaze_profile_cache', JSON.stringify(freshU));
                                 renderProfile(freshU);
                             }
                         } else {
@@ -1225,7 +1235,8 @@
 
                 // --- Execution Logic ---
                 // 1. Immediately load from cache
-                const cached = localStorage.getItem('blaze_profile_cache');
+                const cacheKey = window.getBlazeCacheKey ? window.getBlazeCacheKey() : 'blaze_profile_cache';
+                const cached = localStorage.getItem(cacheKey);
                 if (cached) {
                     try {
                         renderProfile(JSON.parse(cached));
@@ -1237,7 +1248,7 @@
                     const res = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
                     if (res.status === 401 || res.status === 404) {
                         localStorage.removeItem('blaze_token');
-                        localStorage.removeItem('blaze_profile_cache');
+                        localStorage.removeItem(cacheKey);
                         window.location.href = '/auth';
                         return;
                     }
@@ -1245,7 +1256,7 @@
                     const u = await res.json();
                     
                     // Save to cache and re-render
-                    localStorage.setItem('blaze_profile_cache', JSON.stringify(u));
+                    localStorage.setItem(cacheKey, JSON.stringify(u));
                     renderProfile(u);
                 } catch (err) {
                     console.error('Failed to fetch profile', err);

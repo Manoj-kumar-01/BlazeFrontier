@@ -65,13 +65,29 @@ router.post('/potd', upload.single('video'), async (req, res) => {
 
         await newPotd.save();
         
-        // Invalidate Hub caches so POTD updates immediately
         global.graphqlStatsCache = null;
         if (global.clearApiStatsCache) {
             global.clearApiStatsCache();
         }
 
-        res.json({ msg: 'Player of the Day updated successfully!', potd: newPotd });
+        // Send global notification
+        try {
+            const Notification = require('../models/Notification');
+            const allUsers = await User.find({}).select('_id');
+            const notifications = allUsers.map(u => ({
+                userId: u._id,
+                title: 'Player of the Day Updated!',
+                message: `★ ${newPotd.playerName} has been crowned Player of the Day! Check the dashboard to watch their highlight clip.`,
+                type: 'info'
+            }));
+            if (notifications.length > 0) {
+                await Notification.insertMany(notifications);
+            }
+        } catch (notifErr) {
+            console.error('Failed to send global POTD notifications:', notifErr);
+        }
+
+        res.json({ msg: 'Player of the Day updated successfully! (Notifications sent)', potd: newPotd });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

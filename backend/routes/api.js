@@ -44,14 +44,15 @@ const authMiddleware = require('../middleware/auth');
 // @desc    Track user active time on the site and calculate login streak
 router.post('/heartbeat', authMiddleware, async (req, res) => {
     try {
-        const dateStr = new Date().toISOString().split('T')[0];
+        const dateStr = req.body.dateStr || new Date().toISOString().split('T')[0];
         
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).send('User not found');
         
         // Activity Tracking
-        const currentActivity = user.activityLog ? user.activityLog.get(dateStr) || 0 : 0;
-        user.set(`activityLog.${dateStr}`, currentActivity + 1);
+        if (!user.activityLog) user.activityLog = new Map();
+        const currentActivity = user.activityLog.get(dateStr) || 0;
+        user.activityLog.set(dateStr, currentActivity + 1);
 
         // Streak Tracking
         const today = new Date();
