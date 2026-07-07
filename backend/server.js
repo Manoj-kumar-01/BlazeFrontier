@@ -240,6 +240,7 @@ async function startBackend() {
         await agenda.every('0 0 * * 0', 'resolve-weekly-voting');
         await agenda.every('1 0 * * 1', 'cleanup-weekly-clips'); // Runs Monday at 00:01
         await agenda.every('1 minute', 'check-upcoming-slots');
+        await agenda.every('1 minute', 'check-registration-ends');
         // console.log('Agenda Job Queue Started successfully.');
 
         // Initialize Change Streams

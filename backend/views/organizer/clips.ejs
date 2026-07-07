@@ -1483,8 +1483,8 @@
                 
                 tbody.innerHTML = clips.map(c => {
                     const dateStr = new Date(c.createdAt).toLocaleDateString();
-                    const safeUrl = c.videoUrl.replace(/'/g, "\\'");
-                    const safeTitle = c.title.replace(/'/g, "\\'");
+                    const safeUrl = (c.videoUrl || '').replace(/'/g, "\\'");
+                    const safeTitle = (c.title || 'Untitled').replace(/'/g, "\\'").replace(/\n/g, " ").replace(/\r/g, "").replace(/"/g, '&quot;');
                     return `
                         <tr>
                             <td style="text-align:center; width: 120px;">

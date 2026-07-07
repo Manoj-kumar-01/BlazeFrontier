@@ -872,10 +872,10 @@
             const tbody = document.getElementById('results-body');
             const now = new Date();
             
-            // Filter tournaments that have passed their start date and are not ENDED
+            // Filter tournaments that have passed their registration end time (or start date) and are not ENDED
             const results = tournaments.filter(t => {
-                const tDate = new Date(t.date);
-                return tDate < now && t.status !== 'ENDED';
+                const thresholdDate = t.registrationEndTime ? new Date(t.registrationEndTime) : new Date(t.date);
+                return thresholdDate < now && t.status !== 'ENDED';
             });
 
             if (results.length === 0) {

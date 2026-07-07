@@ -296,4 +296,24 @@ agenda.define('check-upcoming-slots', async (job) => {
     }
 });
 
+// Define Job: Check for tournaments that passed registrationEndTime and publish list
+agenda.define('check-registration-ends', async (job) => {
+    try {
+        const Tournament = require('../models/Tournament');
+        const now = new Date();
+        const pendingTournaments = await Tournament.find({
+            isListPublished: false,
+            registrationEndTime: { $lte: now },
+            status: { $ne: 'ENDED' }
+        });
+        
+        for (const t of pendingTournaments) {
+            console.log(`[Queue] Auto-publishing list for tournament: ${t.name}`);
+            await agenda.now('publish-tournament-list', { tournamentId: t._id });
+        }
+    } catch (err) {
+        console.error(`[Queue Error] Failed to check registration ends: ${err.message}`);
+    }
+});
+
 module.exports = agenda;
