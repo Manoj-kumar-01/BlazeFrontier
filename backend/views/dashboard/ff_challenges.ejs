@@ -49,98 +49,199 @@
 
         /* Container */
         .challenge-container {
-            max-width: 900px;
-            margin: 120px auto 60px;
+            max-width: 1000px;
+            margin: 100px auto 80px;
             padding: 0 24px;
         }
 
-        .header-title {
-            font-size: 3.5rem; font-weight: 700; text-align: center; margin-bottom: 8px;
-            background: linear-gradient(135deg, #fff 0%, #a855f7 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px; 
+            color: rgba(255,255,255,0.5); text-decoration: none; 
+            font-weight: 500; font-size: 0.9rem; margin-bottom: 24px; 
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 30px;
         }
-        .header-sub { text-align: center; color: rgba(255,255,255,0.6); font-size: 1.1rem; margin-bottom: 40px; }
+        .back-link:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
+            transform: translateX(-4px);
+        }
+
+        .page-header { margin-bottom: 40px; }
+        .header-title {
+            font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 12px;
+            background: linear-gradient(to right, #ffffff, #a855f7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+        }
+        .header-sub { 
+            color: rgba(255,255,255,0.6); font-size: 1.25rem; font-weight: 300; 
+            max-width: 600px;
+        }
 
         /* Glass Card */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(10, 10, 15, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            border-radius: 32px;
+            padding: 50px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
             position: relative; overflow: hidden;
         }
 
         .glass-card::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            transform: skewX(-20deg); animation: shine 6s infinite;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.5), transparent);
         }
 
-        @keyframes shine {
-            0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; }
+        /* Challenge Info Grid */
+        .ch-info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Challenge Info */
-        .ch-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
-        .ch-status {
-            padding: 6px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;
-            background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3);
-            display: inline-flex; align-items: center; gap: 8px;
+        .ch-title { 
+            font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; line-height: 1.2; 
+            color: #fff; letter-spacing: -0.5px;
         }
-        .ch-status::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 10px #4ade80; animation: pulseDot 2s infinite; }
+        .ch-desc { 
+            color: rgba(255,255,255,0.6); font-size: 1.15rem; line-height: 1.7; 
+        }
+
+        .ch-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .meta-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .meta-label { color: rgba(255,255,255,0.4); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
         
-        @keyframes pulseDot { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .ch-status {
+            font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+            color: #4ade80; display: flex; align-items: center; gap: 10px;
+        }
+        .ch-status::before { 
+            content: ''; display: block; width: 10px; height: 10px; border-radius: 50%; 
+            background: #4ade80; box-shadow: 0 0 12px #4ade80; animation: pulseDot 2s infinite; 
+        }
+        @keyframes pulseDot { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        .ch-reward { display: flex; gap: 12px; }
+        .reward-wrap { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .reward-pill {
-            background: rgba(0,0,0,0.4); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
-            font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: bold;
+            background: rgba(0,0,0,0.5); padding: 10px 16px; border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.08);
+            font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: bold;
+            display: flex; align-items: center; gap: 8px;
         }
         .rp-coin { color: #fbbf24; }
         .rp-point { color: #60a5fa; }
-
-        .ch-title { font-size: 2.2rem; font-weight: 600; margin-bottom: 16px; line-height: 1.2; }
-        .ch-desc { color: rgba(255,255,255,0.7); font-size: 1.1rem; line-height: 1.6; margin-bottom: 32px; }
+        .rp-icon { font-size: 1.2rem; }
 
         /* Upload Area */
+        .upload-section-title {
+            font-size: 1.5rem; font-weight: 600; margin-bottom: 20px; color: #fff;
+        }
         .upload-area {
-            border: 2px dashed rgba(168,85,247,0.4);
-            border-radius: 16px; padding: 40px 20px; text-align: center;
-            background: rgba(168,85,247,0.05);
-            transition: all 0.3s; position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 60px 20px; text-align: center;
+            background: rgba(0,0,0,0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .upload-area::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at center, rgba(168,85,247,0.15) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.4s; pointer-events: none;
         }
         .upload-area:hover, .upload-area.dragover {
-            border-color: #a855f7; background: rgba(168,85,247,0.1);
+            border-color: rgba(168,85,247,0.4); background: rgba(168,85,247,0.05);
         }
-        .upload-icon { font-size: 3rem; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(168,85,247,0.6)); }
-        .upload-text { font-size: 1.1rem; font-weight: 500; margin-bottom: 8px; }
-        .upload-sub { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+        .upload-area:hover::before, .upload-area.dragover::before { opacity: 1; }
         
-        #clip-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .upload-icon { 
+            width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; margin-bottom: 24px; transition: transform 0.4s, background 0.4s;
+        }
+        .upload-area:hover .upload-icon { transform: scale(1.1); background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.3); }
+        .upload-text { font-size: 1.25rem; font-weight: 500; margin-bottom: 12px; color: #fff; }
+        .upload-sub { color: rgba(255,255,255,0.4); font-size: 0.95rem; font-family: 'JetBrains Mono', monospace; }
+        
+        #clip-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
 
         /* Submit Button */
         .submit-btn {
-            width: 100%; margin-top: 24px; padding: 18px; border-radius: 12px;
-            background: linear-gradient(90deg, #a855f7, #ec4899);
-            border: none; color: #fff; font-size: 1.1rem; font-weight: 700; font-family: 'Outfit', sans-serif;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 10px 20px rgba(168,85,247,0.3); transition: all 0.3s;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
+            width: 100%; margin-top: 24px; padding: 20px; border-radius: 16px;
+            background: #fff; color: #000; border: none; 
+            font-size: 1.1rem; font-weight: 700; font-family: 'Outfit', sans-serif;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+            transition: all 0.3s;
+            display: flex; justify-content: center; align-items: center; gap: 12px;
+            position: relative; overflow: hidden;
         }
-        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(168,85,247,0.4); }
-        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+        .submit-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+            opacity: 0; transition: opacity 0.3s; z-index: 1;
+        }
+        .submit-btn span { position: relative; z-index: 2; transition: color 0.3s; }
+        .submit-btn:hover::before { opacity: 1; }
+        .submit-btn:hover span { color: #fff; }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+        /* Success & Winner States */
+        .status-panel {
+            background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.2); 
+            border-radius: 20px; padding: 40px; text-align: center;
+        }
+        .status-icon {
+            width: 80px; height: 80px; border-radius: 50%; background: rgba(34, 197, 94, 0.1);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;
+        }
+
+        .winner-panel {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(0,0,0,0)); 
+            border: 1px solid rgba(251, 191, 36, 0.2); 
+            border-radius: 24px; padding: 40px; margin-top: 40px;
+            position: relative; overflow: hidden;
+        }
+        .winner-panel::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%);
+            transform: translate(-50%, -50%); pointer-events: none;
+        }
 
         /* States */
-        #loading-state { text-align: center; padding: 60px 0; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-left-color: #a855f7; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        #loading-state { text-align: center; padding: 100px 0; }
+        .spinner { width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.05); border-left-color: #a855f7; border-radius: 50%; animation: spin 1s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite; margin: 0 auto 24px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        #empty-state { text-align: center; padding: 60px 0; display: none; }
+        #empty-state { text-align: center; padding: 100px 0; display: none; }
+        
+        @media (max-width: 768px) {
+            .ch-info-grid { grid-template-columns: 1fr; gap: 24px; }
+            .header-title { font-size: 2.5rem; }
+            .glass-card { padding: 30px 20px; }
+        }
     </style>
 </head>
 <body>
@@ -154,75 +255,94 @@
     <%- include('../partials/navbar') %>
 
     <div class="challenge-container">
-        <a href="/dashboard/verified_freefire" style="display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-bottom: 20px; transition: color 0.2s;" onmouseover="this.style.color='#fff';" onmouseout="this.style.color='rgba(255,255,255,0.7)';">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <a href="/dashboard/verified_freefire" class="back-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             Back to Arena
         </a>
-        <div class="header-title">WEEKLY CHALLENGE</div>
-        <div class="header-sub">Prove your skills. Earn rewards.</div>
+        
+        <div class="page-header">
+            <div class="header-title">WEEKLY CHALLENGE</div>
+            <div class="header-sub">Execute the objective. Upload your proof. Claim the exclusive bounty.</div>
+        </div>
 
         <div class="glass-card">
             
             <div id="loading-state">
                 <div class="spinner"></div>
-                <div style="color: rgba(255,255,255,0.6);">Initializing challenge matrix...</div>
+                <div style="color: rgba(255,255,255,0.5); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase;">Initializing Neural Link...</div>
             </div>
 
             <div id="empty-state">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" style="margin-bottom:16px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <div style="font-size: 1.5rem; font-weight:600; margin-bottom:8px;">No Active Challenge</div>
-                <div style="color:rgba(255,255,255,0.6);">The organizers are currently crafting the next challenge. Check back later!</div>
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" style="margin-bottom:24px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div style="font-size: 1.8rem; font-weight:600; margin-bottom:12px; color: #fff;">No Active Intel</div>
+                <div style="color:rgba(255,255,255,0.5); font-size: 1.1rem; max-width: 400px; margin: 0 auto;">High Command is currently formulating the next objective. Stand by.</div>
             </div>
 
             <div id="content-state" style="display: none;">
-                <div class="ch-meta">
-                    <div class="ch-status">LIVE NOW</div>
-                    <div class="ch-reward">
-                        <div class="reward-pill rp-coin"><span id="r-coins">100</span> BZC</div>
-                        <div class="reward-pill rp-point"><span id="r-points">20</span> BZP</div>
+                
+                <div class="ch-info-grid">
+                    <div>
+                        <div class="ch-title" id="ch-title-txt">Loading Objective...</div>
+                        <div class="ch-desc" id="ch-desc-txt">Retrieving classified details...</div>
+                    </div>
+                    <div class="ch-sidebar">
+                        <div class="meta-box">
+                            <span class="meta-label">Status</span>
+                            <div class="ch-status" id="ch-status-badge">LIVE NOW</div>
+                        </div>
+                        <div class="meta-box">
+                            <span class="meta-label">Bounty Reward</span>
+                            <div class="reward-wrap">
+                                <div class="reward-pill rp-coin"><span class="rp-icon">🪙</span> <span id="r-coins">100</span></div>
+                                <div class="reward-pill rp-point"><span class="rp-icon">💎</span> <span id="r-points">20</span></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="ch-title" id="ch-title-txt">Loading Title...</div>
-                <div class="ch-desc" id="ch-desc-txt">Loading description...</div>
-
                 <div id="submission-section">
-                    <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 16px;">Submit Proof</div>
+                    <div class="upload-section-title">Upload Video Proof</div>
                     <form id="challenge-form">
                         <div class="upload-area" id="drop-zone">
-                            <div class="upload-icon">📹</div>
-                            <div class="upload-text" id="file-name-display">Click or drag video file here</div>
-                            <div class="upload-sub">MP4, WebM (Max 50MB)</div>
+                            <div class="upload-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <div class="upload-text" id="file-name-display">Drag & Drop or Click to Browse</div>
+                            <div class="upload-sub">Accepted formats: MP4, WebM (Max 50MB)</div>
                             <input type="file" id="clip-input" name="clip" accept="video/*" required>
                         </div>
-                        <button type="submit" class="submit-btn" id="submit-btn">UPLOAD PROOF</button>
+                        <button type="submit" class="submit-btn" id="submit-btn">
+                            <span>TRANSMIT PROOF</span>
+                        </button>
                     </form>
                 </div>
 
-                <div id="success-section" style="display: none; text-align: center; padding: 40px 20px; background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 16px;">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" style="margin-bottom:16px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    <div style="font-size:1.5rem; font-weight:600; color:#4ade80; margin-bottom:8px;">Proof Submitted!</div>
-                    <div style="color:rgba(255,255,255,0.7);">Your submission is currently under review by the organizers.<br>Rewards will be credited upon approval.</div>
+                <div id="success-section" style="display: none;" class="status-panel">
+                    <div class="status-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div style="font-size:1.8rem; font-weight:700; color:#fff; margin-bottom:12px;">Transmission Successful</div>
+                    <div style="color:rgba(255,255,255,0.6); font-size:1.1rem; max-width:400px; margin:0 auto;">Your proof is securely uploaded and pending review by High Command. The bounty will be disbursed upon verification.</div>
                 </div>
 
-                <div id="winner-section" style="display: none; margin-top: 30px; background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 16px; padding: 24px;">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                        <span style="font-size: 2rem;">🏆</span>
+                <div id="winner-section" style="display: none;" class="winner-panel">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                        <span style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(251,191,36,0.5));">🏆</span>
                         <div>
-                            <div style="color: #fbbf24; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase;">Challenge Completed</div>
-                            <div style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">The reward has been claimed!</div>
+                            <div style="color: #fbbf24; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;">Objective Completed</div>
+                            <div style="color: rgba(255,255,255,0.5); font-size: 1rem;">The bounty has been successfully claimed.</div>
                         </div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #fbbf24; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #000; font-size: 1.2rem;">1</div>
+                    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 24px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #f59e0b); display: flex; justify-content: center; align-items: center; font-weight: 800; color: #000; font-size: 1.2rem; box-shadow: 0 0 20px rgba(251,191,36,0.3);">#1</div>
                             <div>
-                                <div id="winner-name" style="font-weight: 600; font-size: 1.1rem; color: #fff;">PlayerName</div>
-                                <div id="winner-id" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; font-family: 'JetBrains Mono', monospace;">ID: 12345678</div>
+                                <div id="winner-name" style="font-weight: 700; font-size: 1.3rem; color: #fff; margin-bottom: 4px;">AgentName</div>
+                                <div id="winner-id" style="color: rgba(255,255,255,0.4); font-size: 0.9rem; font-family: 'JetBrains Mono', monospace;">ID: 12345678</div>
                             </div>
                         </div>
-                        <div style="color: #4ade80; font-weight: bold; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
-                            AWARDED
+                        <div style="color: #4ade80; font-weight: bold; font-family: 'JetBrains Mono', monospace; font-size: 1rem; padding: 8px 16px; background: rgba(34,197,94,0.1); border-radius: 30px; border: 1px solid rgba(34,197,94,0.2);">
+                            BOUNTY AWARDED
                         </div>
                     </div>
                 </div>
