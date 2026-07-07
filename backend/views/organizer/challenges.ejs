@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Challenges | Organizer Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=block"
+        rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
     <style>
         .org-wrap {
@@ -12,6 +15,7 @@
             margin: 0 auto;
             padding: 100px 24px 60px;
         }
+
         .org-header {
             display: flex;
             align-items: center;
@@ -20,17 +24,20 @@
             gap: 16px;
             flex-wrap: wrap;
         }
+
         .org-header-left {
             display: flex;
             align-items: center;
             gap: 16px;
         }
+
         .org-header-left h1 {
             font-family: var(--font-display);
             font-size: 2.5rem;
             letter-spacing: 1px;
             color: #fff;
         }
+
         .org-badge {
             font-size: 0.7rem;
             font-weight: 700;
@@ -42,32 +49,48 @@
             color: #a855f7;
             border: 1px solid rgba(168, 85, 247, 0.4);
         }
+
         .panel {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 24px;
         }
+
         .panel-title {
             font-family: var(--font-display);
             font-size: 1.5rem;
             color: #fff;
             margin-bottom: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             padding-bottom: 12px;
         }
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
-        .input-group input, .input-group textarea {
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .input-group input,
+        .input-group textarea {
             width: 100%;
             padding: 12px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             color: #fff;
             font-family: var(--font-body);
         }
+
         .btn-primary {
             background: #a855f7;
             color: #fff;
@@ -81,11 +104,14 @@
             letter-spacing: 1px;
             transition: all 0.2s;
         }
-        .btn-primary:hover { background: #9333ea; }
+
+        .btn-primary:hover {
+            background: #9333ea;
+        }
 
         .submission-card {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             padding: 16px;
             margin-bottom: 12px;
@@ -93,6 +119,7 @@
             gap: 16px;
             align-items: center;
         }
+
         .submission-video {
             width: 120px;
             height: 80px;
@@ -102,8 +129,17 @@
             flex-shrink: 0;
             cursor: pointer;
         }
-        .submission-video video { width: 100%; height: 100%; object-fit: cover; }
-        .submission-info { flex: 1; }
+
+        .submission-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .submission-info {
+            flex: 1;
+        }
+
         .action-btns button {
             padding: 8px 16px;
             border: none;
@@ -112,98 +148,104 @@
             cursor: pointer;
             margin-left: 8px;
         }
-        .btn-approve { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; }
-        .btn-reject { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+
+        .btn-approve {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
     </style>
 </head>
+
 <body class="theme-dark">
-    <%- include('../partials/navbar') %>
+    <%- include('navbar') %>
 
     <div class="org-wrap">
         <div class="org-header">
             <div class="org-header-left">
-    <%- include('navbar') %>
-
-    <div class="o-dash">
-        <div class="o-header">
-            <h1>Weekly Challenges Management</h1>
-            <p style="color:var(--text-muted);">Create new challenges and review player submissions.</p>
+                <h1>WEEKLY CHALLENGES</h1>
+                <span class="org-badge">MANAGEMENT</span>
+            </div>
         </div>
 
-        <div class="c-grid">
-            <div class="o-card">
-                <h3 style="color:#fff; margin-bottom: 20px; font-family:var(--font-display); font-size:1.4rem;">Publish New Challenge</h3>
-                <form id="create-challenge-form" style="display: flex; flex-direction: column; gap: 16px;">
-                    <div>
-                        <label style="color:var(--text-muted); font-size:0.9rem; margin-bottom:8px; display:block;">Challenge Title</label>
-                        <input type="text" id="ch-title" class="o-input" required placeholder="e.g. 10 Headshots in 1 Match">
-                    </div>
-                    <div>
-                        <label style="color:var(--text-muted); font-size:0.9rem; margin-bottom:8px; display:block;">Rules / Description</label>
-                        <textarea id="ch-desc" class="o-input" rows="4" required placeholder="Describe the challenge rules..."></textarea>
-                    </div>
-                    <button type="submit" class="o-btn" id="publish-btn">Publish Challenge</button>
-                </form>
-            </div>
-
-            <div class="o-card">
-                <h3 style="color:#fff; margin-bottom: 20px; font-family:var(--font-display); font-size:1.4rem;">Pending Submissions</h3>
-                <div id="submissions-list" style="display: flex; flex-direction: column; gap: 16px; max-height: 500px; overflow-y: auto;">
-                    <div style="color:var(--text-muted); font-size:0.9rem;">Loading...</div>
+        <div class="panel">
+            <h2 class="panel-title">Post New Challenge</h2>
+            <form id="create-challenge-form">
+                <div class="input-group">
+                    <label>Challenge Title</label>
+                    <input type="text" id="ch-title" placeholder="e.g. 10 Headshots in a single match" required>
                 </div>
+                <div class="input-group">
+                    <label>Description & Rules</label>
+                    <textarea id="ch-desc" rows="4" placeholder="Detailed rules..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary" id="publish-btn">Publish Challenge</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2 class="panel-title">Pending Submissions</h2>
+            <div id="submissions-list" style="display: flex; flex-direction: column; max-height: 500px; overflow-y: auto;">
+                <div style="color:var(--text-muted); font-size:0.9rem;">Loading submissions...</div>
             </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('blaze_token');
-            if(!token) {
-                window.location.href = '/auth';
-                return;
-            }
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const token = localStorage.getItem('blaze_token');
+                                if (!token) {
+                                    window.location.href = '/auth';
+                                    return;
+                                }
 
-            // Publish Challenge
-            document.getElementById('create-challenge-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('publish-btn');
-                btn.disabled = true;
-                btn.textContent = 'Publishing...';
+                                // Publish Challenge
+                                document.getElementById('create-challenge-form').addEventListener('submit', async (e) => {
+                                    e.preventDefault();
+                                    const btn = document.getElementById('publish-btn');
+                                    btn.disabled = true;
+                                    btn.textContent = 'Publishing...';
 
-                const title = document.getElementById('ch-title').value;
-                const description = document.getElementById('ch-desc').value;
+                                    const title = document.getElementById('ch-title').value;
+                                    const description = document.getElementById('ch-desc').value;
 
-                try {
-                    const res = await fetch('/api/organizer/challenges', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
-                        body: JSON.stringify({ title, description })
-                    });
-                    const data = await res.json();
-                    alert(data.msg);
-                    if(res.ok) document.getElementById('create-challenge-form').reset();
-                } catch(err) {
-                    alert('Error creating challenge');
-                }
-                btn.disabled = false;
-                btn.textContent = 'Publish Challenge';
-            });
+                                    try {
+                                        const res = await fetch('/api/organizer/challenges', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                                            body: JSON.stringify({ title, description })
+                                        });
+                                        const data = await res.json();
+                                        alert(data.msg);
+                                        if (res.ok) document.getElementById('create-challenge-form').reset();
+                                    } catch (err) {
+                                        alert('Error creating challenge');
+                                    }
+                                    btn.disabled = false;
+                                    btn.textContent = 'Publish Challenge';
+                                });
 
-            // Load submissions
-            async function loadSubmissions() {
-                try {
-                    const res = await fetch('/api/organizer/challenges/submissions', {
-                        headers: { 'x-auth-token': token }
-                    });
-                    if(res.ok) {
-                        const subs = await res.json();
-                        const list = document.getElementById('submissions-list');
-                        if(subs.length === 0) {
-                            list.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem;">No pending submissions.</div>';
-                            return;
-                        }
+                                // Load submissions
+                                async function loadSubmissions() {
+                                    try {
+                                        const res = await fetch('/api/organizer/challenges/submissions', {
+                                            headers: { 'x-auth-token': token }
+                                        });
+                                        if (res.ok) {
+                                            const subs = await res.json();
+                                            const list = document.getElementById('submissions-list');
+                                            if (subs.length === 0) {
+                                                list.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem;">No pending submissions.</div>';
+                                                return;
+                                            }
 
-                        list.innerHTML = subs.map(s => `
+                                            list.innerHTML = subs.map(s => `
                             <div class="submission-card" id="sub-${s._id}">
                                 <div style="width:60px; height:40px; background:#000; cursor:pointer;" onclick="window.open('${s.videoUrl}', '_blank')"></div>
                                 <div class="submission-info">
@@ -217,31 +259,32 @@
                                 </div>
                             </div>
                         `).join('');
-                    }
-                } catch(e) {
-                    console.error(e);
-                }
-            }
+                                        }
+                                    } catch (e) {
+                                        console.error(e);
+                                    }
+                                }
 
-            window.processSub = async (id, action) => {
-                if(!confirm(`Are you sure you want to ${action} this submission?`)) return;
-                try {
-                    const res = await fetch(`/api/organizer/challenges/submissions/${id}/${action}`, {
-                        method: 'POST',
-                        headers: { 'x-auth-token': token }
-                    });
-                    const data = await res.json();
-                    alert(data.msg);
-                    if(res.ok) {
-                        document.getElementById('sub-'+id).remove();
-                    }
-                } catch(e) {
-                    alert('Error processing submission');
-                }
-            };
+                                window.processSub = async (id, action) => {
+                                    if (!confirm(`Are you sure you want to ${action} this submission?`)) return;
+                                    try {
+                                        const res = await fetch(`/api/organizer/challenges/submissions/${id}/${action}`, {
+                                            method: 'POST',
+                                            headers: { 'x-auth-token': token }
+                                        });
+                                        const data = await res.json();
+                                        alert(data.msg);
+                                        if (res.ok) {
+                                            document.getElementById('sub-' + id).remove();
+                                        }
+                                    } catch (e) {
+                                        alert('Error processing submission');
+                                    }
+                                };
 
-            loadSubmissions();
-        });
-    </script>
+                                loadSubmissions();
+                            });
+                        </script>
 </body>
+
 </html>
