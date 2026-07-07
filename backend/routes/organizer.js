@@ -1017,10 +1017,13 @@ router.get('/player/:playerId', async (req, res) => {
 // --- CHALLENGES API ---
 const WeeklyChallenge = require('../models/WeeklyChallenge');
 const ChallengeSubmission = require('../models/ChallengeSubmission');
+const Notification = require('../models/Notification');
+const PushSubscription = require('../models/PushSubscription');
+const webpush = require('web-push');
 
-// @route   POST /organizer/api/challenges
+// @route   POST /organizer/challenges
 // @desc    Create a new weekly challenge (and deactivate older ones)
-router.post('/api/challenges', async (req, res) => {
+router.post('/challenges', async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user || user.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
@@ -1034,6 +1037,34 @@ router.post('/api/challenges', async (req, res) => {
         const newChallenge = new WeeklyChallenge({ title, description });
         await newChallenge.save();
 
+        // --- NOTIFICATION LOGIC ---
+        // Find all verified users
+        const verifiedUsers = await User.find({ isGenuine: true });
+        
+        // 1. In-app notifications
+        const notifs = verifiedUsers.map(u => ({
+            userId: u._id,
+            title: 'New Weekly Challenge!',
+            message: `Challenge: ${title}. Complete it first to win 100 BlazeCoins!`,
+            type: 'info'
+        }));
+        if (notifs.length > 0) await Notification.insertMany(notifs);
+
+        // 2. Web push notifications (offline)
+        const userIds = verifiedUsers.map(u => u._id);
+        const subscriptions = await PushSubscription.find({ userId: { $in: userIds } });
+        const payload = JSON.stringify({
+            title: 'BlazeFrontier Challenges',
+            body: `New Weekly Challenge: ${title}!`
+        });
+        subscriptions.forEach(sub => {
+            webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).catch(err => {
+                if (err.statusCode === 404 || err.statusCode === 410) {
+                    PushSubscription.deleteOne({ endpoint: sub.endpoint }).exec();
+                }
+            });
+        });
+
         res.json({ msg: 'New Weekly Challenge created!', challenge: newChallenge });
     } catch (err) {
         console.error(err.message);
@@ -1041,9 +1072,9 @@ router.post('/api/challenges', async (req, res) => {
     }
 });
 
-// @route   GET /organizer/api/challenges/submissions
+// @route   GET /organizer/challenges/submissions
 // @desc    Get pending challenge submissions
-router.get('/api/challenges/submissions', async (req, res) => {
+router.get('/challenges/submissions', async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user || user.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
@@ -1060,9 +1091,9 @@ router.get('/api/challenges/submissions', async (req, res) => {
     }
 });
 
-// @route   POST /organizer/api/challenges/submissions/:id/approve
-// @desc    Approve a submission
-router.post('/api/challenges/submissions/:id/approve', async (req, res) => {
+// @route   POST /organizer/challenges/submissions/:id/approve
+// @desc    Approve a submission (Only 1 winner per challenge)
+router.post('/challenges/submissions/:id/approve', async (req, res) => {
     try {
         const admin = await User.findById(req.user.id);
         if (!admin || admin.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
@@ -1070,6 +1101,12 @@ router.post('/api/challenges/submissions/:id/approve', async (req, res) => {
         const sub = await ChallengeSubmission.findById(req.params.id).populate('challengeId');
         if (!sub) return res.status(404).json({ msg: 'Submission not found' });
         if (sub.status !== 'Pending') return res.status(400).json({ msg: 'Already processed' });
+
+        // Check if there is already a winner
+        const existingWinner = await ChallengeSubmission.findOne({ challengeId: sub.challengeId._id, status: 'Approved' });
+        if (existingWinner) {
+            return res.status(400).json({ msg: 'This challenge already has a winner!' });
+        }
 
         sub.status = 'Approved';
         await sub.save();
@@ -1081,16 +1118,22 @@ router.post('/api/challenges/submissions/:id/approve', async (req, res) => {
             await player.save();
         }
 
-        res.json({ msg: 'Approved and rewarded!' });
+        // Reject all other pending submissions for this challenge
+        await ChallengeSubmission.updateMany(
+            { challengeId: sub.challengeId._id, _id: { $ne: sub._id }, status: 'Pending' },
+            { $set: { status: 'Rejected' } }
+        );
+
+        res.json({ msg: 'Approved and rewarded! Challenge is now closed for others.' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
 
-// @route   POST /organizer/api/challenges/submissions/:id/reject
+// @route   POST /organizer/challenges/submissions/:id/reject
 // @desc    Reject a submission
-router.post('/api/challenges/submissions/:id/reject', async (req, res) => {
+router.post('/challenges/submissions/:id/reject', async (req, res) => {
     try {
         const admin = await User.findById(req.user.id);
         if (!admin || admin.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });

@@ -2083,7 +2083,14 @@ const ChallengeSubmission = require('../models/ChallengeSubmission');
 router.get('/challenges/active', async (req, res) => {
     try {
         const activeChallenge = await WeeklyChallenge.findOne({ isActive: true }).sort({ createdAt: -1 });
-        res.json(activeChallenge);
+        if (!activeChallenge) return res.json(null);
+
+        const winnerSub = await ChallengeSubmission.findOne({ challengeId: activeChallenge._id, status: 'Approved' }).populate('userId', 'inGameName username playerId');
+        
+        res.json({
+            ...activeChallenge.toObject(),
+            winner: winnerSub ? winnerSub.userId : null
+        });
     } catch (err) {
         console.error('Active challenge fetch error:', err);
         res.status(500).send('Server Error');

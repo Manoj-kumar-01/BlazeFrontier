@@ -122,43 +122,51 @@
     <div class="org-wrap">
         <div class="org-header">
             <div class="org-header-left">
-                <h1>WEEKLY CHALLENGES</h1>
-                <span class="org-badge">MANAGEMENT</span>
+    <%- include('navbar') %>
+
+    <div class="o-dash">
+        <div class="o-header">
+            <h1>Weekly Challenges Management</h1>
+            <p style="color:var(--text-muted);">Create new challenges and review player submissions.</p>
+        </div>
+
+        <div class="c-grid">
+            <div class="o-card">
+                <h3 style="color:#fff; margin-bottom: 20px; font-family:var(--font-display); font-size:1.4rem;">Publish New Challenge</h3>
+                <form id="create-challenge-form" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div>
+                        <label style="color:var(--text-muted); font-size:0.9rem; margin-bottom:8px; display:block;">Challenge Title</label>
+                        <input type="text" id="ch-title" class="o-input" required placeholder="e.g. 10 Headshots in 1 Match">
+                    </div>
+                    <div>
+                        <label style="color:var(--text-muted); font-size:0.9rem; margin-bottom:8px; display:block;">Rules / Description</label>
+                        <textarea id="ch-desc" class="o-input" rows="4" required placeholder="Describe the challenge rules..."></textarea>
+                    </div>
+                    <button type="submit" class="o-btn" id="publish-btn">Publish Challenge</button>
+                </form>
             </div>
-        </div>
 
-        <div class="panel">
-            <h2 class="panel-title">Post New Challenge</h2>
-            <form id="create-challenge-form">
-                <div class="input-group">
-                    <label>Challenge Title</label>
-                    <input type="text" id="ch-title" placeholder="e.g. 10 Headshots in a single match" required>
+            <div class="o-card">
+                <h3 style="color:#fff; margin-bottom: 20px; font-family:var(--font-display); font-size:1.4rem;">Pending Submissions</h3>
+                <div id="submissions-list" style="display: flex; flex-direction: column; gap: 16px; max-height: 500px; overflow-y: auto;">
+                    <div style="color:var(--text-muted); font-size:0.9rem;">Loading...</div>
                 </div>
-                <div class="input-group">
-                    <label>Description & Rules</label>
-                    <textarea id="ch-desc" rows="4" placeholder="Detailed rules..." required></textarea>
-                </div>
-                <button type="submit" class="btn-primary" id="ch-submit-btn">Publish Challenge</button>
-            </form>
-        </div>
-
-        <div class="panel">
-            <h2 class="panel-title">Pending Submissions</h2>
-            <div id="submissions-list">
-                <div style="color:var(--text-muted); font-size:0.9rem;">Loading submissions...</div>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const token = localStorage.getItem('blaze_token');
-            if(!token) return window.location.href='/auth';
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('organizer_token');
+            if(!token) {
+                window.location.href = '/auth';
+                return;
+            }
 
-            // Handle create challenge
+            // Publish Challenge
             document.getElementById('create-challenge-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const btn = document.getElementById('ch-submit-btn');
+                const btn = document.getElementById('publish-btn');
                 btn.disabled = true;
                 btn.textContent = 'Publishing...';
 
@@ -166,16 +174,14 @@
                 const description = document.getElementById('ch-desc').value;
 
                 try {
-                    const res = await fetch('/organizer/api/challenges', {
+                    const res = await fetch('/api/organizer/challenges', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
                         body: JSON.stringify({ title, description })
                     });
                     const data = await res.json();
                     alert(data.msg);
-                    if(res.ok) {
-                        document.getElementById('create-challenge-form').reset();
-                    }
+                    if(res.ok) document.getElementById('create-challenge-form').reset();
                 } catch(err) {
                     alert('Error creating challenge');
                 }
@@ -186,7 +192,7 @@
             // Load submissions
             async function loadSubmissions() {
                 try {
-                    const res = await fetch('/organizer/api/challenges/submissions', {
+                    const res = await fetch('/api/organizer/challenges/submissions', {
                         headers: { 'x-auth-token': token }
                     });
                     if(res.ok) {
@@ -199,30 +205,28 @@
 
                         list.innerHTML = subs.map(s => `
                             <div class="submission-card" id="sub-${s._id}">
-                                <div class="submission-video" onclick="window.open('${s.videoUrl}', '_blank')">
-                                    <video src="${s.videoUrl}"></video>
-                                </div>
+                                <div style="width:60px; height:40px; background:#000; cursor:pointer;" onclick="window.open('${s.videoUrl}', '_blank')"></div>
                                 <div class="submission-info">
                                     <div style="color:#fff; font-weight:bold; margin-bottom:4px;">${s.userId.inGameName || s.userId.username} <span style="color:var(--text-muted); font-weight:normal; font-size:0.8rem;">(${s.userId.playerId})</span></div>
                                     <div style="color:var(--blaze-orange); font-size:0.8rem; margin-bottom:4px;">Challenge: ${s.challengeId.title}</div>
                                     <div style="color:var(--text-muted); font-size:0.75rem;">Submitted: ${new Date(s.createdAt).toLocaleString()}</div>
                                 </div>
-                                <div class="action-btns">
-                                    <button class="btn-approve" onclick="processSub('${s._id}', 'approve')">Approve</button>
-                                    <button class="btn-reject" onclick="processSub('${s._id}', 'reject')">Reject</button>
+                                <div class="submission-actions">
+                                    <button class="s-btn s-approve" onclick="processSub('${s._id}', 'approve')">Approve (Reward)</button>
+                                    <button class="s-btn s-reject" onclick="processSub('${s._id}', 'reject')">Reject</button>
                                 </div>
                             </div>
                         `).join('');
                     }
                 } catch(e) {
-                    console.error('Failed to load submissions', e);
+                    console.error(e);
                 }
             }
 
             window.processSub = async (id, action) => {
                 if(!confirm(`Are you sure you want to ${action} this submission?`)) return;
                 try {
-                    const res = await fetch(`/organizer/api/challenges/submissions/${id}/${action}`, {
+                    const res = await fetch(`/api/organizer/challenges/submissions/${id}/${action}`, {
                         method: 'POST',
                         headers: { 'x-auth-token': token }
                     });

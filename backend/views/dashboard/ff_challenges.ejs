@@ -154,6 +154,10 @@
     <%- include('../partials/navbar') %>
 
     <div class="challenge-container">
+        <a href="/dashboard/verified_freefire" style="display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-bottom: 20px; transition: color 0.2s;" onmouseover="this.style.color='#fff';" onmouseout="this.style.color='rgba(255,255,255,0.7)';">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to Arena
+        </a>
         <div class="header-title">WEEKLY CHALLENGE</div>
         <div class="header-sub">Prove your skills. Earn rewards.</div>
 
@@ -200,6 +204,28 @@
                     <div style="font-size:1.5rem; font-weight:600; color:#4ade80; margin-bottom:8px;">Proof Submitted!</div>
                     <div style="color:rgba(255,255,255,0.7);">Your submission is currently under review by the organizers.<br>Rewards will be credited upon approval.</div>
                 </div>
+
+                <div id="winner-section" style="display: none; margin-top: 30px; background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 16px; padding: 24px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <span style="font-size: 2rem;">🏆</span>
+                        <div>
+                            <div style="color: #fbbf24; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase;">Challenge Completed</div>
+                            <div style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">The reward has been claimed!</div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #fbbf24; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #000; font-size: 1.2rem;">1</div>
+                            <div>
+                                <div id="winner-name" style="font-weight: 600; font-size: 1.1rem; color: #fff;">PlayerName</div>
+                                <div id="winner-id" style="color: rgba(255,255,255,0.5); font-size: 0.8rem; font-family: 'JetBrains Mono', monospace;">ID: 12345678</div>
+                            </div>
+                        </div>
+                        <div style="color: #4ade80; font-weight: bold; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
+                            AWARDED
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -234,6 +260,21 @@
                 document.getElementById('ch-desc-txt').innerText = data.description;
                 document.getElementById('r-coins').innerText = data.rewardCoins;
                 document.getElementById('r-points').innerText = data.rewardPoints;
+
+                if (data.winner) {
+                    // Update status badge
+                    const statusBadge = document.querySelector('.ch-status');
+                    statusBadge.innerHTML = 'COMPLETED';
+                    statusBadge.style.background = 'rgba(251, 191, 36, 0.1)';
+                    statusBadge.style.color = '#fbbf24';
+                    statusBadge.style.borderColor = 'rgba(251, 191, 36, 0.3)';
+
+                    // Hide submission form, show leaderboard
+                    document.getElementById('submission-section').style.display = 'none';
+                    document.getElementById('winner-section').style.display = 'block';
+                    document.getElementById('winner-name').innerText = data.winner.inGameName || data.winner.username;
+                    document.getElementById('winner-id').innerText = 'ID: ' + (data.winner.playerId || 'N/A');
+                }
 
             } catch(e) {
                 document.getElementById('loading-state').style.display = 'none';
