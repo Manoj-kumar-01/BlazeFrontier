@@ -1741,7 +1741,7 @@ router.get('/dashboard/stats', async (req, res) => {
             dynamicNews.sort((a, b) => b.timestamp - a.timestamp);
             dynamicNews = dynamicNews.slice(0, 5);
 
-            const potdRecord = await PlayerOfTheDay.findOne({ isActive: true }).populate('userId', 'inGameName username playerId').lean();
+            const potdRecord = await PlayerOfTheDay.findOne({ isActive: true }).sort({ createdAt: -1 }).populate('userId', 'inGameName username playerId').lean();
             let potd = null;
             if (potdRecord && potdRecord.userId) {
                 potd = {
@@ -1961,7 +1961,7 @@ router.get('/voting-event/:eventId/results', async (req, res) => {
 router.get('/stream/potd', async (req, res) => {
     try {
         const PlayerOfTheDay = require('../models/PlayerOfTheDay');
-        const potdRecord = await PlayerOfTheDay.findOne({ isActive: true }).lean();
+        const potdRecord = await PlayerOfTheDay.findOne({ isActive: true }).sort({ createdAt: -1 }).lean();
         
         if (!potdRecord || !potdRecord.videoUrl) {
             return res.status(404).send('No active POTD video found.');

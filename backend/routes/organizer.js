@@ -866,7 +866,7 @@ const potdUpload = multer({
 router.get('/potd-current', async (req, res) => {
     try {
         const PlayerOfTheDay = require('../models/PlayerOfTheDay');
-        const potd = await PlayerOfTheDay.findOne({ isActive: true }).populate('userId', 'inGameName username playerId').lean();
+        const potd = await PlayerOfTheDay.findOne({ isActive: true }).sort({ createdAt: -1 }).populate('userId', 'inGameName username playerId').lean();
         if (!potd) return res.json(null);
         res.json({
             playerName: potd.playerName || (potd.userId && (potd.userId.inGameName || potd.userId.username)) || 'Unknown',

@@ -971,6 +971,8 @@
                                 bgImg.style.display = 'none';
                                 bgVideo.src = stats.potd.videoUrl;
                                 bgVideo.style.display = 'block';
+                                bgVideo.load();
+                                bgVideo.play().catch(e => console.log('POTD Autoplay prevented'));
                             } else {
                                 bgVideo.style.display = 'none';
                                 bgImg.style.display = 'block';

@@ -155,11 +155,9 @@ const resolvers = {
             dynamicNews.sort((a, b) => b.timestamp - a.timestamp);
             dynamicNews = dynamicNews.slice(0, 5);
 
-            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
             const potdRecord = await PlayerOfTheDay.findOne({ 
-                isActive: true,
-                createdAt: { $gte: twentyFourHoursAgo }
-            }).populate('userId', 'inGameName username playerId').lean();
+                isActive: true
+            }).sort({ createdAt: -1 }).populate('userId', 'inGameName username playerId').lean();
             let potd = null;
             if (potdRecord && potdRecord.userId) {
                 potd = {
