@@ -395,28 +395,31 @@
 
     <div class="dash">
         
-        <!-- Elite Verified Tagline (Top) -->
-        <div id="ff-verified-tagline" style="display: block; grid-column: 1 / -1; margin-bottom: 24px;">
-            <div style="display: flex; align-items: center; gap: 12px; background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); padding: 12px 20px; border-radius: 8px; backdrop-filter: blur(4px);">
-                <span style="color: #d4af37; font-size: 1.2rem; filter: drop-shadow(0 0 5px rgba(212,175,55,0.8));">✦</span>
-                <div style="color: rgba(255,255,255,0.9); font-size: 0.9rem; font-family: var(--font-body); flex: 1;">
-                    <span style="color: #d4af37; font-weight: 700; letter-spacing: 1px; margin-right: 6px;">VERIFIED ELITE:</span> 
-                    Premium tournaments and operations unlocked.
+        <!-- Top Banners Container -->
+        <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
+            <!-- Elite Verified Tagline (Top) -->
+            <div id="ff-verified-tagline" style="display: block;">
+                <div style="display: flex; align-items: center; gap: 12px; background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); padding: 12px 20px; border-radius: 8px; backdrop-filter: blur(4px);">
+                    <span style="color: #d4af37; font-size: 1.2rem; filter: drop-shadow(0 0 5px rgba(212,175,55,0.8));">⭐</span>
+                    <div style="color: rgba(255,255,255,0.9); font-size: 0.9rem; font-family: var(--font-body); flex: 1;">
+                        <span style="color: #d4af37; font-weight: 700; letter-spacing: 1px; margin-right: 6px;">VERIFIED ELITE:</span> 
+                        Premium tournaments and operations unlocked.
+                    </div>
+                    <a href="/dashboard/tournaments" style="color: #d4af37; font-size: 0.85rem; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 2px; transition: border-color 0.2s;" onmouseover="this.style.borderColor='#d4af37';" onmouseout="this.style.borderColor='rgba(212,175,55,0.3)';">
+                        Enter Arena &rarr;
+                    </a>
                 </div>
-                <a href="/dashboard/tournaments" style="color: #d4af37; font-size: 0.85rem; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 2px; transition: border-color 0.2s;" onmouseover="this.style.borderColor='#d4af37';" onmouseout="this.style.borderColor='rgba(212,175,55,0.3)';">
-                    Enter Arena &rarr;
-                </a>
             </div>
-        </div>
 
-        <!-- Weekly Challenges Banner -->
-        <a href="/dashboard/verified_freefire/challenges" style="display: block; grid-column: 1 / -1; margin-bottom: 24px; text-decoration: none;">
-            <div style="background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); padding: 16px 24px; border-radius: 8px; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;" onmouseover="this.style.background='rgba(168,85,247,0.2)';" onmouseout="this.style.background='rgba(168,85,247,0.1)';">
-                <div style="color: #f3e8ff; font-family: var(--font-display); font-size: 1.3rem; letter-spacing: 1px; text-transform: uppercase;">
-                    Weekly Challenges &rarr;
+            <!-- Weekly Challenges Banner -->
+            <a href="/dashboard/verified_freefire/challenges" style="display: block; text-decoration: none;">
+                <div style="background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); padding: 16px 24px; border-radius: 8px; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;" onmouseover="this.style.background='rgba(168,85,247,0.2)';" onmouseout="this.style.background='rgba(168,85,247,0.1)';">
+                    <div style="color: #f3e8ff; font-family: var(--font-display); font-size: 1.3rem; letter-spacing: 1px; text-transform: uppercase;">
+                        Weekly Challenges &rarr;
+                    </div>
                 </div>
-            </div>
-        </a>
+            </a>
+        </div>
 
 
         <!-- Welcome -->
