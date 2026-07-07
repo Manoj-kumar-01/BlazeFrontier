@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support & Feedback | Blaze Frontier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .page-wrap {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 100px 24px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .feedback-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .feedback-header h1 {
+            font-family: var(--font-display, 'Bebas Neue');
+            font-size: 3.5rem;
+            color: #fff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .feedback-header p {
+            color: var(--text-muted, #a1a1aa);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .feedback-card {
+            background: #111116;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff5722, #ff9800);
+            box-shadow: 0 2px 10px rgba(255, 87, 34, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--text-300, #d4d4d8);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 14px 16px;
+            color: #fff;
+            font-family: var(--font-sans, 'Inter');
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: rgba(255, 87, 34, 0.6);
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px top 50%;
+            background-size: 12px auto;
+        }
+        
+        select.form-control option {
+            background-color: #111116;
+            color: #fff;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
+            color: #fff;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: var(--font-display, 'Bebas Neue');
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+        }
+
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-submit:hover::after {
+            left: 100%;
+        }
+
+        .video-proof-group {
+            display: none;
+            animation: slideDown 0.3s ease forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #alert-box {
+            display: none;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Loading spinner for button */
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-loading .spinner {
+            display: inline-block;
+        }
+        .btn-loading .btn-text {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/navbar') %>
+
+    <div class="page-wrap">
+        <div class="feedback-header">
+            <h1>SUPPORT & FEEDBACK</h1>
+            <p>Help us improve Blaze Frontier. Whether you're reporting a glitch, requesting a feature, or reporting a cheater, your voice matters.</p>
+        </div>
+
+        <div class="feedback-card">
+            <div id="alert-box"></div>
+            
+            <form id="feedbackForm">
+                <div class="form-group">
+                    <label class="form-label" for="topic">Topic of Request</label>
+                    <select class="form-control" id="topic" name="topic" required>
+                        <option value="" disabled selected>Select a topic...</option>
+                        <option value="Feature Request / Website Upgrade">Feature Request / Website Upgrade</option>
+                        <option value="Report a Glitch / Bug">Report a Glitch / Bug</option>
+                        <option value="Report a Player (Cheat/Hack)">Report a Player (Cheat/Hack)</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group video-proof-group" id="videoProofGroup">
+                    <label class="form-label" for="proof">Video Proof URL (Required for Cheater Reports)</label>
+                    <input type="url" class="form-control" id="proof" name="proof" placeholder="https://youtube.com/..." autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="subject">Subject</label>
+                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Brief summary of your request" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="message">Details</label>
+                    <textarea class="form-control" id="message" name="message" placeholder="Please provide as much detail as possible..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="btn-text">SUBMIT REQUEST</span>
+                    <div class="spinner"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const topicSelect = document.getElementById('topic');
+            const videoProofGroup = document.getElementById('videoProofGroup');
+            const proofInput = document.getElementById('proof');
+            const form = document.getElementById('feedbackForm');
+            const alertBox = document.getElementById('alert-box');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Toggle Video Proof field based on topic
+            topicSelect.addEventListener('change', (e) => {
+                if (e.target.value === 'Report a Player (Cheat/Hack)') {
+                    videoProofGroup.style.display = 'block';
+                    proofInput.setAttribute('required', 'required');
+                } else {
+                    videoProofGroup.style.display = 'none';
+                    proofInput.removeAttribute('required');
+                    proofInput.value = '';
+                }
+            });
+
+            // Handle Form Submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const token = localStorage.getItem('blaze_token');
+                if (!token) {
+                    window.location.href = '/auth';
+                    return;
+                }
+
+                const topic = document.getElementById('topic').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+                const proof = document.getElementById('proof').value;
+
+                submitBtn.classList.add('btn-loading');
+                submitBtn.disabled = true;
+                alertBox.style.display = 'none';
+
+                try {
+                    const res = await fetch('/api/feedback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': token
+                        },
+                        body: JSON.stringify({ topic, subject, message, proof })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        alertBox.className = 'alert-success';
+                        alertBox.innerText = data.msg || 'Report submitted successfully!';
+                        alertBox.style.display = 'block';
+                        form.reset();
+                        videoProofGroup.style.display = 'none';
+                    } else {
+                        alertBox.className = 'alert-error';
+                        alertBox.innerText = data.msg || 'Failed to submit report.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error('Submission error:', err);
+                    alertBox.className = 'alert-error';
+                    alertBox.innerText = 'An unexpected error occurred. Please try again.';
+                    alertBox.style.display = 'block';
+                } finally {
+                    submitBtn.classList.remove('btn-loading');
+                    submitBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

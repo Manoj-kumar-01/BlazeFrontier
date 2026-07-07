@@ -160,6 +160,7 @@ app.get('/dashboard', (req, res) => res.render('dashboard/index', { activePage: 
 app.get('/dashboard/seasons', (req, res) => res.render('dashboard/seasons', { activePage: '/dashboard/seasons' }));
 app.get('/dashboard/seasons/hub', (req, res) => res.render('dashboard/season_hub', { activePage: '/dashboard/seasons' }));
 app.get('/dashboard/profile', (req, res) => res.render('dashboard/profile', { activePage: '/dashboard/profile' }));
+app.get('/dashboard/feedback', (req, res) => res.render('dashboard/feedback', { activePage: '/dashboard/feedback' }));
 app.get('/dashboard/tournaments', (req, res) => res.render('dashboard/tournaments', { activePage: '/dashboard/tournaments' }));
 app.get('/dashboard/tournaments/all', (req, res) => res.render('dashboard/tournaments_all', { activePage: '/dashboard/tournaments' }));
 app.get('/dashboard/tournaments/register', (req, res) => res.render('dashboard/tourney_register', { activePage: '/dashboard/tournaments' }));

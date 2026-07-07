@@ -792,7 +792,7 @@
                     style="z-index: 10; padding: 0; overflow: hidden; position: relative; height: 260px; min-height: 260px; display: flex; align-items: flex-end; justify-content: flex-start; border-radius: 16px; border: 1px solid rgba(255, 215, 0, 0.15); box-shadow: 0 12px 40px rgba(0,0,0,0.7); cursor: pointer; transition: transform 0.2s; margin-top: 16px;">
                     <img id="potd-bg-img" src="/public/potd_bg.jpg"
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; filter: brightness(0.6); transition: filter 0.3s;" />
-                    <video id="potd-bg-video" autoplay loop muted playsinline
+                    <video id="potd-bg-video" autoplay muted playsinline
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; filter: brightness(0.6); transition: filter 0.3s; display: none;"></video>
                     <div
                         style="position: relative; z-index: 2; padding: 24px; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0) 100%);">
@@ -808,6 +808,12 @@
                                 Please wait</div>
                         </div>
                     </div>
+                    <button id="potd-play-btn" onclick="togglePotdPlay(event)" style="position: absolute; bottom: 16px; right: 60px; z-index: 20; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 36px; height: 36px; display: none; align-items: center; justify-content: center; color: #fff; cursor: pointer; backdrop-filter: blur(4px); transition: all 0.2s;">
+                        <svg id="potd-play-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    </button>
                     <button id="potd-mute-btn" onclick="togglePotdMute(event)" style="position: absolute; bottom: 16px; right: 16px; z-index: 20; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 36px; height: 36px; display: none; align-items: center; justify-content: center; color: #fff; cursor: pointer; backdrop-filter: blur(4px); transition: all 0.2s;">
                         <svg id="potd-mute-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -980,12 +986,24 @@
                                 bgVideo.src = stats.potd.videoUrl;
                                 bgVideo.style.display = 'block';
                                 document.getElementById('potd-mute-btn').style.display = 'flex';
+                                document.getElementById('potd-play-btn').style.display = 'flex';
+                                
+                                bgVideo.onplay = () => {
+                                    document.getElementById('potd-play-icon').innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+                                };
+                                bgVideo.onpause = () => {
+                                    document.getElementById('potd-play-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+                                };
+                                bgVideo.onended = () => {
+                                    document.getElementById('potd-play-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+                                };
                                 
                                 bgVideo.onerror = function() {
                                     console.error('POTD Video failed to load or decode. It may be an unsupported format (like HEVC or MKV). Please upload a standard H.264 MP4.');
                                     bgVideo.style.display = 'none';
                                     bgImg.style.display = 'block';
                                     document.getElementById('potd-mute-btn').style.display = 'none';
+                                    document.getElementById('potd-play-btn').style.display = 'none';
                                 };
                                 
                                 bgVideo.load();
@@ -1006,6 +1024,7 @@
                             } else {
                                 bgVideo.style.display = 'none';
                                 document.getElementById('potd-mute-btn').style.display = 'none';
+                                document.getElementById('potd-play-btn').style.display = 'none';
                                 bgImg.style.display = 'block';
                             }
 
@@ -1023,6 +1042,7 @@
                             document.getElementById('potd-bg-img').style.display = 'block';
                             document.getElementById('potd-bg-video').style.display = 'none';
                             document.getElementById('potd-mute-btn').style.display = 'none';
+                            if(document.getElementById('potd-play-btn')) document.getElementById('potd-play-btn').style.display = 'none';
                             document.getElementById('potd-bg-img').style.filter = 'brightness(0.3)';
                             document.getElementById('potd-player').innerText = 'AWAITING UPLOAD';
                             document.getElementById('potd-title').innerText = 'PENDING';
@@ -1150,6 +1170,17 @@
                 } catch (e) { console.error(e); }
             });
 
+            window.togglePotdPlay = function(e) {
+                e.stopPropagation();
+                const video = document.getElementById('potd-bg-video');
+                if (!video) return;
+                if (video.paused || video.ended) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            };
+
             window.togglePotdMute = function(e) {
                 e.stopPropagation();
                 const video = document.getElementById('potd-bg-video');
@@ -1159,7 +1190,7 @@
                 if (video.muted) {
                     icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
                 } else {
-                    icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>';
+                    icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>';
                 }
             };
         </script>

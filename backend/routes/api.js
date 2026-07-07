@@ -2021,6 +2021,59 @@ router.get('/stream/potd', async (req, res) => {
     }
 });
 
+// @route   POST /api/feedback
+// @desc    Submit feedback or report player
+router.post('/feedback', authMiddleware, async (req, res) => {
+    try {
+        const { topic, subject, message, proof } = req.body;
+        if (!topic || !subject || !message) {
+            return res.status(400).json({ msg: 'Please provide topic, subject, and message.' });
+        }
+        if (topic === 'Report a Player (Cheat/Hack)' && !proof) {
+            return res.status(400).json({ msg: 'Video proof is required when reporting a player.' });
+        }
+        
+        const User = require('../models/User');
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+        
+        const sendEmail = require('../utils/sendEmail');
+        
+        let htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                <h2 style="color: #ff5722;">New Report / Feedback</h2>
+                <p><strong>From:</strong> ${user.username} ${user.email ? `(${user.email})` : ''}</p>
+                <p><strong>Blaze ID:</strong> ${user.playerId}</p>
+                <p><strong>Topic:</strong> ${topic}</p>
+                <p><strong>Subject:</strong> ${subject}</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p><strong>Message:</strong></p>
+                <p style="white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 4px;">${message}</p>
+        `;
+        
+        if (topic === 'Report a Player (Cheat/Hack)' && proof) {
+            htmlContent += `<p><strong>Video Proof:</strong> <a href="${proof}" target="_blank" style="color: #2196F3;">${proof}</a></p>`;
+        }
+        
+        htmlContent += `</div>`;
+        
+        const emailSent = await sendEmail({
+            email: 'blazefrontierofficial@gmail.com',
+            subject: `[Support] ${topic} - ${subject}`,
+            html: htmlContent
+        });
+        
+        if (!emailSent) {
+            return res.status(500).json({ msg: 'Failed to send report. Please try again later.' });
+        }
+        
+        res.json({ msg: 'Your report has been submitted successfully.' });
+    } catch (err) {
+        console.error('Feedback error:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
 
 
