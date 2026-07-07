@@ -42,6 +42,11 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ msg: 'Access Denied: Organizers cannot access the Player portal.' });
         }
 
+        // Enforce Single Device Login
+        if (user.sessionToken && decoded.sessionToken !== user.sessionToken) {
+            return res.status(401).json({ msg: 'Session expired. Logged in from another device.' });
+        }
+
         req.user = decoded.user || decoded;
         next();
     } catch (err) {

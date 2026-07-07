@@ -28,6 +28,30 @@
     }
 </style>
 <script>
+    // Global fetch interceptor for Single Device Login enforcement
+    const originalFetch = window.fetch;
+    window.fetch = async function(...args) {
+        try {
+            const response = await originalFetch.apply(this, args);
+            if (response.status === 401) {
+                const clone = response.clone();
+                try {
+                    const data = await clone.json();
+                    if (data.msg === 'Session expired. Logged in from another device.') {
+                        localStorage.removeItem('blaze_token');
+                        localStorage.removeItem('organizer_token');
+                        alert('Session expired. You have logged in from another device.');
+                        window.location.href = '/auth';
+                        return new Promise(() => {}); // Stop execution
+                    }
+                } catch(e) {}
+            }
+            return response;
+        } catch(error) {
+            throw error;
+        }
+    };
+
     // Fades out the preloader once the entire page (including images) is fully loaded
     window.addEventListener('load', () => {
         document.body.classList.add('loaded');

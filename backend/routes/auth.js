@@ -124,8 +124,13 @@ router.post('/google', async (req, res) => {
             return res.status(500).json({ msg: `Database error while saving user: ${dbErr.message}` });
         }
 
+        const crypto = require('crypto');
+        const sessionToken = crypto.randomBytes(16).toString('hex');
+        user.sessionToken = sessionToken;
+        await user.save();
+
         const token = jwt.sign(
-            { id: user._id },
+            { id: user._id, sessionToken: sessionToken },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );

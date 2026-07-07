@@ -118,6 +118,10 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
+    sessionToken: {
+        type: String,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now
