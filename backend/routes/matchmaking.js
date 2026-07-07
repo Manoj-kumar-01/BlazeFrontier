@@ -44,7 +44,7 @@ setInterval(() => {
             activeMatches.delete(matchId);
         }
     }
-}, 60 * 1000); // Check every 60 seconds
+}, 60 * 1000).unref(); // Check every 60 seconds
 
 // ─── STALE QUEUE CLEANUP (expired requests that timer missed) ───
 
@@ -56,7 +56,7 @@ setInterval(() => {
             removeRequest(requestId);
         }
     }
-}, 15 * 1000); // Check every 15 seconds
+}, 15 * 1000).unref(); // Check every 15 seconds
 
 // ─── HELPER FUNCTIONS ───────────────────────────────────────────
 

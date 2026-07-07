@@ -976,10 +976,18 @@
                             
                             if (stats.potd.videoUrl) {
                                 bgImg.style.display = 'none';
-                                // Add a timestamp to bypass browser 206 caching issues on returning sessions
-                                bgVideo.src = stats.potd.videoUrl + '?t=' + Date.now();
+                                // Removed cache buster to prevent massive re-downloads on returning sessions.
+                                bgVideo.src = stats.potd.videoUrl;
                                 bgVideo.style.display = 'block';
                                 document.getElementById('potd-mute-btn').style.display = 'flex';
+                                
+                                bgVideo.onerror = function() {
+                                    console.error('POTD Video failed to load or decode. It may be an unsupported format (like HEVC or MKV). Please upload a standard H.264 MP4.');
+                                    bgVideo.style.display = 'none';
+                                    bgImg.style.display = 'block';
+                                    document.getElementById('potd-mute-btn').style.display = 'none';
+                                };
+                                
                                 bgVideo.load();
                                 
                                 const playPromise = bgVideo.play();

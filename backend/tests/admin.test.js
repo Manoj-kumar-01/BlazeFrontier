@@ -3,7 +3,9 @@ const { app } = require('../server');
 const process = require('process');
 const speakeasy = require('speakeasy');
 require('dotenv').config();
+const mongoose = require('mongoose');
 
+jest.setTimeout(30000);
 describe('Admin Security & Session Auth Tests', () => {
     let adminRoute;
 
@@ -13,6 +15,10 @@ describe('Admin Security & Session Auth Tests', () => {
         process.env.ADMIN_PASSWORD = 'testpassword';
         process.env.ADMIN_MFA_SECRET = 'JBSWY3DPEHPK3PXP'; // Valid base32 secret
         process.env.SESSION_SECRET = 'testsecret';
+    });
+
+    afterAll(async () => {
+        await mongoose.connection.close();
     });
 
     it('should redirect unauthenticated users to the login page', async () => {

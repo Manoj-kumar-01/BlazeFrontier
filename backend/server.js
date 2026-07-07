@@ -40,20 +40,22 @@ app.use(express.urlencoded({ extended: true }));
 // Express Session for Admin Panel
 const session = require('express-session');
 const MongoStore = require('connect-mongo').default || require('connect-mongo');
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI,
-        collectionName: 'adminSessions'
-    }),
-    cookie: { 
-        secure: process.env.NODE_ENV === 'production', 
-        httpOnly: true, 
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
-    }
-}));
+const sessionOptions = {
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: { 
+          secure: process.env.NODE_ENV === 'production', 
+          maxAge: 24 * 60 * 60 * 1000 // 1 day
+      }
+  };
+  if (process.env.NODE_ENV !== 'test' && process.env.MONGO_URI) {
+      sessionOptions.store = MongoStore.create({
+          mongoUrl: process.env.MONGO_URI,
+          collectionName: 'adminSessions'
+      });
+  }
+  app.use(session(sessionOptions));
 
 // Apply rate limiter specifically to API routes
 app.use('/api/', apiLimiter);

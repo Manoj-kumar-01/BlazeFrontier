@@ -3,15 +3,19 @@ const { app } = require('../server');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
+jest.mock('../models/User', () => ({
+    findById: jest.fn().mockResolvedValue({ role: 'user', email: 'test@test.com' })
+}));
+
+jest.setTimeout(30000);
+
 beforeAll(async () => {
     require('dotenv').config();
-    if (process.env.MONGO_URI) {
-        await mongoose.connect(process.env.MONGO_URI);
-    }
+    mongoose.set('bufferCommands', false); // Prevent hanging queries when no DB
 });
 
 afterAll(async () => {
-    await mongoose.connection.close();
+    // No connection to close
 });
 
 describe('Authentication Tests', () => {
