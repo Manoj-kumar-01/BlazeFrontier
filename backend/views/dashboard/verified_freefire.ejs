@@ -655,7 +655,11 @@
                 }
                 if(profRes.ok) {
                     const prof = await profRes.json();
-                    isGenuine = prof.isGenuine === true;
+                    if (prof.isGenuine !== true) {
+                        window.location.href = '/dashboard/freefire';
+                        return;
+                    }
+                    isGenuine = true;
                     totalMatches = prof.totalMatches || 0;
                     blockedUntil = prof.matchmakingBlockedUntil;
                     dailyCount = prof.matchmakingDailyCount || 0;
