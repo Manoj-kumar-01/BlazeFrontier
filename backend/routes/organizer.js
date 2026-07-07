@@ -1020,7 +1020,7 @@ const ChallengeSubmission = require('../models/ChallengeSubmission');
 
 // @route   POST /organizer/api/challenges
 // @desc    Create a new weekly challenge (and deactivate older ones)
-router.post('/api/challenges', authMiddleware, async (req, res) => {
+router.post('/api/challenges', async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user || user.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
@@ -1043,7 +1043,7 @@ router.post('/api/challenges', authMiddleware, async (req, res) => {
 
 // @route   GET /organizer/api/challenges/submissions
 // @desc    Get pending challenge submissions
-router.get('/api/challenges/submissions', authMiddleware, async (req, res) => {
+router.get('/api/challenges/submissions', async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user || user.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
@@ -1062,7 +1062,7 @@ router.get('/api/challenges/submissions', authMiddleware, async (req, res) => {
 
 // @route   POST /organizer/api/challenges/submissions/:id/approve
 // @desc    Approve a submission
-router.post('/api/challenges/submissions/:id/approve', authMiddleware, async (req, res) => {
+router.post('/api/challenges/submissions/:id/approve', async (req, res) => {
     try {
         const admin = await User.findById(req.user.id);
         if (!admin || admin.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
@@ -1090,7 +1090,7 @@ router.post('/api/challenges/submissions/:id/approve', authMiddleware, async (re
 
 // @route   POST /organizer/api/challenges/submissions/:id/reject
 // @desc    Reject a submission
-router.post('/api/challenges/submissions/:id/reject', authMiddleware, async (req, res) => {
+router.post('/api/challenges/submissions/:id/reject', async (req, res) => {
     try {
         const admin = await User.findById(req.user.id);
         if (!admin || admin.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
