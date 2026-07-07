@@ -976,11 +976,25 @@
                             
                             if (stats.potd.videoUrl) {
                                 bgImg.style.display = 'none';
-                                bgVideo.src = stats.potd.videoUrl;
+                                // Add a timestamp to bypass browser 206 caching issues on returning sessions
+                                bgVideo.src = stats.potd.videoUrl + '?t=' + Date.now();
                                 bgVideo.style.display = 'block';
                                 document.getElementById('potd-mute-btn').style.display = 'flex';
                                 bgVideo.load();
-                                bgVideo.play().catch(e => console.log('POTD Autoplay prevented'));
+                                
+                                const playPromise = bgVideo.play();
+                                if (playPromise !== undefined) {
+                                    playPromise.catch(e => {
+                                        console.log('POTD Autoplay prevented', e);
+                                        const forcePlay = () => {
+                                            bgVideo.play();
+                                            document.removeEventListener('click', forcePlay);
+                                            document.removeEventListener('touchstart', forcePlay);
+                                        };
+                                        document.addEventListener('click', forcePlay);
+                                        document.addEventListener('touchstart', forcePlay);
+                                    });
+                                }
                             } else {
                                 bgVideo.style.display = 'none';
                                 document.getElementById('potd-mute-btn').style.display = 'none';
