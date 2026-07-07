@@ -444,7 +444,8 @@
                         </div>
                         <div class="ph-meta">
                             <div class="ph-tag">Region <span><span id="ph-region">—</span></span></div>
-                            <div class="ph-tag">Game UID <span><span id="ph-uid">—</span></span></div>
+                            <div class="ph-tag">FreeFire UID <span><span id="ph-uid">—</span></span></div>
+                            <div class="ph-tag" style="margin-top: 6px;">Player ID <span><span id="ph-pid-header">—</span></span></div>
                         </div>
                     </div>
                     
@@ -546,7 +547,7 @@
                         <div class="dp-title" id="account-title">ACCOUNT</div>
                         <div class="dp-item"><span class="dp-key">Username</span><span class="dp-val"
                                 id="dp-user">—</span></div>
-                        <div class="dp-item"><span class="dp-key">In-Game Name</span><span class="dp-val"
+                        <div class="dp-item"><span class="dp-key">Free Fire Name</span><span class="dp-val"
                                 id="dp-ign">—</span></div>
                         <div class="dp-item" id="mobile-hide-setup"><span class="dp-key">Setup</span><span class="dp-val" style="color:#22c55e"
                                 id="dp-setup">—</span></div>
@@ -554,8 +555,8 @@
                     <div class="detail-panel" id="server-detail-panel">
                         <div class="dp-title" id="server-title">SERVER</div>
                         <div class="dp-item"><span class="dp-key">Region</span><span class="dp-val"
-                                id="dp-region">—</span></div>
-                        <div class="dp-item"><span class="dp-key">Game UID</span><span class="dp-val"
+                                id="ph-region-dup" style="display:none;">—</span><span class="dp-val" id="dp-region">—</span></div>
+                        <div class="dp-item"><span class="dp-key">FreeFire UID</span><span class="dp-val"
                                 id="dp-uid">—</span></div>
                         <div class="dp-item"><span class="dp-key">Player ID</span><span class="dp-val" id="dp-pid"
                                 style="font-size:0.75rem">—</span></div>
@@ -649,7 +650,7 @@
 
             <div id="search-result" style="display: none;">
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06);">
-                    <img id="sp-avatar" src="/public/blaze_avatar.png" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);">
+                    <img id="sp-avatar" src="/public/blaze_avatar.png" onerror="this.src='/public/blaze_avatar.png'" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);">
                     <div>
                         <div id="sp-name" style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1;">—</div>
                         <div id="sp-badge" style="font-size: 0.75rem; font-family: var(--font-mono); margin-top: 6px; padding: 2px 6px; border-radius: 4px; display: inline-block;"></div>
@@ -681,7 +682,7 @@
                         <span id="sp-pid" style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                        <span style="color: var(--text-muted);">Game UID</span>
+                        <span style="color: var(--text-muted);">FreeFire UID</span>
                         <span id="sp-uid" style="color: #fff; font-family: var(--font-mono);">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
@@ -710,12 +711,12 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="editInGameName">In-Game Name</label>
-                    <input type="text" class="form-input" id="editInGameName" placeholder="Enter new IGN">
+                    <label class="form-label" for="editInGameName">Free Fire Name</label>
+                    <input type="text" class="form-input" id="editInGameName" placeholder="Enter new Free Fire Name">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="editGameUid">Game UID</label>
-                    <input type="text" class="form-input" id="editGameUid" placeholder="Enter Game UID">
+                    <label class="form-label" for="editGameUid">FreeFire UID</label>
+                    <input type="text" class="form-input" id="editGameUid" placeholder="Enter FreeFire UID">
                 </div>
                 <div style="display: flex; gap: 12px; margin-top: 24px;">
                     <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeEditProfileModal()">Cancel</button>
@@ -908,6 +909,7 @@
                     document.getElementById('ph-name').textContent = u.inGameName || u.username;
                     document.getElementById('ph-region').textContent = u.location || '—';
                     document.getElementById('ph-uid').textContent = u.gameUid || '—';
+                    if (document.getElementById('ph-pid-header')) document.getElementById('ph-pid-header').textContent = u.playerId || '—';
                     
                     const avatarEl = document.getElementById('ph-avatar');
                     if (u.profilePic && u.profilePic.trim() !== '') {
