@@ -910,7 +910,11 @@
                             if (res.ok) {
                                 const user = await res.json();
                                 document.getElementById('enter-arena-btn').addEventListener('click', () => {
-                                    window.location.href = '/dashboard/freefire';
+                                    if (user.isGenuine) {
+                                        window.location.href = '/dashboard/verified_freefire';
+                                    } else {
+                                        window.location.href = '/dashboard/freefire';
+                                    }
                                 });
                                 break; // Success, exit loop
                             }
