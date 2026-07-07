@@ -484,7 +484,7 @@
         </div>
 
         <!-- Sidebar -->
-        <div class="c-sidebar" id="ff-qs-section">
+        <div class="c-sidebar">
             <div class="side-panel">
                 <div class="sp-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <span style="color: #fff; font-family: var(--font-display); letter-spacing: 1px; font-size: 1.2rem;">HIGHLIGHTS</span>
@@ -686,7 +686,7 @@
                     const tData = await tRes.json();
                     let html = '';
                     
-                    const activeReq = tData.requests && tData.requests.find(r => r.status === 'Approved' || r.status === 'Pending' || r.status === 'Awaiting Verification');
+                    const activeReq = tData.requests && tData.requests.find(r => (r.status === 'Approved' || r.status === 'Pending' || r.status === 'Awaiting Verification') && r.format === 'Qualification Series');
 
                     if (activeReq) {
                         const formatStr = activeReq.format ? activeReq.format.toUpperCase() : 'UNKNOWN';
