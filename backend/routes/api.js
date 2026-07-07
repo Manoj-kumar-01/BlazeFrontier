@@ -2098,12 +2098,12 @@ router.get('/challenges/active', async (req, res) => {
 });
 
 // @route   POST /api/challenges/submit
-// @desc    Submit a video proof for a challenge
-router.post('/challenges/submit', authMiddleware, upload.single('clip'), async (req, res) => {
+// @desc    Submit a video proof link for a challenge
+router.post('/challenges/submit', authMiddleware, async (req, res) => {
     try {
-        const { challengeId } = req.body;
-        if (!challengeId || !req.file) {
-            return res.status(400).json({ msg: 'Please provide challengeId and a video file.' });
+        const { challengeId, videoUrl } = req.body;
+        if (!challengeId || !videoUrl) {
+            return res.status(400).json({ msg: 'Please provide challengeId and a public proof link.' });
         }
 
         const user = await User.findById(req.user.id);
@@ -2117,8 +2117,6 @@ router.post('/challenges/submit', authMiddleware, upload.single('clip'), async (
             return res.status(400).json({ msg: 'You have already submitted proof for this challenge (Pending or Approved).' });
         }
 
-        const videoUrl = '/public/uploads/' + req.file.filename;
-
         const newSubmission = new ChallengeSubmission({
             challengeId,
             userId: req.user.id,
@@ -2126,13 +2124,11 @@ router.post('/challenges/submit', authMiddleware, upload.single('clip'), async (
         });
 
         await newSubmission.save();
-        res.json({ msg: 'Challenge proof submitted successfully! Pending approval.' });
+        res.json({ msg: 'Proof link submitted successfully! Under review.' });
     } catch (err) {
-        console.error('Challenge submit error:', err);
+        console.error('Submit challenge error:', err);
         res.status(500).send('Server Error');
     }
 });
 
 module.exports = router;
-
-
