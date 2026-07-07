@@ -2074,6 +2074,58 @@ router.post('/feedback', authMiddleware, async (req, res) => {
     }
 });
 
+// --- CHALLENGES API ---
+const WeeklyChallenge = require('../models/WeeklyChallenge');
+const ChallengeSubmission = require('../models/ChallengeSubmission');
+
+// @route   GET /api/challenges/active
+// @desc    Get the active weekly challenge
+router.get('/challenges/active', async (req, res) => {
+    try {
+        const activeChallenge = await WeeklyChallenge.findOne({ isActive: true }).sort({ createdAt: -1 });
+        res.json(activeChallenge);
+    } catch (err) {
+        console.error('Active challenge fetch error:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /api/challenges/submit
+// @desc    Submit a video proof for a challenge
+router.post('/challenges/submit', authMiddleware, upload.single('clip'), async (req, res) => {
+    try {
+        const { challengeId } = req.body;
+        if (!challengeId || !req.file) {
+            return res.status(400).json({ msg: 'Please provide challengeId and a video file.' });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user || !user.isGenuine) {
+            return res.status(403).json({ msg: 'Only verified players can submit challenge proofs.' });
+        }
+
+        // Check if user already submitted for this challenge
+        const existingSubmission = await ChallengeSubmission.findOne({ challengeId, userId: req.user.id, status: { $in: ['Pending', 'Approved'] } });
+        if (existingSubmission) {
+            return res.status(400).json({ msg: 'You have already submitted proof for this challenge (Pending or Approved).' });
+        }
+
+        const videoUrl = '/public/uploads/' + req.file.filename;
+
+        const newSubmission = new ChallengeSubmission({
+            challengeId,
+            userId: req.user.id,
+            videoUrl
+        });
+
+        await newSubmission.save();
+        res.json({ msg: 'Challenge proof submitted successfully! Pending approval.' });
+    } catch (err) {
+        console.error('Challenge submit error:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
 
 

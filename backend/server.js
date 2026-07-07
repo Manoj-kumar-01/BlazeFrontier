@@ -168,6 +168,7 @@ app.get('/dashboard/tournaments/:id/register', (req, res) => res.render('dashboa
 app.get('/dashboard/leaderboards', (req, res) => res.render('dashboard/leaderboards', { activePage: '/dashboard/leaderboards' }));
 app.get('/dashboard/freefire', (req, res) => res.render('dashboard/freefire', { activePage: '/dashboard/freefire' }));
 app.get('/dashboard/verified_freefire', (req, res) => res.render('dashboard/verified_freefire', { activePage: '/dashboard/freefire' }));
+app.get('/dashboard/verified_freefire/challenges', (req, res) => res.render('dashboard/ff_challenges', { activePage: '/dashboard/freefire' }));
 app.get('/dashboard/content', (req, res) => res.render('dashboard/content', { activePage: '/dashboard/content' }));
 app.get('/dashboard/vote', (req, res) => res.render('dashboard/vote', { activePage: '/dashboard/vote' }));
 app.get('/dashboard/hall-of-fame', (req, res) => res.render('dashboard/hall_of_fame', { activePage: '/dashboard/hall-of-fame' }));
@@ -179,6 +180,7 @@ app.get('/organizer/tournaments', (req, res) => res.render('organizer/tournament
 app.get('/organizer/results', (req, res) => res.render('organizer/results', { activePage: '/organizer/results' }));
 app.get('/organizer/registrations', (req, res) => res.render('organizer/registrations', { activePage: '/organizer/registrations' }));
 app.get('/organizer/clips', (req, res) => res.render('organizer/clips', { activePage: '/organizer/clips' }));
+app.get('/organizer/challenges', (req, res) => res.render('organizer/challenges', { activePage: '/organizer/challenges' }));
 app.get('/organizer/daily', (req, res) => res.render('organizer/daily', { activePage: '/organizer/daily' }));
 
 const { ApolloServer } = require('@apollo/server');

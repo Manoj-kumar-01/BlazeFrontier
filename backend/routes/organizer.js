@@ -1014,6 +1014,100 @@ router.get('/player/:playerId', async (req, res) => {
     }
 });
 
+// --- CHALLENGES API ---
+const WeeklyChallenge = require('../models/WeeklyChallenge');
+const ChallengeSubmission = require('../models/ChallengeSubmission');
+
+// @route   POST /organizer/api/challenges
+// @desc    Create a new weekly challenge (and deactivate older ones)
+router.post('/api/challenges', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user || user.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
+
+        const { title, description } = req.body;
+        if (!title || !description) return res.status(400).json({ msg: 'Title and description required' });
+
+        // Deactivate previous
+        await WeeklyChallenge.updateMany({}, { $set: { isActive: false } });
+
+        const newChallenge = new WeeklyChallenge({ title, description });
+        await newChallenge.save();
+
+        res.json({ msg: 'New Weekly Challenge created!', challenge: newChallenge });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /organizer/api/challenges/submissions
+// @desc    Get pending challenge submissions
+router.get('/api/challenges/submissions', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user || user.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
+
+        const submissions = await ChallengeSubmission.find({ status: 'Pending' })
+            .populate('userId', 'username inGameName playerId')
+            .populate('challengeId', 'title rewardCoins rewardPoints')
+            .sort({ createdAt: 1 });
+
+        res.json(submissions);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /organizer/api/challenges/submissions/:id/approve
+// @desc    Approve a submission
+router.post('/api/challenges/submissions/:id/approve', authMiddleware, async (req, res) => {
+    try {
+        const admin = await User.findById(req.user.id);
+        if (!admin || admin.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
+
+        const sub = await ChallengeSubmission.findById(req.params.id).populate('challengeId');
+        if (!sub) return res.status(404).json({ msg: 'Submission not found' });
+        if (sub.status !== 'Pending') return res.status(400).json({ msg: 'Already processed' });
+
+        sub.status = 'Approved';
+        await sub.save();
+
+        const player = await User.findById(sub.userId);
+        if (player && sub.challengeId) {
+            player.blazeCoins += sub.challengeId.rewardCoins;
+            player.blazePoints += sub.challengeId.rewardPoints;
+            await player.save();
+        }
+
+        res.json({ msg: 'Approved and rewarded!' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /organizer/api/challenges/submissions/:id/reject
+// @desc    Reject a submission
+router.post('/api/challenges/submissions/:id/reject', authMiddleware, async (req, res) => {
+    try {
+        const admin = await User.findById(req.user.id);
+        if (!admin || admin.role !== 'organizer') return res.status(403).json({ msg: 'Unauthorized' });
+
+        const sub = await ChallengeSubmission.findById(req.params.id);
+        if (!sub) return res.status(404).json({ msg: 'Submission not found' });
+        
+        sub.status = 'Rejected';
+        await sub.save();
+
+        res.json({ msg: 'Submission rejected.' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
 
 
