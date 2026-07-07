@@ -713,7 +713,19 @@
                     
                     const activeReq = tData.requests && tData.requests.find(r => r.status === 'Approved' || r.status === 'Pending' || r.status === 'Awaiting Verification');
 
-                    if (activeReq) {
+                    if (isGenuine) {
+                        document.body.classList.add('is-genuine');
+                        const vt = document.getElementById('ff-verified-tagline');
+                        if (vt) vt.style.display = 'block';
+                        
+                        html = `
+                        <div style="text-align:center; padding: 20px 10px;">
+                            <div style="font-size: 2rem; margin-bottom: 12px;">✅</div>
+                            <div style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px;">VERIFIED PLAYER</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">You have already completed your qualification series and are a trusted player.</div>
+                        </div>
+                        `;
+                    } else if (activeReq) {
                         const formatStr = activeReq.format ? activeReq.format.toUpperCase() : 'UNKNOWN';
                         const modeStr = activeReq.mode ? activeReq.mode.toUpperCase() : 'UNKNOWN';
                         
@@ -805,18 +817,6 @@
                             }
 
                             html += `</div>`;
-                    } else if (isGenuine) {
-                        document.body.classList.add('is-genuine');
-                        const vt = document.getElementById('ff-verified-tagline');
-                        if (vt) vt.style.display = 'block';
-                        
-                        html = `
-                        <div style="text-align:center; padding: 20px 10px;">
-                            <div style="font-size: 2rem; margin-bottom: 12px;">✅</div>
-                            <div style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px;">VERIFIED PLAYER</div>
-                            <div style="color: var(--text-muted); font-size: 0.9rem;">You have already completed your qualification series and are a trusted player.</div>
-                        </div>
-                        `;
                     } else {
                         html = `
                         <div style="text-align:center; padding: 20px 10px;">
