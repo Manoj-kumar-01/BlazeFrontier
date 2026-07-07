@@ -315,9 +315,14 @@
                         const bg = featuredBgs[i % featuredBgs.length];
                         const statusClass = t.status === 'LIVE' ? 'bg-[#22c55e]' : 'bg-[#A855F7]';
                         const statusText = t.status === 'LIVE' ? 'LIVE NOW' : 'S-Tier';
+                        const safeName = (t.name || '').replace(/'/g, "\\'");
+                        const isRegClosed = t.isListPublished || (t.registrationEndTime && new Date(t.registrationEndTime).getTime() < Date.now());
+                        const onClickAttr = isRegClosed 
+                            ? `onclick="viewParticipants(event, '${t.id || t._id}', '${safeName}')"`
+                            : `onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'"`;
                         
                         return `
-                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[180px] flex flex-col justify-end min-w-[300px] md:min-w-0 md:flex-1 shrink-0 snap-center" onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
+                        <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer relative h-[180px] flex flex-col justify-end min-w-[300px] md:min-w-0 md:flex-1 shrink-0 snap-center" ${onClickAttr}>
                             <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('${bg}'); opacity: 0.5;"></div>
                             <div class="absolute inset-0 bg-gradient-to-t from-[#050709] to-transparent"></div>
                             
@@ -350,14 +355,19 @@
                             const isLive = t.status === 'LIVE';
                             const badgeColor = isLive ? 'text-[#22c55e] border-[#22c55e]/30' : 'text-cyber-blue border-cyber-blue/30';
                             
+                            const safeName = (t.name || '').replace(/'/g, "\\'");
+                            const isRegClosed = t.isListPublished || (t.registrationEndTime && new Date(t.registrationEndTime).getTime() < Date.now());
+                            const onClickAttr = isRegClosed
+                                ? `onclick="viewParticipants(event, '${t.id || t._id}', '${safeName}')"`
+                                : `onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'"`;
+
                             let rosterHtml = '';
                             if (t.isListPublished) {
-                                const safeName = (t.name || '').replace(/'/g, "\\'");
                                 rosterHtml = `<button onclick="viewParticipants(event, '${t.id || t._id}', '${safeName}')" class="px-2 py-1 rounded bg-surface border border-outline-variant hover:border-primary text-xs transition-colors">View Roster</button>`;
                             }
 
                             return `
-                            <tr class="border-b border-white/5 table-row-hover cursor-pointer transition-colors" onclick="window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
+                            <tr class="border-b border-white/5 table-row-hover cursor-pointer transition-colors" ${onClickAttr}>
                                 <td class="py-md px-xs text-white font-medium">${t.name}</td>
                                 <td class="py-md px-xs text-on-surface-variant">${t.date || 'TBA'}</td>
                                 <td class="py-md px-xs text-tertiary">${t.prize || '—'}</td>
@@ -383,15 +393,6 @@
                     let lb = await res.json();
                     let top5 = lb.slice(0, 5);
 
-                    if (top5.length === 0) {
-                        top5 = [
-                            { rank: 1, name: 'Manoj', bp: 15400, region: 'India' },
-                            { rank: 2, name: 'Phantom', bp: 12100, region: 'India' },
-                            { rank: 3, name: 'Striker', bp: 9800, region: 'India' },
-                            { rank: 4, name: 'Ninja', bp: 8500, region: 'India' },
-                            { rank: 5, name: 'Ghost', bp: 7200, region: 'India' }
-                        ];
-                    }
                     while (top5.length < 5) top5.push({ rank: top5.length + 1, name: 'TBA', bp: 0, region: 'India' });
 
                     container.innerHTML = top5.map((p, i) => {
