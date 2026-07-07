@@ -686,7 +686,7 @@
                     const tData = await tRes.json();
                     let html = '';
                     
-                    const activeReq = tData.requests && tData.requests.find(r => (r.status === 'Approved' || r.status === 'Pending' || r.status === 'Awaiting Verification') && r.format === 'Qualification Series');
+                    const activeReq = tData.requests && tData.requests.find(r => (r.status === 'Approved' || r.status === 'Pending' || r.status === 'Awaiting Verification') && ['solo', 'duo', 'squad'].includes(r.format ? r.format.toLowerCase() : ''));
 
                     if (activeReq) {
                         const formatStr = activeReq.format ? activeReq.format.toUpperCase() : 'UNKNOWN';
