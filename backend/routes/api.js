@@ -77,6 +77,11 @@ router.post('/heartbeat', authMiddleware, async (req, res) => {
             }
         }
 
+        // Update Tactical Directives (firstBlood - Daily Check-in)
+        if (!user.directives) user.directives = {};
+        if (!user.directives.firstBlood) user.directives.firstBlood = { completed: false, claimed: false };
+        user.directives.firstBlood.completed = true;
+
         await user.save();
         res.status(200).send();
     } catch (err) {
@@ -1916,6 +1921,16 @@ router.post('/voting-event/:eventId/vote', authMiddleware, async (req, res) => {
         });
 
         await newVote.save();
+
+        // Update Tactical Directives (highCommandVoter)
+        const user = await User.findById(req.user.id);
+        if (user) {
+            if (!user.directives) user.directives = {};
+            if (!user.directives.highCommandVoter) user.directives.highCommandVoter = { completed: false, claimed: false };
+            user.directives.highCommandVoter.completed = true;
+            await user.save();
+        }
+
         res.json({ msg: 'Vote cast successfully' });
     } catch (err) {
         console.error(err.message);

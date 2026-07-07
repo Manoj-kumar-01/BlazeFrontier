@@ -488,10 +488,16 @@ router.post('/accept/:requestId', authMiddleware, async (req, res) => {
 
         requester.blazeCoins -= 20;
         requester.matchmakingBlockedUntil = cooldownUntil;
+        if (!requester.directives) requester.directives = {};
+        if (!requester.directives.squadDeployment) requester.directives.squadDeployment = { completed: false, claimed: false };
+        requester.directives.squadDeployment.completed = true;
         await requester.save();
 
         acceptor.matchmakingBlockedUntil = cooldownUntil;
         acceptor.matchmakingDailyCount = (acceptor.matchmakingDailyCount || 0) + 1;
+        if (!acceptor.directives) acceptor.directives = {};
+        if (!acceptor.directives.squadDeployment) acceptor.directives.squadDeployment = { completed: false, claimed: false };
+        acceptor.directives.squadDeployment.completed = true;
         await acceptor.save();
 
         // Create match room with creation timestamp for TTL

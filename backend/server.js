@@ -77,6 +77,7 @@ const adminApiRoutes = require('./routes/admin');
 const matchmakingRoutes = require('./routes/matchmaking');
 const organizerRoutes = require('./routes/organizer');
 const pushRoutes = require('./routes/push');
+const directivesRoutes = require('./routes/directives');
 
 const adminAuth = require('./middleware/adminAuth');
 const adminPrefix = process.env.ADMIN_ROUTE_PREFIX || '/hidden-admin';
@@ -104,6 +105,7 @@ app.use('/api', apiRoutes);
 app.use('/api/matchmaking', matchmakingRoutes);
 app.use('/api/organizer', organizerRoutes);
 app.use('/api/push', pushRoutes);
+app.use('/api/directives', directivesRoutes);
 app.use(`${adminPrefix}/api`, adminAuth, adminApiRoutes);
 
 // --- Admin Login Routes ---

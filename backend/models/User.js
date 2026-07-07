@@ -118,6 +118,12 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
+    directives: {
+        squadDeployment: { completed: { type: Boolean, default: false }, claimed: { type: Boolean, default: false } },
+        firstBlood: { completed: { type: Boolean, default: false }, claimed: { type: Boolean, default: false } },
+        highCommandVoter: { completed: { type: Boolean, default: false }, claimed: { type: Boolean, default: false } },
+        lastReset: { type: Date, default: Date.now }
+    },
     sessionToken: {
         type: String,
         default: null
