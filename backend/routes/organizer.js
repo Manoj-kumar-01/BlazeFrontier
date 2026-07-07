@@ -899,8 +899,19 @@ router.post('/potd', potdUpload.single('video'), async (req, res) => {
             return res.status(404).json({ msg: 'User with this Blaze ID not found' });
         }
 
-        // Deactivate old
-        await PlayerOfTheDay.updateMany({}, { isActive: false });
+        // Delete old POTD records and their physical files
+        const fs = require('fs');
+        const path = require('path');
+        const oldPotds = await PlayerOfTheDay.find({});
+        for (const old of oldPotds) {
+            if (old.videoUrl) {
+                const filePath = path.join(__dirname, '../../', old.videoUrl.replace(/^\/+/, ''));
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+        }
+        await PlayerOfTheDay.deleteMany({});
 
         // Create new
         const newPotd = new PlayerOfTheDay({

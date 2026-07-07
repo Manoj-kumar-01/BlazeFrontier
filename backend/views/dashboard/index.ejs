@@ -808,6 +808,13 @@
                                 Please wait</div>
                         </div>
                     </div>
+                    <button id="potd-mute-btn" onclick="togglePotdMute(event)" style="position: absolute; bottom: 16px; right: 16px; z-index: 20; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 36px; height: 36px; display: none; align-items: center; justify-content: center; color: #fff; cursor: pointer; backdrop-filter: blur(4px); transition: all 0.2s;">
+                        <svg id="potd-mute-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <line x1="23" y1="9" x2="17" y2="15"></line>
+                            <line x1="17" y1="9" x2="23" y2="15"></line>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -971,10 +978,12 @@
                                 bgImg.style.display = 'none';
                                 bgVideo.src = stats.potd.videoUrl;
                                 bgVideo.style.display = 'block';
+                                document.getElementById('potd-mute-btn').style.display = 'flex';
                                 bgVideo.load();
                                 bgVideo.play().catch(e => console.log('POTD Autoplay prevented'));
                             } else {
                                 bgVideo.style.display = 'none';
+                                document.getElementById('potd-mute-btn').style.display = 'none';
                                 bgImg.style.display = 'block';
                             }
 
@@ -991,6 +1000,7 @@
                         } else {
                             document.getElementById('potd-bg-img').style.display = 'block';
                             document.getElementById('potd-bg-video').style.display = 'none';
+                            document.getElementById('potd-mute-btn').style.display = 'none';
                             document.getElementById('potd-bg-img').style.filter = 'brightness(0.3)';
                             document.getElementById('potd-player').innerText = 'AWAITING UPLOAD';
                             document.getElementById('potd-title').innerText = 'PENDING';
@@ -1117,6 +1127,19 @@
                     }
                 } catch (e) { console.error(e); }
             });
+
+            window.togglePotdMute = function(e) {
+                e.stopPropagation();
+                const video = document.getElementById('potd-bg-video');
+                const icon = document.getElementById('potd-mute-icon');
+                if (!video) return;
+                video.muted = !video.muted;
+                if (video.muted) {
+                    icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
+                } else {
+                    icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>';
+                }
+            };
         </script>
 </body>
 
