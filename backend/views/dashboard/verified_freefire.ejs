@@ -396,9 +396,23 @@
     <div class="dash">
         
         <!-- Top Banners Container -->
-        <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
+        <style>
+            .top-banners-grid {
+                grid-column: 1 / -1; 
+                display: grid; 
+                grid-template-columns: 1fr; 
+                gap: 14px; 
+                margin-bottom: 24px;
+            }
+            @media (min-width: 900px) {
+                .top-banners-grid {
+                    grid-template-columns: 2fr 1fr;
+                }
+            }
+        </style>
+        <div class="top-banners-grid">
             <!-- Elite Verified Tagline (Top) -->
-            <div id="ff-verified-tagline" style="display: block;">
+            <div id="ff-verified-tagline" style="display: block; height: 100%;">
                 <div style="display: flex; align-items: center; gap: 12px; background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.2); padding: 12px 20px; border-radius: 8px; backdrop-filter: blur(4px);">
                     <span style="color: #d4af37; font-size: 1.2rem; filter: drop-shadow(0 0 5px rgba(212,175,55,0.8));">⭐</span>
                     <div style="color: rgba(255,255,255,0.9); font-size: 0.9rem; font-family: var(--font-body); flex: 1;">
@@ -412,8 +426,8 @@
             </div>
 
             <!-- Weekly Challenges Banner -->
-            <a href="/dashboard/verified_freefire/challenges" style="display: block; text-decoration: none;">
-                <div style="background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); padding: 16px 24px; border-radius: 8px; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;" onmouseover="this.style.background='rgba(168,85,247,0.2)';" onmouseout="this.style.background='rgba(168,85,247,0.1)';">
+            <a href="/dashboard/verified_freefire/challenges" style="display: block; text-decoration: none; height: 100%;">
+                <div style="height: 100%; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); padding: 16px 24px; border-radius: 8px; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;" onmouseover="this.style.background='rgba(168,85,247,0.2)';" onmouseout="this.style.background='rgba(168,85,247,0.1)';">
                     <div style="color: #f3e8ff; font-family: var(--font-display); font-size: 1.3rem; letter-spacing: 1px; text-transform: uppercase;">
                         Weekly Challenges &rarr;
                     </div>
@@ -492,14 +506,31 @@
         <!-- Main Content -->
         <div class="c-main">
             <div class="grid-1">
-                <!-- Active Tournaments (Qualification Series) -->
-                <div class="qs-section" id="ff-qs-section">
+                <!-- Elite Operations Panel -->
+                <div class="qs-section" style="background: rgba(10,5,8,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; overflow: hidden; margin-bottom: 0;">
+                    <!-- Ambient Glow -->
+                    <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,87,34,0.1); filter: blur(40px); border-radius: 50%;"></div>
                     
-                    <div id="ff-tourneys-container">
-                        <div style="text-align:center; padding: 20px 10px;">
-                            <div style="font-size: 2rem; margin-bottom: 12px;">✅</div>
-                            <div style="color: #fff; font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px;">VERIFIED PLAYER</div>
-                            <div style="color: var(--text-muted); font-size: 0.9rem;">You have already completed your qualification series and are a trusted player.</div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                        <div>
+                            <div style="color: var(--blaze-orange); font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 8px;">/// CLASSIFIED INTEL</div>
+                            <div style="color: #fff; font-family: var(--font-display); font-size: 2rem; letter-spacing: 1px;">ELITE OPERATIONS</div>
+                        </div>
+                        <div style="background: rgba(255,87,34,0.1); border: 1px solid rgba(255,87,34,0.3); color: var(--blaze-orange); padding: 6px 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold;">
+                            STATUS: ACTIVE
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; position: relative; z-index: 1;">
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; transition: transform 0.2s, background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.transform='translateY(0)';">
+                            <div style="font-size: 1.5rem; margin-bottom: 12px;">🎯</div>
+                            <div style="color: #fff; font-weight: bold; font-size: 1.1rem; margin-bottom: 6px;">Bounty Hunting</div>
+                            <div style="color: rgba(255,255,255,0.5); font-size: 0.9rem; line-height: 1.5;">Hunt down high-value targets in designated lobbies. Special rewards unlock on weekend operations.</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; transition: transform 0.2s, background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.transform='translateY(0)';">
+                            <div style="font-size: 1.5rem; margin-bottom: 12px;">🏆</div>
+                            <div style="color: #fff; font-weight: bold; font-size: 1.1rem; margin-bottom: 6px;">Pro Scrims</div>
+                            <div style="color: rgba(255,255,255,0.5); font-size: 0.9rem; line-height: 1.5;">Compete against other Verified Elites in custom rooms. Prove your dominance on the ranked ladder.</div>
                         </div>
                     </div>
                 </div>
