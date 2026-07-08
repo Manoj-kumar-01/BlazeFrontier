@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weekly Challenge | Blaze Frontier</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/public/style.css">
     <style>
         body {
             background-color: #030014;
@@ -121,11 +121,8 @@
             align-items: center;
             justify-content: space-between;
             gap: 24px;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(251,191,36,0.2);
-            border-radius: 16px;
+            background: transparent;
             padding: 24px 28px;
-            backdrop-filter: blur(20px);
         }
 
         .winner-profile-left {
@@ -439,7 +436,7 @@
 
                 <div class="winner-profile-card" style="display:flex; align-items:center; flex-wrap:wrap; gap:16px;">
                     <div class="winner-rank-badge">#1</div>
-                    <img src="/blaze_avatar.png" alt="Avatar" id="winner-avatar" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); display: none;">
+                    <img src="/public/blaze_avatar.png" alt="Avatar" id="winner-avatar" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); display: none;" onerror="this.src='/public/blaze_avatar.png'">
                     <div class="winner-player-name" id="winner-name" style="margin:0;">—</div>
                     <div class="winner-player-id" id="winner-game-id" style="margin:0; font-family:var(--font-mono); color:var(--blaze-orange);">Game ID: —</div>
                     <div class="winner-player-id" id="winner-id" style="margin:0; font-family:var(--font-mono); color:#38bdf8;">Blaze ID: —</div>
@@ -652,8 +649,8 @@ void main() {
                     
                     const avatarEl = document.getElementById('winner-avatar');
                     if (avatarEl) {
-                        let profilePicUrl = data.winner.profilePic || '/blaze_avatar.png';
-                        if (profilePicUrl.startsWith('/public/')) profilePicUrl = profilePicUrl.replace('/public/', '/');
+                        let profilePicUrl = data.winner.profilePic || '/public/blaze_avatar.png';
+                        // Use original URL if it already starts with /public/ or http, else fallback
                         avatarEl.src = profilePicUrl;
                         avatarEl.style.display = 'block';
                     }
