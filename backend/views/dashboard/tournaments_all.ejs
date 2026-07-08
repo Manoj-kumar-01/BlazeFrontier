@@ -44,19 +44,6 @@
         .table-row-hover:hover { background-color: rgba(168, 85, 247, 0.08); }
         .btn-primary { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); color: white; transition: all 0.3s ease; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4); }
-        
-        @media (max-width: 768px) {
-            table, thead, tbody, th, td, tr { display: block; }
-            thead tr { display: none; }
-            tr { margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; background: rgba(17,17,24,0.6); padding: 0.5rem; }
-            td { position: relative; padding: 0.75rem !important; padding-left: 45% !important; text-align: right !important; border-bottom: 1px solid rgba(255,255,255,0.05); }
-            td:last-child { border-bottom: none; }
-            td::before { 
-                content: attr(data-label); 
-                position: absolute; left: 1rem; width: 40%; padding-right: 10px; 
-                white-space: nowrap; text-align: left; font-weight: 600; color: #94a3b8; font-size: 0.875rem;
-            }
-        }
     </style>
     
     <link rel="stylesheet" href="/style.css">
@@ -87,28 +74,12 @@
             </div>
         </div>
 
-        <section class="glass-panel rounded-xl p-4 md:p-8">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-white/10 text-on-surface-variant text-sm uppercase tracking-wider">
-                            <th class="py-3 px-2 font-normal">League</th>
-                            <th class="py-3 px-2 font-normal">Status</th>
-                            <th class="py-3 px-2 font-normal">Start Time</th>
-                            <th class="py-3 px-2 font-normal">Prize Pool</th>
-                            <th class="py-3 px-2 font-normal text-right">Registered</th>
-                            <th class="py-3 px-2 font-normal text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tournament-table-body">
-                        <tr>
-                            <td colspan="6" class="text-center py-10 text-on-surface-variant">
-                                <span class="material-symbols-outlined animate-spin text-3xl">refresh</span>
-                                <p class="mt-2">Loading leagues...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <section>
+            <div id="tournament-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="col-span-full text-center py-10 text-on-surface-variant glass-panel rounded-xl">
+                    <span class="material-symbols-outlined animate-spin text-3xl">refresh</span>
+                    <p class="mt-2 font-medium tracking-wide">Loading leagues...</p>
+                </div>
             </div>
         </section>
 
@@ -136,7 +107,7 @@
 
         let allData = { live: [], upcoming: [], completed: [] };
         
-        const tableBody = document.getElementById('tournament-table-body');
+        const gridContainer = document.getElementById('tournament-grid');
         const statusFilter = document.getElementById('status-filter');
 
         async function loadTournaments() {
@@ -151,7 +122,7 @@
                     throw new Error('Failed to fetch');
                 }
             } catch (e) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-error">Failed to load leagues.</td></tr>';
+                gridContainer.innerHTML = '<div class="col-span-full text-center py-8 text-error glass-panel rounded-xl">Failed to load leagues.</div>';
             }
         }
 
@@ -170,41 +141,63 @@
             }
 
             if (list.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-on-surface-variant">No leagues found for this category.</td></tr>';
+                gridContainer.innerHTML = '<div class="col-span-full text-center py-8 text-on-surface-variant glass-panel rounded-xl">No leagues found for this category.</div>';
                 return;
             }
 
-            tableBody.innerHTML = list.map(t => {
-                let badgeColor = 'border-cyber-blue text-cyber-blue';
+            gridContainer.innerHTML = list.map(t => {
+                let badgeColor = 'border-cyber-blue text-cyber-blue bg-cyber-blue/10';
                 if (t.status === 'LIVE') badgeColor = 'border-[#ef4444] text-[#ef4444] bg-[#ef4444]/10';
                 if (t.status === 'COMPLETED') badgeColor = 'border-outline text-on-surface-variant bg-surface-variant';
                 
                 let actionBtn = '';
                 if (t.status === 'COMPLETED') {
-                    actionBtn = `<span class="text-on-surface-variant text-sm">Ended</span>`;
+                    actionBtn = `<span class="text-on-surface-variant text-sm font-semibold tracking-wide">Ended</span>`;
                 } else if (t.participantListPublished) {
-                    actionBtn = `<button class="btn-primary px-3 py-1.5 text-xs rounded-md shadow-[0_0_10px_rgba(168,85,247,0.4)]" onclick="event.stopPropagation(); viewParticipants('${t._id}')">View Roster</button>`;
+                    actionBtn = `<button class="btn-primary px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-md shadow-[0_0_10px_rgba(168,85,247,0.4)]" onclick="event.stopPropagation(); viewParticipants('${t._id}')">View Roster</button>`;
                 } else {
-                    actionBtn = `<span class="text-tertiary text-sm">Registering</span>`;
+                    actionBtn = `<span class="text-tertiary text-sm font-semibold tracking-wide flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">app_registration</span> Registering</span>`;
                 }
 
                 return `
-                <tr class="border-b border-white/5 table-row-hover cursor-pointer transition-colors" onclick="if('${t.status}' !== 'COMPLETED') window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
-                    <td data-label="League" class="py-4 px-2 text-white font-medium">${t.name}</td>
-                    <td data-label="Status" class="py-4 px-2">
-                        <span class="inline-block px-2 py-0.5 rounded border text-xs font-semibold ${badgeColor}">${t.status}</span>
-                    </td>
-                    <td data-label="Start Time" class="py-4 px-2 text-on-surface-variant">${t.date || 'TBA'}</td>
-                    <td data-label="Prize Pool" class="py-4 px-2 text-tertiary text-xs leading-relaxed">
-                        🥇 100 Coins + 100 BP<br>
-                        🥈 50 Coins + 50 BP<br>
-                        🥉 25 Coins + 25 BP
-                    </td>
-                    <td data-label="Registered" class="py-4 px-2 text-right">
-                        <span class="inline-block px-2 py-1 rounded bg-[#111118] border border-outline text-xs">${t.registeredCount || 0}/${t.participants || '-'}</span>
-                    </td>
-                    <td data-label="Action" class="py-4 px-2 text-right">${actionBtn}</td>
-                </tr>`;
+                <div class="glass-panel rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_8px_30px_rgba(168,85,247,0.15)] flex flex-col group" onclick="if('${t.status}' !== 'COMPLETED') window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
+                    <div class="p-5 border-b border-white/5 flex justify-between items-start gap-4 bg-gradient-to-r from-white/5 to-transparent">
+                        <h3 class="text-xl font-display tracking-wider text-white group-hover:text-primary transition-colors line-clamp-2 leading-tight">${t.name}</h3>
+                        <span class="shrink-0 px-3 py-1 rounded border text-xs font-bold uppercase tracking-widest ${badgeColor}">${t.status}</span>
+                    </div>
+                    
+                    <div class="p-5 flex-1 flex flex-col gap-4">
+                        <div class="flex items-center gap-3 text-on-surface-variant">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[18px] text-cyber-blue">calendar_month</span>
+                            </div>
+                            <span class="font-medium text-white text-sm">${t.date || 'TBA'}</span>
+                        </div>
+                        
+                        <div class="flex items-start gap-3 text-on-surface-variant">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[18px] text-tertiary">emoji_events</span>
+                            </div>
+                            <div class="text-sm leading-relaxed text-white/90">
+                                <div class="flex items-center gap-2 mb-1"><span class="text-yellow-400">🥇</span> 100 Coins + 100 BP</div>
+                                <div class="flex items-center gap-2 mb-1"><span class="text-gray-300">🥈</span> 50 Coins + 50 BP</div>
+                                <div class="flex items-center gap-2"><span class="text-amber-600">🥉</span> 25 Coins + 25 BP</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 text-on-surface-variant">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[18px] text-primary">groups</span>
+                            </div>
+                            <span class="font-medium text-white text-sm">${t.registeredCount || 0} / ${t.participants || '-'} <span class="text-on-surface-variant font-normal">Registered</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-black/40 border-t border-white/5 flex justify-between items-center mt-auto">
+                        <span class="text-xs text-on-surface-variant font-medium tracking-wide group-hover:text-white transition-colors">Tap for details</span>
+                        ${actionBtn}
+                    </div>
+                </div>`;
             }).join('');
         }
 
