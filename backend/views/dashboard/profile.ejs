@@ -283,12 +283,14 @@
         .heatmap-scroll::-webkit-scrollbar {
             height: 6px;
         }
+
         .heatmap-scroll::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border-radius: 3px;
         }
+
         .heatmap-scroll::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 3px;
         }
 
@@ -298,17 +300,42 @@
                 align-items: stretch;
             }
 
-            .profile-sidebar, .profile-main {
+            .profile-sidebar,
+            .profile-main {
                 display: contents;
             }
-            .profile-header { order: 1; }
-            .streak-panel { order: 2; }
-            .rank-bar { order: 3; }
-            .stats-grid { order: 4; }
-            .first-place-box { order: 5; }
-            .heatmap-panel { order: 6; }
-            .detail-row { order: 7; }
-            .rewards-panel { order: 8; }
+
+            .profile-header {
+                order: 1;
+            }
+
+            .streak-panel {
+                order: 2;
+            }
+
+            .rank-bar {
+                order: 3;
+            }
+
+            .stats-grid {
+                order: 4;
+            }
+
+            .first-place-box {
+                order: 5;
+            }
+
+            .heatmap-panel {
+                order: 6;
+            }
+
+            .detail-row {
+                order: 7;
+            }
+
+            .rewards-panel {
+                order: 8;
+            }
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -327,15 +354,20 @@
                 padding: 24px;
                 gap: 0;
             }
-            #account-detail-panel, #server-detail-panel {
+
+            #account-detail-panel,
+            #server-detail-panel {
                 display: contents;
             }
+
             #account-title {
                 display: none;
             }
+
             #mobile-hide-setup {
                 display: none !important;
             }
+
             #server-title {
                 order: -1;
             }
@@ -345,41 +377,113 @@
             .page-wrap {
                 padding: 90px 12px 40px;
             }
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
             .action-row {
                 flex-direction: column;
             }
+
             .reward-item {
                 flex-direction: column !important;
                 align-items: stretch !important;
                 gap: 12px;
             }
-            .dp-item { flex-direction: row; align-items: center; }
-            .dp-val { text-align: right; }
+
+            .dp-item {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .dp-val {
+                text-align: right;
+            }
         }
 
         /* Modal CSS */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            display: none; align-items: center; justify-content: center;
+            display: none;
+            align-items: center;
+            justify-content: center;
             z-index: 1000;
         }
+
         .modal-content {
-            background: #111116; padding: 32px; border-radius: 14px;
+            background: #111116;
+            padding: 32px;
+            border-radius: 14px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%; max-width: 400px;
+            width: 100%;
+            max-width: 400px;
         }
-        .modal-title { font-family: var(--font-display); color: #fff; font-size: 1.8rem; margin-bottom: 24px; text-align: center; }
-        .form-group { margin-bottom: 16px; text-align: left; }
-        .form-label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .form-input { width: 100%; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 12px; border-radius: 8px; font-family: var(--font-mono); outline: none; }
-        .form-input:focus { border-color: var(--blaze-orange); }
-        .btn { padding: 12px 24px; font-family: var(--font-display); font-size: 1.1rem; border-radius: 8px; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-primary { background: var(--blaze-orange); color: #fff; }
-        .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+
+        .modal-title {
+            font-family: var(--font-display);
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--blaze-orange);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--blaze-orange);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
         /* Toast System */
         .org-toast {
             position: fixed;
@@ -391,7 +495,7 @@
             border-radius: 8px;
             font-size: 0.9rem;
             font-family: var(--font-main);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.3s ease;
@@ -399,20 +503,45 @@
             pointer-events: none;
             border-left: 4px solid #fff;
         }
+
         .org-toast.show {
             opacity: 1;
             transform: translateY(0);
         }
-        .org-toast.success { border-left-color: #22c55e; }
-        .org-toast.error { border-left-color: #ef4444; }
-        .org-toast.info { border-left-color: #3b82f6; }
-        
+
+        .org-toast.success {
+            border-left-color: #22c55e;
+        }
+
+        .org-toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .org-toast.info {
+            border-left-color: #3b82f6;
+        }
+
         /* Fire Animation for Streak */
         @keyframes subtle-flicker {
-            0% { transform: rotate(-15deg) scale(1); opacity: 0.05; text-shadow: 0 0 10px rgba(255,87,34,0.1); }
-            50% { transform: rotate(-13deg) scale(1.05); opacity: 0.08; text-shadow: 0 0 20px rgba(255,87,34,0.4); }
-            100% { transform: rotate(-15deg) scale(1); opacity: 0.05; text-shadow: 0 0 10px rgba(255,87,34,0.1); }
+            0% {
+                transform: rotate(-15deg) scale(1);
+                opacity: 0.05;
+                text-shadow: 0 0 10px rgba(255, 87, 34, 0.1);
+            }
+
+            50% {
+                transform: rotate(-13deg) scale(1.05);
+                opacity: 0.08;
+                text-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
+            }
+
+            100% {
+                transform: rotate(-15deg) scale(1);
+                opacity: 0.05;
+                text-shadow: 0 0 10px rgba(255, 87, 34, 0.1);
+            }
         }
+
         .streak-icon {
             animation: subtle-flicker 3s infinite alternate ease-in-out;
         }
@@ -429,15 +558,29 @@
             <div class="profile-sidebar">
                 <!-- Header -->
                 <div class="profile-header" id="profile-header" style="position: relative; overflow: hidden;">
-                    <div id="ph-watermark" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; display: flex; justify-content: center; align-items: center; pointer-events: none;">
-                        <div style="font-family: var(--font-display); font-size: 6.5rem; color: rgba(255, 215, 0, 0.04); font-weight: 800; letter-spacing: 10px; white-space: nowrap; user-select: none; transform: translateY(-10px);">TRUSTED</div>
+                    <div id="ph-watermark"
+                        style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                        <div
+                            style="font-family: var(--font-display); font-size: 6.5rem; color: rgba(255, 215, 0, 0.04); font-weight: 800; letter-spacing: 10px; white-space: nowrap; user-select: none; transform: translateY(-10px);">
+                            TRUSTED</div>
                     </div>
-                    
+
 
                     <div style="position: relative; display: inline-block; padding: 10px; z-index: 1;">
-                        <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar" referrerpolicy="no-referrer" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; display: block; position: relative; z-index: 1; margin: 0; background-color: #111116;" onerror="this.onerror=null; this.src='/public/blaze_avatar.png';">
-                        <button onclick="openEditProfileModal()" style="position: absolute; bottom: 6px; right: 6px; background: var(--blaze-orange); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.2s; z-index: 2;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        <img src="/public/blaze_avatar.png" alt="Avatar" class="ph-avatar" id="ph-avatar"
+                            referrerpolicy="no-referrer"
+                            style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; display: block; position: relative; z-index: 1; margin: 0; background-color: #111116;"
+                            onerror="this.onerror=null; this.src='/public/blaze_avatar.png';">
+                        <button onclick="openEditProfileModal()"
+                            style="position: absolute; bottom: 6px; right: 6px; background: var(--blaze-orange); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.2s; z-index: 2;"
+                            onmouseover="this.style.transform='scale(1.1)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
                         </button>
                     </div>
                     <div class="ph-info" style="margin-top: 16px; position: relative; z-index: 1;">
@@ -451,61 +594,92 @@
                         <div class="ph-meta">
                             <div class="ph-tag">Region <span><span id="ph-region">—</span></span></div>
                             <div class="ph-tag">FreeFire UID <span><span id="ph-uid">—</span></span></div>
-                            <div class="ph-tag" style="margin-top: 6px;">Player ID <span><span id="ph-pid-header">—</span></span></div>
+                            <div class="ph-tag" style="margin-top: 6px;">Player ID <span><span
+                                        id="ph-pid-header">—</span></span></div>
                         </div>
                     </div>
-                    
-                    </div>
+
+                </div>
 
                 <!-- 7-Day Login Streak Row -->
-                <div class="streak-panel" style="background: #111116; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
-                    <div style="font-size: 0.9rem; color: var(--blaze-orange); font-weight: bold; margin-bottom: 16px; letter-spacing: 1.5px; text-transform: uppercase; font-family: var(--font-display);">7-Day Login Streak</div>
-                    <div style="display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center; flex-wrap: wrap;">
+                <div class="streak-panel"
+                    style="background: #111116; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+                    <div
+                        style="font-size: 0.9rem; color: var(--blaze-orange); font-weight: bold; margin-bottom: 16px; letter-spacing: 1.5px; text-transform: uppercase; font-family: var(--font-display);">
+                        7-Day Login Streak</div>
+                    <div
+                        style="display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center; flex-wrap: wrap;">
                         <div id="streak-days" style="display: flex; gap: 8px;">
                             <!-- Injected by JS -->
                         </div>
-                        <div style="margin-left: 12px; font-size: 0.9rem; font-weight: bold; color: #ffd700; background: rgba(255, 215, 0, 0.1); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255, 215, 0, 0.2); box-shadow: 0 0 10px rgba(255,215,0,0.1); display: flex; align-items: center; gap: 6px;">
-                            +100 <span style="font-family: var(--font-display); font-size: 0.9rem; letter-spacing: 1px;">BlazeCoins</span>
+                        <div
+                            style="margin-left: 12px; font-size: 0.9rem; font-weight: bold; color: #ffd700; background: rgba(255, 215, 0, 0.1); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255, 215, 0, 0.2); box-shadow: 0 0 10px rgba(255,215,0,0.1); display: flex; align-items: center; gap: 6px;">
+                            +100 <span
+                                style="font-family: var(--font-display); font-size: 0.9rem; letter-spacing: 1px;">BlazeCoins</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Rank bar -->
-                <div class="rank-bar" style="position: relative; overflow: hidden; background: #111116; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; margin-bottom: 24px;">
-                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 preserveAspectRatio=%22none%22><path d=%22M0,100 L0,80 L20,60 L40,70 L60,40 L80,50 L100,20 L100,100 Z%22 fill=%22rgba(255,87,34,0.05)%22 stroke=%22rgba(255,87,34,0.4)%22 stroke-width=%221%22/></svg>') bottom/100% 100% no-repeat; z-index: 0; opacity: 0.8; pointer-events: none;"></div>
-                    
-                    <div style="display: flex; gap: 24px; position: relative; z-index: 1; justify-content: space-around;">
+                <div class="rank-bar"
+                    style="position: relative; overflow: hidden; background: #111116; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; margin-bottom: 24px;">
+                    <div
+                        style="position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 preserveAspectRatio=%22none%22><path d=%22M0,100 L0,80 L20,60 L40,70 L60,40 L80,50 L100,20 L100,100 Z%22 fill=%22rgba(255,87,34,0.05)%22 stroke=%22rgba(255,87,34,0.4)%22 stroke-width=%221%22/></svg>') bottom/100% 100% no-repeat; z-index: 0; opacity: 0.8; pointer-events: none;">
+                    </div>
+
+                    <div
+                        style="display: flex; gap: 24px; position: relative; z-index: 1; justify-content: space-around;">
                         <!-- Regional -->
                         <div style="text-align: center;">
                             <div class="rank-label" style="margin-bottom: 8px;">Regional Ranking</div>
-                            <div class="rank-badge" id="rank-icon-regional" style="font-size: 2rem; color: #fff; margin-bottom: 8px;">#—</div>
-                            <div class="rank-text" id="rank-text-regional" style="font-size: 0.8rem; color: var(--text-muted); margin: 0; text-transform: uppercase;">Calculating…</div>
+                            <div class="rank-badge" id="rank-icon-regional"
+                                style="font-size: 2rem; color: #fff; margin-bottom: 8px;">#—</div>
+                            <div class="rank-text" id="rank-text-regional"
+                                style="font-size: 0.8rem; color: var(--text-muted); margin: 0; text-transform: uppercase;">
+                                Calculating…</div>
                         </div>
-                        
+
                         <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
 
                         <!-- National -->
                         <div style="text-align: center;">
                             <div class="rank-label" style="margin-bottom: 8px;">National Ranking</div>
-                            <div class="rank-badge" id="rank-icon" style="font-size: 2rem; color: #fff; margin-bottom: 8px;">#—</div>
-                            <div class="rank-text" id="rank-text" style="font-size: 0.8rem; color: var(--text-muted); margin: 0; text-transform: uppercase;">Calculating…</div>
+                            <div class="rank-badge" id="rank-icon"
+                                style="font-size: 2rem; color: #fff; margin-bottom: 8px;">#—</div>
+                            <div class="rank-text" id="rank-text"
+                                style="font-size: 0.8rem; color: var(--text-muted); margin: 0; text-transform: uppercase;">
+                                Calculating…</div>
                         </div>
                     </div>
 
                     <!-- Percentile Bar -->
-                    <div class="prog-track" style="background: rgba(255, 255, 255, 0.1); margin-top: 20px; position: relative; z-index: 1;">
-                        <div class="prog-fill" id="rank-prog" style="background: linear-gradient(90deg, #ff5722 0%, #ff9800 100%); box-shadow: 0 0 10px rgba(255,87,34,0.5);"></div>
+                    <div class="prog-track"
+                        style="background: rgba(255, 255, 255, 0.1); margin-top: 20px; position: relative; z-index: 1;">
+                        <div class="prog-fill" id="rank-prog"
+                            style="background: linear-gradient(90deg, #ff5722 0%, #ff9800 100%); box-shadow: 0 0 10px rgba(255,87,34,0.5);">
+                        </div>
                     </div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 8px; position: relative; z-index: 1; letter-spacing: 1px;">NATIONAL PERCENTILE TRACKER</div>
+                    <div
+                        style="font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 8px; position: relative; z-index: 1; letter-spacing: 1px;">
+                        NATIONAL PERCENTILE TRACKER</div>
                 </div>
 
                 <!-- 1st Place Finishes Box -->
-                <div class="first-place-box" style="position: relative; border: 1px solid rgba(255, 215, 0, 0.4); border-radius: 14px; padding: 24px; text-align: center; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); min-height: 260px; justify-content: center; margin-top: auto;">
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('/public/1st_place_bg.jpg') center/cover; opacity: 0.6; z-index: 0;"></div>
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(17,17,22,0.95) 0%, rgba(17,17,22,0.1) 100%); z-index: 0;"></div>
+                <div class="first-place-box"
+                    style="position: relative; border: 1px solid rgba(255, 215, 0, 0.4); border-radius: 14px; padding: 24px; text-align: center; overflow: hidden; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); min-height: 260px; justify-content: center; margin-top: auto;">
+                    <div
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('/public/1st_place_bg.jpg') center/cover; opacity: 0.6; z-index: 0;">
+                    </div>
+                    <div
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(17,17,22,0.95) 0%, rgba(17,17,22,0.1) 100%); z-index: 0;">
+                    </div>
                     <div style="position: relative; z-index: 1; margin-top: auto;">
-                        <div style="font-family: var(--font-display); font-size: 1.3rem; letter-spacing: 2px; color: #ffd700; text-transform: uppercase; text-shadow: 0 2px 6px rgba(0,0,0,0.9);">1st Place Finishes</div>
-                        <div id="st-wins" style="font-family: var(--font-display); font-size: 4.5rem; color: #fff; text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 4px 8px rgba(0,0,0,0.9); line-height: 1; margin-top: 12px;">—</div>
+                        <div
+                            style="font-family: var(--font-display); font-size: 1.3rem; letter-spacing: 2px; color: #ffd700; text-transform: uppercase; text-shadow: 0 2px 6px rgba(0,0,0,0.9);">
+                            1st Place Finishes</div>
+                        <div id="st-wins"
+                            style="font-family: var(--font-display); font-size: 4.5rem; color: #fff; text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 4px 8px rgba(0,0,0,0.9); line-height: 1; margin-top: 12px;">
+                            —</div>
                     </div>
                 </div>
             </div>
@@ -514,42 +688,76 @@
             <div class="profile-main">
                 <!-- Stats -->
                 <div class="stats-grid">
-                    <div class="stat-card" style="background: url('/public/platform_updates_empty.png') right center/70% no-repeat, #000; position: relative; overflow: hidden; border-color: rgba(255, 215, 0, 0.2);">
-                        <div class="stat-label" style="color: #fcd34d; position: relative; z-index: 1;">Blaze Coins</div>
-                        <div class="stat-val" id="st-bc" style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">—</div>
+                    <div class="stat-card" style="background: url('/public/blaze_coin.jpg') right center/70% no-repeat, #000; position: relative; overflow: hidden; border-color: rgba(255, 215, 0, 0.2);">
+                        <div class="stat-label" style="color: #fcd34d; position: relative; z-index: 1;">Blaze Coins
+                        </div>
+                        <div class="stat-val" id="st-bc"
+                            style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+                            —</div>
                     </div>
-                    <div class="stat-card" style="background: url('/public/blaze_points_custom.png') center/cover; position: relative; overflow: hidden; border-color: rgba(255, 87, 34, 0.2);">
-                        <div class="stat-label" style="color: var(--blaze-orange); position: relative; z-index: 1;">Blaze Points</div>
-                        <div class="stat-val" id="st-bp" style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">—</div>
+                    <div class="stat-card" style="background: url('/public/platform_updates_empty.png') center/cover no-repeat; position: relative; overflow: hidden; border-color: rgba(255, 87, 34, 0.2);">
+                        <div class="stat-label" style="color: var(--blaze-orange); position: relative; z-index: 1;">
+                            Blaze Points</div>
+                        <div class="stat-val" id="st-bp"
+                            style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+                            —</div>
                     </div>
-                    <div class="stat-card" style="background: url('/public/white_joystick.png') center/cover; position: relative; overflow: hidden; border-color: rgba(34, 197, 94, 0.2);">
+                    <div class="stat-card"
+                        style="background: url('/public/white_joystick.png') center/cover; position: relative; overflow: hidden; border-color: rgba(34, 197, 94, 0.2);">
                         <div class="stat-label" style="color: #86efac; position: relative; z-index: 1;">Matches</div>
-                        <div class="stat-val" id="st-matches" style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">—</div>
+                        <div class="stat-val" id="st-matches"
+                            style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+                            —</div>
                     </div>
-                    <div class="stat-card" style="background: url('/public/gaming_silver_trophy.png') center/cover; position: relative; overflow: hidden; border-color: rgba(139, 92, 246, 0.4);">
-                        <div class="stat-label" style="color: #f3e8ff; font-weight: 700; position: relative; z-index: 1; text-shadow: 0 2px 8px rgba(0,0,0,1);">Tournaments</div>
-                        <div class="stat-val" id="st-tournaments" style="color: #fff; position: relative; z-index: 1; text-shadow: 0 4px 12px rgba(0,0,0,1);">0</div>
+                    <div class="stat-card"
+                        style="background: url('/public/gaming_silver_trophy.png') center/cover; position: relative; overflow: hidden; border-color: rgba(139, 92, 246, 0.4);">
+                        <div class="stat-label"
+                            style="color: #f3e8ff; font-weight: 700; position: relative; z-index: 1; text-shadow: 0 2px 8px rgba(0,0,0,1);">
+                            Tournaments</div>
+                        <div class="stat-val" id="st-tournaments"
+                            style="color: #fff; position: relative; z-index: 1; text-shadow: 0 4px 12px rgba(0,0,0,1);">
+                            0</div>
                     </div>
-                    <div class="stat-card" style="grid-column: 1 / -1; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                        <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, rgba(14,165,233,0.1) 0%, transparent 50%); pointer-events: none; z-index: 0;"></div>
-                        <div class="stat-label" style="color: #7dd3fc; position: relative; z-index: 1; text-transform: uppercase; letter-spacing: 2px;">Player Search</div>
-                        <div style="display: flex; gap: 12px; position: relative; z-index: 1; margin-top: 12px; align-items: center; flex-wrap: wrap;">
+                    <div class="stat-card"
+                        style="grid-column: 1 / -1; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                        <div
+                            style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, rgba(14,165,233,0.1) 0%, transparent 50%); pointer-events: none; z-index: 0;">
+                        </div>
+                        <div class="stat-label"
+                            style="color: #7dd3fc; position: relative; z-index: 1; text-transform: uppercase; letter-spacing: 2px;">
+                            Player Search</div>
+                        <div
+                            style="display: flex; gap: 12px; position: relative; z-index: 1; margin-top: 12px; align-items: center; flex-wrap: wrap;">
                             <div style="position: relative; flex: 1; min-width: 200px;">
-                                <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.5;">🔍</span>
-                                <input type="text" id="search-blaze-id" placeholder="Enter Blaze ID..." onkeypress="if(event.key === 'Enter'){ event.preventDefault(); searchUserProfile(); }" style="background: rgba(0,0,0,0.6); border: 1px solid rgba(14, 165, 233, 0.4); color: #fff; border-radius: 8px; padding: 12px 12px 12px 40px; width: 100%; outline: none; font-family: var(--font-mono); font-size: 1rem; transition: border-color 0.3s, box-shadow 0.3s;" onfocus="this.style.borderColor='#38bdf8'; this.style.boxShadow='0 0 12px rgba(56,189,248,0.3)';" onblur="this.style.borderColor='rgba(14,165,233,0.4)'; this.style.boxShadow='none';">
+                                <span
+                                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.5;">🔍</span>
+                                <input type="text" id="search-blaze-id" placeholder="Enter Blaze ID..."
+                                    onkeypress="if(event.key === 'Enter'){ event.preventDefault(); searchUserProfile(); }"
+                                    style="background: rgba(0,0,0,0.6); border: 1px solid rgba(14, 165, 233, 0.4); color: #fff; border-radius: 8px; padding: 12px 12px 12px 40px; width: 100%; outline: none; font-family: var(--font-mono); font-size: 1rem; transition: border-color 0.3s, box-shadow 0.3s;"
+                                    onfocus="this.style.borderColor='#38bdf8'; this.style.boxShadow='0 0 12px rgba(56,189,248,0.3)';"
+                                    onblur="this.style.borderColor='rgba(14,165,233,0.4)'; this.style.boxShadow='none';">
                             </div>
-                            <button type="button" onclick="searchUserProfile()" style="background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%); border: none; border-radius: 8px; padding: 0 24px; height: 46px; color: white; cursor: pointer; transition: all 0.2s; font-weight: 600; font-family: var(--font-main); letter-spacing: 1px; box-shadow: 0 4px 12px rgba(14,165,233,0.4);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(14,165,233,0.6)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(14,165,233,0.4)';">SEARCH</button>
+                            <button type="button" onclick="searchUserProfile()"
+                                style="background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%); border: none; border-radius: 8px; padding: 0 24px; height: 46px; color: white; cursor: pointer; transition: all 0.2s; font-weight: 600; font-family: var(--font-main); letter-spacing: 1px; box-shadow: 0 4px 12px rgba(14,165,233,0.4);"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(14,165,233,0.6)';"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(14,165,233,0.4)';">SEARCH</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Activity Heatmap -->
-                <div class="heatmap-panel" style="background: #111116; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 24px; margin-bottom: 24px;">
-                    <div style="font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 12px;">LOGIN ACTIVITY</div>
+                <div class="heatmap-panel"
+                    style="background: #111116; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 24px; margin-bottom: 24px;">
+                    <div
+                        style="font-family: var(--font-display); font-size: 1.3rem; color: #fff; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 12px;">
+                        LOGIN ACTIVITY</div>
                     <div class="heatmap-scroll" style="overflow-x: auto; padding-bottom: 12px;">
-                        <div id="heatmap-months" style="display: flex; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; margin-left: 30px; position: relative; height: 16px;"></div>
+                        <div id="heatmap-months"
+                            style="display: flex; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; margin-left: 30px; position: relative; height: 16px;">
+                        </div>
                         <div style="display: flex; gap: 6px;">
-                            <div style="display: grid; grid-template-rows: repeat(7, 1fr); font-size: 0.65rem; color: var(--text-muted); align-items: center; width: 24px; text-align: right; position: sticky; left: 0; z-index: 5; background: #111116; padding-right: 4px;">
+                            <div
+                                style="display: grid; grid-template-rows: repeat(7, 1fr); font-size: 0.65rem; color: var(--text-muted); align-items: center; width: 24px; text-align: right; position: sticky; left: 0; z-index: 5; background: #111116; padding-right: 4px;">
                                 <div></div>
                                 <div>Mon</div>
                                 <div></div>
@@ -558,17 +766,23 @@
                                 <div>Fri</div>
                                 <div></div>
                             </div>
-                            <div id="heatmap-grid" style="display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 6px; min-width: max-content;">
+                            <div id="heatmap-grid"
+                                style="display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 6px; min-width: max-content;">
                                 <!-- JS Generated -->
                             </div>
                         </div>
                     </div>
-                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
+                    <div
+                        style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
                         <span>Less</span>
-                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,255,255,0.05);"></div>
-                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,0.4);"></div>
-                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,0.7);"></div>
-                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,1);"></div>
+                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,255,255,0.05);">
+                        </div>
+                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,0.4);">
+                        </div>
+                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,0.7);">
+                        </div>
+                        <div style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,87,34,1);">
+                        </div>
                         <span>More</span>
                     </div>
                 </div>
@@ -581,13 +795,13 @@
                                 id="dp-user">—</span></div>
                         <div class="dp-item"><span class="dp-key">Free Fire Name</span><span class="dp-val"
                                 id="dp-ign">—</span></div>
-                        <div class="dp-item" id="mobile-hide-setup"><span class="dp-key">Setup</span><span class="dp-val" style="color:#22c55e"
-                                id="dp-setup">—</span></div>
+                        <div class="dp-item" id="mobile-hide-setup"><span class="dp-key">Setup</span><span
+                                class="dp-val" style="color:#22c55e" id="dp-setup">—</span></div>
                     </div>
                     <div class="detail-panel" id="server-detail-panel">
                         <div class="dp-title" id="server-title">SERVER</div>
-                        <div class="dp-item"><span class="dp-key">Region</span><span class="dp-val"
-                                id="ph-region-dup" style="display:none;">—</span><span class="dp-val" id="dp-region">—</span></div>
+                        <div class="dp-item"><span class="dp-key">Region</span><span class="dp-val" id="ph-region-dup"
+                                style="display:none;">—</span><span class="dp-val" id="dp-region">—</span></div>
                         <div class="dp-item"><span class="dp-key">FreeFire UID</span><span class="dp-val"
                                 id="dp-uid">—</span></div>
                         <div class="dp-item"><span class="dp-key">Player ID</span><span class="dp-val" id="dp-pid"
@@ -598,37 +812,81 @@
                 <!-- Rewards Section -->
                 <style>
                     @keyframes fallCoin {
-                        0% { transform: translateY(-30px) rotate(0deg); opacity: 0; }
-                        10% { opacity: 0.8; }
-                        90% { opacity: 0.8; }
-                        100% { transform: translateY(250px) rotate(360deg); opacity: 0; }
+                        0% {
+                            transform: translateY(-30px) rotate(0deg);
+                            opacity: 0;
+                        }
+
+                        10% {
+                            opacity: 0.8;
+                        }
+
+                        90% {
+                            opacity: 0.8;
+                        }
+
+                        100% {
+                            transform: translateY(250px) rotate(360deg);
+                            opacity: 0;
+                        }
                     }
+
                     .rewards-panel {
                         position: relative;
                         overflow: hidden;
                         border: 1px solid rgba(255, 215, 0, 0.06) !important;
                     }
+
                     .coin-bg {
-                        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-                        pointer-events: none; z-index: 0;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        pointer-events: none;
+                        z-index: 0;
                     }
+
                     .c-particle {
                         position: absolute;
-                        width: 32px; height: 32px;
-                        background-image: url('/public/platform_updates_empty.png');
+                        width: 32px;
+                        height: 32px;
+                        background-image: url('/public/blaze_coin.jpg');
                         background-size: cover;
                         background-position: center;
                         border-radius: 50%;
-                        box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-                        top: -40px; opacity: 0;
+                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+                        top: -40px;
+                        opacity: 0;
                         z-index: 0;
                     }
-                    .c-1 { left: 10%; animation: fallCoin 12s linear infinite 0s; }
-                    .c-2 { left: 35%; animation: fallCoin 15s linear infinite 3s; }
-                    .c-3 { left: 60%; animation: fallCoin 10s linear infinite 1s; }
-                    .c-4 { left: 80%; animation: fallCoin 14s linear infinite 5s; }
-                    .c-5 { left: 90%; animation: fallCoin 18s linear infinite 2s; }
-                    .rewards-panel > * {
+
+                    .c-1 {
+                        left: 10%;
+                        animation: fallCoin 12s linear infinite 0s;
+                    }
+
+                    .c-2 {
+                        left: 35%;
+                        animation: fallCoin 15s linear infinite 3s;
+                    }
+
+                    .c-3 {
+                        left: 60%;
+                        animation: fallCoin 10s linear infinite 1s;
+                    }
+
+                    .c-4 {
+                        left: 80%;
+                        animation: fallCoin 14s linear infinite 5s;
+                    }
+
+                    .c-5 {
+                        left: 90%;
+                        animation: fallCoin 18s linear infinite 2s;
+                    }
+
+                    .rewards-panel>* {
                         position: relative;
                         z-index: 1;
                     }
@@ -644,7 +902,8 @@
                     <div class="dp-title" style="display:flex; justify-content:space-between; align-items:center;">
                         <span>EARN REWARDS</span>
                     </div>
-                    <div class="dp-item reward-item" id="first-login-container" style="align-items: center;"><span class="dp-key">First Login (100
+                    <div class="dp-item reward-item" id="first-login-container" style="align-items: center;"><span
+                            class="dp-key">First Login (100
                             BC)</span><button id="first-login-btn" class="action-btn action-primary"
                             style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
                     </div>
@@ -652,7 +911,8 @@
                             BC)</span><button id="daily-login-btn" class="action-btn action-primary"
                             style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
                     </div>
-                    <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">Trusted Player (100
+                    <div class="dp-item reward-item" style="align-items: center;"><span class="dp-key">Trusted Player
+                            (100
                             BC)</span><button id="trusted-player-btn" class="action-btn action-primary"
                             style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto; flex: none;">CLAIM</button>
                     </div>
@@ -662,273 +922,307 @@
 
         </div>
 
-    <!-- View Profile Modal -->
-    <div class="modal-overlay" id="viewProfileModal">
-        <div class="modal-content" style="max-width: 450px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h2 class="modal-title" style="margin: 0; font-size: 1.5rem;">Player Profile</h2>
-                <button onclick="closeViewProfileModal()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem;">&times;</button>
-            </div>
-            
-            <div id="search-loading" style="display: none; text-align: center; padding: 20px; color: var(--text-muted);">
-                Searching database...
-            </div>
-            
-            <div id="search-error" style="display: none; text-align: center; padding: 40px 20px; color: #ef4444; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px;">
-                <div style="font-size: 3rem; margin-bottom: 10px;">🚫</div>
-                NO PROFILE EXISTS
-            </div>
+        <!-- View Profile Modal -->
+        <div class="modal-overlay" id="viewProfileModal">
+            <div class="modal-content" style="max-width: 450px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 class="modal-title" style="margin: 0; font-size: 1.5rem;">Player Profile</h2>
+                    <button onclick="closeViewProfileModal()"
+                        style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem;">&times;</button>
+                </div>
 
-            <div id="search-result" style="display: none;">
-                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06);">
-                    <img id="sp-avatar" src="/public/blaze_avatar.png" onerror="this.src='/public/blaze_avatar.png'" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);">
-                    <div>
-                        <div id="sp-name" style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1;">—</div>
-                        <div id="sp-badge" style="font-size: 0.75rem; font-family: var(--font-mono); margin-top: 6px; padding: 2px 6px; border-radius: 4px; display: inline-block;"></div>
-                    </div>
+                <div id="search-loading"
+                    style="display: none; text-align: center; padding: 20px; color: var(--text-muted);">
+                    Searching database...
                 </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,215,0,0.2);">
-                        <div style="font-size: 0.65rem; color: #fcd34d; text-transform: uppercase; font-weight: bold;">Blaze Coins</div>
-                        <div id="sp-bc" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
-                    </div>
-                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
-                        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Matches</div>
-                        <div id="sp-matches" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
-                    </div>
-                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
-                        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Wins</div>
-                        <div id="sp-wins" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
-                    </div>
+
+                <div id="search-error"
+                    style="display: none; text-align: center; padding: 40px 20px; color: #ef4444; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 1px;">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🚫</div>
+                    NO PROFILE EXISTS
                 </div>
-                
-                <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                        <span style="color: var(--text-muted);">Username</span>
-                        <span id="sp-user" style="color: #fff; font-family: var(--font-mono);">—</span>
+
+                <div id="search-result" style="display: none;">
+                    <div
+                        style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                        <img id="sp-avatar" src="/public/blaze_avatar.png" onerror="this.src='/public/blaze_avatar.png'"
+                            style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);">
+                        <div>
+                            <div id="sp-name"
+                                style="font-family: var(--font-display); font-size: 1.8rem; color: #fff; line-height: 1;">
+                                —</div>
+                            <div id="sp-badge"
+                                style="font-size: 0.75rem; font-family: var(--font-mono); margin-top: 6px; padding: 2px 6px; border-radius: 4px; display: inline-block;">
+                            </div>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                        <span style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">Blaze ID</span>
-                        <span id="sp-pid" style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">—</span>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                        <div
+                            style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,215,0,0.2);">
+                            <div
+                                style="font-size: 0.65rem; color: #fcd34d; text-transform: uppercase; font-weight: bold;">
+                                Blaze Coins</div>
+                            <div id="sp-bc" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0
+                            </div>
+                        </div>
+                        <div
+                            style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                            <div
+                                style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">
+                                Matches</div>
+                            <div id="sp-matches"
+                                style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">0</div>
+                        </div>
+                        <div
+                            style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                            <div
+                                style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">
+                                Wins</div>
+                            <div id="sp-wins" style="font-family: var(--font-display); font-size: 1.5rem; color: #fff;">
+                                0</div>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                        <span style="color: var(--text-muted);">FreeFire UID</span>
-                        <span id="sp-uid" style="color: #fff; font-family: var(--font-mono);">—</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                        <span style="color: var(--text-muted);">Region</span>
-                        <span id="sp-region" style="color: #fff; font-family: var(--font-mono);">—</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                        <span style="color: var(--text-muted);">Setup Complete</span>
-                        <span id="sp-setup" style="color: #22c55e; font-family: var(--font-mono); font-weight: bold;">—</span>
+
+                    <div
+                        style="display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                            <span style="color: var(--text-muted);">Username</span>
+                            <span id="sp-user" style="color: #fff; font-family: var(--font-mono);">—</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                            <span
+                                style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">Blaze
+                                ID</span>
+                            <span id="sp-pid"
+                                style="color: var(--blaze-orange); font-family: var(--font-mono); font-weight: bold;">—</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                            <span style="color: var(--text-muted);">FreeFire UID</span>
+                            <span id="sp-uid" style="color: #fff; font-family: var(--font-mono);">—</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                            <span style="color: var(--text-muted);">Region</span>
+                            <span id="sp-region" style="color: #fff; font-family: var(--font-mono);">—</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                            <span style="color: var(--text-muted);">Setup Complete</span>
+                            <span id="sp-setup"
+                                style="color: #22c55e; font-family: var(--font-mono); font-weight: bold;">—</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Edit Profile Modal -->
-    <div class="modal-overlay" id="editProfileModal">
-        <div class="modal-content">
-            <h2 class="modal-title">Edit Profile</h2>
-            <form id="editProfileForm" onsubmit="handleEditProfile(event)">
-                <div class="form-group" style="text-align: center; margin-bottom: 24px;">
-                    <img id="edit-avatar-preview" src="/public/blaze_avatar.png" alt="Preview" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--blaze-orange); margin-bottom: 12px; cursor: pointer;" onclick="document.getElementById('profilePicInput').click()">
-                    <div>
-                        <label for="profilePicInput" style="color: var(--blaze-orange); cursor: pointer; font-size: 0.9rem; font-family: var(--font-display);">CHANGE AVATAR</label>
-                        <input type="file" id="profilePicInput" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
+        <!-- Edit Profile Modal -->
+        <div class="modal-overlay" id="editProfileModal">
+            <div class="modal-content">
+                <h2 class="modal-title">Edit Profile</h2>
+                <form id="editProfileForm" onsubmit="handleEditProfile(event)">
+                    <div class="form-group" style="text-align: center; margin-bottom: 24px;">
+                        <img id="edit-avatar-preview" src="/public/blaze_avatar.png" alt="Preview"
+                            style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--blaze-orange); margin-bottom: 12px; cursor: pointer;"
+                            onclick="document.getElementById('profilePicInput').click()">
+                        <div>
+                            <label for="profilePicInput"
+                                style="color: var(--blaze-orange); cursor: pointer; font-size: 0.9rem; font-family: var(--font-display);">CHANGE
+                                AVATAR</label>
+                            <input type="file" id="profilePicInput" accept="image/*" style="display: none;"
+                                onchange="previewAvatar(event)">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="editInGameName">Free Fire Name</label>
-                    <input type="text" class="form-input" id="editInGameName" placeholder="Enter new Free Fire Name">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="editGameUid">FreeFire UID</label>
-                    <input type="text" class="form-input" id="editGameUid" placeholder="Enter FreeFire UID">
-                </div>
-                <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeEditProfileModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="flex: 1;" id="saveProfileBtn">Save Changes</button>
-                </div>
-            </form>
+                    <div class="form-group">
+                        <label class="form-label" for="editInGameName">Free Fire Name</label>
+                        <input type="text" class="form-input" id="editInGameName"
+                            placeholder="Enter new Free Fire Name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editGameUid">FreeFire UID</label>
+                        <input type="text" class="form-input" id="editGameUid" placeholder="Enter FreeFire UID">
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="button" class="btn btn-secondary" style="flex: 1;"
+                            onclick="closeEditProfileModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" style="flex: 1;" id="saveProfileBtn">Save
+                            Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-    
-    <div id="toast-container"></div>
 
-    <script src="/script.js?v=1.2"></script>
-    <script>
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `org-toast ${type} show`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+        <div id="toast-container"></div>
 
-        async function searchUserProfile() {
-            const pid = document.getElementById('search-blaze-id').value.trim();
-            if (!pid) return showToast('Please enter a Blaze ID', 'error');
-            
-            const modal = document.getElementById('viewProfileModal');
-            modal.style.display = 'flex';
-            modal.style.opacity = '1';
-            modal.style.visibility = 'visible';
-            
-            document.getElementById('search-loading').style.display = 'block';
-            document.getElementById('search-result').style.display = 'none';
-            document.getElementById('search-error').style.display = 'none';
-            
-            try {
-                const token = localStorage.getItem('blaze_token');
-                const res = await fetch(`/api/player/${pid}`, {
-                    headers: { 'x-auth-token': token }
-                });
-                
-                if (!res.ok) {
-                    document.getElementById('search-loading').style.display = 'none';
-                    document.getElementById('search-error').style.display = 'block';
-                    return;
-                }
-                
-                const data = await res.json();
-                document.getElementById('sp-name').textContent = data.inGameName || data.username;
-                document.getElementById('sp-avatar').src = data.profilePic || '/public/blaze_avatar.png';
-                document.getElementById('sp-bc').textContent = data.blazeCoins || 0;
-                document.getElementById('sp-matches').textContent = data.totalMatches || 0;
-                document.getElementById('sp-wins').textContent = data.tournamentsWon || 0;
-                document.getElementById('sp-user').textContent = data.username || '—';
-                document.getElementById('sp-pid').textContent = data.playerId;
-                document.getElementById('sp-uid').textContent = data.gameUid || '—';
-                document.getElementById('sp-region').textContent = data.location || '—';
-                
-                const setupEl = document.getElementById('sp-setup');
-                if (data.isSetupComplete) {
-                    setupEl.textContent = 'COMPLETE';
-                    setupEl.style.color = '#22c55e';
-                } else {
-                    setupEl.textContent = 'PENDING';
-                    setupEl.style.color = '#ef4444';
-                }
-                
-                const badge = document.getElementById('sp-badge');
-                if (data.role === 'organizer') {
-                    badge.textContent = 'ORGANIZER';
-                    badge.style.background = 'rgba(139, 92, 246, 0.2)';
-                    badge.style.color = '#a78bfa';
-                    badge.style.border = '1px solid rgba(139, 92, 246, 0.4)';
-                    document.getElementById('sp-avatar').style.borderColor = '#a78bfa';
-                } else if (data.isGenuine) {
-                    badge.textContent = 'TRUSTED';
-                    badge.style.background = 'rgba(255, 215, 0, 0.2)';
-                    badge.style.color = '#ffd700';
-                    badge.style.border = '1px solid rgba(255, 215, 0, 0.4)';
-                    document.getElementById('sp-avatar').style.borderColor = '#ffd700';
-                } else {
-                    badge.textContent = 'UNVERIFIED';
-                    badge.style.background = 'rgba(255, 255, 255, 0.05)';
-                    badge.style.color = 'var(--text-muted)';
-                    badge.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                    document.getElementById('sp-avatar').style.borderColor = 'rgba(255,255,255,0.1)';
-                }
-                
-                document.getElementById('search-loading').style.display = 'none';
-                document.getElementById('search-result').style.display = 'block';
-                
-            } catch (err) {
-                console.error(err);
-                closeViewProfileModal();
-                showToast('Error fetching profile', 'error');
+        <script src="/script.js?v=1.2"></script>
+        <script>
+            function showToast(message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `org-toast ${type} show`;
+                toast.textContent = message;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
             }
-        }
-        
-        function closeViewProfileModal() {
-            const modal = document.getElementById('viewProfileModal');
-            modal.style.display = 'none';
-            modal.style.opacity = '0';
-            modal.style.visibility = 'hidden';
-        }
 
-        function openEditProfileModal() {
-            const modal = document.getElementById('editProfileModal');
-            modal.style.display = 'flex';
-            modal.style.opacity = '1';
-            modal.style.visibility = 'visible';
-            document.getElementById('editInGameName').value = document.getElementById('ph-name').innerText;
-            document.getElementById('editGameUid').value = document.getElementById('ph-uid').innerText;
-            document.getElementById('edit-avatar-preview').src = document.getElementById('ph-avatar').src;
-        }
+            async function searchUserProfile() {
+                const pid = document.getElementById('search-blaze-id').value.trim();
+                if (!pid) return showToast('Please enter a Blaze ID', 'error');
 
-        function closeEditProfileModal() {
-            const modal = document.getElementById('editProfileModal');
-            modal.style.display = 'none';
-            modal.style.opacity = '0';
-            modal.style.visibility = 'hidden';
-        }
+                const modal = document.getElementById('viewProfileModal');
+                modal.style.display = 'flex';
+                modal.style.opacity = '1';
+                modal.style.visibility = 'visible';
 
-        function previewAvatar(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('edit-avatar-preview').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+                document.getElementById('search-loading').style.display = 'block';
+                document.getElementById('search-result').style.display = 'none';
+                document.getElementById('search-error').style.display = 'none';
 
-        async function handleEditProfile(e) {
-            e.preventDefault();
-            const btn = document.getElementById('saveProfileBtn');
-            const originalText = btn.innerText;
-            btn.innerText = 'Saving...';
-            btn.disabled = true;
+                try {
+                    const token = localStorage.getItem('blaze_token');
+                    const res = await fetch(`/api/player/${pid}`, {
+                        headers: { 'x-auth-token': token }
+                    });
 
-            const inGameName = document.getElementById('editInGameName').value;
-            const gameUid = document.getElementById('editGameUid').value;
-            const fileInput = document.getElementById('profilePicInput');
+                    if (!res.ok) {
+                        document.getElementById('search-loading').style.display = 'none';
+                        document.getElementById('search-error').style.display = 'block';
+                        return;
+                    }
 
-            const formData = new FormData();
-            if (inGameName) formData.append('inGameName', inGameName);
-            if (gameUid) formData.append('gameUid', gameUid);
-            if (fileInput.files[0]) formData.append('profilePic', fileInput.files[0]);
-
-            try {
-                const token = localStorage.getItem('blaze_token');
-                const res = await fetch('/api/profile', {
-                    method: 'PUT',
-                    headers: { 'x-auth-token': token },
-                    body: formData
-                });
-
-                if (res.ok) {
                     const data = await res.json();
-                    // Update DOM
-                    if (data.inGameName) document.getElementById('ph-name').innerText = data.inGameName;
-                    if (data.gameUid) document.getElementById('ph-uid').innerText = data.gameUid;
-                    if (data.profilePic) document.getElementById('ph-avatar').src = data.profilePic;
-                    
-                    showToast('Profile updated successfully!', 'success');
-                    closeEditProfileModal();
-                } else {
-                    showToast('Failed to update profile', 'error');
+                    document.getElementById('sp-name').textContent = data.inGameName || data.username;
+                    document.getElementById('sp-avatar').src = data.profilePic || '/public/blaze_avatar.png';
+                    document.getElementById('sp-bc').textContent = data.blazeCoins || 0;
+                    document.getElementById('sp-matches').textContent = data.totalMatches || 0;
+                    document.getElementById('sp-wins').textContent = data.tournamentsWon || 0;
+                    document.getElementById('sp-user').textContent = data.username || '—';
+                    document.getElementById('sp-pid').textContent = data.playerId;
+                    document.getElementById('sp-uid').textContent = data.gameUid || '—';
+                    document.getElementById('sp-region').textContent = data.location || '—';
+
+                    const setupEl = document.getElementById('sp-setup');
+                    if (data.isSetupComplete) {
+                        setupEl.textContent = 'COMPLETE';
+                        setupEl.style.color = '#22c55e';
+                    } else {
+                        setupEl.textContent = 'PENDING';
+                        setupEl.style.color = '#ef4444';
+                    }
+
+                    const badge = document.getElementById('sp-badge');
+                    if (data.role === 'organizer') {
+                        badge.textContent = 'ORGANIZER';
+                        badge.style.background = 'rgba(139, 92, 246, 0.2)';
+                        badge.style.color = '#a78bfa';
+                        badge.style.border = '1px solid rgba(139, 92, 246, 0.4)';
+                        document.getElementById('sp-avatar').style.borderColor = '#a78bfa';
+                    } else if (data.isGenuine) {
+                        badge.textContent = 'TRUSTED';
+                        badge.style.background = 'rgba(255, 215, 0, 0.2)';
+                        badge.style.color = '#ffd700';
+                        badge.style.border = '1px solid rgba(255, 215, 0, 0.4)';
+                        document.getElementById('sp-avatar').style.borderColor = '#ffd700';
+                    } else {
+                        badge.textContent = 'UNVERIFIED';
+                        badge.style.background = 'rgba(255, 255, 255, 0.05)';
+                        badge.style.color = 'var(--text-muted)';
+                        badge.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                        document.getElementById('sp-avatar').style.borderColor = 'rgba(255,255,255,0.1)';
+                    }
+
+                    document.getElementById('search-loading').style.display = 'none';
+                    document.getElementById('search-result').style.display = 'block';
+
+                } catch (err) {
+                    console.error(err);
+                    closeViewProfileModal();
+                    showToast('Error fetching profile', 'error');
                 }
-            } catch (err) {
-                console.error(err);
-                showToast('An error occurred', 'error');
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
             }
-        }
-    </script>
+
+            function closeViewProfileModal() {
+                const modal = document.getElementById('viewProfileModal');
+                modal.style.display = 'none';
+                modal.style.opacity = '0';
+                modal.style.visibility = 'hidden';
+            }
+
+            function openEditProfileModal() {
+                const modal = document.getElementById('editProfileModal');
+                modal.style.display = 'flex';
+                modal.style.opacity = '1';
+                modal.style.visibility = 'visible';
+                document.getElementById('editInGameName').value = document.getElementById('ph-name').innerText;
+                document.getElementById('editGameUid').value = document.getElementById('ph-uid').innerText;
+                document.getElementById('edit-avatar-preview').src = document.getElementById('ph-avatar').src;
+            }
+
+            function closeEditProfileModal() {
+                const modal = document.getElementById('editProfileModal');
+                modal.style.display = 'none';
+                modal.style.opacity = '0';
+                modal.style.visibility = 'hidden';
+            }
+
+            function previewAvatar(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('edit-avatar-preview').src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            async function handleEditProfile(e) {
+                e.preventDefault();
+                const btn = document.getElementById('saveProfileBtn');
+                const originalText = btn.innerText;
+                btn.innerText = 'Saving...';
+                btn.disabled = true;
+
+                const inGameName = document.getElementById('editInGameName').value;
+                const gameUid = document.getElementById('editGameUid').value;
+                const fileInput = document.getElementById('profilePicInput');
+
+                const formData = new FormData();
+                if (inGameName) formData.append('inGameName', inGameName);
+                if (gameUid) formData.append('gameUid', gameUid);
+                if (fileInput.files[0]) formData.append('profilePic', fileInput.files[0]);
+
+                try {
+                    const token = localStorage.getItem('blaze_token');
+                    const res = await fetch('/api/profile', {
+                        method: 'PUT',
+                        headers: { 'x-auth-token': token },
+                        body: formData
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Update DOM
+                        if (data.inGameName) document.getElementById('ph-name').innerText = data.inGameName;
+                        if (data.gameUid) document.getElementById('ph-uid').innerText = data.gameUid;
+                        if (data.profilePic) document.getElementById('ph-avatar').src = data.profilePic;
+
+                        showToast('Profile updated successfully!', 'success');
+                        closeEditProfileModal();
+                    } else {
+                        showToast('Failed to update profile', 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast('An error occurred', 'error');
+                } finally {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            }
+        </script>
 
         <script>
             document.addEventListener('DOMContentLoaded', async () => {
@@ -941,7 +1235,7 @@
                     document.getElementById('ph-region').textContent = u.location || '—';
                     document.getElementById('ph-uid').textContent = u.gameUid || '—';
                     if (document.getElementById('ph-pid-header')) document.getElementById('ph-pid-header').textContent = u.playerId || '—';
-                    
+
                     const avatarEl = document.getElementById('ph-avatar');
                     if (u.profilePic && u.profilePic.trim() !== '') {
                         const tempImg = new Image();
@@ -955,7 +1249,7 @@
                     if (document.getElementById('st-bc')) document.getElementById('st-bc').textContent = u.blazeCoins || 0;
                     if (document.getElementById('st-bp')) document.getElementById('st-bp').textContent = u.blazePoints || 0;
                     document.getElementById('st-matches').textContent = u.totalMatches || 0;
-                    
+
                     // Render Streak Row
                     const currentStreak = u.currentStreak || 0;
                     const visualStreak = currentStreak % 7 === 0 && currentStreak > 0 ? 7 : currentStreak % 7;
@@ -969,15 +1263,15 @@
                         }
                     }
                     daysContainer.innerHTML = daysHTML;
-                    
+
                     const stWinsEl = document.getElementById('st-wins');
                     if (stWinsEl) stWinsEl.textContent = u.tourneysWon || 0;
-                    
+
                     // Platform Ranking logic
                     document.getElementById('rank-text').textContent = 'NATIONAL';
                     document.getElementById('rank-icon').textContent = u.globalRank ? `#${u.globalRank}` : '#0';
                     document.getElementById('rank-prog').style.width = u.globalRankPercentile ? `${100 - u.globalRankPercentile}%` : '0%';
-                    
+
                     if (document.getElementById('rank-icon-regional')) {
                         document.getElementById('rank-text-regional').textContent = u.location || 'REGION';
                         document.getElementById('rank-icon-regional').textContent = u.regionalRank ? `#${u.regionalRank}` : '#0';
@@ -1037,23 +1331,23 @@
                     if (heatmapGrid && heatmapMonths) {
                         heatmapGrid.innerHTML = '';
                         heatmapMonths.innerHTML = '';
-                        
+
                         const today = new Date();
-                        
+
                         // Dynamically calculate grid start: 1st of the previous month, anchored to Sunday
                         const firstDayOfPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
                         const startOfGrid = new Date(firstDayOfPrevMonth);
                         startOfGrid.setDate(firstDayOfPrevMonth.getDate() - firstDayOfPrevMonth.getDay());
-                        
+
                         // Exact days passed since the grid start
                         const totalDays = Math.floor((today - startOfGrid) / (1000 * 60 * 60 * 24)) + 1;
-                        
+
                         let currentMonth = -1;
                         let lastLabelLeft = -50; // Track position of last label to avoid clustering
                         const colWidth = 20; // 14px width + 6px gap
                         const activity = u.activityLog || {};
 
-                        for (let i = 0; i < totalDays; i++) { 
+                        for (let i = 0; i < totalDays; i++) {
                             const box = document.createElement('div');
                             box.style.width = '14px';
                             box.style.height = '14px';
@@ -1061,7 +1355,7 @@
                             box.style.transition = 'transform 0.2s, box-shadow 0.2s';
                             box.style.position = 'relative';
                             box.style.cursor = 'pointer';
-                            
+
                             let tooltip = document.getElementById('heatmap-tooltip');
                             if (!tooltip) {
                                 tooltip = document.createElement('div');
@@ -1082,16 +1376,16 @@
                                 tooltip.style.fontFamily = 'var(--font-main)';
                                 document.body.appendChild(tooltip);
                             }
-                            
+
                             // Get date
                             const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (totalDays - 1 - i));
-                            
+
                             // Check for month change to place label
                             if (date.getMonth() !== currentMonth) {
                                 currentMonth = date.getMonth();
                                 const colIndex = Math.floor(i / 7);
                                 const currentLeft = colIndex * colWidth;
-                                
+
                                 // Skip printing if it's the very first column but just the tail end of an unwanted month (e.g., May 31)
                                 if (i < 7 && date.getDate() > 20) {
                                     // Skip to cleanly start labels with the target month
@@ -1116,34 +1410,34 @@
                             else if (activeMinutes > 0) bg = 'rgba(255,87,34,0.3)'; // Very low (just logged in)
 
                             box.style.background = bg;
-                            
+
                             // tooltip logic with accurate dynamic date and active minutes
                             const dateStr = date.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                            
+
                             const showTooltip = (e) => {
-                                box.style.transform = 'scale(1.2)'; 
-                                box.style.boxShadow = '0 0 8px rgba(255,87,34,0.5)'; 
+                                box.style.transform = 'scale(1.2)';
+                                box.style.boxShadow = '0 0 8px rgba(255,87,34,0.5)';
                                 box.style.zIndex = '10';
-                                
+
                                 let info = '<span style="color:var(--text-muted)">Activity:</span> <span style="color:#fff">No logins</span>';
                                 if (activeMinutes >= 30) info = '<span style="color:var(--text-muted)">Activity:</span> <span style="color:#ff5722; font-weight:bold;">High</span> (' + activeMinutes + ' mins)';
                                 else if (activeMinutes >= 15) info = '<span style="color:var(--text-muted)">Activity:</span> <span style="color:#f4714d; font-weight:bold;">Med</span> (' + activeMinutes + ' mins)';
                                 else if (activeMinutes > 0) info = '<span style="color:var(--text-muted)">Activity:</span> <span style="color:#e0937a;">Low</span> (' + activeMinutes + ' mins)';
-                                
+
                                 tooltip.innerHTML = `<strong>${dateStr}</strong><br><div style="margin-top: 4px;">${info}</div>`;
                                 tooltip.style.display = 'block';
-                                
+
                                 const rect = box.getBoundingClientRect();
                                 tooltip.style.left = `${rect.left + window.scrollX + (rect.width / 2)}px`;
                                 tooltip.style.top = `${rect.top + window.scrollY - 8}px`;
-                                
+
                                 // Prevent click from instantly closing if clicking on mobile
                                 e.stopPropagation();
                             };
 
                             const hideTooltip = () => {
-                                box.style.transform = 'scale(1)'; 
-                                box.style.boxShadow = 'none'; 
+                                box.style.transform = 'scale(1)';
+                                box.style.boxShadow = 'none';
                                 box.style.zIndex = '1';
                                 tooltip.style.display = 'none';
                             };
@@ -1154,7 +1448,7 @@
 
                             heatmapGrid.appendChild(box);
                         }
-                        
+
                         // Close tooltip globally on click elsewhere for mobile
                         document.addEventListener('click', () => {
                             const tooltip = document.getElementById('heatmap-tooltip');
@@ -1211,8 +1505,8 @@
                         const lastClaim = new Date(userData.lastLoginClaimDate);
                         const now = new Date();
                         const isSameDayUTC = lastClaim.getUTCFullYear() === now.getUTCFullYear() &&
-                                             lastClaim.getUTCMonth() === now.getUTCMonth() &&
-                                             lastClaim.getUTCDate() === now.getUTCDate();
+                            lastClaim.getUTCMonth() === now.getUTCMonth() &&
+                            lastClaim.getUTCDate() === now.getUTCDate();
                         if (!isSameDayUTC) {
                             canClaimDaily = true;
                         }
@@ -1250,7 +1544,7 @@
                             body: JSON.stringify({ type })
                         });
                         const claimData = await claimRes.json();
-                        
+
                         if (claimData.claimed) {
                             if (document.getElementById('st-bc')) document.getElementById('st-bc').textContent = claimData.totalBonus;
                             const freshRes = await fetch('/api/profile', { headers: { 'x-auth-token': token }, cache: 'no-store' });
@@ -1293,7 +1587,7 @@
                     }
                     if (!res.ok) throw new Error();
                     const u = await res.json();
-                    
+
                     // Save to cache and re-render
                     localStorage.setItem(cacheKey, JSON.stringify(u));
                     renderProfile(u);
