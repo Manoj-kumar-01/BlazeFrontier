@@ -256,21 +256,21 @@
             const vs = `attribute vec2 a_position; varying vec2 v_texCoord; void main() { v_texCoord = a_position * 0.5 + 0.5; gl_Position = vec4(a_position, 0.0, 1.0); }`;
             const fs = `precision highp float; uniform float u_time; uniform vec2 u_resolution; varying vec2 v_texCoord;
             void main() {
-                vec2 uv = v_texCoord; float time = u_time * 0.2;
+                vec2 uv = v_texCoord; float time = u_time * 0.15;
                 vec2 grid = fract(uv * 40.0);
                 float gridLine = smoothstep(0.95, 0.98, grid.x) + smoothstep(0.95, 0.98, grid.y);
-                vec2 p = uv * 2.0 - 1.0; p.x *= u_resolution.x / u_resolution.y;
+                vec2 p = uv * 2.2 - 1.1; p.x *= u_resolution.x / u_resolution.y;
                 float noise = 0.0;
                 for (int i = 0; i < 5; i++) {
-                    p += sin(p.yx * 2.0 + time) * 0.4;
-                    noise += abs(dot(sin(p), cos(p.yx + time * 0.5))) * 0.5;
+                    p += sin(p.yx * 1.8 + time) * 0.45;
+                    noise += abs(dot(sin(p), cos(p.yx + time * 0.4))) * 0.5;
                 }
-                vec3 base = vec3(0.04, 0.04, 0.05); vec3 accent = vec3(0.2, 0.22, 0.25); vec3 highlight = vec3(0.4, 0.45, 0.5);
-                vec3 finalColor = mix(base, accent, noise * 0.3);
-                finalColor += highlight * pow(noise, 8.0) * 0.15;
-                finalColor += vec3(0.05, 0.07, 0.1) * gridLine * 0.2;
+                vec3 base = vec3(0.08, 0.04, 0.12); vec3 accent = vec3(0.25, 0.15, 0.45); vec3 highlight = vec3(0.7, 0.6, 0.9);
+                vec3 finalColor = mix(base, accent, noise * 0.35);
+                finalColor += highlight * pow(noise, 7.0) * 0.22;
+                finalColor += vec3(0.15, 0.1, 0.2) * gridLine * 0.15;
                 float dist = length(uv - 0.5);
-                finalColor *= smoothstep(1.0, 0.2, dist);
+                finalColor *= smoothstep(1.1, 0.2, dist);
                 gl_FragColor = vec4(finalColor, 1.0);
             }`;
             function cs(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
