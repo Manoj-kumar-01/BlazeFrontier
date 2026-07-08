@@ -1618,7 +1618,7 @@ img {
 @media (max-width: 768px) {
     .nav-container {
         padding: 0 20px;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         height: auto;
         min-height: 72px;
     }

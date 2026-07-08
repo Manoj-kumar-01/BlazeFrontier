@@ -2113,7 +2113,7 @@ router.get('/challenges/active', async (req, res) => {
         const activeChallenge = await WeeklyChallenge.findOne({ isActive: true }).sort({ createdAt: -1 });
         if (!activeChallenge) return res.json(null);
 
-        const winnerSub = await ChallengeSubmission.findOne({ challengeId: activeChallenge._id, status: 'Approved' }).populate('userId', 'inGameName username playerId');
+        const winnerSub = await ChallengeSubmission.findOne({ challengeId: activeChallenge._id, status: 'Approved' }).populate('userId', 'inGameName username playerId gameUid profilePic');
         
         res.json({
             ...activeChallenge.toObject(),
