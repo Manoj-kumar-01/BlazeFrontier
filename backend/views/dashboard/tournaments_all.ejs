@@ -52,19 +52,22 @@
 
     <%- include('../partials/navbar') %>
 
-    <main class="flex-grow w-full max-w-[1500px] mx-auto px-4 md:px-8 pt-32 pb-16">
+    <main class="flex-grow w-full max-w-[1500px] mx-auto px-4 md:px-8 pt-24 pb-16">
         
-        <div class="mb-8">
-            <a href="/dashboard/tournaments" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-xs mb-4 inline-flex">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Back to Leagues
+        <div class="mb-8 border-b border-white/10 pb-6">
+            <a href="/dashboard/tournaments" class="text-on-surface-variant hover:text-white transition-colors flex items-center gap-2 mb-6 inline-flex font-medium tracking-wide">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span> Back to Leagues
             </a>
             
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-cyber-blue">League Explorer</h1>
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-display tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_2px_15px_rgba(251,191,36,0.15)] uppercase">LEAGUE EXPLORER</h1>
+                    <p class="text-on-surface-variant text-sm mt-2 tracking-wide font-medium">Browse and register for all competitive esports events.</p>
+                </div>
                 
-                <div class="flex items-center gap-3">
-                    <label for="status-filter" class="text-sm text-on-surface-variant font-medium uppercase tracking-wider">Filter by Status:</label>
-                    <select id="status-filter" class="bg-[#111118] text-white border border-[#334155] rounded-md px-4 py-2 font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors cursor-pointer">
+                <div class="flex items-center gap-3 bg-[#111118]/80 p-1.5 rounded-lg border border-white/10 shadow-inner">
+                    <label for="status-filter" class="text-xs text-on-surface-variant font-bold uppercase tracking-widest pl-3">Status:</label>
+                    <select id="status-filter" class="bg-transparent text-white border-none text-sm font-semibold focus:ring-0 outline-none cursor-pointer pr-4 hover:text-amber-400 transition-colors">
                         <option value="all" class="bg-[#111118] text-white">All Leagues</option>
                         <option value="live" class="bg-[#111118] text-white">Live Now</option>
                         <option value="upcoming" class="bg-[#111118] text-white">Upcoming</option>
