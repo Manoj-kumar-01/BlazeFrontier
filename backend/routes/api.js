@@ -1099,7 +1099,14 @@ router.get('/tournaments', authMiddleware, async (req, res) => {
         let upcoming = [];
         let completed = [];
         
-        const allRegs = await Registration.find({ userId: req.user.id }).sort({ createdAt: -1 }).lean();
+        const User = require('../models/User');
+        const currentUser = await User.findById(req.user.id);
+        const userFilters = [{ userId: req.user.id }];
+        if (currentUser && currentUser.playerId) {
+            userFilters.push({ teamMembers: currentUser.playerId });
+        }
+        
+        const allRegs = await Registration.find({ $or: userFilters }).sort({ createdAt: -1 }).lean();
         const userTourneyRegs = new Set(allRegs.filter(r => r.format === 'Tournament' && r.status !== 'Missed' && r.status !== 'Rejected').map(r => r.tournamentId ? r.tournamentId.toString() : ''));
 
         // 1. Generic Open Tournaments
@@ -1475,21 +1482,27 @@ router.post('/tournaments/register', authMiddleware, async (req, res) => {
                     { userId: { $in: userObjectIds } },
                     { teamMembers: { $in: teamArray } }
                 ],
-                status: { $in: ['Pending', 'Approved'] }
+                status: { $in: ['Pending', 'Approved', 'Awaiting Verification'] }
             });
             if (teamExisting) {
                 return res.status(400).json({ msg: 'One or more team members are already registered in an active series.' });
             }
         }
 
-        // Check if user already has an active registration (Redundant if team is provided, but good for Solo)
+        // Check if current user is already in an active registration (as leader or teammate)
+        const currentUserReg = await User.findById(req.user.id);
+        const leaderFilters = [{ userId: req.user.id }];
+        if (currentUserReg && currentUserReg.playerId) {
+            leaderFilters.push({ teamMembers: currentUserReg.playerId });
+        }
+
         const activeUserReg = await Registration.findOne({
-            userId: req.user.id,
+            $or: leaderFilters,
             status: { $in: ['Pending', 'Approved', 'Awaiting Verification'] }
         });
         
         if(activeUserReg) {
-            return res.status(400).json({ msg: 'You already have an active or pending registration request.' });
+            return res.status(400).json({ msg: 'You are already registered in an active or pending registration.' });
         }
 
         // Check if Discord ID is already registered by someone else
