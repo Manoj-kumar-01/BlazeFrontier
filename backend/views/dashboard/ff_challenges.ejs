@@ -124,36 +124,51 @@
         }
 
         .meta-box {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
             padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
         }
-        .meta-label { color: rgba(255,255,255,0.4); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .meta-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--ai-primary), transparent);
+            opacity: 0.5;
+        }
+        .meta-label { color: rgba(255,255,255,0.5); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
         
         .ch-status {
-            font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem; font-weight: 800; font-family: 'JetBrains Mono', monospace;
             color: #4ade80; display: flex; align-items: center; gap: 10px;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
         }
         .ch-status::before { 
-            content: ''; display: block; width: 10px; height: 10px; border-radius: 50%; 
-            background: #4ade80; box-shadow: 0 0 12px #4ade80; animation: pulseDot 2s infinite; 
+            content: ''; display: block; width: 12px; height: 12px; border-radius: 50%; 
+            background: #4ade80; box-shadow: 0 0 15px #4ade80; animation: pulseDot 2s infinite; 
         }
         @keyframes pulseDot { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        .reward-wrap { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .reward-wrap { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
         .reward-pill {
-            background: rgba(0,0,0,0.5); padding: 10px 16px; border-radius: 12px; 
-            border: 1px solid rgba(255,255,255,0.08);
-            font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: bold;
-            display: flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(20,20,25,0.9)); 
+            padding: 12px 20px; border-radius: 16px; 
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+            font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 800;
+            display: flex; align-items: center; gap: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        .rp-coin { color: #fbbf24; }
-        .rp-point { color: #60a5fa; }
-        .rp-icon { font-size: 1.2rem; }
+        .reward-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .rp-coin { color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.3); }
+        .rp-point { color: #60a5fa; text-shadow: 0 0 10px rgba(96,165,250,0.3); }
 
         /* Link Input Area */
         .upload-section-title {
@@ -215,14 +230,15 @@
         }
 
         .winner-panel {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(0,0,0,0)); 
-            border: 1px solid rgba(251, 191, 36, 0.2); 
-            border-radius: 24px; padding: 40px; margin-top: 40px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(0,0,0,0.4)); 
+            border: 1px solid rgba(251, 191, 36, 0.3); 
+            border-radius: 24px; padding: 40px; margin-top: 50px;
             position: relative; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(251,191,36,0.15), inset 0 1px 0 rgba(251,191,36,0.2);
         }
         .winner-panel::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 200px; height: 200px;
-            background: radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%);
+            content: ''; position: absolute; top: 0; left: 0; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(251,191,36,0.2) 0%, transparent 70%);
             transform: translate(-50%, -50%); pointer-events: none;
         }
 
@@ -237,6 +253,16 @@
             .ch-info-grid { grid-template-columns: 1fr; gap: 24px; }
             .header-title { font-size: 2.5rem; }
             .glass-card { padding: 30px 20px; }
+            
+            /* Mobile fixes for panels */
+            .challenge-container { margin-top: 120px; padding: 0 16px; margin-bottom: 40px; }
+            .winner-panel { padding: 24px 16px; margin-top: 30px; }
+            .winner-header { flex-direction: column; text-align: center; gap: 12px; margin-bottom: 24px !important; }
+            .winner-card { flex-direction: column; text-align: center; gap: 20px; padding: 20px !important; }
+            .winner-info { flex-direction: column; }
+            .reward-wrap { flex-direction: column; align-items: stretch; }
+            .reward-pill { justify-content: center; }
+            .meta-box { padding: 20px; }
         }
     </style>
 </head>
@@ -325,22 +351,22 @@
                 </div>
 
                 <div id="winner-section" style="display: none;" class="winner-panel">
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-                        <span style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(251,191,36,0.5));">🏆</span>
+                    <div class="winner-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                        <span style="font-size: 3rem; filter: drop-shadow(0 0 15px rgba(251,191,36,0.6));">🏆</span>
                         <div>
-                            <div style="color: #fbbf24; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;">Objective Completed</div>
-                            <div style="color: rgba(255,255,255,0.5); font-size: 1rem;">The bounty has been successfully claimed.</div>
+                            <div style="color: #fbbf24; font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; letter-spacing: 2px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; text-shadow: 0 0 10px rgba(251,191,36,0.3);">Objective Completed</div>
+                            <div style="color: rgba(255,255,255,0.7); font-size: 1.1rem;">The bounty has been successfully claimed by this operative.</div>
                         </div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 24px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="display: flex; align-items: center; gap: 16px;">
-                            <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #f59e0b); display: flex; justify-content: center; align-items: center; font-weight: 800; color: #000; font-size: 1.2rem; box-shadow: 0 0 20px rgba(251,191,36,0.3);">#1</div>
+                    <div class="winner-card" style="background: rgba(0,0,0,0.6); border-radius: 20px; padding: 24px 30px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(251,191,36,0.2); box-shadow: inset 0 0 20px rgba(251,191,36,0.05);">
+                        <div class="winner-info" style="display: flex; align-items: center; gap: 20px;">
+                            <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #f59e0b); display: flex; justify-content: center; align-items: center; font-weight: 900; color: #000; font-size: 1.4rem; box-shadow: 0 0 20px rgba(251,191,36,0.4);">#1</div>
                             <div>
-                                <div id="winner-name" style="font-weight: 700; font-size: 1.3rem; color: #fff; margin-bottom: 4px;">AgentName</div>
-                                <div id="winner-id" style="color: rgba(255,255,255,0.4); font-size: 0.9rem; font-family: 'JetBrains Mono', monospace;">ID: 12345678</div>
+                                <div id="winner-name" style="font-weight: 800; font-size: 1.5rem; color: #fff; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">AgentName</div>
+                                <div id="winner-id" style="color: rgba(255,255,255,0.5); font-size: 1rem; font-family: 'JetBrains Mono', monospace;">ID: 12345678</div>
                             </div>
                         </div>
-                        <div style="color: #4ade80; font-weight: bold; font-family: 'JetBrains Mono', monospace; font-size: 1rem; padding: 8px 16px; background: rgba(34,197,94,0.1); border-radius: 30px; border: 1px solid rgba(34,197,94,0.2);">
+                        <div style="color: #000; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; padding: 10px 20px; background: linear-gradient(90deg, #4ade80, #22c55e); border-radius: 30px; box-shadow: 0 4px 15px rgba(34,197,94,0.3);">
                             BOUNTY AWARDED
                         </div>
                     </div>
