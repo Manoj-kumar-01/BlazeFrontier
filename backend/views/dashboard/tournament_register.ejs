@@ -19,9 +19,9 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#a855f7",
-                        "primary-container": "rgba(168, 85, 247, 0.15)",
-                        "on-primary-container": "#d8b4fe",
+                        primary: "#fbbf24",
+                        "primary-container": "rgba(251, 191, 36, 0.15)",
+                        "on-primary-container": "#fde68a",
                         secondary: "#3b82f6",
                         tertiary: "#f59e0b",
                         "cyber-blue": "#06b6d4",
@@ -46,8 +46,8 @@
     <style>
         body { background-color: #050709; color: #ffffff; margin: 0; padding: 0; }
         .glass-panel { background: rgba(17, 17, 24, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .btn-primary { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); color: white; transition: all 0.3s ease; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4); }
+        .btn-primary { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: white; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4); }
         .btn-primary:disabled { background: rgba(255,255,255,0.1); color: #94a3b8; transform: none; box-shadow: none; cursor: not-allowed; }
         
         .hero-bg {
@@ -83,7 +83,7 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-[#050709] via-[#050709]/80 to-transparent"></div>
                 
                 <div class="relative z-10 p-8 flex flex-col gap-4">
-                    <div class="inline-flex items-center gap-2 bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-md text-xs font-bold tracking-widest uppercase w-fit shadow-[0_0_10px_rgba(168,85,247,0.3)]">
+                    <div class="inline-flex items-center gap-2 bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-md text-xs font-bold tracking-widest uppercase w-fit shadow-[0_0_10px_rgba(251,191,36,0.3)]">
                         <span class="material-symbols-outlined text-[16px]">local_fire_department</span> Official League
                     </div>
                     
@@ -172,7 +172,7 @@
                             <span class="material-symbols-outlined">error</span> <span id="error-text"></span>
                         </div>
                         
-                        <button type="submit" id="submit-btn" class="btn-primary w-full py-5 rounded-xl font-display text-2xl tracking-widest shadow-[0_0_30px_rgba(168,85,247,0.3)]">
+                        <button type="submit" id="submit-btn" class="btn-primary w-full py-5 rounded-xl font-display text-2xl tracking-widest shadow-[0_0_30px_rgba(251,191,36,0.3)]">
                             CONFIRM REGISTRATION
                         </button>
                     </div>
@@ -204,7 +204,7 @@
                     const t = data.live.find(x => x._id === tid) || data.upcoming.find(x => x._id === tid);
                     if (t) {
                         document.getElementById('display-t-name').textContent = t.name;
-                        document.getElementById('display-t-date').textContent = t.date;
+                        document.getElementById('display-t-date').innerHTML = (t.date || '').replace('T', '&nbsp;&nbsp;|&nbsp;&nbsp;');
 
                         // Check if registration ended
                         if (t.registrationEndTime && new Date(t.registrationEndTime) < new Date()) {
@@ -265,7 +265,7 @@
                 
                 container.innerHTML = data.map((p, index) => `
                     <div class="list-item-anim flex items-center gap-4 bg-black/40 border border-white/5 p-4 rounded-xl hover:bg-black/60 hover:border-primary/30 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.2)]" style="animation-delay: ${index * 0.05}s;">
-                        <div class="w-10 h-10 min-w-[40px] rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/30 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+                        <div class="w-10 h-10 min-w-[40px] rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/30 shadow-[0_0_10px_rgba(251,191,36,0.2)]">
                             #${index + 1}
                         </div>
                         <div class="flex-1 overflow-hidden">

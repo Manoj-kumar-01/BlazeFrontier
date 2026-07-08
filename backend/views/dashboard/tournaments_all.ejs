@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=block" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
     
     <script id="tailwind-config">
         tailwind.config = {
@@ -15,9 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#a855f7",
-                        "primary-container": "rgba(168, 85, 247, 0.15)",
-                        "on-primary-container": "#d8b4fe",
+                        primary: "#fbbf24",
+                        "primary-container": "rgba(251, 191, 36, 0.15)",
+                        "on-primary-container": "#fde68a",
                         secondary: "#3b82f6",
                         tertiary: "#f59e0b",
                         "cyber-blue": "#06b6d4",
@@ -42,9 +41,9 @@
     <style>
         body { background-color: #050709; color: #ffffff; margin: 0; padding: 0; }
         .glass-panel { background: rgba(17, 17, 24, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .table-row-hover:hover { background-color: rgba(168, 85, 247, 0.08); }
-        .btn-primary { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); color: white; transition: all 0.3s ease; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4); }
+        .table-row-hover:hover { background-color: rgba(251, 191, 36, 0.08); }
+        .btn-primary { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: white; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4); }
     </style>
     
     <link rel="stylesheet" href="/style.css">
@@ -158,13 +157,13 @@
                 if (t.status === 'COMPLETED') {
                     actionBtn = `<span class="text-on-surface-variant text-sm font-semibold tracking-wide">Ended</span>`;
                 } else if (t.participantListPublished) {
-                    actionBtn = `<button class="btn-primary px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-md shadow-[0_0_10px_rgba(168,85,247,0.4)]" onclick="event.stopPropagation(); viewParticipants('${t._id}')">View Roster</button>`;
+                    actionBtn = `<button class="btn-primary px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-md shadow-[0_0_10px_rgba(251,191,36,0.4)]" onclick="event.stopPropagation(); viewParticipants('${t._id}')">View Roster</button>`;
                 } else {
                     actionBtn = `<span class="text-tertiary text-sm font-semibold tracking-wide flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">app_registration</span> Registering</span>`;
                 }
 
                 return `
-                <div class="glass-panel rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_8px_30px_rgba(168,85,247,0.15)] flex flex-col group" onclick="if('${t.status}' !== 'COMPLETED') window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
+                <div class="glass-panel rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_8px_30px_rgba(251,191,36,0.15)] flex flex-col group" onclick="if('${t.status}' !== 'COMPLETED') window.location.href='/dashboard/tournaments/${t.id || t._id}/register'">
                     <div class="p-5 border-b border-white/5 flex justify-between items-start gap-4 bg-gradient-to-r from-white/5 to-transparent">
                         <h3 class="text-xl font-display tracking-wider text-white group-hover:text-primary transition-colors line-clamp-2 leading-tight">${t.name}</h3>
                         <span class="shrink-0 px-3 py-1 rounded border text-xs font-bold uppercase tracking-widest ${badgeColor}">${t.status}</span>
@@ -177,7 +176,7 @@
                                 <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[18px] text-cyber-blue">calendar_month</span>
                                 </div>
-                                <span class="font-medium text-white text-sm">${t.date || 'TBA'}</span>
+                                <span class="font-medium text-white text-sm">${(t.date || 'TBA').replace('T', '&nbsp;&nbsp;|&nbsp;&nbsp;')}</span>
                             </div>
                             
                             <div class="flex items-start gap-3 text-on-surface-variant">
@@ -246,146 +245,65 @@
         function initShaderUpcoming(canvasId) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
-            if (typeof THREE === 'undefined') {
-                console.error('Three.js not loaded');
-                return;
-            }
-            const width = canvas.clientWidth || 300;
-            const height = canvas.clientHeight || 200;
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-            camera.position.z = 5;
-
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-            renderer.setSize(width, height, false);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-            const geometry = new THREE.SphereGeometry(1.5, 128, 128);
-
-            const material = new THREE.ShaderMaterial({
-                uniforms: {
-                    uTime: { value: 0 },
-                    uColor: { value: new THREE.Color(0xffffff) },
-                    uMouse: { value: new THREE.Vector2(0, 0) }
-                },
-                vertexShader: `
-                    varying vec3 vNormal;
-                    varying vec3 vPosition;
-                    uniform float uTime;
-                    uniform vec2 uMouse;
-
-                    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-                    vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-                    vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
-                    vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-                    float snoise(vec3 v) {
-                        const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
-                        const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-                        vec3 i  = floor(v + dot(v, C.yyy) );
-                        vec3 x0 =   v - i + dot(i, C.xxx) ;
-                        vec3 g = step(x0.yzx, x0.xyz);
-                        vec3 l = 1.0 - g;
-                        vec3 i1 = min( g.xyz, l.zxy );
-                        vec3 i2 = max( g.xyz, l.zxy );
-                        vec3 x1 = x0 - i1 + C.xxx;
-                        vec3 x2 = x0 - i2 + C.yyy;
-                        vec3 x3 = x0 - D.yyy;
-                        i = mod289(i);
-                        vec4 p = permute( permute( permute(
-                                i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
-                                + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
-                                + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
-                        float n_ = 0.142857142857;
-                        vec3  ns = n_ * D.wyz - D.xzx;
-                        vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-                        vec4 x_ = floor(j * ns.z);
-                        vec4 y_ = floor(j - 7.0 * x_ );
-                        vec4 x = x_ *ns.x + ns.yyyy;
-                        vec4 y = y_ *ns.x + ns.yyyy;
-                        vec4 h = 1.0 - abs(x) - abs(y);
-                        vec4 b0 = vec4( x.xy, y.xy );
-                        vec4 b1 = vec4( x.zw, y.zw );
-                        vec4 s0 = floor(b0)*2.0 + 1.0;
-                        vec4 s1 = floor(b1)*2.0 + 1.0;
-                        vec4 sh = -step(h, vec4(0.0));
-                        vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
-                        vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
-                        vec3 p0 = vec3(a0.xy,h.x);
-                        vec3 p1 = vec3(a0.zw,h.y);
-                        vec3 p2 = vec3(a1.xy,h.z);
-                        vec3 p3 = vec3(a1.zw,h.w);
-                        vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-                        p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
-                        vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-                        m = m * m;
-                        return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
-                    }
-
-                    void main() {
-                        vNormal = normal;
-                        float noise = snoise(position * 0.8 + uTime * 0.5);
-                        vec3 newPosition = position + normal * noise * 0.4;
-                        vPosition = newPosition;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    varying vec3 vNormal;
-                    varying vec3 vPosition;
-                    uniform vec3 uColor;
-
-                    void main() {
-                        vec3 light = normalize(vec3(5.0, 5.0, 5.0));
-                        float dProd = max(0.1, dot(vNormal, light));
-                        
-                        float rim = 1.0 - max(dot(vNormal, vec3(0,0,1)), 0.0);
-                        rim = pow(rim, 3.0);
-                        
-                        vec3 baseColor = vec3(0.85, 0.85, 0.9);
-                        vec3 color = baseColor * dProd + rim * 0.5;
-                        
-                        gl_FragColor = vec4(color, 1.0);
-                    }
-                `,
-                transparent: true
-            });
-
-            const mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-
-            window.addEventListener('mousemove', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                if (rect.width && rect.height) {
-                    material.uniforms.uMouse.value.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-                    material.uniforms.uMouse.value.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-                }
-            });
-
             function syncSize() {
                 const w = canvas.clientWidth || 300;
                 const h = canvas.clientHeight || 200;
                 if (canvas.width !== w || canvas.height !== h) {
-                    renderer.setSize(w, h, false);
-                    camera.aspect = w / h;
-                    camera.updateProjectionMatrix();
+                    canvas.width = w; canvas.height = h;
                 }
             }
-
-            if (typeof ResizeObserver !== 'undefined') {
-                new ResizeObserver(syncSize).observe(canvas);
+            if (typeof ResizeObserver !== 'undefined') new ResizeObserver(syncSize).observe(canvas);
+            syncSize();
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return;
+            const vs = `attribute vec2 a_position; varying vec2 v_texCoord; void main() { v_texCoord = a_position * 0.5 + 0.5; gl_Position = vec4(a_position, 0.0, 1.0); }`;
+            const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+varying vec2 v_texCoord;
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 mouse = u_mouse / u_resolution;
+    float t = u_time * 0.2;
+    float highlight1 = smoothstep(0.4, 0.5, sin(uv.x * 1.5 + uv.y * 0.5 + t));
+    float highlight2 = smoothstep(0.5, 0.6, sin(uv.x * -1.0 + uv.y * 2.0 - t * 1.2));
+    float dist = distance(uv, mouse);
+    float mouseLight = smoothstep(0.4, 0.0, dist) * 0.15;
+    vec3 base = vec3(0.05, 0.05, 0.07);
+    vec3 silver = vec3(0.7, 0.7, 0.75);
+    vec3 bright = vec3(0.95, 0.95, 1.0);
+    vec3 color = base;
+    color = mix(color, silver, highlight1 * 0.3);
+    color = mix(color, bright, highlight2 * 0.4);
+    color += mouseLight;
+    float brush = fract(uv.x * 200.0);
+    color += (brush * 0.02);
+    float vignette = 1.0 - smoothstep(0.5, 1.5, length(uv - 0.5));
+    color *= vignette;
+    gl_FragColor = vec4(color, 1.0);
+}`;
+            function cs(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+            const prog = gl.createProgram(); gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); gl.useProgram(prog);
+            const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+            const pos = gl.getAttribLocation(prog, 'a_position'); gl.enableVertexAttribArray(pos); gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+            const uTime = gl.getUniformLocation(prog, 'u_time'); const uRes = gl.getUniformLocation(prog, 'u_resolution'); const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+            let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+            window.addEventListener('mousemove', (event) => {
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width && rect.height) {
+                    mouse.x = ((event.clientX - rect.left) / rect.width) * canvas.width;
+                    mouse.y = (1.0 - (event.clientY - rect.top) / rect.height) * canvas.height;
+                }
+            });
+            function render(t) {
+                if (typeof ResizeObserver === 'undefined') syncSize();
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                if (uTime) gl.uniform1f(uTime, t * 0.001); if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+                if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); requestAnimationFrame(render);
             }
-
-            function animate(t) {
-                syncSize();
-                material.uniforms.uTime.value = t * 0.001;
-                mesh.rotation.y += 0.005;
-                mesh.rotation.z += 0.003;
-                mesh.position.y = Math.sin(t * 0.001) * 0.1;
-                renderer.render(scene, camera);
-                requestAnimationFrame(animate);
-            }
-            animate(0);
+            render(0);
         }
 
         function initShaderLive(canvasId) {
