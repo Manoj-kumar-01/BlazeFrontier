@@ -599,6 +599,9 @@ router.get('/profile', authMiddleware, async (req, res) => {
             percentile = Math.round((absoluteRank / totalPlayers) * 100);
         }
 
+        const Registration = require('../models/Registration');
+        const completedLeagueMatches = await Registration.countDocuments({ userId: user._id, isCompleted: true });
+
         res.json({
             ...user._doc,
             blazeCoins: user.blazeCoins || 0,
@@ -609,7 +612,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
             rankText: `#${absoluteRank} NATIONAL`,
             regionalRank: regionalRank,
             regionalRankText: `#${regionalRank} ${user.location || 'REGION'}`,
-            totalMatches: user.activityLog ? (typeof user.activityLog.size === 'number' ? user.activityLog.size : Object.keys(user.activityLog).length) : 0,
+            totalMatches: completedLeagueMatches,
             tournamentsWon: user.tourneysWon || 0
         });
     } catch (err) {
