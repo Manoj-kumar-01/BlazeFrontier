@@ -588,6 +588,12 @@ router.get('/profile', authMiddleware, async (req, res) => {
         const absoluteRank = higherBPCount + sameBPEarlierCount + 1;
         const totalPlayers = await User.countDocuments({ role: 'player' });
 
+        // Regional rank
+        const regionalHigherBP = await User.countDocuments({ location: user.location, blazePoints: { $gt: user.blazePoints } });
+        const regionalSameBPEarlier = await User.countDocuments({ location: user.location, blazePoints: user.blazePoints, createdAt: { $lt: user.createdAt } });
+        const regionalRank = regionalHigherBP + regionalSameBPEarlier + 1;
+        const totalRegional = await User.countDocuments({ location: user.location, role: 'player' });
+
         let percentile = 0;
         if (totalPlayers > 1) {
             percentile = Math.round((absoluteRank / totalPlayers) * 100);
@@ -601,6 +607,8 @@ router.get('/profile', authMiddleware, async (req, res) => {
             globalRank: absoluteRank,
             globalRankPercentile: percentile,
             rankText: `#${absoluteRank} GLOBAL`,
+            regionalRank: regionalRank,
+            regionalRankText: `#${regionalRank} ${user.location || 'REGION'}`,
             totalMatches: user.activityLog ? Object.keys(user.activityLog).length : 0,
             tournamentsWon: user.tourneysWon || 0
         });
@@ -852,7 +860,7 @@ router.get('/leaderboard', cacheMiddleware(300), async (req, res) => {
                 id: user._id,
                 name: user.inGameName || user.username || 'Unknown',
                 region: user.location || 'Global',
-                bp: user.blazePoints || 0
+                bp: user.blazePoints === undefined || user.blazePoints === 0 ? 10 : user.blazePoints
             };
         });
 
