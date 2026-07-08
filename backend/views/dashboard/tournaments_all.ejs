@@ -166,30 +166,33 @@
                         <span class="shrink-0 px-3 py-1 rounded border text-xs font-bold uppercase tracking-widest ${badgeColor}">${t.status}</span>
                     </div>
                     
-                    <div class="p-5 flex-1 flex flex-col gap-4">
-                        <div class="flex items-center gap-3 text-on-surface-variant">
-                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-[18px] text-cyber-blue">calendar_month</span>
+                    <div class="p-5 flex-1 flex flex-col relative overflow-hidden">
+                        <canvas id="shader-canvas-${t.id || t._id}" class="absolute inset-0 w-full h-full z-0 opacity-50" style="display:block; mix-blend-mode: screen;"></canvas>
+                        <div class="relative z-10 flex flex-col gap-4">
+                            <div class="flex items-center gap-3 text-on-surface-variant">
+                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[18px] text-cyber-blue">calendar_month</span>
+                                </div>
+                                <span class="font-medium text-white text-sm">${t.date || 'TBA'}</span>
                             </div>
-                            <span class="font-medium text-white text-sm">${t.date || 'TBA'}</span>
-                        </div>
-                        
-                        <div class="flex items-start gap-3 text-on-surface-variant">
-                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-[18px] text-tertiary">emoji_events</span>
+                            
+                            <div class="flex items-start gap-3 text-on-surface-variant">
+                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[18px] text-tertiary">emoji_events</span>
+                                </div>
+                                <div class="text-sm leading-relaxed text-white/95 font-medium drop-shadow-md">
+                                    <div class="flex items-center gap-2 mb-1"><span class="text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]">🥇</span> 100 Coins + 100 BP</div>
+                                    <div class="flex items-center gap-2 mb-1"><span class="text-gray-300 drop-shadow-[0_0_5px_rgba(209,213,219,0.8)]">🥈</span> 50 Coins + 50 BP</div>
+                                    <div class="flex items-center gap-2"><span class="text-amber-600 drop-shadow-[0_0_5px_rgba(217,119,6,0.8)]">🥉</span> 25 Coins + 25 BP</div>
+                                </div>
                             </div>
-                            <div class="text-sm leading-relaxed text-white/90">
-                                <div class="flex items-center gap-2 mb-1"><span class="text-yellow-400">🥇</span> 100 Coins + 100 BP</div>
-                                <div class="flex items-center gap-2 mb-1"><span class="text-gray-300">🥈</span> 50 Coins + 50 BP</div>
-                                <div class="flex items-center gap-2"><span class="text-amber-600">🥉</span> 25 Coins + 25 BP</div>
-                            </div>
-                        </div>
 
-                        <div class="flex items-center gap-3 text-on-surface-variant">
-                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-[18px] text-primary">groups</span>
+                            <div class="flex items-center gap-3 text-on-surface-variant">
+                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">groups</span>
+                                </div>
+                                <span class="font-medium text-white text-sm drop-shadow-md">${t.registeredCount || 0} / ${t.participants || '-'} <span class="text-white/70 font-normal">Registered</span></span>
                             </div>
-                            <span class="font-medium text-white text-sm">${t.registeredCount || 0} / ${t.participants || '-'} <span class="text-on-surface-variant font-normal">Registered</span></span>
                         </div>
                     </div>
                     
@@ -199,6 +202,15 @@
                     </div>
                 </div>`;
             }).join('');
+            
+            setTimeout(() => {
+                list.forEach(t => {
+                    const cid = 'shader-canvas-' + (t.id || t._id);
+                    if (t.status === 'UPCOMING') initShaderUpcoming(cid);
+                    else if (t.status === 'LIVE') initShaderLive(cid);
+                    else if (t.status === 'COMPLETED') initShaderCompleted(cid);
+                });
+            }, 50);
         }
 
         async function viewParticipants(tid) {
@@ -225,6 +237,134 @@
 
         statusFilter.addEventListener('change', renderTable);
         loadTournaments();
+
+        // Shaders
+        function initShaderUpcoming(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            function syncSize() {
+                const w = canvas.clientWidth || 300;
+                const h = canvas.clientHeight || 200;
+                if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w; canvas.height = h;
+                }
+            }
+            if (typeof ResizeObserver !== 'undefined') new ResizeObserver(syncSize).observe(canvas);
+            syncSize();
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return;
+            const vs = `attribute vec2 a_position; varying vec2 v_texCoord; void main() { v_texCoord = a_position * 0.5 + 0.5; gl_Position = vec4(a_position, 0.0, 1.0); }`;
+            const fs = `precision highp float; uniform float u_time; uniform vec2 u_resolution; varying vec2 v_texCoord;
+            void main() {
+                vec2 uv = v_texCoord; float time = u_time * 0.2;
+                vec2 grid = fract(uv * 40.0);
+                float gridLine = smoothstep(0.95, 0.98, grid.x) + smoothstep(0.95, 0.98, grid.y);
+                vec2 p = uv * 2.0 - 1.0; p.x *= u_resolution.x / u_resolution.y;
+                float noise = 0.0;
+                for (int i = 0; i < 5; i++) {
+                    p += sin(p.yx * 2.0 + time) * 0.4;
+                    noise += abs(dot(sin(p), cos(p.yx + time * 0.5))) * 0.5;
+                }
+                vec3 base = vec3(0.04, 0.04, 0.05); vec3 accent = vec3(0.2, 0.22, 0.25); vec3 highlight = vec3(0.4, 0.45, 0.5);
+                vec3 finalColor = mix(base, accent, noise * 0.3);
+                finalColor += highlight * pow(noise, 8.0) * 0.15;
+                finalColor += vec3(0.05, 0.07, 0.1) * gridLine * 0.2;
+                float dist = length(uv - 0.5);
+                finalColor *= smoothstep(1.0, 0.2, dist);
+                gl_FragColor = vec4(finalColor, 1.0);
+            }`;
+            function cs(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+            const prog = gl.createProgram(); gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); gl.useProgram(prog);
+            const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+            const pos = gl.getAttribLocation(prog, 'a_position'); gl.enableVertexAttribArray(pos); gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+            const uTime = gl.getUniformLocation(prog, 'u_time'); const uRes = gl.getUniformLocation(prog, 'u_resolution');
+            function render(t) {
+                if (typeof ResizeObserver === 'undefined') syncSize();
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                if (uTime) gl.uniform1f(uTime, t * 0.001); if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); requestAnimationFrame(render);
+            }
+            render(0);
+        }
+
+        function initShaderLive(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            function syncSize() {
+                const w = canvas.clientWidth || 300;
+                const h = canvas.clientHeight || 200;
+                if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+            }
+            if (typeof ResizeObserver !== 'undefined') new ResizeObserver(syncSize).observe(canvas);
+            syncSize();
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return;
+            const vs = `attribute vec2 a_position; varying vec2 v_texCoord; void main() { v_texCoord = a_position * 0.5 + 0.5; gl_Position = vec4(a_position, 0.0, 1.0); }`;
+            const fs = `precision highp float; uniform float u_time; uniform vec2 u_resolution; varying vec2 v_texCoord;
+            float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
+            void main() {
+                vec2 uv = v_texCoord; float time = u_time * 0.5;
+                vec2 p = uv * 10.0; vec2 ip = floor(p); vec2 fp = fract(p); float star = 0.0;
+                if (hash(ip) > 0.95) { float size = hash(ip + 1.0) * 0.5; float pulse = sin(time + hash(ip) * 10.0) * 0.5 + 0.5; star = smoothstep(size, 0.0, length(fp - 0.5)) * pulse; }
+                vec2 uv2 = uv * 1.5; float flow = 0.0;
+                for(int i=0; i<3; i++) { uv2 += sin(uv2.yx * 3.0 + time * 0.3) * 0.5; flow += abs(sin(uv2.x + uv2.y)) * 0.5; }
+                vec3 color1 = vec3(0.02, 0.02, 0.05); vec3 color2 = vec3(0.05, 0.1, 0.2); vec3 color3 = vec3(0.0, 0.8, 1.0);
+                vec3 finalColor = mix(color1, color2, flow * 0.4); finalColor += color3 * star * 0.8; finalColor += color3 * pow(flow, 10.0) * 0.05;
+                finalColor *= smoothstep(1.2, 0.4, length(uv - 0.5));
+                gl_FragColor = vec4(finalColor, 1.0);
+            }`;
+            function cs(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+            const prog = gl.createProgram(); gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); gl.useProgram(prog);
+            const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+            const pos = gl.getAttribLocation(prog, 'a_position'); gl.enableVertexAttribArray(pos); gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+            const uTime = gl.getUniformLocation(prog, 'u_time'); const uRes = gl.getUniformLocation(prog, 'u_resolution');
+            function render(t) {
+                if (typeof ResizeObserver === 'undefined') syncSize();
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                if (uTime) gl.uniform1f(uTime, t * 0.001); if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); requestAnimationFrame(render);
+            }
+            render(0);
+        }
+
+        function initShaderCompleted(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            function syncSize() {
+                const w = canvas.clientWidth || 300;
+                const h = canvas.clientHeight || 200;
+                if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+            }
+            if (typeof ResizeObserver !== 'undefined') new ResizeObserver(syncSize).observe(canvas);
+            syncSize();
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return;
+            const vs = `attribute vec2 a_position; varying vec2 v_texCoord; void main() { v_texCoord = a_position * 0.5 + 0.5; gl_Position = vec4(a_position, 0.0, 1.0); }`;
+            const fs = `precision highp float; uniform float u_time; uniform vec2 u_resolution; varying vec2 v_texCoord;
+            float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+            void main() {
+                vec2 uv = v_texCoord; float time = u_time * 0.5;
+                float glitch = step(0.98, hash(vec2(floor(time * 10.0), floor(uv.y * 20.0))));
+                float offset = glitch * (hash(vec2(time)) - 0.5) * 0.1; vec2 guv = uv + vec2(offset, 0.0);
+                float scan = sin(guv.y * 400.0 + time * 10.0) * 0.02; float flow = 0.0; vec2 p = guv * 1.5;
+                for(int i=0; i<3; i++) { p += sin(p.yx * 2.0 + time) * 0.5; flow += abs(dot(sin(p), cos(p.yx))) * 0.3; }
+                vec3 col1 = vec3(0.02, 0.0, 0.05); vec3 col2 = vec3(0.15, 0.0, 0.3); vec3 col3 = vec3(0.6, 0.4, 0.8);
+                vec3 finalColor = mix(col1, col2, flow); finalColor += col3 * glitch * 0.3; finalColor += col3 * scan;
+                finalColor *= smoothstep(1.2, 0.5, length(uv - 0.5));
+                gl_FragColor = vec4(finalColor, 1.0);
+            }`;
+            function cs(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+            const prog = gl.createProgram(); gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog); gl.useProgram(prog);
+            const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+            const pos = gl.getAttribLocation(prog, 'a_position'); gl.enableVertexAttribArray(pos); gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+            const uTime = gl.getUniformLocation(prog, 'u_time'); const uRes = gl.getUniformLocation(prog, 'u_resolution');
+            function render(t) {
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                if (uTime) gl.uniform1f(uTime, t * 0.001); if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); requestAnimationFrame(render);
+            }
+            render(0);
+        }
     </script>
 </body>
 </html>
