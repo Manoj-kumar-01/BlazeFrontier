@@ -1212,15 +1212,22 @@
                     ${user.isGenuine ? 'REVOKE GENUINE STATUS' : 'MARK AS GENUINE'}
                 </button>`;
 
+                let profilePicUrl = user.profilePic || '/blaze_avatar.png';
+                if (profilePicUrl.startsWith('/public/')) {
+                    profilePicUrl = profilePicUrl.replace('/public/', '/');
+                }
+
                 content.innerHTML = `
                     <div style="display:flex; align-items:center; margin-bottom:15px;">
-                        <img src="${user.profilePic || '/assets/default_avatar.png'}" style="width:60px; height:60px; border-radius:50%; margin-right:15px; border:2px solid var(--primary); object-fit:cover;" onerror="this.src='/assets/default_avatar.png'">
+                        <img src="${profilePicUrl}" style="width:60px; height:60px; border-radius:50%; margin-right:15px; border:2px solid var(--primary); object-fit:cover;" onerror="this.src='/blaze_avatar.png'">
                         <div>
                             <div style="font-size: 1.2rem; font-weight: 600; color: #fff;">${user.inGameName || user.username || 'N/A'}</div>
                             <div style="color: var(--text-muted); font-size: 0.85rem;">@${user.username}</div>
                         </div>
                     </div>
-                    <div style="margin-bottom: 8px;"><strong>In-Game ID:</strong> <span style="font-family:var(--font-mono); color:var(--blaze-orange);">${user.playerId || 'N/A'}</span></div>
+                    <div style="margin-bottom: 8px;"><strong>In-Game Name:</strong> <span style="font-weight:600;">${user.inGameName || 'N/A'}</span></div>
+                    <div style="margin-bottom: 8px;"><strong>In-Game ID:</strong> <span style="font-family:var(--font-mono); color:var(--blaze-orange);">${user.gameUid || 'N/A'}</span></div>
+                    <div style="margin-bottom: 8px;"><strong>Blaze ID:</strong> <span style="font-family:var(--font-mono); color:#38bdf8;">${user.playerId || 'N/A'}</span></div>
                     <div style="margin-bottom: 8px;"><strong>Email:</strong> ${user.email || 'N/A'}</div>
                     <div style="margin-bottom: 8px;"><strong>Location:</strong> ${user.location || 'N/A'}</div>
                     <div style="margin-bottom: 15px; display:flex; align-items:center;"><strong>Status:</strong> ${genuineBadge}</div>

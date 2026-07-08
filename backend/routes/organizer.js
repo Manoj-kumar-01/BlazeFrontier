@@ -1154,7 +1154,7 @@ router.post('/challenges/submissions/:id/reject', async (req, res) => {
 // @desc    Get user details for organizer
 router.get('/users/:id', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).select('username inGameName playerId email isGenuine profilePic location');
+        const user = await User.findById(req.params.id).select('username inGameName gameUid playerId email isGenuine profilePic location');
         if (!user) return res.status(404).json({ msg: 'User not found' });
         res.json(user);
     } catch (err) {
