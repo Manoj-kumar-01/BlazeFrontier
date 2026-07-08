@@ -220,10 +220,12 @@ agenda.define('cleanup-weekly-clips', async (job) => {
 agenda.define('check-upcoming-slots', async (job) => {
     try {
         const Registration = require('../models/Registration');
+        const Tournament = require('../models/Tournament');
         const User = require('../models/User');
         const Notification = require('../models/Notification');
         const PushSubscription = require('../models/PushSubscription');
         const webpush = require('web-push');
+        const sendEmail = require('./sendEmail');
 
         const today = new Date();
         const yyyy = today.getFullYear();
@@ -231,15 +233,14 @@ agenda.define('check-upcoming-slots', async (job) => {
         const dd = String(today.getDate()).padStart(2, '0');
         const todayStr = `${yyyy}-${mm}-${dd}`;
 
+        let notifyOrganizers = false;
+
+        // 1. Check Registrations (Qualification Series)
         const upcomingRegs = await Registration.find({
             status: 'Approved',
             organizerNotified: false,
             startDate: todayStr
         });
-
-        if (upcomingRegs.length === 0) return;
-
-        let notifyOrganizers = false;
 
         for (const reg of upcomingRegs) {
             if (!reg.timeSlot) continue;
@@ -267,20 +268,41 @@ agenda.define('check-upcoming-slots', async (job) => {
             }
         }
 
+        // 2. Check Tournaments (League Matches)
+        const upcomingTournaments = await Tournament.find({
+            status: { $ne: 'ENDED' },
+            organizerNotified: false
+        });
+
+        for (const t of upcomingTournaments) {
+            const tDate = new Date(t.date);
+            if (!isNaN(tDate.getTime())) {
+                const diffMs = tDate.getTime() - Date.now();
+                const diffMins = diffMs / 60000;
+                
+                if (diffMins > 0 && diffMins <= 30) {
+                    notifyOrganizers = true;
+                    t.organizerNotified = true;
+                    await t.save();
+                }
+            }
+        }
+
+        // 3. Send Notifications if needed
         if (notifyOrganizers) {
             const organizers = await User.find({ role: 'organizer' });
             for (const org of organizers) {
                 await Notification.create({
                     userId: org._id,
-                    title: 'Upcoming Slot Alert',
-                    message: 'A booked slot starts in 30 minutes! Please prepare to send credentials.',
+                    title: 'Upcoming Match Alert',
+                    message: 'A booked match/slot starts in 30 minutes! Please prepare to send credentials.',
                     type: 'warning'
                 });
 
                 const subscriptions = await PushSubscription.find({ userId: org._id });
                 const payload = JSON.stringify({
-                    title: 'Upcoming Slot Alert',
-                    body: 'A booked slot starts in 30 minutes! Please prepare to send credentials.'
+                    title: 'Upcoming Match Alert',
+                    body: 'A booked match/slot starts in 30 minutes! Please prepare to send credentials.'
                 });
                 subscriptions.forEach(sub => {
                     webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload).catch(err => {
@@ -289,6 +311,21 @@ agenda.define('check-upcoming-slots', async (job) => {
                         }
                     });
                 });
+
+                if (org.email) {
+                    await sendEmail({
+                        email: org.email,
+                        subject: 'ACTION REQUIRED: Upcoming Match in 30 Minutes',
+                        html: `<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background: #1a1a24; color: #fff; border-radius: 8px;">
+                                <h2 style="color: #ff5722;">Upcoming Match Alert</h2>
+                                <p style="font-size: 1.1rem;">Hello Organizer <strong>${org.username}</strong>,</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6;">A booked Qualification Series slot or League Match is scheduled to begin in approximately <strong>30 minutes</strong>.</p>
+                                <p style="font-size: 1.1rem; line-height: 1.6;">Please log in to the Organizer Dashboard and distribute the Room Credentials (ID and Password) to the participants immediately.</p>
+                                <a href="${process.env.FRONTEND_URL || 'http://localhost:5000'}/dashboard/organizer" style="display: inline-block; padding: 12px 24px; background: #ff5722; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; margin-top: 20px;">Go to Dashboard</a>
+                                <p style="font-size: 1.1rem; color: #aaa; margin-top: 30px;">The Blaze Frontier System</p>
+                               </div>`
+                    });
+                }
             }
         }
     } catch (err) {

@@ -47,6 +47,10 @@ const TournamentSchema = new mongoose.Schema({
     organizerName: {
         type: String,
         default: 'System'
+    },
+    organizerNotified: {
+        type: Boolean,
+        default: false
     }
 });
 
