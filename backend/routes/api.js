@@ -609,7 +609,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
             rankText: `#${absoluteRank} NATIONAL`,
             regionalRank: regionalRank,
             regionalRankText: `#${regionalRank} ${user.location || 'REGION'}`,
-            totalMatches: user.activityLog ? Object.keys(user.activityLog).length : 0,
+            totalMatches: user.activityLog ? (typeof user.activityLog.size === 'number' ? user.activityLog.size : Object.keys(user.activityLog).length) : 0,
             tournamentsWon: user.tourneysWon || 0
         });
     } catch (err) {
