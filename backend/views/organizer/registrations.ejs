@@ -799,6 +799,19 @@
         </div>
     </div>
 
+    <!-- Player Details Modal -->
+    <div class="org-modal-overlay" id="playerModal">
+        <div class="org-modal" style="max-width: 500px; text-align: left;">
+            <h2 style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">PLAYER DETAILS</h2>
+            <div id="player-modal-content" style="color: #e2e8f0; font-size: 0.95rem; line-height: 1.6;">
+                <div style="text-align:center; padding: 20px;"><div class="empty-icon">⏳</div><p>Loading details...</p></div>
+            </div>
+            <div class="org-modal-actions" style="margin-top: 24px;">
+                <button class="org-btn org-btn-ghost" onclick="document.getElementById('playerModal').classList.remove('active')">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="org-toast" id="org-toast"></div>
 
@@ -1111,6 +1124,12 @@
                     } else {
                         actionsHtml = '<span style="color:var(--text-muted); font-size:0.75rem;">Available 30 mins prior</span>';
                     }
+                } else if (r.status === 'Completed') {
+                    actionsHtml = `
+                        <button class="org-btn org-btn-sm org-btn-primary" onclick="openPlayerModal('${player._id || player}')" style="background: rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); color: #7dd3fc;">
+                            👁️ VIEW PLAYER
+                        </button>
+                    `;
                 } else if (statusClass === 'status-rejected' || r.status === 'Missed') {
                     actionsHtml = `<span style="color:var(--text-muted); font-size:0.75rem;">Reason: <span style="color:#ef4444;">${r.resolutionCause || 'No reason provided'}</span></span>`;
                 } else {
@@ -1171,6 +1190,67 @@
 
         function closeCreateModal() {
             document.getElementById('tournamentModal').classList.remove('active');
+        }
+
+        async function openPlayerModal(userId) {
+            document.getElementById('playerModal').classList.add('active');
+            const content = document.getElementById('player-modal-content');
+            content.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="empty-icon">⏳</div><p>Loading details...</p></div>';
+            
+            try {
+                const res = await fetch(`/api/organizer/users/${userId}`, {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!res.ok) throw new Error('Failed to fetch');
+                const user = await res.json();
+                
+                const genuineBadge = user.isGenuine 
+                    ? '<span class="status-badge status-active" style="margin-left: 10px;">✔ GENUINE</span>'
+                    : '<span class="status-badge status-upcoming" style="margin-left: 10px;">UNVERIFIED</span>';
+                
+                const toggleBtn = `<button class="org-btn org-btn-sm ${user.isGenuine ? 'org-btn-danger' : 'org-btn-success'}" style="margin-top: 15px; width: 100%;" onclick="toggleGenuine('${user._id}')">
+                    ${user.isGenuine ? 'REVOKE GENUINE STATUS' : 'MARK AS GENUINE'}
+                </button>`;
+
+                content.innerHTML = `
+                    <div style="display:flex; align-items:center; margin-bottom:15px;">
+                        <img src="${user.profilePic || '/assets/default_avatar.png'}" style="width:60px; height:60px; border-radius:50%; margin-right:15px; border:2px solid var(--primary); object-fit:cover;" onerror="this.src='/assets/default_avatar.png'">
+                        <div>
+                            <div style="font-size: 1.2rem; font-weight: 600; color: #fff;">${user.inGameName || user.username || 'N/A'}</div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem;">@${user.username}</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 8px;"><strong>In-Game ID:</strong> <span style="font-family:var(--font-mono); color:var(--blaze-orange);">${user.playerId || 'N/A'}</span></div>
+                    <div style="margin-bottom: 8px;"><strong>Email:</strong> ${user.email || 'N/A'}</div>
+                    <div style="margin-bottom: 8px;"><strong>Location:</strong> ${user.location || 'N/A'}</div>
+                    <div style="margin-bottom: 15px; display:flex; align-items:center;"><strong>Status:</strong> ${genuineBadge}</div>
+                    ${toggleBtn}
+                `;
+            } catch (e) {
+                content.innerHTML = '<div style="text-align:center; padding: 20px; color: #ef4444;"><p>Error loading player details.</p></div>';
+            }
+        }
+
+        async function toggleGenuine(userId) {
+            const btn = document.querySelector('#player-modal-content .org-btn');
+            if (btn) btn.disabled = true;
+            try {
+                const res = await fetch(`/api/organizer/users/${userId}/verify`, {
+                    method: 'PUT',
+                    headers: { 'x-auth-token': token }
+                });
+                if (res.ok) {
+                    showToast('Genuine status updated!', 'success');
+                    openPlayerModal(userId);
+                    loadRegistrations(); // refresh list
+                } else {
+                    showToast('Failed to update status', 'error');
+                    if (btn) btn.disabled = false;
+                }
+            } catch (e) {
+                showToast('Network error', 'error');
+                if (btn) btn.disabled = false;
+            }
         }
 
         async function submitTournament() {

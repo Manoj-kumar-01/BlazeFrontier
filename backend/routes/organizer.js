@@ -454,7 +454,7 @@ router.get('/registrations', async (req, res) => {
         }
         
         const registrations = await Registration.find(filter)
-            .populate('userId', 'username inGameName playerId email profilePic')
+            .populate('userId', 'username inGameName playerId email profilePic isGenuine')
             .populate('tournamentId', 'name')
             .sort({ createdAt: -1 });
         
@@ -475,7 +475,7 @@ router.get('/tournaments/:id/registrations', async (req, res) => {
         }
         
         const registrations = await Registration.find(filter)
-            .populate('userId', 'username inGameName gameUid playerId email profilePic')
+            .populate('userId', 'username inGameName gameUid playerId email profilePic isGenuine')
             .populate('tournamentId', 'name')
             .sort({ createdAt: -1 });
         
@@ -1144,6 +1144,41 @@ router.post('/challenges/submissions/:id/reject', async (req, res) => {
         await sub.save();
 
         res.json({ msg: 'Submission rejected.' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/organizer/users/:id
+// @desc    Get user details for organizer
+router.get('/users/:id', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('username inGameName playerId email isGenuine profilePic location');
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   PUT /api/organizer/users/:id/verify
+// @desc    Toggle Genuine Operator status for a user
+router.put('/users/:id/verify', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        user.isGenuine = !user.isGenuine;
+
+        if (user.isGenuine) {
+            user.trustedPlayerClaimed = true;
+            user.blazeCoins = (user.blazeCoins || 0) + 100;
+        }
+
+        await user.save();
+        res.json({ msg: `User is now ${user.isGenuine ? 'verified' : 'unverified'}`, isGenuine: user.isGenuine });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
