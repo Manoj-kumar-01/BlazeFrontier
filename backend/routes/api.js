@@ -522,6 +522,11 @@ router.get('/profile', authMiddleware, async (req, res) => {
             updated = true;
         }
 
+        if (user.blazePoints === 0 || user.blazePoints === undefined) {
+            user.blazePoints = 10;
+            updated = true;
+        }
+
         if (user.isGenuine && !user.trustedPlayerClaimed) {
             user.trustedPlayerClaimed = true;
             user.blazeCoins = (user.blazeCoins || 0) + 100;
@@ -572,30 +577,32 @@ router.get('/profile', authMiddleware, async (req, res) => {
             });
         }
 
-        // Calculate global rank across the platform by totaling Blaze Points from all Matches
-        const Match = require('../models/Match');
+        // Calculate global rank based on Blaze Points directly on the User document
+        // Rank = Number of users with more BP + Number of users with same BP but earlier createdAt + 1
+        const higherBPCount = await User.countDocuments({ blazePoints: { $gt: user.blazePoints } });
+        const sameBPEarlierCount = await User.countDocuments({
+            blazePoints: user.blazePoints,
+            createdAt: { $lt: user.createdAt }
+        });
         
-        // Sum BP for the current user
-        const userMatches = await Match.find({ playerId: user._id, status: 'COMPLETED' });
-        const userTotalBP = userMatches.reduce((acc, m) => acc + m.blazePoints, 0);
+        const absoluteRank = higherBPCount + sameBPEarlierCount + 1;
+        const totalPlayers = await User.countDocuments({ role: 'player' });
 
-        // Aggregate to find rank (Count users with higher BP)
-        const higherRankCount = await User.countDocuments({ blazeCoins: { $gt: user.blazeCoins || 0 } });
-        const totalPlayers = await User.countDocuments();
-        
         let percentile = 0;
         if (totalPlayers > 1) {
-            percentile = Math.round((higherRankCount / totalPlayers) * 100);
+            percentile = Math.round((absoluteRank / totalPlayers) * 100);
         }
 
         res.json({
             ...user._doc,
             blazeCoins: user.blazeCoins || 0,
+            blazePoints: user.blazePoints || 0,
             matchmakingDailyCount: user.matchmakingDailyCount || 0,
+            globalRank: absoluteRank,
             globalRankPercentile: percentile,
-            rankText: `TOP ${percentile}% GLOBAL`,
-            totalMatches: userMatches.length,
-            tournamentsWon: userMatches.filter(m => m.placement === 1).length
+            rankText: `#${absoluteRank} GLOBAL`,
+            totalMatches: user.activityLog ? Object.keys(user.activityLog).length : 0,
+            tournamentsWon: user.tourneysWon || 0
         });
     } catch (err) {
         console.error(err.message);
@@ -826,31 +833,28 @@ router.get('/leaderboard', cacheMiddleware(300), async (req, res) => {
             userIdsInRegion = usersInRegion.map(u => u._id);
         }
         
-        // Match stage
-        const matchStage = { status: 'COMPLETED' };
+        // Aggregate to find total BP per player directly from User collection
+        const filter = { isBanned: false, role: 'player' };
         if (userIdsInRegion) {
-            matchStage.playerId = { $in: userIdsInRegion };
+            filter._id = { $in: userIdsInRegion };
         }
 
-        // Aggregate to find total BP per player
-        const leaderboard = await Match.aggregate([
-            { $match: matchStage },
-            { $group: { _id: "$playerId", totalBP: { $sum: "$blazePoints" } } },
-            { $sort: { totalBP: -1 } },
-            { $limit: 100 }
-        ]);
+        const leaderboard = await User.find(filter)
+            .select('username inGameName location blazePoints createdAt')
+            .sort({ blazePoints: -1, createdAt: 1 }) // Descending points, ascending creation time (tie-breaker)
+            .limit(100)
+            .lean();
 
-        // Populate user details
-        const populatedLeaderboard = await Promise.all(leaderboard.map(async (entry, index) => {
-            const user = await User.findById(entry._id).select('username inGameName location').lean();
+        // Populate details
+        const populatedLeaderboard = leaderboard.map((user, index) => {
             return {
                 rank: index + 1,
-                id: entry._id,
-                name: user ? (user.inGameName || user.username) : 'Unknown',
-                region: user ? (user.location || 'Global') : 'Global',
-                bp: entry.totalBP
+                id: user._id,
+                name: user.inGameName || user.username || 'Unknown',
+                region: user.location || 'Global',
+                bp: user.blazePoints || 0
             };
-        }));
+        });
 
         res.json(populatedLeaderboard);
     } catch (err) {
