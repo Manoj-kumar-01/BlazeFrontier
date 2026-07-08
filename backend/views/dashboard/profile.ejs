@@ -484,9 +484,9 @@
                         
                         <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
 
-                        <!-- Global -->
+                        <!-- National -->
                         <div style="text-align: center;">
-                            <div class="rank-label" style="margin-bottom: 8px;">Global Ranking</div>
+                            <div class="rank-label" style="margin-bottom: 8px;">National Ranking</div>
                             <div class="rank-badge" id="rank-icon" style="font-size: 2rem; color: #fff; margin-bottom: 8px;">#—</div>
                             <div class="rank-text" id="rank-text" style="font-size: 0.8rem; color: var(--text-muted); margin: 0; text-transform: uppercase;">Calculating…</div>
                         </div>
@@ -496,7 +496,7 @@
                     <div class="prog-track" style="background: rgba(255, 255, 255, 0.1); margin-top: 20px; position: relative; z-index: 1;">
                         <div class="prog-fill" id="rank-prog" style="background: linear-gradient(90deg, #ff5722 0%, #ff9800 100%); box-shadow: 0 0 10px rgba(255,87,34,0.5);"></div>
                     </div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 8px; position: relative; z-index: 1; letter-spacing: 1px;">GLOBAL PERCENTILE TRACKER</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 8px; position: relative; z-index: 1; letter-spacing: 1px;">NATIONAL PERCENTILE TRACKER</div>
                 </div>
 
                 <!-- 1st Place Finishes Box -->
@@ -514,11 +514,11 @@
             <div class="profile-main">
                 <!-- Stats -->
                 <div class="stats-grid">
-                    <div class="stat-card" style="background: url('/public/blaze_coin.jpg') center/cover; position: relative; overflow: hidden; border-color: rgba(255, 215, 0, 0.2);">
+                    <div class="stat-card" style="background: url('/public/blaze_coin.jpg') right center/70% no-repeat, linear-gradient(135deg, #111116 0%, #1a1a20 100%); position: relative; overflow: hidden; border-color: rgba(255, 215, 0, 0.2);">
                         <div class="stat-label" style="color: #fcd34d; position: relative; z-index: 1;">Blaze Coins</div>
                         <div class="stat-val" id="st-bc" style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">—</div>
                     </div>
-                    <div class="stat-card" style="background: url('/public/ignite.webp') center/cover; position: relative; overflow: hidden; border-color: rgba(255, 87, 34, 0.2);">
+                    <div class="stat-card" style="background: url('/public/blaze_points_bg.png') center/cover; position: relative; overflow: hidden; border-color: rgba(255, 87, 34, 0.2);">
                         <div class="stat-label" style="color: var(--blaze-orange); position: relative; z-index: 1;">Blaze Points</div>
                         <div class="stat-val" id="st-bp" style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">—</div>
                     </div>
@@ -526,7 +526,7 @@
                         <div class="stat-label" style="color: #86efac; position: relative; z-index: 1;">Matches</div>
                         <div class="stat-val" id="st-matches" style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">—</div>
                     </div>
-                    <div class="stat-card" style="background: url('/public/tournament_poster.png') center/cover; position: relative; overflow: hidden; border-color: rgba(139, 92, 246, 0.2);">
+                    <div class="stat-card" style="background: url('/public/silver_cup_bg.png') center/cover; position: relative; overflow: hidden; border-color: rgba(139, 92, 246, 0.2);">
                         <div class="stat-label" style="color: #c4b5fd; position: relative; z-index: 1;">Tournaments</div>
                         <div class="stat-val" id="st-tournaments" style="color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">0</div>
                     </div>
@@ -974,7 +974,7 @@
                     if (stWinsEl) stWinsEl.textContent = u.tourneysWon || 0;
                     
                     // Platform Ranking logic
-                    document.getElementById('rank-text').textContent = 'GLOBAL';
+                    document.getElementById('rank-text').textContent = 'NATIONAL';
                     document.getElementById('rank-icon').textContent = u.globalRank ? `#${u.globalRank}` : '#0';
                     document.getElementById('rank-prog').style.width = u.globalRankPercentile ? `${100 - u.globalRankPercentile}%` : '0%';
                     

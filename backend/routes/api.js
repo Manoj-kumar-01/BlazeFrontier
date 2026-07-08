@@ -606,7 +606,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
             matchmakingDailyCount: user.matchmakingDailyCount || 0,
             globalRank: absoluteRank,
             globalRankPercentile: percentile,
-            rankText: `#${absoluteRank} GLOBAL`,
+            rankText: `#${absoluteRank} NATIONAL`,
             regionalRank: regionalRank,
             regionalRankText: `#${regionalRank} ${user.location || 'REGION'}`,
             totalMatches: user.activityLog ? Object.keys(user.activityLog).length : 0,
