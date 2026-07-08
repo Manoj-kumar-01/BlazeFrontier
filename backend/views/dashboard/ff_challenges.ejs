@@ -131,13 +131,20 @@
             gap: 20px;
         }
         .winner-rank-badge {
-            width: 60px; height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            display: flex; justify-content: center; align-items: center;
-            font-weight: 900; color: #000; font-size: 1.5rem;
-            box-shadow: 0 0 25px rgba(251,191,36,0.5);
-            flex-shrink: 0;
+            padding: 8px 16px;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            color: #000;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 900;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(251,191,36,0.4);
+            transform: skewX(-10deg);
+        }
+        .winner-rank-badge > * {
+            transform: skewX(10deg);
         }
         .winner-player-name {
             font-weight: 800;
@@ -435,7 +442,12 @@
                 </div>
 
                 <div class="winner-profile-card" style="display:flex; align-items:center; flex-wrap:wrap; gap:16px;">
-                    <div class="winner-rank-badge">#1</div>
+                    <div class="winner-rank-badge">
+                        <div style="display:flex; align-items:center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right:6px;"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"></path></svg>
+                            1ST PLACE
+                        </div>
+                    </div>
                     <img src="/public/blaze_avatar.png" alt="Avatar" id="winner-avatar" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); display: none;" onerror="this.src='/public/blaze_avatar.png'">
                     <div class="winner-player-name" id="winner-name" style="margin:0;">—</div>
                     <div class="winner-player-id" id="winner-game-id" style="margin:0; font-family:var(--font-mono); color:var(--blaze-orange);">Game ID: —</div>

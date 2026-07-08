@@ -346,12 +346,12 @@
                         </div>`;
                     }).join('');
 
-                    // 2. Render Table (Remaining Tournaments)
-                    const remainingTournaments = allTournaments.slice(2);
-                    if (remainingTournaments.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-md text-on-surface-variant">No further matches scheduled.</td></tr>';
+                    // 2. Render Table (Upcoming Tournaments)
+                    const upcomingTournaments = (data.upcoming || []).filter(t => t.game !== 'CUSTOM SERIES');
+                    if (upcomingTournaments.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-md text-on-surface-variant">No upcoming matches scheduled.</td></tr>';
                     } else {
-                        tableBody.innerHTML = remainingTournaments.map(t => {
+                        tableBody.innerHTML = upcomingTournaments.map(t => {
                             const isLive = t.status === 'LIVE';
                             const badgeColor = isLive ? 'text-[#22c55e] border-[#22c55e]/30' : 'text-cyber-blue border-cyber-blue/30';
                             
