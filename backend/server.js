@@ -237,7 +237,11 @@ async function startBackend() {
 
     // Connect to MongoDB
     mongoose.set('strictQuery', false);
-    mongoose.connect(process.env.MONGO_URI)
+    mongoose.connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 60000, // Keep trying to send operations for 60 seconds
+        socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+        connectTimeoutMS: 60000, // Give up initial connection after 60 seconds
+    })
     .then(async () => {
         // console.log('MongoDB Connected to Blaze Frontier Cluster');
         // Start Agenda Queue
@@ -253,7 +257,11 @@ async function startBackend() {
         const initChangeStreams = require('./utils/changeStreams');
         initChangeStreams();
     })
-    .catch(err => console.log('MongoDB Connection Error:', err));
+    .catch(err => {
+        console.error('MongoDB Connection Error:', err);
+        // Exit process on initial connection failure so Render can restart it
+        process.exit(1);
+    });
 
     if (process.env.NODE_ENV !== 'test') {
         const PORT = process.env.PORT || 5000;
