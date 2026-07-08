@@ -499,16 +499,15 @@ router.put('/registrations/:id/completion', async (req, res) => {
         if (!reg) return res.status(404).json({ msg: 'Registration not found' });
 
         if (outcome === 'Completed') {
-            reg.status = 'Completed';
-            const reg = await Registration.findByIdAndUpdate(
+            const updatedReg = await Registration.findByIdAndUpdate(
                 req.params.id,
                 { $set: { status: 'Completed', isCompleted: true } },
                 { new: true }
             );
-            if (!reg) return res.status(404).json({ msg: 'Registration not found' });
-            return res.json({ msg: 'Match marked as completed', reg });
+            if (!updatedReg) return res.status(404).json({ msg: 'Registration not found' });
+            return res.json({ msg: 'Match marked as completed', reg: updatedReg });
         } else if (outcome === 'Missed') {
-            const reg = await Registration.findByIdAndUpdate(
+            const updatedReg = await Registration.findByIdAndUpdate(
                 req.params.id,
                 { 
                     $set: { 
@@ -519,30 +518,30 @@ router.put('/registrations/:id/completion', async (req, res) => {
                 { new: true }
             ).populate('userId', 'username inGameName email');
 
-            if (!reg) return res.status(404).json({ msg: 'Registration not found' });
-            const formatMode = `${reg.format.toUpperCase()} ${reg.mode.toUpperCase()}`;
+            if (!updatedReg) return res.status(404).json({ msg: 'Registration not found' });
+            const formatMode = `${updatedReg.format.toUpperCase()} ${updatedReg.mode.toUpperCase()}`;
             
             agenda.now('send-inapp-notification', {
-                userId: reg.userId._id,
+                userId: updatedReg.userId._id,
                 title: 'Match Missed',
-                message: `We're sorry, your ${formatMode} match time concluded without being played. Reason: ${reg.resolutionCause}. You can register again!`,
+                message: `We're sorry, your ${formatMode} match time concluded without being played. Reason: ${updatedReg.resolutionCause}. You can register again!`,
                 type: 'error'
             });
 
-            if (reg.userId && reg.userId.email) {
+            if (updatedReg.userId && updatedReg.userId.email) {
                 agenda.now('send-email', {
-                    email: reg.userId.email,
+                    email: updatedReg.userId.email,
                     subject: 'Match Missed - Blaze Frontier',
                     html: `
                         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
                             <div style="padding: 30px; text-align: left;">
                                 <h2 style="color: #ff4e00; margin-top: 0;">Match Missed</h2>
-                                <p style="font-size: 1.1rem; color: #333;">Hello <strong>${reg.userId.inGameName || reg.userId.username}</strong>,</p>
+                                <p style="font-size: 1.1rem; color: #333;">Hello <strong>${updatedReg.userId.inGameName || updatedReg.userId.username}</strong>,</p>
                                 <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">
                                     It appears your <strong>${formatMode}</strong> match was missed.
                                 </p>
                                 <div style="background-color: #ffe5e5; padding: 15px; border-left: 4px solid #ef4444; margin: 20px 0;">
-                                    <p style="margin: 0; color: #cc0000;"><strong>Reason:</strong> ${reg.resolutionCause}</p>
+                                    <p style="margin: 0; color: #cc0000;"><strong>Reason:</strong> ${updatedReg.resolutionCause}</p>
                                 </div>
                                 <div style="background-color: #e5f0ff; padding: 15px; border-left: 4px solid #0056b3; margin: 20px 0;">
                                     <p style="margin: 0; color: #004085;"><strong>Fresh Start:</strong> Your previous registration has been moved to history without penalties. You are free to register for a new tournament slot immediately.</p>
