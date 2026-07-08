@@ -1125,11 +1125,19 @@
                         actionsHtml = '<span style="color:var(--text-muted); font-size:0.75rem;">Available 30 mins prior</span>';
                     }
                 } else if (r.status === 'Completed') {
-                    actionsHtml = `
-                        <button class="org-btn org-btn-sm org-btn-primary" onclick="openPlayerModal('${player._id || player}')" style="background: rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); color: #7dd3fc;">
-                            👁️ VIEW PLAYER
-                        </button>
-                    `;
+                    if (r.teamMembers && r.teamMembers.length > 0) {
+                        let squadBtns = `<button class="org-btn org-btn-sm org-btn-primary" onclick="openPlayerModal('${player._id || player}')" style="margin-bottom: 6px; background: rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); color: #7dd3fc; width: 100%;">👁️ LDR: ${player.inGameName || player.username || 'Unknown'}</button>`;
+                        r.teamMembers.forEach((memId, idx) => {
+                            squadBtns += `<button class="org-btn org-btn-sm org-btn-primary" onclick="openPlayerModalByPlayerId('${memId}')" style="margin-bottom: 6px; background: rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); color: #7dd3fc; width: 100%;">👁️ P${idx+2}: ${memId}</button>`;
+                        });
+                        actionsHtml = `<div style="display:flex; flex-direction:column; min-width: 140px;">${squadBtns}</div>`;
+                    } else {
+                        actionsHtml = `
+                            <button class="org-btn org-btn-sm org-btn-primary" onclick="openPlayerModal('${player._id || player}')" style="background: rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); color: #7dd3fc;">
+                                👁️ VIEW PLAYER
+                            </button>
+                        `;
+                    }
                 } else if (statusClass === 'status-rejected' || r.status === 'Missed') {
                     actionsHtml = `<span style="color:var(--text-muted); font-size:0.75rem;">Reason: <span style="color:#ef4444;">${r.resolutionCause || 'No reason provided'}</span></span>`;
                 } else {
@@ -1199,6 +1207,52 @@
             
             try {
                 const res = await fetch(`/api/organizer/users/${userId}`, {
+                    headers: { 'x-auth-token': token }
+                });
+                if (!res.ok) throw new Error('Failed to fetch');
+                const user = await res.json();
+                
+                const genuineBadge = user.isGenuine 
+                    ? '<span class="status-badge status-active" style="margin-left: 10px;">✔ GENUINE</span>'
+                    : '<span class="status-badge status-upcoming" style="margin-left: 10px;">UNVERIFIED</span>';
+                
+                const toggleBtn = `<button class="org-btn org-btn-sm ${user.isGenuine ? 'org-btn-danger' : 'org-btn-success'}" style="margin-top: 15px; width: 100%;" onclick="toggleGenuine('${user._id}')">
+                    ${user.isGenuine ? 'REVOKE GENUINE STATUS' : 'MARK AS GENUINE'}
+                </button>`;
+
+                let profilePicUrl = user.profilePic || '/blaze_avatar.png';
+                if (profilePicUrl.startsWith('/public/')) {
+                    profilePicUrl = profilePicUrl.replace('/public/', '/');
+                }
+
+                content.innerHTML = `
+                    <div style="display:flex; align-items:center; margin-bottom:15px;">
+                        <img src="${profilePicUrl}" style="width:60px; height:60px; border-radius:50%; margin-right:15px; border:2px solid var(--primary); object-fit:cover;" onerror="this.src='/blaze_avatar.png'">
+                        <div>
+                            <div style="font-size: 1.2rem; font-weight: 600; color: #fff;">${user.inGameName || user.username || 'N/A'}</div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem;">@${user.username}</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 8px;"><strong>In-Game Name:</strong> <span style="font-weight:600;">${user.inGameName || 'N/A'}</span></div>
+                    <div style="margin-bottom: 8px;"><strong>In-Game ID:</strong> <span style="font-family:var(--font-mono); color:var(--blaze-orange);">${user.gameUid || 'N/A'}</span></div>
+                    <div style="margin-bottom: 8px;"><strong>Blaze ID:</strong> <span style="font-family:var(--font-mono); color:#38bdf8;">${user.playerId || 'N/A'}</span></div>
+                    <div style="margin-bottom: 8px;"><strong>Email:</strong> ${user.email || 'N/A'}</div>
+                    <div style="margin-bottom: 8px;"><strong>Location:</strong> ${user.location || 'N/A'}</div>
+                    <div style="margin-bottom: 15px; display:flex; align-items:center;"><strong>Status:</strong> ${genuineBadge}</div>
+                    ${toggleBtn}
+                `;
+            } catch (e) {
+                content.innerHTML = '<div style="text-align:center; padding: 20px; color: #ef4444;"><p>Error loading player details.</p></div>';
+            }
+        }
+
+        async function openPlayerModalByPlayerId(playerId) {
+            document.getElementById('playerModal').classList.add('active');
+            const content = document.getElementById('player-modal-content');
+            content.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="empty-icon">⏳</div><p>Loading details...</p></div>';
+            
+            try {
+                const res = await fetch(`/api/organizer/users/by-player-id/${playerId}`, {
                     headers: { 'x-auth-token': token }
                 });
                 if (!res.ok) throw new Error('Failed to fetch');

@@ -1163,6 +1163,19 @@ router.get('/users/:id', async (req, res) => {
     }
 });
 
+// @route   GET /api/organizer/users/by-player-id/:playerId
+// @desc    Get user details by Player ID (Blaze ID) for organizer
+router.get('/users/by-player-id/:playerId', async (req, res) => {
+    try {
+        const user = await User.findOne({ playerId: req.params.playerId }).select('username inGameName gameUid playerId email isGenuine profilePic location');
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // @route   PUT /api/organizer/users/:id/verify
 // @desc    Toggle Genuine Operator status for a user
 router.put('/users/:id/verify', async (req, res) => {
