@@ -59,6 +59,13 @@
         }
         .tab-btn.active { background: var(--blaze-orange); color: #fff; }
         .tab-btn:hover:not(.active) { color: #fff; }
+        .tab-btn:active { transform: scale(0.95); }
+
+        .table-scroll { height: 500px; overflow-y: auto; overflow-x: auto; }
+        .table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: rgba(255,87,34,0.5); border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb:hover { background: var(--blaze-orange); }
 
         .lb-table { width: 100%; border-collapse: collapse; }
         .lb-table th {
@@ -125,11 +132,6 @@
             <p>Top commanders across the Blaze Frontier network.</p>
         </div>
 
-        <!-- Podium -->
-        <div class="podium-row" id="podium">
-            <div style="text-align:center; width:100%;"><div class="spinner-ring"></div></div>
-        </div>
-
         <!-- Table -->
         <div class="table-panel" style="margin-bottom: 40px;">
             <div class="table-header">
@@ -139,7 +141,7 @@
                     <button class="tab-btn" id="tab-regional">YOUR REGION</button>
                 </div>
             </div>
-            <div style="overflow-x: auto;">
+            <div class="table-scroll">
                 <table class="lb-table">
                     <thead>
                         <tr><th>Rank</th><th>Commander</th><th>Blaze Points</th></tr>
@@ -152,7 +154,12 @@
         </div>
 
         <!-- Showcase -->
-        <div class="showcase-row" id="showcases"></div>
+        <div class="showcase-row" id="showcases" style="margin-bottom: 40px;"></div>
+
+        <!-- Podium -->
+        <div class="podium-row" id="podium">
+            <div style="text-align:center; width:100%;"><div class="spinner-ring"></div></div>
+        </div>
     </div>
 
     <script src="/script.js?v=1.2"></script>
