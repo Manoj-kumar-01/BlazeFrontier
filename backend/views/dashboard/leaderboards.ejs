@@ -130,13 +130,10 @@
             <div style="text-align:center; width:100%;"><div class="spinner-ring"></div></div>
         </div>
 
-        <!-- Showcase -->
-        <div class="showcase-row" id="showcases"></div>
-
         <!-- Table -->
-        <div class="table-panel">
+        <div class="table-panel" style="margin-bottom: 40px;">
             <div class="table-header">
-                <div class="table-title">RANKINGS</div>
+                <div class="table-title" id="lb-title">NATIONAL RANKINGS</div>
                 <div class="tab-group">
                     <button class="tab-btn active" id="tab-national">NATIONAL</button>
                     <button class="tab-btn" id="tab-regional">YOUR REGION</button>
@@ -145,14 +142,17 @@
             <div style="overflow-x: auto;">
                 <table class="lb-table">
                     <thead>
-                        <tr><th>Rank</th><th>Commander</th><th>Arena</th><th>Blaze Coins</th></tr>
+                        <tr><th>Rank</th><th>Commander</th><th>Blaze Points</th></tr>
                     </thead>
                     <tbody id="lb-body">
-                        <tr class="loading-row"><td colspan="4"><div class="spinner-ring"></div></td></tr>
+                        <tr class="loading-row"><td colspan="3"><div class="spinner-ring"></div></td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <!-- Showcase -->
+        <div class="showcase-row" id="showcases"></div>
     </div>
 
     <script src="/script.js?v=1.2"></script>
@@ -217,7 +217,11 @@
 
                 const loadLB = async (region) => {
                     const tbody = document.getElementById('lb-body');
-                    tbody.innerHTML = '<tr class="loading-row"><td colspan="4"><div class="spinner-ring"></div></td></tr>';
+                    const lbTitle = document.getElementById('lb-title');
+                    tbody.innerHTML = '<tr class="loading-row"><td colspan="3"><div class="spinner-ring"></div></td></tr>';
+                    
+                    lbTitle.textContent = region ? `${region.toUpperCase()} RANKINGS` : 'NATIONAL RANKINGS';
+                    
                     let url = '/api/leaderboard';
                     if (region) url += `?region=${encodeURIComponent(region)}`;
 
@@ -226,20 +230,19 @@
                         if (res.ok) {
                             const lb = await res.json();
                             if (lb.length === 0) {
-                                tbody.innerHTML = `<tr class="empty-row"><td colspan="5" style="text-align:center; padding: 60px 20px;"><div style="font-size: 2rem; margin-bottom: 12px; opacity: 0.8; filter: drop-shadow(0 0 8px rgba(255,100,100,0.3));">⚔️</div><div style="font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 1.5px; color: var(--text-primary); margin-bottom: 8px;">LEADERBOARD UNCHARTED</div><div style="font-size: 0.9rem; color: var(--text-muted);">Complete Seasonal matches to establish your dominance${region ? ' in ' + region : ''}.</div></td></tr>`;
+                                tbody.innerHTML = `<tr class="empty-row"><td colspan="3" style="text-align:center; padding: 60px 20px;"><div style="font-size: 2rem; margin-bottom: 12px; opacity: 0.8; filter: drop-shadow(0 0 8px rgba(255,100,100,0.3));">⚔️</div><div style="font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 1.5px; color: var(--text-primary); margin-bottom: 8px;">LEADERBOARD UNCHARTED</div><div style="font-size: 0.9rem; color: var(--text-muted);">Complete Seasonal matches to establish your dominance${region ? ' in ' + region : ''}.</div></td></tr>`;
                                 return;
                             }
                             tbody.innerHTML = lb.map(p => `
                                 <tr class="rank-${p.rank}">
                                     <td><span class="rank-cell">#${p.rank}</span></td>
                                     <td style="font-weight:600">${p.name}</td>
-                                    <td><span class="arena-badge">${region ? region.toUpperCase() : 'GLOBAL'}</span></td>
                                     <td><span class="bp-cell">${p.bp} BP</span></td>
                                 </tr>
                             `).join('');
                         }
                     } catch (e) {
-                        tbody.innerHTML = '<tr class="empty-row"><td colspan="4">Failed to load rankings.</td></tr>';
+                        tbody.innerHTML = '<tr class="empty-row"><td colspan="3">Failed to load rankings.</td></tr>';
                     }
                 };
 
@@ -256,7 +259,7 @@
                     if (userRegion) {
                         loadLB(userRegion);
                     } else {
-                        document.getElementById('lb-body').innerHTML = '<tr class="empty-row"><td colspan="4">Region unknown. Update your profile.</td></tr>';
+                        document.getElementById('lb-body').innerHTML = '<tr class="empty-row"><td colspan="3">Region unknown. Update your profile.</td></tr>';
                     }
                 });
 

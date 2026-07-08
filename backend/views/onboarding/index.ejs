@@ -306,16 +306,26 @@
                     try {
                         const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=en`);
                         const data = await res.json();
-                        const loc = `${data.city || data.principalSubdivision || 'Unknown'}, ${data.countryCode}`;
-
+                        
                         if (data.countryCode !== 'IN') {
-                            val.textContent = loc.toUpperCase();
-                            stat.textContent = 'Region not supported';
+                            val.textContent = 'OUTSIDE INDIA';
+                            stat.textContent = 'Blaze Frontier is currently exclusive to India.';
                             stat.style.color = 'var(--red)';
                             block.style.display = 'block';
                             onboardingData.location = null;
                             return;
                         }
+
+                        let districtName = data.city || data.principalSubdivision || 'Unknown';
+                        if (data.localityInfo && data.localityInfo.administrative) {
+                            const distObj = data.localityInfo.administrative.find(a => a.name.toLowerCase().includes('district') || (a.description && a.description.toLowerCase().includes('district')));
+                            if (distObj) {
+                                districtName = distObj.name.replace(/ district/i, '').trim();
+                            }
+                        }
+                        
+                        const stateName = data.principalSubdivision || 'Unknown';
+                        const loc = `${districtName}, ${stateName}`;
 
                         val.textContent = loc.toUpperCase();
                         stat.textContent = 'Region confirmed';
