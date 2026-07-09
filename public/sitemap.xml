@@ -2,17 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://blazefrontier.in/</loc>
-    <lastmod>2026-06-11</lastmod>
+    <lastmod>2026-07-09</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://blazefrontier.in/about</loc>
-    <lastmod>2026-06-11</lastmod>
+    <loc>https://blazefrontier.in/privacy</loc>
+    <lastmod>2026-07-09</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blazefrontier.in/contact</loc>
-    <lastmod>2026-06-11</lastmod>
-    <priority>0.5</priority>
+    <loc>https://blazefrontier.in/terms</loc>
+    <lastmod>2026-07-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://blazefrontier.in/disclaimer</loc>
+    <lastmod>2026-07-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://blazefrontier.in/help</loc>
+    <lastmod>2026-07-09</lastmod>
+    <priority>0.8</priority>
   </url>
 </urlset>
