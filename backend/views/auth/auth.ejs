@@ -340,19 +340,6 @@
             .brand-side { display: none; }
             .auth-side { flex: 1; width: 100%; border-left: none; padding: 10px; }
             
-            .mobile-video-bg {
-                display: block;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                z-index: 0;
-                opacity: 0.8;
-                pointer-events: none;
-            }
-
             .auth-card { 
                 padding: 15px; 
                 border: none; 
@@ -389,11 +376,6 @@
 
     <!-- Right Authentication Side -->
     <div class="auth-side">
-        <!-- Mobile Background Video -->
-        <video class="mobile-video-bg" autoplay loop muted playsinline>
-            <source src="/public/mobilesubck.mp4" type="video/mp4">
-        </video>
-
         <div class="auth-card">
             <div class="auth-header">
                 <img src="/public/NEWLOGO.webp" alt="Blaze Frontier" class="mobile-logo">
@@ -433,19 +415,6 @@
     </div>
 
     <script>
-        // Custom 6-second loop for mobile video
-        document.addEventListener("DOMContentLoaded", () => {
-            const mobileVideo = document.querySelector('.mobile-video-bg');
-            if(mobileVideo) {
-                mobileVideo.addEventListener('timeupdate', () => {
-                    if(mobileVideo.currentTime >= 6) {
-                        mobileVideo.currentTime = 0;
-                        mobileVideo.play();
-                    }
-                });
-            }
-        });
-
         // Check if already logged in
         if (localStorage.getItem('blaze_token')) {
             const cachedRole = localStorage.getItem('blaze_role');

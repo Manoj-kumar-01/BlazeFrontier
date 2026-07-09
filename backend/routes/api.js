@@ -717,12 +717,41 @@ router.post('/user/setup', authMiddleware, async (req, res) => {
     try {
         const { game, location, ign, uid } = req.body;
         
+        // Server-side validation: location must be provided
+        if (!location || typeof location !== 'string' || !location.trim()) {
+            return res.status(400).json({ msg: 'Location is required. Please allow location access and verify your region.' });
+        }
+
+        // Server-side validation: IGN and UID must be provided
+        if (!ign || !uid) {
+            return res.status(400).json({ msg: 'In-Game Name and UID are required.' });
+        }
+
+        // Server-side geo-verification: check user's IP is from India
+        try {
+            const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+            // Skip IP check for localhost/dev
+            const isLocal = !clientIp || clientIp === '127.0.0.1' || clientIp === '::1' || clientIp === '::ffff:127.0.0.1';
+            if (!isLocal) {
+                const geoRes = await fetch(`https://api.bigdatacloud.net/data/ip-geolocation?ip=${clientIp}&key=`);
+                if (geoRes.ok) {
+                    const geoData = await geoRes.json();
+                    if (geoData.country && geoData.country.isoAlpha2 && geoData.country.isoAlpha2 !== 'IN') {
+                        return res.status(403).json({ msg: 'Blaze Frontier is currently available for Indian users only.' });
+                    }
+                }
+            }
+        } catch (geoErr) {
+            // If geo-check fails, allow setup to proceed (don't block users due to API failure)
+            console.warn('Server-side geo-check failed, allowing setup:', geoErr.message);
+        }
+
         const user = await User.findById(req.user.id);
         if(!user) return res.status(404).json({ msg: 'User not found' });
         
-        user.location = location;
-        user.inGameName = ign;
-        user.gameUid = uid;
+        user.location = location.trim();
+        user.inGameName = ign.trim();
+        user.gameUid = uid.trim();
         user.isSetupComplete = true;
         
         await user.save();
